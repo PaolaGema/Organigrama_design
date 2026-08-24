@@ -7,10 +7,11 @@ import { Check, ChevronDown, Search } from 'lucide-react'
    por opción —"Camila Herrera · Ejecutiva Comercial"—, no se puede buscar dentro, y al lado
    del selector de sedes, que sí es nuestro, parecía de otra aplicación.
 
-   Con más de una docena de opciones aparece el buscador solo. Elegir de una lista de treinta
-   cargos leyéndolos uno por uno es el problema que el `<select>` nunca resolvió. */
-
-const CON_BUSCADOR = 12
+   El buscador está SIEMPRE, no a partir de cierta cantidad de opciones. Aparecer recién pasada
+   la docena hacía que el mismo campo se comportara distinto según cuántos cargos hubiera, y
+   quien ya sabe el nombre de lo que busca tenía que averiguar antes si esta vez le tocaba
+   escribirlo o recorrer la lista. Con pocas opciones el campo sobra, pero no estorba: la lista
+   entera sigue debajo, a la vista. */
 
 /* Cuánto espacio hace falta debajo para que la lista quepa sin quedar cortada por el pie del
    modal. Si no lo hay, se abre hacia arriba: un desplegable que se abre siempre hacia abajo
@@ -70,20 +71,21 @@ export default function SelectorLista({
 
       {abierto && (
         <div className={`pl-dropdown-menu og-sedes-menu${haciaArriba ? ' og-lista-arriba' : ''}`}>
-          {todas.length > CON_BUSCADOR && (
-            <div className="pl-search-wrap og-sedes-search">
-              <Search size={13} className="pl-search-ico" />
-              <input
-                className="pl-search"
-                value={busca}
-                onChange={e => setBusca(e.target.value)}
-                placeholder="Buscar"
-                autoFocus
-              />
-            </div>
-          )}
+          <div className="pl-search-wrap og-lista-buscar">
+            <Search size={13} className="pl-search-ico" />
+            <input
+              className="pl-search"
+              value={busca}
+              onChange={e => setBusca(e.target.value)}
+              placeholder="Buscar"
+              autoFocus
+            />
+          </div>
 
-          <div className="og-sedes-check">
+          {/* Elegir UNO y elegir VARIOS se ven distinto a propósito: la casilla es lo que
+              dice "puedo marcar más de una". Donde solo cabe una respuesta no hay casillas,
+              solo un ✓ sobre la elegida. */}
+          <div className={`og-sedes-check${multiple ? '' : ' og-lista-simple'}`}>
             {filtradas.map(o => {
               const marcada = estaMarcada(o)
               return (

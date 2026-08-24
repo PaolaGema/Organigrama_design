@@ -1,4 +1,3 @@
-import { Fragment } from 'react'
 import { Building2, User, Layers } from 'lucide-react'
 import { getUnidad, subunidadesDe } from '../../data/organigramaData'
 
@@ -43,6 +42,48 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
   const visibles = dentro.slice(0, MAX_HIJOS)
   const resto = dentro.length - visibles.length
 
+  /* La unidad que se está creando, con lo que ya tiene adentro. Es el fondo de la recursión. */
+  const foco = (
+    <>
+      <MiniPildora
+        foco
+        marca={nueva ? 'Nueva' : 'Esta unidad'}
+        nombre={form.nombre.trim() || 'Sin nombre todavía'}
+      />
+
+      {dentro.length > 0 && (
+        <div className="og-pv-rama">
+          {visibles.map(h => (
+            <div key={h.id} className="og-pv-hijo">
+              {h.unidad
+                ? <MiniPildora nombre={h.nombre} />
+                : (
+                  <div className="og-pv-card">
+                    <span className="og-pv-nom"><User size={11} /> {h.nombre}</span>
+                  </div>
+                )}
+            </div>
+          ))}
+          {resto > 0 && (
+            <div className="og-pv-hijo"><span className="og-pv-mas">+{resto} más adentro</span></div>
+          )}
+        </div>
+      )}
+    </>
+  )
+
+  /* Cada escalón del camino contiene al siguiente, y el último contiene al foco. La sangría se
+     acumula porque las ramas quedan una dentro de otra, no una al lado de la otra. */
+  const escalon = i => (
+    <div className={`og-pv-rama${camino.length === 0 ? ' og-pv-rama-raiz' : ''}`}>
+      <div className="og-pv-hijo">
+        {i < camino.length
+          ? <><MiniPildora nombre={camino[i].nombre} />{escalon(i + 1)}</>
+          : foco}
+      </div>
+    </div>
+  )
+
   return (
     <aside className="og-pv">
       <div className="og-pv-hd">Cómo va a quedar en el organigrama</div>
@@ -55,43 +96,9 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
       </div>
 
       <div className="og-pv-tree">
-        {/* Cada escalón del camino anida al siguiente, igual que en el dibujo grande. */}
-        {camino.map((u, i) => (
-          <Fragment key={u.id}>
-            {i === 0
-              ? <MiniPildora nombre={u.nombre} />
-              : <div className="og-pv-rama"><div className="og-pv-hijo"><MiniPildora nombre={u.nombre} /></div></div>}
-          </Fragment>
-        ))}
-
-        <div className={`og-pv-rama${camino.length ? '' : ' og-pv-rama-raiz'}`}>
-          <div className="og-pv-hijo">
-            <MiniPildora
-              foco
-              marca={nueva ? 'Nueva' : 'Esta unidad'}
-              nombre={form.nombre.trim() || 'Sin nombre todavía'}
-            />
-
-            {dentro.length > 0 && (
-              <div className="og-pv-rama">
-                {visibles.map(h => (
-                  <div key={h.id} className="og-pv-hijo">
-                    {h.unidad
-                      ? <MiniPildora nombre={h.nombre} />
-                      : (
-                        <div className="og-pv-card">
-                          <span className="og-pv-nom"><User size={11} /> {h.nombre}</span>
-                        </div>
-                      )}
-                  </div>
-                ))}
-                {resto > 0 && (
-                  <div className="og-pv-hijo"><span className="og-pv-mas">+{resto} más adentro</span></div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+        {camino.length > 0
+          ? <><MiniPildora nombre={camino[0].nombre} />{escalon(1)}</>
+          : escalon(0)}
       </div>
 
       {!nueva && (

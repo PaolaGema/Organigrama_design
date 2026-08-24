@@ -1,6 +1,8 @@
 import { Fragment } from 'react'
 import { User, Star, Users, Briefcase, MapPin, CornerDownRight, Building2 } from 'lucide-react'
-import { sucursales, getUnidad, tipoDe } from '../../data/organigramaData'
+import { sucursales, getUnidad, tipoDe, ocupantesDe, getPersona, rotuloVacantes } from '../../data/organigramaData'
+import Avatar from './Avatar'
+import { Desglosadas } from './OrgNodos'
 
 /* Dónde va a quedar el puesto, dibujado. Antes era una lista de tres renglones con flechitas
    —"Recursos Humanos › Gerente General › este puesto"— y contestaba la pregunta con texto,
@@ -22,7 +24,13 @@ const ICONO = { colaborador: User, jefe: Star, staff: Users, outsourcing: Briefc
    la previa en la lista de otro puesto. */
 const MAX_HERMANOS = 4
 
-function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, marca }) {
+/* Cuántas caras entran en el cuadro antes de contarse. Es el mismo tope que usa la tarjeta del
+   árbol: la previa tiene que verse como el organigrama, no parecerse. */
+const MAX_CARAS = 3
+
+const genteDe = cargo => ocupantesDe(cargo).map(getPersona).filter(Boolean)
+
+function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, marca, gente, plazas }) {
   const Icon = ICONO[tipo] || User
   const clases = ['og-pv-card']
   if (tipo === 'staff') clases.push('og-pv-staff')
@@ -34,24 +42,60 @@ function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, marca }) 
       {marca && <span className="og-pv-tag">{marca}</span>}
       <span className="og-pv-nom"><Icon size={11} /> {nombre}</span>
       {area && <span className="og-pv-sub">{area}</span>}
-      {estado && <span className="og-pv-estado">{estado}</span>}
+      {/* Quién lo ocupa, dibujado igual que en el árbol: una persona con su cara y su nombre,
+          varias como caras superpuestas más la cuenta. Antes esto salía como texto gris en el
+          mismo renglón donde dice "Vacante", así que haber elegido a alguien se veía igual que
+          no haber elegido a nadie. */}
+      {gente?.length ? (
+        <span className="og-pv-gente">
+          {gente.length === 1 ? (
+            <>
+              <Avatar persona={gente[0]} size={15} clase="og-chip-av" />
+              <span className="og-pv-gente-nom">{gente[0].name}</span>
+            </>
+          ) : (
+            <>
+              <span className="og-caras">
+                {gente.slice(0, MAX_CARAS).map(p => (
+                  <Avatar key={p.id} persona={p} size={15} clase="og-chip-av" />
+                ))}
+                {gente.length > MAX_CARAS && (
+                  <span className="og-chip-av og-cara-mas">+{gente.length - MAX_CARAS}</span>
+                )}
+              </span>
+              {/* Contra el cupo, igual que el cuadro del árbol: con cuatro plazas y dos
+                  cubiertas dice "2 de 4" y no "2 personas", que escondía lo que falta. */}
+              <span className="og-pv-gente-nom">
+                {plazas > gente.length ? `${gente.length} de ${plazas}` : `${gente.length} personas`}
+              </span>
+            </>
+          )}
+        </span>
+      ) : estado && <span className="og-pv-estado">{estado}</span>}
     </div>
   )
 }
 
 export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
   const jefe = form.reportaA ? org.cargos.find(c => c.id === form.reportaA) : null
-  const lateral = form.tipo === 'staff' || form.tipo === 'outsourcing'
+  /* Solo el staff va al costado. El outsourcing baja en la línea como cualquier reporte, así
+     que acá también: la previa tiene que dibujar lo mismo que el árbol o promete un lugar que
+     el organigrama no le va a dar. */
+  const lateral = form.tipo === 'staff'
   /* Al costado solo se puede colgar de alguien: un staff sin jefe es una raíz, y no hay de qué
      colgarlo al costado. */
   const alCostado = lateral && !!jefe
+
+  /* Cuántas caben. Con el cupo en la mano la previa cuenta las vacantes igual que el cuadro
+     de verdad, así que subir una plaza se ve en el dibujo sin salir de la pestaña Básico. */
+  const plazas = Math.max(1, form.plazas || 1, ocupantes.length)
 
   /* Los hermanos son la línea de mando: los laterales del mismo jefe no van en esa fila,
      porque en el árbol tampoco van ahí. */
   const hermanos = (jefe
     ? org.cargos.filter(c => c.reportaA === jefe.id)
     : org.cargos.filter(c => !c.reportaA)
-  ).filter(c => c.id !== cargoId && c.tipo !== 'staff' && c.tipo !== 'outsourcing')
+  ).filter(c => c.id !== cargoId && c.tipo !== 'staff')
 
   /* Dónde cae este puesto dentro de la fila. Sin posición declarada —un cargo nuevo— va al
      final, que es donde lo va a poner la lista. */
@@ -69,19 +113,38 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
   const todas = sedes.length === sucursales.length
 
   const foco = (
+    <>
     <MiniCargo
       foco
       marca={nuevo ? 'Nuevo' : 'Este puesto'}
       nombre={form.nombre.trim() || 'Sin nombre todavía'}
       tipo={form.tipo}
-      /* Con una persona se lee su nombre; con varias, cuántas son: cinco nombres no entran en
-         una columna de 400 px. */
-      estado={ocupantes.length > 1
-        ? `${ocupantes.length} personas`
-        : ocupantes.length
-          ? ocupantes[0].name
-          : form.tipo === 'outsourcing' ? 'Vacante · sin prestador' : 'Vacante'}
+      gente={ocupantes}
+      plazas={plazas}
+      /* El estado solo habla cuando no hay nadie: con gente elegida, lo que se muestra son las
+         caras. Y cuenta las plazas, igual que la etiqueta del dibujo: con cuatro plazas vacías
+         la previa decía "Vacante" en singular mientras el cuadro de al lado iba a decir
+         "4 vacantes". */
+      estado={form.tipo === 'outsourcing'
+        ? `${rotuloVacantes(plazas)} · sin prestador`
+        : rotuloVacantes(plazas)}
     />
+    {/* Y colgando, UNA CAJITA POR PLAZA: las cubiertas con su persona y las libres como huecos
+        punteados. Subir el cupo a cuatro dibuja cuatro casillas y se van llenando a medida que
+        se marca gente, así que "cuántos puestos me quedan libres" se cuenta mirando en vez de
+        leyendo un número. Es el mismo componente que usa el organigrama al desplegar un cuadro,
+        no una copia: la previa tiene que verse como el dibujo, no parecerse.
+
+        SIEMPRE, también con una sola plaza. Se probó dibujándolas recién a partir de dos —con
+        una, el cuadro ya dice "Vacante" y la casilla parecía repetirlo— y el resultado fue peor:
+        la primera plaza no se veía y la segunda hacía aparecer dos de golpe, así que la regla
+        "una cajita por plaza" dejaba de leerse como una regla. */}
+    <Desglosadas
+      ocupantes={ocupantes}
+      cargo={form.nombre.trim() || 'Sin nombre todavía'}
+      libres={plazas - ocupantes.length}
+    />
+    </>
   )
 
   return (
@@ -92,7 +155,7 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
           organigrama dibuja los cargos dentro de la píldora de su área. Antes iba de renglón
           adentro del cuadro y lo que quedaba arriba era el nombre de la empresa, que se leía
           como si fuera el área equivocada. */}
-      <div className="og-pv-area">
+      <div className="og-pv-area og-pv-area-uni">
         <span className="og-pv-area-rot">Unidad organizacional</span>
         <span className="og-pv-area-nom"><Building2 size={13} /> {area || 'Sin área'}</span>
       </div>
@@ -106,7 +169,7 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
       {jefe && <div className="og-pv-rot">Depende de</div>}
 
       <div className="og-pv-tree">
-        {jefe && <MiniCargo nombre={jefe.nombre} tipo={tipoDe(jefe, org)} area={areaJefe} />}
+        {jefe && <MiniCargo nombre={jefe.nombre} tipo={tipoDe(jefe, org)} area={areaJefe} gente={genteDe(jefe)} />}
 
         <div className={`og-pv-rama${jefe ? '' : ' og-pv-rama-raiz'}`}>
           {/* El lateral va antes que la línea de mando, como en el dibujo grande: primero lo

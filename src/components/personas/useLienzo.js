@@ -39,6 +39,30 @@ export function useLienzo({ tree, ignorarPan } = {}) {
 
   useEffect(() => { ajustar(ZOOM_LEGIBLE) }, [tree, ajustar])
 
+  /* LLEVAR LA VISTA A UN CUADRO. Buscar en un árbol de cinco mil píxeles no sirve de nada si
+     después hay que encontrarlo a mano.
+
+     El corrimiento se suma en píxeles de pantalla y no en coordenadas del árbol: `translate` va
+     ANTES que `scale` en la transformación, así que mover el panel un píxel mueve lo dibujado un
+     píxel, sea cual sea el zoom. Por eso alcanza con restar los dos centros.
+
+     Si el zoom está por debajo de lo legible se sube primero: llegar al cuadro correcto y
+     encontrarlo de 30 px es la mitad del trabajo. El centrado se hace después de pintar, cuando
+     la nueva escala ya movió al elemento de lugar. */
+  const centrar = useCallback((el, { zoomMin = ZOOM_LEGIBLE } = {}) => {
+    if (!el || !canvasRef.current) return
+    setZoom(z => Math.max(z, zoomMin))
+    requestAnimationFrame(() => {
+      const canvas = canvasRef.current
+      if (!canvas) return
+      const c = canvas.getBoundingClientRect()
+      const e = el.getBoundingClientRect()
+      const dx = (c.left + c.width / 2) - (e.left + e.width / 2)
+      const dy = (c.top + c.height / 2) - (e.top + e.height / 2)
+      setPan(p => ({ x: p.x + dx, y: p.y + dy }))
+    })
+  }, [])
+
   // La rueda hace zoom en vez de scrollear, así que el listener va nativo: React
   // registra onWheel como pasivo y ahí preventDefault() no tiene efecto.
   useEffect(() => {
@@ -72,7 +96,7 @@ export function useLienzo({ tree, ignorarPan } = {}) {
   }
 
   return {
-    canvasRef, stageRef, zoom, setZoom, pan, arrastrando, empezarArrastre, ajustar,
+    canvasRef, stageRef, zoom, setZoom, pan, arrastrando, empezarArrastre, ajustar, centrar,
     estiloStage: { transform: `translate(calc(-50% + ${pan.x}px), ${pan.y}px) scale(${zoom})` },
   }
 }

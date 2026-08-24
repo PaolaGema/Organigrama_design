@@ -8,6 +8,7 @@ import { avatarUrl } from '../../utils/calendarEvents'
 import AsignarBuddyModal from '../../components/onboarding/AsignarBuddyModal'
 import ConfirmarAccionModal from '../../components/layout/ConfirmarAccionModal'
 import { departamentos, colaboradoresData, ESTADOS_ONBOARDING, CON_RUTA_ACTIVA } from './colaboradoresData'
+import { cargoDe } from '../../data/organigramaData'
 
 /* Foto real del colaborador; si no carga, caen las iniciales sobre su color de siempre. */
 function Avatar({ name, initials, color, size = 34 }) {
@@ -213,7 +214,8 @@ function MiniCalendar({ value, onChange }) {
 
 export default function Colaboradores() {
   const { activarRuta } = useRutaActiva()
-  const { plantillas } = useOnboardingData()
+  /* El cargo sale del organigrama —ver `cargoDe`— así que esta pantalla necesita tenerlo. */
+  const { plantillas, organigrama } = useOnboardingData()
   // Copia local: asignar, desasignar y cambiar de buddy tienen que verse en la tabla.
   const [colaboradores, setColaboradores] = useState(colaboradoresData)
   const [buddyModal, setBuddyModal] = useState(null)
@@ -261,7 +263,7 @@ export default function Colaboradores() {
 
   const filtered = colaboradores.filter(c => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.cargo.toLowerCase().includes(search.toLowerCase()) ||
+      (cargoDe(c, organigrama) || '').toLowerCase().includes(search.toLowerCase()) ||
       c.email.toLowerCase().includes(search.toLowerCase())
     const matchDepto = filterDepto === 'Todos' || c.depto === filterDepto
     const matchStatus = filterStatus === 'todos' || c.status === filterStatus
@@ -453,7 +455,7 @@ export default function Colaboradores() {
                   </div>
                 </td>
                 <td><span className="as-ruta">{c.depto}</span></td>
-                <td><span className="as-ruta">{c.cargo}</span></td>
+                <td><span className="as-ruta">{cargoDe(c, organigrama)}</span></td>
                 <td><span className="as-ruta">{c.rol}</span></td>
                 <td>
                   <div className="pr-progress">
@@ -898,7 +900,7 @@ export default function Colaboradores() {
                   <Avatar name={rolModal.name} initials={rolModal.initials} color={rolModal.color} size={36} />
                   <div>
                     <h2 style={{ margin: 0, fontSize: 15 }}>{rolModal.name}</h2>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>{rolModal.cargo} · {rolModal.depto}</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>{cargoDe(rolModal, organigrama)} · {rolModal.depto}</span>
                   </div>
                 </div>
                 <button className="pl-modal-close" onClick={() => setRolModal(null)}>

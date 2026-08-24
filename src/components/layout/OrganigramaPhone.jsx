@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight, Building2, Star, User, Briefcase } from 'lucide-react'
+import Avatar from '../personas/Avatar'
 import {
   unidadesRaiz, subunidadesDe, tarjetaUnidad, cargosDeUnidad, getUnidad, TIPOS_CARGO,
 } from '../../data/organigramaData'
@@ -60,15 +61,15 @@ function TarjetaCargo({ fila }) {
   return (
     <div style={{
       position: 'relative',
-      background: porCubrir ? '#fffdf5' : staff ? '#f0fdfa' : externo ? '#f7f5ff' : '#fff',
-      border: porCubrir ? '1px dashed #f59e0b' : staff ? '1px dashed #2dd4bf'
-        : externo ? '1px dashed #a78bfa' : '1px solid #e2e8f0',
+      background: porCubrir ? '#fef3c7' : staff ? '#ccfbf1' : externo ? '#ede9fe' : '#fff',
+      border: porCubrir ? '1.5px dashed #d97706' : staff ? '1.5px dashed #0d9488'
+        : externo ? '1.5px dashed #7c3aed' : '1px solid #e2e8f0',
       borderRadius: 10, padding: '9px 10px', marginBottom: 6,
     }}>
       {vacante && (
         <span style={{
           position: 'absolute', top: -5, right: 8,
-          background: '#fef3c7', color: '#b45309',
+          background: '#d97706', color: '#fff',
           fontSize: 5, fontWeight: 800, letterSpacing: '.03em', textTransform: 'uppercase',
           padding: '1px 5px', borderRadius: 4,
         }}>Vacante</span>
@@ -78,10 +79,10 @@ function TarjetaCargo({ fila }) {
         {tipo === 'jefe'
           ? <Star size={12} style={{ color: '#f59e0b', fill: '#f59e0b', flexShrink: 0, marginTop: 1 }} />
           : externo
-            ? <Briefcase size={12} style={{ color: '#8b5cf6', flexShrink: 0, marginTop: 1 }} />
+            ? <Briefcase size={12} style={{ color: '#7c3aed', flexShrink: 0, marginTop: 1 }} />
             : <User size={12} style={{ color: '#7C93A6', flexShrink: 0, marginTop: 1 }} />}
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontSize: 8, fontWeight: 700, lineHeight: 1.25, color: staff ? '#0f766e' : externo ? '#6d28d9' : '#0C2D40' }}>{cargo.nombre}</div>
+          <div style={{ fontSize: 8, fontWeight: 700, lineHeight: 1.25, color: porCubrir ? '#92400e' : staff ? '#115e59' : externo ? '#5b21b6' : '#0C2D40' }}>{cargo.nombre}</div>
           <div style={{ fontSize: 6, fontWeight: 600, color: '#94a3b8', marginTop: 1 }}>{TIPO[tipo]}</div>
         </div>
       </div>
@@ -97,10 +98,7 @@ function TarjetaCargo({ fila }) {
       {ocupantes.length ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f1f5f9', borderRadius: 7, padding: '5px 7px' }}>
           {ocupantes.slice(0, 3).map(p => (
-            <span key={p.id} style={{
-              width: 15, height: 15, borderRadius: '50%', background: p.color, color: '#fff',
-              fontSize: 5.5, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            }}>{p.initials}</span>
+            <Avatar key={p.id} persona={p} size={15} clase="og-chip-av" style={{ fontSize: 5.5 }} />
           ))}
           <span style={{ fontSize: 7, fontWeight: 600, color: '#0C2D40' }}>
             {ocupantes.length === 1 ? ocupantes[0].name : `${ocupantes.length} personas`}
@@ -108,8 +106,8 @@ function TarjetaCargo({ fila }) {
         </div>
       ) : (
         <div style={{
-          background: '#fffbeb', border: '1px solid #f59e0b', borderRadius: 7,
-          padding: '5px 7px', fontSize: 6.5, fontWeight: 700, color: '#b45309',
+          background: 'rgba(255,255,255,.7)', border: '1px dashed #d97706', borderRadius: 7,
+          padding: '5px 7px', fontSize: 6.5, fontWeight: 700, color: '#92400e',
         }}>{externo ? 'Sin prestador asignado' : 'Sin colaborador asignado'}</div>
       )}
     </div>
