@@ -43,23 +43,34 @@ export const unidades = [
   { id: 'diseno', nombre: 'Diseño', corto: 'Diseño', padreId: 'direccion' },
 ]
 
-/* Los cuatro tipos de cargo. `staff` y `outsourcing` cuelgan de lado en vez de bajar en la
-   línea de mando: asesoran o prestan un servicio, pero no mandan sobre nadie.
+/* TRES TIPOS, y ninguno se deduce. "Jefe / Director" era un cuarto tipo que salía de tener
+   gente debajo, y se sacó por dos razones que el usuario vio antes que nadie: no es una
+   naturaleza del puesto sino una consecuencia de la estructura —el mismo cargo deja de ser
+   jefatura porque alguien movió a otro de lugar— y, deducido, era una etiqueta que la pantalla
+   afirmaba sin que nadie pudiera decidirla.
 
-   `jefatura` y `colaborador` se deducen de tener o no gente a cargo —ver `tipoDe`—, así que
-   en los cargos sembrados casi ninguno lo declara. Los dos laterales sí tienen que
-   declararse: de nada se puede deducir que alguien es externo. */
+   Quién manda se sigue leyendo donde siempre estuvo: en el dibujo, por lo que le cuelga debajo,
+   y en la tabla, por la sangría y la columna "Reporta a".
+
+   Lo que queda es de qué CLASE es el puesto, que sí es del puesto y no de su lugar: uno en
+   planilla, uno que asiste al costado, o uno que cubre un tercero. Sin declarar vale
+   Colaborador, que es el caso común y el de todo lo que se guardó antes. */
 export const TIPOS_CARGO = [
-  { key: 'colaborador', label: 'Colaborador', desc: 'Puesto sin gente a cargo', lateral: false },
-  { key: 'jefe', label: 'Jefe / Director', desc: 'Puesto con línea de mando', lateral: false },
+  { key: 'colaborador', label: 'Colaborador', desc: 'En planilla, baja en la línea de mando', lateral: false },
   { key: 'staff', label: 'Staff', desc: 'Asiste a un cargo sin estar en su línea de mando', lateral: true },
   /* No es lateral: cuelga de su jefe y queda dentro de su área como cualquier otro puesto. Lo
      que dice que es externo es el color y la línea punteada, no el lugar donde se dibuja. */
   { key: 'outsourcing', label: 'Outsourcing', desc: 'Lo cubre un prestador de servicios', lateral: false },
 ]
 
-/* `sucursalIds` es una lista y no un id suelto a propósito: una gerencia responsable de dos
-   regiones es UN cargo con dos sedes, no dos cuadros duplicados en el árbol.
+/* `sucursalIds` sigue siendo una lista de a lo sumo UNA: un puesto pertenece a una sede y la
+   lista vacía quiere decir "toda la empresa". Se dejó como lista y no como id suelto para no
+   reescribir `estaEnSucursal` ni lo ya guardado —un dato viejo con tres sedes sigue entrando en
+   el filtro por las tres hasta que alguien guarde ese puesto—.
+
+   Lo que antes justificaba varias —"una gerencia responsable de dos regiones es UN cargo con
+   dos sedes"— se cayó con el cupo de plazas: si atiende dos ciudades y hay dos personas, son
+   dos puestos, cada uno con su código.
 
    TRES PUESTOS QUEDAN SIN OCUPANTE A PROPÓSITO —Reclutadora, Pasante Comercial y Asistente
    Operativo— y por lo tanto tres personas quedan sin cuadro. Antes las 29 del directorio
@@ -80,7 +91,7 @@ export const cargos = [
   { id: 'data', nombre: 'Data Analyst', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 20, sucursalIds: ['central'] },
   { id: 'soporte-ext', nombre: 'Soporte de Infraestructura', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: null, tipo: 'outsourcing', sucursalIds: ['central'] },
 
-  { id: 'dir-rrhh', nombre: 'Especialista RRHH', unidadId: 'rrhh', reportaA: 'gg', ocupanteId: 9, sucursalIds: ['central', 'lpz', 'sre'] },
+  { id: 'dir-rrhh', nombre: 'Especialista RRHH', unidadId: 'rrhh', reportaA: 'gg', ocupanteId: 9, sucursalIds: ['central'] },
   { id: 'nominas', nombre: 'Analista de Nóminas', unidadId: 'rrhh', reportaA: 'dir-rrhh', ocupanteId: 15, sucursalIds: ['central'] },
   { id: 'recluta', nombre: 'Reclutadora', unidadId: 'rrhh', reportaA: 'dir-rrhh', ocupanteId: null, sucursalIds: ['central'] },
 
@@ -89,20 +100,20 @@ export const cargos = [
   /* El caso de apoyo funcional del sembrado: es de Marketing Digital y ayuda en Contenidos.
      Pertenece a una sola área —la de su jefe— y trabaja en dos. */
   { id: 'cm', nombre: 'Community Manager', unidadId: 'mkt-digital', reportaA: 'jefe-mkt-dig', ocupanteId: 11, sucursalIds: ['central'], funcionales: [{ unidadId: 'contenidos', reportaA: 'analista-mkt' }] },
-  { id: 'seo', nombre: 'Especialista SEO', unidadId: 'mkt-digital', reportaA: 'jefe-mkt-dig', ocupanteId: 26, sucursalIds: ['lpz', 'eal'] },
+  { id: 'seo', nombre: 'Especialista SEO', unidadId: 'mkt-digital', reportaA: 'jefe-mkt-dig', ocupanteId: 26, sucursalIds: ['lpz'] },
   { id: 'analista-mkt', nombre: 'Analista de Marketing', unidadId: 'contenidos', reportaA: 'dir-mkt', ocupanteId: 13, sucursalIds: ['central'] },
   { id: 'content', nombre: 'Content Creator', unidadId: 'contenidos', reportaA: 'dir-mkt', ocupanteId: 21, sucursalIds: ['central'] },
-  { id: 'marca', nombre: 'Ejecutiva de Marca', unidadId: 'contenidos', reportaA: 'dir-mkt', ocupanteId: 27, sucursalIds: ['cbb', 'tja'] },
+  { id: 'marca', nombre: 'Ejecutiva de Marca', unidadId: 'contenidos', reportaA: 'dir-mkt', ocupanteId: 27, sucursalIds: ['cbb'] },
 
   { id: 'lider-ventas', nombre: 'Ejecutivo Senior', unidadId: 'ventas', reportaA: 'gg', ocupanteId: 12, sucursalIds: [] },
-  { id: 'ejec-com', nombre: 'Ejecutiva Comercial', unidadId: 'ventas', reportaA: 'lider-ventas', ocupantes: [2], sucursalIds: ['central', 'sre', 'tja'] },
-  { id: 'account', nombre: 'Account Manager', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: 7, sucursalIds: ['lpz', 'oru'] },
-  { id: 'sdr', nombre: 'SDR Junior', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: 18, sucursalIds: ['cbb', 'pot', 'eal'] },
-  { id: 'pasante', nombre: 'Pasante Comercial', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['central', 'eal'] },
+  { id: 'ejec-com', nombre: 'Ejecutiva Comercial', unidadId: 'ventas', reportaA: 'lider-ventas', ocupantes: [2], sucursalIds: ['sre'] },
+  { id: 'account', nombre: 'Account Manager', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: 7, sucursalIds: ['oru'] },
+  { id: 'sdr', nombre: 'SDR Junior', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: 18, sucursalIds: ['pot'] },
+  { id: 'pasante', nombre: 'Pasante Comercial', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['eal'] },
 
-  { id: 'coord-log', nombre: 'Coordinador Logístico', unidadId: 'operaciones', reportaA: 'gg', ocupanteId: 16, sucursalIds: ['central', 'cbb', 'tja'] },
+  { id: 'coord-log', nombre: 'Coordinador Logístico', unidadId: 'operaciones', reportaA: 'gg', ocupanteId: 16, sucursalIds: ['tja'] },
   { id: 'analista-proc', nombre: 'Analista de Procesos', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: 8, sucursalIds: ['central'] },
-  { id: 'asist-op', nombre: 'Asistente Operativo', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: null, sucursalIds: ['cbb', 'oru', 'pot'] },
+  { id: 'asist-op', nombre: 'Asistente Operativo', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: null, sucursalIds: ['oru'] },
   { id: 'limpieza-ext', nombre: 'Servicio de Limpieza', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: null, tipo: 'outsourcing', sucursalIds: [] },
 
   { id: 'tesorero', nombre: 'Tesorero', unidadId: 'finanzas', reportaA: 'gg', ocupanteId: 23, sucursalIds: ['central'] },
@@ -167,27 +178,27 @@ const esLateral = c => c.tipo === 'staff'
    cargo de lugar. */
 export const esTipoDeclarado = tipo => tipo === 'staff' || tipo === 'outsourcing'
 
-/* Un cargo lo pueden ocupar VARIAS personas: "Ejecutiva Comercial" puede tener tres. Por eso
-   los ocupantes son una lista y no un id suelto, que obligaba a duplicar el cuadro —con su
-   tipo, sus sedes y mañana su ruta de onboarding— una vez por persona.
+/* UN CARGO, UNA PERSONA. Cada cargo/puesto lleva su propio código —así lo identifica RRHH— y un
+   código no se puede repartir entre cinco casillas: si hay cinco ejecutivas comerciales, hay
+   cinco puestos, cada uno con su código, su sede y su gente.
 
-   Cuántas caben lo dice `plazas` (ver `plazasDe`, más abajo): la lista de ocupantes es quiénes
-   están, y las plazas son cuántos entran.
+   Se probó lo contrario —un cargo con N plazas, un solo cuadro que se iba llenando— y se
+   descartó por eso: el código no encajaba, y todo lo que fue apareciendo después (la sede, el
+   apoyo funcional) terminaba teniendo que bajar plaza por plaza hasta que la plaza era el puesto
+   con otro nombre.
 
-   El campo viejo de un solo ocupante se sigue leyendo: hay organigramas guardados con él y
-   no hace falta migrarlos para que se vean bien. */
-export const ocupantesDe = cargo => (
-  cargo.ocupantes ?? (cargo.ocupanteId != null ? [cargo.ocupanteId] : [])
-)
+   `ocupantes` sigue siendo una LISTA de a lo sumo uno: así se guardó lo que ya existe y así lo
+   leen `cuadroDe` y `cargoDe`, que preguntan "¿en qué cuadro está esta persona?". El campo viejo
+   de un solo ocupante también se sigue leyendo. */
+export const ocupantesDe = cargo => {
+  const lista = cargo.ocupantes ?? (cargo.ocupanteId != null ? [cargo.ocupanteId] : [])
+  /* Un dato viejo puede traer varios de cuando el puesto tenía plazas: manda el primero, que es
+     el que el cuadro va a dibujar. */
+  return lista.slice(0, 1)
+}
 
-/* CUÁNTA GENTE CABE EN EL PUESTO. Un cargo es una posición con N plazas: cuatro ejecutivas
-   comerciales son un cuadro con cuatro plazas, no cuatro cuadros repetidos. Es lo que convierte
-   "vacante" en una cuenta —cuántas quedan por cubrir— en vez de un sí o un no.
-
-   Sin declarar vale UNA, que es el caso normal y el de todo lo que se guardó antes de que este
-   campo existiera. Nunca menos que la gente que ya tiene adentro: un dato importado puede traer
-   más ocupantes que plazas, y el cupo no puede desmentir a quien ya está trabajando ahí. */
-export const plazasDe = cargo => Math.max(cargo.plazas ?? 1, ocupantesDe(cargo).length)
+/* Quién lo ocupa, o nada. */
+export const ocupanteDe = cargo => ocupantesDe(cargo)[0] ?? null
 
 /* EL APOYO FUNCIONAL. Un cargo PERTENECE a un área —`unidadId`, la que manda: ahí está su jefe,
    su presupuesto y su evaluación— y además puede TRABAJAR en otras. El Community Manager es de
@@ -206,12 +217,26 @@ export const plazasDe = cargo => Math.max(cargo.plazas ?? 1, ocupantesDe(cargo).
    responde ahí. Lo segundo no siempre existe —se puede apoyar a un área sin tener un jefe
    funcional— y por eso `reportaA` es opcional; cuando está, el cuadro cuelga de esa persona
    igual que cualquier reporte. */
-export const funcionalesDe = cargo => (
-  cargo.funcionales
-  /* Formato viejo: una lista de áreas sin jefe funcional. Se sigue leyendo para no migrar a
-     mano lo que ya se guardó. */
-  ?? (cargo.unidadesFuncionales || []).map(unidadId => ({ unidadId, reportaA: null }))
-)
+/* Cada asignación funcional tiene DOS datos: en qué área trabaja y, si corresponde, a quién le
+   responde ahí. Lo segundo no siempre existe —se puede apoyar a un área sin tener un jefe
+   funcional— y por eso `reportaA` es opcional; cuando está, el cuadro cuelga de esa persona
+   igual que cualquier reporte.
+
+   Se leen los dos formatos viejos sin migrar nada: `unidadesFuncionales` (una lista de áreas
+   sueltas) y el intento de colgar el apoyo de cada plaza (`{ plaza, ... }`), que se colapsa por
+   área —el puesto es uno, así que apoyar a un área es una sola respuesta—. */
+export const funcionalesDe = cargo => {
+  const guardadas = cargo.funcionales
+    ?? (cargo.unidadesFuncionales || []).map(unidadId => ({ unidadId, reportaA: null }))
+  const salida = []
+  const visto = new Set()
+  for (const f of guardadas) {
+    if (!f.unidadId || visto.has(f.unidadId)) continue
+    visto.add(f.unidadId)
+    salida.push({ unidadId: f.unidadId, reportaA: f.reportaA || null })
+  }
+  return salida
+}
 
 export const areasQueApoya = cargo => funcionalesDe(cargo).map(f => f.unidadId)
 
@@ -219,19 +244,15 @@ export const areasQueApoya = cargo => funcionalesDe(cargo).map(f => f.unidadId)
    área: "¿quién más trabaja acá sin ser de acá?". Devuelve el cargo junto con a quién le
    responde en esa área, que es lo que decide de dónde cuelga su cuadro. */
 export const apoyosDeUnidad = (unidadId, org = orgSeed) => org.cargos
-  .map(c => {
-    const f = funcionalesDe(c).find(x => x.unidadId === unidadId)
-    return f ? { cargo: c, reportaA: f.reportaA || null } : null
+  .map(cargo => {
+    const f = funcionalesDe(cargo).find(x => x.unidadId === unidadId)
+    return f ? { cargo, reportaA: f.reportaA } : null
   })
   .filter(Boolean)
 
-/* El rótulo de las plazas por cubrir. Vive acá porque lo dibujan tres pantallas —el árbol, las
-   cards y la tabla— y tres textos para el mismo dato se despegan al primer cambio. */
-export const rotuloVacantes = libres => (libres === 1 ? 'Vacante' : `${libres} vacantes`)
-
 /* Dónde está parada una persona en el organigrama: el cuadro que ocupa, o nada. Nadie ocupa
-   dos puestos —la lista de Colaboradores del modal no deja marcar a quien ya tiene uno— así
-   que el `find` devuelve el único; en un organigrama guardado antes de esa regla, el primero. */
+   dos puestos, así que el `find` devuelve el único; si un dato viejo trae a alguien en dos
+   cuadros, el primero. */
 export const cuadroDe = (persona, org = orgSeed) => (persona
   ? org.cargos.find(c => ocupantesDe(c).includes(persona.id)) || null
   : null)
@@ -257,18 +278,11 @@ export function areaDe(persona, org = orgSeed) {
   return cuadro ? (getUnidad(cuadro.unidadId, org)?.nombre || null) : null
 }
 
-/* `vacante` sigue queriendo decir "no hay NADIE": es lo que pinta el cuadro de amarillo, y un
-   puesto con tres de cinco plazas cubiertas no está vacante, está incompleto. Las plazas por
-   cubrir son `libres`, que es otra pregunta y por eso es otro campo. */
+/* `vacante` quiere decir "no hay nadie", que es lo que pinta el cuadro de amarillo. Con un
+   puesto por cargo vuelve a ser una pregunta de sí o no. */
 const estadoDeOcupantes = cargo => {
   const ocupantes = ocupantesDe(cargo).map(getPersona).filter(Boolean)
-  const plazas = plazasDe(cargo)
-  return {
-    ocupantes,
-    plazas,
-    libres: Math.max(0, plazas - ocupantes.length),
-    vacante: ocupantes.length === 0,
-  }
+  return { ocupantes, vacante: ocupantes.length === 0 }
 }
 
 const nodoSuelto = cargo => ({
@@ -475,6 +489,11 @@ function colgarUnidadesVacias(hijosRaiz, org, conFuncionales) {
 }
 
 /* Forma común de una fila/tarjeta de cargo: la comparten la tabla, las cards y el buscador. */
+/* La fila de un cargo: el cargo envuelto con su área, su tipo, sus sedes y su estado. Es lo
+   que consumen la tabla y las tarjetas, así que se exporta para que quien necesite describir un
+   puesto suelto —los apoyos funcionales de un área, por ejemplo— no arme una versión propia. */
+export const filaDeCargo = (cargo, org = orgSeed) => datosFila(cargo, org)
+
 const datosFila = (cargo, org) => ({
   cargo,
   unidad: getUnidad(cargo.unidadId, org),
@@ -507,18 +526,25 @@ export function tarjetaUnidad(unidadId, org = orgSeed) {
 export const cargosDeUnidad = (unidadId, org = orgSeed) =>
   org.cargos.filter(c => c.unidadId === unidadId).map(c => datosFila(c, org))
 
+/* SIN TILDES NI EÑES. Nadie escribe "Núñez" en un buscador: escribe "nunez" y espera
+   encontrarlo. Descomponer y quitar los signos deja la ñ en n y la á en a, así que las dos
+   formas se cruzan. Se normalizan LOS DOS LADOS, o buscar "Núñez" bien escrito dejaría de
+   funcionar. */
+export const normalizar = t => (t || '')
+  .normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+
 export function buscarCargos(texto, org = orgSeed) {
-  const q = texto.trim().toLowerCase()
+  const q = normalizar(texto.trim())
   if (!q) return []
   return org.cargos
     .map(c => datosFila(c, org))
     .filter(f =>
-      f.cargo.nombre.toLowerCase().includes(q) ||
+      normalizar(f.cargo.nombre).includes(q) ||
       /* Por CADA ocupante. Antes miraba `f.ocupante` en singular, un campo que dejó de existir
          cuando un cargo pasó a poder tener varios: buscar por el nombre de una persona no
          encontraba nada, en ninguna de las tres vistas. */
-      f.ocupantes.some(p => p.name.toLowerCase().includes(q)) ||
-      (f.unidad?.nombre || '').toLowerCase().includes(q))
+      f.ocupantes.some(p => normalizar(p.name).includes(q)) ||
+      normalizar(f.unidad?.nombre).includes(q))
 }
 
 /* La tabla agrupa por ÁREA, no por unidad exacta: las subunidades (Marketing Digital,
@@ -535,14 +561,9 @@ export function grupoDe(unidadId, org = orgSeed) {
   return u
 }
 
-/* Lo declarado gana; lo que no se declaró se deduce. Staff y Outsourcing no se pueden
-   deducir de nada, así que siempre vienen declarados. Jefe y colaborador sí: tener gente
-   debajo es exactamente lo que los distingue, y deducirlo evita que el árbol se contradiga
-   con su propia etiqueta cuando alguien mueve un cargo. */
-export const tipoDe = (cargo, org = orgSeed) => {
-  if (cargo.tipo && cargo.tipo !== 'jefe' && cargo.tipo !== 'colaborador') return cargo.tipo
-  return org.cargos.some(c => c.reportaA === cargo.id) ? 'jefe' : 'colaborador'
-}
+/* El tipo es el que se declaró, y nada más. Ya no recibe el organigrama: no hay nada que
+   consultar en la estructura para saber de qué clase es un puesto. */
+export const tipoDe = cargo => cargo.tipo || 'colaborador'
 
 /* Devuelve las filas ya ordenadas jerárquicamente y con el nivel de sangría calculado
    dentro de cada grupo, para que la tabla solo tenga que pintarlas. */
@@ -622,13 +643,15 @@ export function coordinacionesDe(cargoId, org = orgSeed) {
 
 export const TODAS_SUCURSALES = 'todas'
 
+/* Las sucursales del cargo. Lista vacía = en todas, incluidas las que se abran mañana: es lo
+   correcto a futuro, y enumerarlas dejaría al puesto fuera de la novena. */
 export const sucursalesDe = (cargo, org = orgSeed) => {
   const ids = cargo.sucursalIds || []
   return sucursales.filter(s => ids.includes(s.id))
 }
 
-/* Un cargo sin sedes declaradas se considera presente en todas: es lo que evita que al
-   filtrar desaparezca de la vista un cargo al que todavía nadie le cargó la sede. */
+/* Un cargo sin sedes declaradas se considera presente en todas: es lo que evita que al filtrar
+   desaparezca de la vista un cargo al que todavía nadie le cargó la sede. */
 export const estaEnSucursal = (cargo, sucursalId) => {
   if (!sucursalId || sucursalId === TODAS_SUCURSALES) return true
   const ids = cargo.sucursalIds || []

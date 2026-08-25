@@ -76,7 +76,10 @@ function TarjetaCargo({ fila }) {
       )}
 
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7 }}>
-        {tipo === 'jefe'
+        {/* La estrella era del tipo 'jefe', que dejó de existir: quién manda se lee en el
+            dibujo, no en un ícono. Queda para el cargo DESTACADO, que sí es una marca puesta a
+            mano. */}
+        {cargo.destacado
           ? <Star size={12} style={{ color: '#f59e0b', fill: '#f59e0b', flexShrink: 0, marginTop: 1 }} />
           : externo
             ? <Briefcase size={12} style={{ color: '#7c3aed', flexShrink: 0, marginTop: 1 }} />

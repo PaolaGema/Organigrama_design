@@ -3406,23 +3406,6 @@ select.pl-input:focus {
 .og-persona-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; line-height: 1.25; }
 .og-persona-txt strong { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .og-persona-txt em { font-style: normal; font-size: 8.5px; font-weight: 600; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* El resumen del tope no es una persona: sin cara y en gris, para que no se cuente como una. */
-.og-persona-mas { justify-content: center; padding: 0 9px; border-style: dashed; background: none; box-shadow: none; color: var(--text-muted); font-weight: 700; }
-
-/* LA PLAZA SIN CUBRIR. Misma caja y mismo alto que la de una persona —es una casilla del mismo
-   puesto y tiene que contarse igual de un vistazo— pero hueca: borde punteado en el color de
-   vacante, sin relleno ni sombra, y en lugar de la cara un círculo vacío. Así cuatro plazas con
-   dos cubiertas se leen como dos llenas y dos por llenar sin tener que sumar nada. */
-.og-persona-libre {
-  border: 1.5px dashed var(--og-vacante); background: var(--og-vacante-bg);
-  box-shadow: none; color: var(--og-vacante-txt);
-}
-.og-persona-libre .og-persona-txt em { color: var(--og-vacante-txt); opacity: .75; }
-.og-persona-hueco {
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  width: 18px; height: 18px; border-radius: 50%;
-  border: 1.5px dashed var(--og-vacante); color: var(--og-vacante);
-}
 
 /* El chip pasa a ser un botón cuando hay desglose: se nota que se puede tocar sin agregar otro
    control al cuadro, que ya tiene el de plegar la rama en la esquina. */
@@ -3439,10 +3422,6 @@ select.pl-input:focus {
 }
 .og-card:hover .og-chip-flecha,
 .og-chip-abierto .og-chip-flecha { opacity: 1; }
-/* El chip abierto es un resumen: centrado, sin cara y sin nombre, porque el detalle está en
-   las cajitas de abajo. */
-.og-chip-resumen { justify-content: center; }
-.og-chip-varios .og-chip-plazas { display: inline-flex; align-items: center; }
 
 /* ---- nodos ---- */
 
@@ -3468,7 +3447,7 @@ select.pl-input:focus {
   font-size: 9.5px; font-weight: 600; line-height: 1.25;
 }
 
-/* La pestaña Funcional: una lista de áreas donde el puesto también trabaja. Cada fila lleva
+/* La lista de áreas donde una plaza también trabaja, en su modal de apoyo. Cada fila lleva
    dos campos y su papelera, en una caja punteada que la separa de la siguiente sin encerrarla
    —el punteado es el mismo lenguaje que usa el dibujo para lo funcional—. */
 .og-nota-suelta { margin: 0 0 14px; }
@@ -3556,14 +3535,6 @@ select.pl-input:focus {
 
 .og-chip-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Varias personas en un mismo puesto: las caras van en fila y superpuestas, no en lista.
-   Cinco renglones harían crecer el cuadro justo donde hay más gente. */
-.og-chip-varios { flex-direction: column; align-items: flex-start; gap: 4px; }
-.og-caras { display: flex; }
-.og-caras .og-chip-av { margin-right: -5px; box-shadow: 0 0 0 1.5px var(--surface-card); }
-.og-cara-mas { background: var(--border-dark); color: var(--navy); font-size: 6px; }
-.og-chip-plazas { font-size: 9.5px; font-weight: 700; color: var(--navy); }
-.og-chip-plazas em { font-style: normal; font-weight: 600; color: var(--og-vacante-txt); }
 .og-chip-vacio { justify-content: center; background: transparent; border: 1px dashed var(--border-dark); color: var(--text-muted); }
 
 /* Staff y outsourcing no mandan: cuelgan de lado con línea punteada, fuera de la cadena. */
@@ -4008,7 +3979,6 @@ select.pl-input:focus {
 .og-cc:hover { box-shadow: var(--sh-md); }
 .og-cc-hd { display: flex; align-items: flex-start; gap: 11px; }
 .og-cc-ico { display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.og-ico-jefe { color: var(--yellow); fill: var(--yellow); }
 .og-ico-colab { color: #7C93A6; }
 .og-ico-staff { color: var(--og-staff-txt); }
 .og-ico-ext { color: #8b5cf6; }
@@ -4073,7 +4043,23 @@ select.pl-input:focus {
 .og-td-codigo { font-size: 11.5px; font-weight: 600; color: var(--text-muted); }
 .og-pertenece { display: inline-block; background: var(--surface-hover); color: var(--navy); font-size: 10.5px; font-weight: 600; padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
 .og-tipo { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 6px; white-space: nowrap; }
-.og-tipo-jefe { background: #fef3c7; color: #b45309; }
+/* EL AMARILLO ES DE LAS VACANTES, en las tres vistas. Esta píldora lo usaba para decir
+   "Jefe / Director", así que un puesto de jefatura vacante mostraba amarillo dos veces
+   diciendo dos cosas distintas —y en el gráfico ese mismo cuadro es todo amarillo porque está
+   por cubrir—. La jefatura la marca la ESTRELLA, que es como el dibujo señala a los
+   destacados; la píldora vuelve al neutro. */
+/* El área que un cargo APOYA, al lado de la que le pertenece. Punteada y en azul: el mismo
+   lenguaje que su cuadro prestado en el dibujo, para que las tres vistas digan lo mismo con la
+   misma forma. */
+.og-pertenece-func {
+  margin-left: 5px; border: 1px dashed var(--og-func);
+  background: var(--og-func-bg); color: var(--og-func-txt);
+}
+/* La tarjeta prestada, en la vista Cards. */
+.og-cc-func { border: 1.5px dashed var(--og-func); background: var(--og-func-bg); }
+.og-cc-func .og-cc-hd-txt strong { color: var(--og-func-txt); }
+.og-cc-func .og-cc-edit { opacity: 1; }
+
 .og-tipo-staff { background: var(--og-staff-bg); color: var(--og-staff-txt); }
 .og-tipo-ext { background: var(--og-ext-bg); color: var(--og-ext-txt); }
 .og-tipo-colab { background: var(--surface-hover); color: #475569; }
@@ -4136,36 +4122,6 @@ select.pl-input:focus {
 }
 .og-cargo-campos .og-solo { color: var(--text-heading); }
 .og-solo:hover { opacity: .7; }
-
-/* EL CUPO DEL PUESTO. Tiene que verse como un campo del formulario y no como dos botoncitos
-   sueltos: mismo alto que los inputs de arriba, mismo borde y mismo redondeo, con el número
-   grande en el medio. */
-.og-cupo {
-  display: inline-flex; align-items: center; align-self: flex-start;
-  height: 38px; padding: 3px;
-  border: 1px solid var(--border); border-radius: 9px; background: var(--surface-card);
-}
-.og-cupo button {
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  width: 32px; height: 30px; border: none; border-radius: 7px;
-  background: none; color: var(--navy); cursor: pointer;
-}
-.og-cupo button:hover:not(:disabled) { background: var(--surface-hover); }
-.og-cupo button:disabled { color: var(--border-dark); cursor: default; }
-.og-cupo-val {
-  min-width: 92px; text-align: center;
-  font-size: 11.5px; font-weight: 600; color: var(--text-muted);
-}
-.og-cupo-val strong { margin-right: 3px; font-size: 15px; font-weight: 700; color: var(--navy); }
-
-/* La salida al pie de la lista de personas: quienes ya ocupan un puesto no están, pero se
-   pueden pedir. Apagada y en el borde: es una aclaración, no una acción pendiente. */
-.og-ver-ocupados {
-  margin-top: 6px; width: 100%; border: 1px dashed var(--border-soft); border-radius: 8px;
-  background: none; padding: 7px 10px; font-family: inherit; font-size: 10.5px; font-weight: 700;
-  color: var(--text-muted); cursor: pointer;
-}
-.og-ver-ocupados:hover { border-color: var(--border-dark); color: var(--text-heading); }
 
 /* QUÉ INCLUYE EL DIBUJO, flotando sobre el lienzo. Mismo lenguaje que el zoom —pastilla
    oscura, esquina, sombra— porque es de la misma familia: herramientas del lienzo, no
@@ -4256,7 +4212,10 @@ select.pl-input:focus {
 .og-fila-op.on .og-op-txt strong { color: var(--text-heading); }
 /* "Todas las sedes" no es una sede más: va arriba, separada por una línea. */
 .og-fila-op-cabeza { margin-bottom: 5px; padding-bottom: 10px; border-bottom: 1px solid var(--border-soft); border-radius: 9px 9px 0 0; }
-.og-op-box { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; flex-shrink: 0; border: 1.5px solid var(--border-dark); border-radius: 6px; color: #08231A; }
+/* REDONDA Y NO CUADRADA: la lista pasó a ser de una sola respuesta —un puesto pertenece a una
+   sede— y el cuadrado dice "marca las que quieras". La forma tiene que prometer lo que el
+   control hace, o el primer clic sobre la segunda opción sorprende. */
+.og-op-box { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; flex-shrink: 0; border: 1.5px solid var(--border-dark); border-radius: 50%; color: #08231A; }
 .og-fila-op.on .og-op-box { background: var(--green); border-color: var(--green); }
 /* El nombre y su detalle en la MISMA línea. Apilados, cada opción ocupaba dos renglones y una
    lista de ocho se leía como dieciséis: la altura se va en lo secundario —"Sucursal",
@@ -4271,23 +4230,6 @@ select.pl-input:focus {
 /* Es contexto, no una respuesta: baja de peso para no competir con el nombre, que es lo que se
    está eligiendo. */
 .og-op-extra { flex-shrink: 0; font-size: 10.5px; font-weight: 500; color: var(--text-muted); }
-/* El puesto que la persona ya ocupa se lee más fuerte que un "Sin puesto": es la excepción
-   que hay que notar, no el caso normal. */
-.og-op-extra-ocupado { color: var(--text-heading); font-weight: 600; }
-/* La fila apagada: quien ya ocupa un puesto no se puede marcar acá. Se ve, para no dejar
-   buscando a alguien que sí está en el directorio, pero no responde al clic. */
-/* Cubierta por la regla de arriba, no elegida. Se apaga como la bloqueada pero sigue viva:
-   tocarla es la forma de pasar de "todas" a elegir sedes concretas. */
-.og-fila-op-cubierta { opacity: .5; }
-.og-fila-op-cubierta .og-op-box { border-style: dashed; }
-.og-fila-op-cubierta:hover { opacity: 1; }
-.og-fila-op-ocupada { cursor: default; opacity: .55; }
-.og-fila-op-ocupada:hover { background: none; }
-.og-fila-op-ocupada .og-op-box { border-style: dashed; }
-/* El directorio es largo de entrada, así que la lista de personas se estira un poco más que la
-   de sedes —tres renglones no necesitan lo mismo que treinta—. */
-.og-lista-personas { max-height: 340px; }
-.og-lista-personas .og-op-extra { max-width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .og-sedes-vacio { margin: 0; font-size: 11px; color: var(--text-muted); text-align: center; padding: 6px 0 2px; }
 .og-sedes-trigger { padding: 9px 12px; font-size: 12px; }

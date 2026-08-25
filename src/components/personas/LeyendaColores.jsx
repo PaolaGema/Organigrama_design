@@ -54,12 +54,10 @@ export default function LeyendaColores() {
         </span>
       </div>
 
-      {/* La etiqueta cuenta plazas, así que dice "Vacante" con una y "3 vacantes" con más. La
-          muestra usa el caso de una, que es el que se ve en casi todos los cuadros. */}
-      <div className="og-lc-rot">La etiqueta cuenta lo que falta cubrir</div>
+      <div className="og-lc-rot">La etiqueta avisa lo que falta cubrir</div>
       <div className="og-lc-fila">
         <span className="og-lc-tag">Vacante</span>
-        <span className="og-lc-txt">Plazas del puesto sin cubrir</span>
+        <span className="og-lc-txt">El puesto no lo ocupa nadie</span>
       </div>
     </div>
   )

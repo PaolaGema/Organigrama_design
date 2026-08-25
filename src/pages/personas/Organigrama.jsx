@@ -18,11 +18,12 @@ import { useOnboardingData } from '../../context/OnboardingDataContext'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
 import {
   empresa, sucursales, getUnidad, nuevoId, tipoDe, TIPOS_CARGO,
-  buildOrgTree, filasTabla, buscarCargos, unidadesRaiz, subunidadesDe,
+  buildOrgTree, filasTabla, buscarCargos, normalizar, unidadesRaiz, subunidadesDe,
   tarjetaUnidad, cargosDeUnidad, filtrarPorSucursal, TODAS_SUCURSALES, estaEnSucursal,
   eliminarCargo, eliminarUnidad, bloqueoUnidad, unidadesPadrePosibles, cabezaDe, paresDe, moverEntrePares,
   filtrarPorUnidad, cargosEnRama, TODAS_UNIDADES,
-  ocupantesDe, plazasDe, rotuloVacantes, esTipoDeclarado, funcionalesDe, areasQueApoya, apoyosDeUnidad, cargoDe, areaDe,
+  ocupantesDe, funcionalesDe, areasQueApoya, apoyosDeUnidad,
+  filaDeCargo,
   coordinacionesDe,
 } from '../../data/organigramaData'
 
@@ -35,7 +36,6 @@ import {
    y lo que avisa de la vacante es la etiqueta. */
 const PINTA_TIPO = {
   colaborador: { clase: 'colab', Icon: User },
-  jefe: { clase: 'jefe', Icon: Star },
   staff: { clase: 'staff', Icon: Users, propio: true },
   outsourcing: { clase: 'ext', Icon: Briefcase, propio: true },
 }
@@ -45,10 +45,9 @@ const tipoVisual = tipo => {
   return { ...base, ...PINTA_TIPO[base.key] }
 }
 
-/* Lo que sí se elige del tipo de puesto. Jefe queda fuera a propósito: `tipoDe` lo deduce de
-   tener gente a cargo, así que ofrecerlo en el formulario sería una opción que al guardar no
-   cambia nada. Los subtítulos hablan en el idioma del contrato —planilla, servicios,
-   prestador de servicios— porque es como lo nombra RRHH al dar de alta. */
+/* Los tres tipos, tal cual se guardan: no hay ninguno que la pantalla deduzca por su cuenta.
+   Los subtítulos hablan en el idioma del contrato —planilla, servicios, prestador de
+   servicios— porque es como lo nombra RRHH al dar de alta. */
 const TIPOS_PUESTO = [
   { key: 'colaborador', label: 'Colaborador', sub: 'En planilla, baja en la línea', Icon: User },
   { key: 'staff', label: 'Staff', sub: 'Asiste al costado de la línea', Icon: Users },
@@ -64,12 +63,7 @@ const PESTANAS_CARGO = [
   { key: 'jerarquia', label: 'Jerarquía', Icon: Network },
   { key: 'funcional', label: 'Funcional', Icon: Share2 },
   { key: 'donde', label: 'Localización', Icon: MapPin },
-  { key: 'gente', label: 'Colaboradores', Icon: Users },
 ]
-
-/* Tope de plazas de un puesto. No hay regla de negocio detrás: es el freno para que un dedo
-   apoyado en el "+" no deje un cuadro con seiscientas vacantes. */
-const PLAZAS_MAX = 99
 
 const VISTAS = [
   { key: 'grafico', label: 'Gráfico', icon: Network },
@@ -120,24 +114,21 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
       : base && 'reportaA' in base ? base.reportaA
       : (org.cargos[0]?.id ?? null),
     ocupantes: cargo ? ocupantesDe(cargo) : [],
-    /* Cuánta gente cabe. Uno es el caso normal, así que el puesto nuevo nace con una plaza y
-       quien necesita cinco lo dice; al revés —preguntar siempre cuántas— le cobra el campo a
-       los cientos de puestos que tienen una sola. */
-    plazas: cargo ? plazasDe(cargo) : 1,
     /* Áreas donde trabaja sin pertenecer. Al cambiar de área propia hay que sacarla de acá si
        estaba marcada, o el puesto quedaría apoyándose a sí mismo. */
     funcionales: cargo ? funcionalesDe(cargo).map(f => ({ ...f })) : [],
-    /* El tipo que se muestra es el que ve el resto de la pantalla: para un cargo con gente
-       debajo, `tipoDe` devuelve 'jefe' aunque el cargo no lo declare. */
-    tipo: cargo ? tipoDe(cargo, org) : (base?.tipo || 'colaborador'),
-    /* Si se está mirando una sede concreta, el puesto nuevo nace en esa sede y no en todas. Es
-       la respuesta a "¿para qué sucursal estoy creando?": para la que se está viendo, y el
-       formulario lo deja dicho y modificable en vez de suponerlo en silencio.
+    /* De qué clase es el puesto. Se declara y se guarda: no hay ninguno que la pantalla
+       deduzca de la estructura. */
+    tipo: cargo ? tipoDe(cargo) : (base?.tipo || 'colaborador'),
+    /* Si se está mirando una sede concreta, el puesto nuevo nace en esa sede y no en todas: es
+       la respuesta a "¿para qué sucursal estoy creando?".
 
        Sin sede activa nace con la lista VACÍA y no con las sedes enumeradas: las dos se ven
        igual hoy, pero la lista vacía quiere decir "en todas" y sigue valiendo cuando mañana se
        abra la novena; enumerarlas dejaría al puesto fuera de esa. */
-    sucursalIds: cargo?.sucursalIds || (sedeActiva ? [sedeActiva.id] : []),
+    /* Una sola, siempre. Un dato viejo de cuando un cargo podía existir en varias sedes se
+       queda con la primera. */
+    sucursalIds: (cargo?.sucursalIds || (sedeActiva ? [sedeActiva.id] : [])).slice(0, 1),
     /* El lugar que ocupa entre los cargos que se dibujan en su misma fila. No es un campo del
        cargo —el orden es el de la lista— pero se edita acá y se guarda con el resto: mover un
        cuadro y que el cambio quede a medias entre "ya pasó" y "hay que guardar" sería la peor
@@ -151,79 +142,22 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
     ...f,
     funcionales: f.funcionales.map((x, j) => (j === i ? { ...x, ...cambios } : x)),
   }))
-  const alternarSede = id => setForm(f => {
-    const siguiente = f.sucursalIds.includes(id)
-      ? f.sucursalIds.filter(x => x !== id)
-      : [...f.sucursalIds, id]
-    /* Marcarlas todas una por una es decir "todas", y así se guarda: con la lista enumerada, una
-       sede que se abra mañana nacería fuera de este puesto. */
-    return { ...f, sucursalIds: siguiente.length === sucursales.length ? [] : siguiente }
-  })
-
-  /* "En todas" no es un modo aparte sino un valor: ninguna sede declarada. Así lo lee el resto
-     del sistema (`estaEnSucursal`) y así se guarda, que además es lo correcto a futuro —una
-     sede nueva entra sola en los puestos que existen en todas, y no en los que enumeran tres—. */
   const [buscaSede, setBuscaSede] = useState('')
-  /* Con 50 sedes y 3 marcadas, repasar lo elegido obliga a recorrer las 50: lo marcado queda
-     repartido entre lo que no. Este modo muestra solo eso. Se ofrece únicamente cuando la lista
-     no entra de un vistazo —con tres sedes no hay nada que repasar— y cuando hay algo marcado
-     que no sea "todas", que ya se lee en una línea. */
-  const [soloSedesMarcadas, setSoloSedesMarcadas] = useState(false)
+  /* El buscador va siempre, sin umbral de "a partir de N sedes": una lista corta se busca igual
+     y el campo no estorba. */
   const sedesFiltradas = sucursales
-    .filter(s => `${s.nombre} ${s.ciudad}`.toLowerCase().includes(buscaSede.trim().toLowerCase()))
-    .filter(s => !soloSedesMarcadas || form.sucursalIds.includes(s.id))
+    .filter(sc => `${sc.nombre} ${sc.ciudad}`.toLowerCase().includes(buscaSede.trim().toLowerCase()))
+  /* "Toda la empresa" no es un modo aparte sino un valor: ninguna sede declarada. Así lo lee el
+     resto del sistema (`estaEnSucursal`) y así se guarda. */
   const enTodasLasSedes = form.sucursalIds.length === 0
   /* Cuántos puestos existen ya en cada sede. El que se está editando no se cuenta: la pregunta
      es qué hay allá, no qué va a haber cuando se guarde. Sale de `estaEnSucursal`, que es la
-     misma regla que usa el filtro de la pantalla —contarlos a mano acá sería una segunda
-     verdad que se despega de la primera en cuanto una cambie. */
+     misma regla que usa el filtro de la pantalla —contarlos a mano acá sería una segunda verdad
+     que se despega de la primera en cuanto una cambie. */
   const puestosPorSede = useMemo(() => Object.fromEntries(sucursales.map(sc => [
     sc.id,
     org.cargos.filter(c => c.id !== cargo?.id && estaEnSucursal(c, sc.id)).length,
   ])), [org.cargos, cargo?.id])
-
-  const [buscaPersona, setBuscaPersona] = useState('')
-  const [soloPersonasMarcadas, setSoloPersonasMarcadas] = useState(false)
-  /* Qué puesto ocupa hoy cada persona en el organigrama, sin contar este. Es lo que hay que
-     saber antes de marcarla: el directorio dice qué cargo TIENE, y esto dice qué cuadro del
-     dibujo ya está ocupando —que no siempre coinciden—. */
-  const puestoDePersona = useMemo(() => {
-    const m = {}
-    for (const c of org.cargos) {
-      if (c.id === cargo?.id) continue
-      for (const pid of ocupantesDe(c)) if (!(pid in m)) m[pid] = c.nombre
-    }
-    return m
-  }, [org.cargos, cargo?.id])
-
-  /* La lista muestra a los LIBRES. Quien ya ocupa otro cuadro no se puede asignar acá —nadie
-     tiene dos cargos en la misma empresa— así que su renglón era una fila apagada que no
-     respondía al clic: ocupaba la lista sin ser una opción, y en un directorio de doscientos
-     dejaba a los asignables perdidos entre gente que no lo era.
-
-     No desaparecen del todo: se piden con un botón y el buscador avisa cuando lo que se está
-     buscando está entre ellos. Ese era el motivo por el que antes se mostraban siempre —que
-     nadie quede buscando a alguien que sí está en el directorio— y sigue cubierto.
-
-     Ojo: `puestoDePersona` no cuenta ESTE cargo, así que quienes ya lo ocupan siguen contando
-     como libres y no se esconden al abrir el detalle de un puesto con gente. */
-  const [verOcupados, setVerOcupados] = useState(false)
-  const { libres, ocupados } = useMemo(() => {
-    const t = buscaPersona.trim().toLowerCase()
-    const coinciden = colaboradoresData.filter(pe => (
-      /* Se busca por lo que la fila MUESTRA. Buscar por el `depto` del directorio encontraría
-         gente por un área que la fila no dice, y que además puede no ser la suya. */
-      !t || `${pe.name} ${areaDe(pe, org) || ''} ${cargoDe(pe, org) || ''}`.toLowerCase().includes(t)
-    ))
-    const vistas = soloPersonasMarcadas ? coinciden.filter(pe => form.ocupantes.includes(pe.id)) : coinciden
-    return {
-      libres: vistas.filter(pe => !puestoDePersona[pe.id]),
-      ocupados: vistas.filter(pe => puestoDePersona[pe.id]),
-    }
-  }, [buscaPersona, puestoDePersona, org, soloPersonasMarcadas, form.ocupantes])
-  const personasFiltradas = verOcupados ? [...libres, ...ocupados] : libres
-  const plazasLibres = Math.max(0, form.plazas - form.ocupantes.length)
-  const puestoLleno = plazasLibres === 0
 
   const coordinaciones = cargo ? coordinacionesDe(cargo.id, org) : []
   const ocupantes = form.ocupantes
@@ -260,18 +194,20 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
     unidadId: form.unidadId,
     reportaA: form.reportaA,
     ocupantes: form.ocupantes,
-    /* Nunca por debajo de la gente que ya está adentro: bajar el cupo no puede echar a nadie. */
-    plazas: Math.max(form.plazas, form.ocupantes.length),
     /* Se descartan las filas a medio llenar y la propia área: una asignación sin área no dice
        nada, y apoyarse a uno mismo tampoco. */
-    funcionales: form.funcionales.filter(f => f.unidadId && f.unidadId !== form.unidadId),
+    funcionales: form.funcionales
+      .filter(f => f.unidadId && f.unidadId !== form.unidadId)
+      .map(f => ({ unidadId: f.unidadId, reportaA: f.reportaA || null })),
+    /* El campo de las plazas se limpia: un dato viejo con cupo cinco haría que `ocupantesDe`
+       y el dibujo hablaran de casillas que ya no existen. */
+    plazas: null,
+    plazasSedes: null,
     /* El campo viejo se limpia para que no queden dos verdades sobre quién ocupa el puesto. */
     ocupanteId: null,
-    /* Se guarda el tipo solo cuando no se puede deducir: Staff y Outsourcing hay que
-       declararlos; Jefe y Colaborador salen de tener o no gente a cargo. Ya no se pregunta por
-       la lateralidad —el outsourcing dejó de ser lateral y así se perdía su tipo al guardar—. */
-    tipo: esTipoDeclarado(form.tipo) ? form.tipo : null,
-    sucursalIds: form.sucursalIds,
+    /* Los tres se declaran, así que el tipo se guarda tal cual viene del formulario. */
+    tipo: form.tipo,
+    sucursalIds: form.sucursalIds.slice(0, 1),
   }, mismaFila ? form.posicion : null)
 
   return (
@@ -349,75 +285,6 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
                   autoFocus={nuevo}
                 />
               </label>
-
-              {/* El cupo, en su propio renglón y no al lado del nombre. Se probó en la misma
-                  fila y confundía: un texto de sesenta caracteres y un número de un dígito
-                  tienen pesos muy distintos, así que las dos etiquetas se leían como una sola
-                  —"Nombre del cargo / puesto … Plazas"— y el escalón parecía un accesorio del
-                  input. Abajo, con su renglón entero, se lee como lo que es: otra decisión
-                  sobre el puesto.
-
-                  Sigue en Básico y no en Colaboradores porque cuántas personas caben es parte
-                  de la DEFINICIÓN del puesto, no de a quién se le asigna: en uno nuevo el cupo
-                  se fija antes de tener a nadie. */}
-              {/* La pregunta en el idioma de quien la contesta. "Plazas del puesto" es como lo
-                  nombra RRHH en su planilla, no como lo piensa quien está armando el
-                  organigrama: la duda real es cuánta gente hace el mismo trabajo. La palabra
-                  "plaza" queda solo en la ayuda, que es donde se puede explicar. */}
-              <div className="pl-label">
-                <span className="og-label-fila">
-                  ¿Cuántas personas ocupan este puesto?
-                  <AyudaCampo>
-                    Cuando varias personas hacen exactamente el mismo trabajo, es{' '}
-                    <strong>un</strong> puesto con varias plazas y no un cuadro repetido por
-                    cada una: cuatro ejecutivas comerciales son un cuadro con cuatro. Se
-                    renombra una vez, se define una vez, y las plazas sin cubrir se cuentan
-                    solas como vacantes.
-                  </AyudaCampo>
-                </span>
-
-                <div className="og-cupo">
-                  {/* No baja de la gente que ya está adentro: quitar una plaza no puede echar
-                      a nadie. */}
-                  <button
-                    type="button"
-                    disabled={form.plazas <= Math.max(1, form.ocupantes.length)}
-                    onClick={() => set('plazas', form.plazas - 1)}
-                    title="Una menos"
-                  >
-                    <Minus size={15} />
-                  </button>
-                  <span className="og-cupo-val">
-                    <strong>{form.plazas}</strong> {form.plazas === 1 ? 'persona' : 'personas'}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={form.plazas >= PLAZAS_MAX}
-                    onClick={() => set('plazas', form.plazas + 1)}
-                    title="Una más"
-                  >
-                    <Plus size={15} />
-                  </button>
-                </div>
-
-                {/* Con una sola persona no hay nada que aclarar: el cuadro es un cuadro y lo
-                    demás lo dice la pestaña Colaboradores. El renglón aparecía igual y decía
-                    "0 de 1 cubiertas · Vacante", que es la misma cosa dicha dos veces. */}
-                {form.plazas > 1 && (
-                  <p className="og-modal-nota">
-                    Va a salir <strong>un solo cuadro</strong> con {form.plazas} casillas:{' '}
-                    {form.ocupantes.length > 0
-                      ? <>{form.ocupantes.length} con nombre</>
-                      : <>ninguna con nombre</>}
-                    {plazasLibres > 0 && <> y {plazasLibres} por cubrir</>}.{' '}
-                    {plazasLibres > 0 && (
-                      <button type="button" className="og-solo" onClick={() => setHoja('gente')}>
-                        Elegir a quiénes
-                      </button>
-                    )}
-                  </p>
-                )}
-              </div>
 
             </section>
             )}
@@ -515,7 +382,7 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
                 <span className="og-label-fila">Tipo de cargo / puesto <em className="og-req">*</em></span>
                 <div className="og-tipo-cards">
                   {TIPOS_PUESTO.map(o => {
-                    const activa = o.key === form.tipo || (o.key === 'colaborador' && form.tipo === 'jefe')
+                    const activa = o.key === form.tipo
                     return (
                       <button
                         key={o.key}
@@ -534,20 +401,32 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
                     )
                   })}
                 </div>
-                {form.tipo === 'jefe' && (
-                  <p className="og-modal-nota">
-                    Ya tiene gente a cargo, así que en el organigrama figura como <strong>Jefe</strong>.
-                    Es lo mismo que un puesto interno: la jefatura se deduce sola.
-                  </p>
-                )}
               </div>
+
+              {/* Las coordinaciones no se editan aquí —se trazan sobre el lienzo— pero sí se
+                  muestran: son la otra mitad de con quién trabaja el puesto. */}
+              {!nuevo && coordinaciones.length > 0 && (
+                <div className="pl-label">
+                  <span className="og-label-fila">
+                    Coordina con <span className="og-coord-count">{coordinaciones.length}</span>
+                    <AyudaCampo>
+                      Coordinan trabajo sin ser línea de mando: no cambian de quién depende el
+                      puesto. Todavía no se pueden crear ni cerrar desde ninguna pantalla.
+                    </AyudaCampo>
+                  </span>
+                  {coordinaciones.map(c => (
+                    <div key={c.id} className="og-coord-fila">
+                      <span className={`og-coord-rol og-coord-${c.rol}`}>
+                        {c.rol === 'par' ? 'Par' : c.rol === 'supervisor' ? 'Supervisa' : 'Lo supervisa'}
+                      </span>
+                      <span className="og-coord-cargo">{c.contraparte.nombre}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
             )}
 
-            {/* FUNCIONAL: dónde más trabaja este puesto. Tiene pestaña propia porque no es un
-                campo sino una LISTA, y cada fila lleva dos respuestas —en qué área y a quién le
-                responde ahí—. Metida en Jerarquía competía con la línea de mando de verdad, que
-                es la que casi siempre se viene a mirar. */}
             {hoja === 'funcional' && (
             <section className="og-bloque">
               <p className="og-modal-nota og-nota-suelta">
@@ -636,40 +515,29 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
             {hoja === 'donde' && (
             <section className="og-bloque">
 
-                {/* Un puesto puede existir en varias sedes a la vez —una gerencia regional es UN
-                  cargo con dos sedes, no dos cuadros repetidos—, así que se marcan varias.
+                {/* UNA SOLA SEDE. Un puesto es un puesto: tiene su código y está en un lugar. Se
+                    elegían varias cuando un cargo era un cuadro con N plazas —"una gerencia
+                    regional es un cargo con dos sedes"—, y eso se cayó con el cupo: si la
+                    gerencia atiende dos ciudades y hay dos personas, son dos puestos.
 
-                  Un solo campo y no dos pestañas. Antes se contestaba primero "¿en todas?" y
-                  recién ahí aparecía la lista: tres controles apilados —pestañas, cuenta,
-                  desplegable— para una pregunta que se contesta con uno. "Todas las sedes" es la
-                  primera opción de la misma lista, que además es lo que significa en el dato:
-                  ninguna declarada = está en todas, incluidas las que se abran después. */}
+                    Sigue siendo una lista a la vista y no un desplegable: la pestaña tiene una
+                    columna entera libre, así que esconder la respuesta detrás de un clic no
+                    compra nada. La reja scrollea y no crece: una empresa con cuarenta sucursales
+                    no puede estirar el modal. */}
               <div className="pl-label">
                 <span className="og-label-fila">
-                  Sedes donde existe el cargo / puesto
+                  Sede a la que pertenece
                   <AyudaCampo>
-                    El organigrama es uno solo: lo que cambia por sede es en cuáles existe cada
-                    puesto. Una gerencia regional es <strong>un</strong> cargo con dos sedes, no
-                    dos cuadros repetidos.
+                    El organigrama es uno solo: lo que cambia por sede es qué puestos existen en
+                    cada una. Si el mismo trabajo se hace en dos ciudades, son{' '}
+                    <strong>dos puestos</strong>, cada uno con su código y su gente.
                   </AyudaCampo>
-                  <span className="og-contador">
-                    {enTodasLasSedes
-                      ? `Las ${sucursales.length}`
-                      : `${form.sucursalIds.length} de ${sucursales.length}`}
-                  </span>
-                  {!enTodasLasSedes && form.sucursalIds.length > 0 && (
-                    <button type="button" className="og-solo" onClick={() => setSoloSedesMarcadas(v => !v)}>
-                      {soloSedesMarcadas ? 'Ver todas' : 'Ver solo las marcadas'}
-                    </button>
-                  )}
                 </span>
 
-                {/* Sin desplegable: la pestaña tiene una columna entera libre y las sedes son
-                    pocas, así que se marcan a la vista en vez de esconderlas detrás de un clic.
-                    La reja scrollea y no crece: una empresa con cuarenta sucursales no puede
-                    estirar el modal. */}
-                {/* "Todas" no es una sede más sino la regla que las abarca: va arriba y separada
-                    por una línea, no como una cuarta fila de la lista. */}
+                {/* "Toda la empresa" no es una sede más sino la respuesta de los puestos que no
+                    están atados a ninguna —una gerencia general—: va arriba y separada por una
+                    línea. En el dato es la lista vacía, que además es lo que hace que una sede
+                    nueva no deje afuera a nadie. */}
                 <button
                   type="button"
                   className={`og-fila-op og-fila-op-cabeza${enTodasLasSedes ? ' on' : ''}`}
@@ -677,8 +545,8 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
                 >
                   <span className="og-op-box">{enTodasLasSedes && <Check size={12} />}</span>
                   <span className="og-op-txt">
-                    <strong>Todas las sedes</strong>
-                    <em>Incluye las que se abran más adelante</em>
+                    <strong>Toda la empresa</strong>
+                    <em>No pertenece a ninguna sucursal en particular</em>
                   </span>
                 </button>
 
@@ -694,29 +562,23 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
 
                 <div className="og-lista-op">
                   {sedesFiltradas.map(sc => {
-                    /* Cubierta = la abarca "Todas las sedes", no fue elegida. Se dibuja apagada
-                       y sin tilde para que las dos respuestas no se vean iguales: marcar las
-                       ocho a mano deja fuera a la novena, y "todas" no.
-                       Sigue respondiendo al clic a propósito: es la única salida del modo, ya
-                       que "todas" se guarda como lista vacía y destildarla no significa nada. */
-                    const cubierta = enTodasLasSedes
-                    const marcada = !cubierta && form.sucursalIds.includes(sc.id)
+                    const marcada = form.sucursalIds[0] === sc.id
                     const cuantos = puestosPorSede[sc.id] || 0
                     return (
                       <button
                         key={sc.id}
                         type="button"
-                        className={`og-fila-op${marcada ? ' on' : ''}${cubierta ? ' og-fila-op-cubierta' : ''}`}
-                        title={cubierta
-                          ? `Ya está incluida por "Todas las sedes". Al tocarla, el puesto pasa a existir solo en ${sc.ciudad}.`
-                          : undefined}
-                        onClick={() => (cubierta ? set('sucursalIds', [sc.id]) : alternarSede(sc.id))}
+                        className={`og-fila-op${marcada ? ' on' : ''}`}
+                        /* Elegir una reemplaza a la anterior: no se acumulan. Volver a tocar la
+                           elegida no la destilda —el puesto tiene que estar en algún lado— y la
+                           salida es "Toda la empresa", que está arriba. */
+                        onClick={() => set('sucursalIds', [sc.id])}
                       >
                         <span className="og-op-box">{marcada && <Check size={12} />}</span>
                         {/* La ciudad manda y el nombre va debajo: dos sedes se llaman
                             "Sucursal" y lo único que las distingue es dónde están. Es además
-                            como las nombra el resto del producto —"Existe en Santa Cruz, La
-                            Paz"— y como se leen en la barra de la pantalla. */}
+                            como las nombra el resto del producto y como se leen en la barra de
+                            la pantalla. */}
                         <span className="og-op-txt">
                           <strong>{sc.ciudad}</strong>
                           <em>{sc.nombre}</em>
@@ -735,8 +597,7 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
                   <p className="og-sedes-vacio">Ninguna sede coincide con “{buscaSede.trim()}”.</p>
                 )}
 
-                {nuevo && sedeActiva && form.sucursalIds.length === 1
-                  && form.sucursalIds[0] === sedeActiva.id && (
+                {nuevo && sedeActiva && form.sucursalIds[0] === sedeActiva.id && (
                   <p className="og-modal-nota">
                     Viene elegida <strong>{sedeActiva.ciudad}</strong> porque es la sede que estás viendo.
                   </p>
@@ -746,150 +607,6 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
 
             )}
 
-            {hoja === 'gente' && (
-            <section className="og-bloque">
-
-              <div className="pl-label">
-                <span className="og-label-fila">
-                  Quiénes lo ocupan
-                  <AyudaCampo>
-                    Se pueden marcar <strong>varias personas</strong> en un mismo puesto: tres
-                    ejecutivas comerciales son un cargo con tres ocupantes, no tres cuadros. Sin
-                    nadie, el puesto sale como vacante en el dibujo.
-                  </AyudaCampo>
-                  <span className="og-contador">
-                    {form.ocupantes.length} de {form.plazas}
-                  </span>
-                  {form.ocupantes.length > 0 && (
-                    <button type="button" className="og-solo" onClick={() => setSoloPersonasMarcadas(v => !v)}>
-                      {soloPersonasMarcadas ? 'Ver todos' : 'Ver solo los marcados'}
-                    </button>
-                  )}
-                </span>
-                {/* Por qué las filas dejaron de responder. El cupo se fija en Básico, así que
-                    acá se explica y se ofrece el camino de vuelta: sin esto, quedan veinte
-                    casillas apagadas sin ningún motivo a la vista. */}
-                {puestoLleno && form.ocupantes.length > 0 && (
-                  <p className="og-modal-nota">
-                    El puesto está completo: {form.plazas} de {form.plazas}{' '}
-                    {form.plazas === 1 ? 'plaza' : 'plazas'}. Para sumar a alguien más{' '}
-                    <button type="button" className="og-solo" onClick={() => setHoja('basico')}>
-                      agrega una plaza
-                    </button>.
-                  </p>
-                )}
-
-                {/* La misma lista a la vista que en Localización, y por lo mismo: la pestaña
-                    tiene una columna entera para una sola pregunta, así que esconder la
-                    respuesta detrás de un clic no compra nada. */}
-                <button
-                  type="button"
-                  className={`og-fila-op og-fila-op-cabeza${form.ocupantes.length === 0 ? ' on' : ''}`}
-                  onClick={() => set('ocupantes', [])}
-                >
-                  <span className="og-op-box">{form.ocupantes.length === 0 && <Check size={12} />}</span>
-                  <span className="og-op-txt">
-                    <strong>{externo ? 'Sin prestador asignado' : 'Nadie asignado todavía'}</strong>
-                    <em>El puesto sale como vacante en el dibujo</em>
-                  </span>
-                </button>
-
-                <div className="pl-search-wrap og-lista-buscar">
-                  <Search size={13} className="pl-search-ico" />
-                  <input
-                    className="pl-search"
-                    value={buscaPersona}
-                    onChange={e => setBuscaPersona(e.target.value)}
-                    placeholder="Buscar por nombre, área o cargo"
-                  />
-                </div>
-
-                <div className="og-lista-op og-lista-personas">
-                  {personasFiltradas.map(pe => {
-                    const marcada = form.ocupantes.includes(pe.id)
-                    const ocupa = puestoDePersona[pe.id]
-                    return (
-                      <button
-                        key={pe.id}
-                        type="button"
-                        /* Dos motivos distintos para no poder marcar a alguien: que la persona
-                           ya tenga puesto, o que este puesto ya no tenga plazas. El título dice
-                           cuál de los dos es, porque la salida es distinta en cada caso. */
-                        disabled={!!ocupa || (puestoLleno && !marcada)}
-                        className={`og-fila-op${marcada ? ' on' : ''}${ocupa ? ' og-fila-op-ocupada' : ''}`}
-                        title={ocupa
-                          ? `${pe.name} ya ocupa ${ocupa}. Para asignarlo acá hay que liberarlo de ese puesto primero.`
-                          : puestoLleno && !marcada
-                            ? `El puesto tiene ${form.plazas} ${form.plazas === 1 ? 'plaza' : 'plazas'} y ya está completo. Agrega una plaza para sumar a alguien más.`
-                            : undefined}
-                        onClick={() => set('ocupantes', marcada
-                          ? form.ocupantes.filter(x => x !== pe.id)
-                          : [...form.ocupantes, pe.id])}
-                      >
-                        <span className="og-op-box">{marcada && <Check size={12} />}</span>
-                        <Avatar persona={pe} size={26} />
-                        <span className="og-op-txt">
-                          <strong>{pe.name}</strong>
-                          {/* El área sale del cuadro que ocupa: quien no ocupa ninguno no
-                              pertenece a un área todavía, y el renglón no se la inventa. */}
-                          <em>{areaDe(pe, org)}</em>
-                        </span>
-                        {/* El puesto que ya ocupa es la razón por la que la fila está apagada,
-                            así que se lee ahí mismo y no en un cartel aparte. */}
-                        <span className={`og-op-extra${ocupa ? ' og-op-extra-ocupado' : ''}`}>
-                          {ocupa || 'Libre'}
-                        </span>
-                      </button>
-                    )
-                  })}
-                </div>
-                {personasFiltradas.length === 0 && (
-                  <p className="og-sedes-vacio">
-                    {buscaPersona.trim()
-                      ? `Nadie libre coincide con “${buscaPersona.trim()}”.`
-                      : 'Todo el directorio ya ocupa un puesto.'}
-                  </p>
-                )}
-
-                {/* La salida para quien busca a alguien y no lo encuentra: dice cuántos quedaron
-                    fuera y por qué. Con el buscador escrito el número es el de las coincidencias,
-                    así que contesta justo la pregunta que se acaba de hacer. */}
-                {ocupados.length > 0 && (
-                  <button
-                    type="button"
-                    className="og-ver-ocupados"
-                    onClick={() => setVerOcupados(v => !v)}
-                  >
-                    {verOcupados
-                      ? 'Ocultar a quienes ya ocupan un puesto'
-                      : `Ver ${ocupados.length} ${ocupados.length === 1 ? 'persona que ya ocupa' : 'personas que ya ocupan'} un puesto`}
-                  </button>
-                )}
-              </div>
-
-              {/* Las coordinaciones no se editan aquí —se trazan sobre el lienzo— pero sí se
-                  muestran: son la otra mitad de con quién trabaja el puesto. */}
-              {!nuevo && coordinaciones.length > 0 && (
-                <div className="pl-label">
-                  <span className="og-label-fila">
-                    Coordina con <span className="og-coord-count">{coordinaciones.length}</span>
-                    <AyudaCampo>
-                      Coordinan trabajo sin ser línea de mando: no cambian de quién depende el
-                      puesto. Todavía no se pueden crear ni cerrar desde ninguna pantalla.
-                    </AyudaCampo>
-                  </span>
-                  {coordinaciones.map(c => (
-                    <div key={c.id} className="og-coord-fila">
-                      <span className={`og-coord-rol og-coord-${c.rol}`}>
-                        {c.rol === 'par' ? 'Par' : c.rol === 'supervisor' ? 'Supervisa' : 'Lo supervisa'}
-                      </span>
-                      <span className="og-coord-cargo">{c.contraparte.nombre}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-            )}
           </div>
           </div>
         </div>
@@ -1060,8 +777,8 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
                 Apoyo funcional
                 <AyudaCampo>
                   Puestos de otras áreas que trabajan en esta. No pertenecen aquí ni se cuentan
-                  entre sus cargos: se declara en el formulario de cada puesto, en{' '}
-                  <strong>También apoya a estas áreas</strong>.
+                  entre sus cargos: se declara en el formulario de cada puesto, en la pestaña{' '}
+                  <strong>Funcional</strong>.
                 </AyudaCampo>
                 <span className="og-contador">{apoyos.length}</span>
               </span>
@@ -1157,8 +874,8 @@ function Seccion({ titulo, conteo }) {
   )
 }
 
-function CargoCard({ fila, onAbrir }) {
-  const { cargo, tipo, ocupantes, vacante, plazas, libres, jefeNombre, sedes } = fila
+function CargoCard({ fila, onAbrir, funcional }) {
+  const { cargo, tipo, ocupantes, vacante, jefeNombre, sedes } = fila
   const t = tipoVisual(tipo)
   const externo = tipo === 'outsourcing'
   const clases = ['og-cc']
@@ -1167,10 +884,13 @@ function CargoCard({ fila, onAbrir }) {
      propio y no por la lateralidad: el outsourcing dejó de ser lateral y seguía teñido. */
   if (vacante && !t.propio) clases.push('og-cc-vacante')
   if (t.propio) clases.push(`og-cc-${t.clase}`)
+  /* Prestado de otra área: gana sobre el color de tipo, porque lo que hace falta saber acá es
+     que no es un puesto de esta área. */
+  if (funcional) clases.push('og-cc-func')
 
   return (
     <div className={clases.join(' ')} onDoubleClick={() => onAbrir(cargo)}>
-      {libres > 0 && <span className="og-cc-tag">{rotuloVacantes(libres)}</span>}
+      {vacante && <span className="og-cc-tag">Vacante</span>}
       <button className="og-cc-edit" onClick={() => onAbrir(cargo)} title="Editar cargo"><Pencil size={12} /></button>
 
       <div className="og-cc-hd">
@@ -1185,28 +905,18 @@ function CargoCard({ fila, onAbrir }) {
         <div className="og-cc-reporta"><ArrowUp size={10} /> Reporta a <strong>{jefeNombre}</strong></div>
       )}
 
-      {/* Un cargo puede existir en más de una sede; sin sedes declaradas está en todas. */}
+      {/* Un puesto pertenece a una sede; sin ninguna declarada, a ninguna en particular. */}
       <div className="og-cc-sedes">
         <MapPin size={10} />
         {sedes.length === 0
-          ? <span>Todas las sedes</span>
-          : sedes.map(s => <span key={s.id}>{s.ciudad}</span>)}
+          ? <span>Toda la empresa</span>
+          : <span>{sedes[0].ciudad}</span>}
       </div>
 
       <div className="og-cc-sep" />
       {ocupantes.length ? (
         <>
-          <div className="og-cc-label">
-            {/* Con plazas de sobra la cuenta se lee contra el cupo: "3 de 5 plazas cubiertas"
-                dice lo mismo y además cuánto falta. */}
-            {plazas > ocupantes.length
-              ? `${ocupantes.length} de ${plazas} plazas cubiertas`
-              : ocupantes.length === 1
-                ? '1 colaborador asignado'
-                : `${ocupantes.length} colaboradores asignados`}
-          </div>
-          {/* La ficha sí tiene lugar para la lista entera: es la pantalla a la que uno viene
-              justamente a ver quiénes ocupan el puesto. */}
+          <div className="og-cc-label">Colaborador asignado</div>
           {ocupantes.map(p => (
             <div key={p.id} className="og-cc-persona"><Avatar persona={p} size={22} />{p.name}</div>
           ))}
@@ -1258,6 +968,14 @@ function VistaCards({ org, busca, setBusca, onAbrir, onEditarUnidad }) {
     () => (actual ? subunidadesDe(actual, org).map(u => tarjetaUnidad(u.id, org)) : []),
     [actual, org],
   )
+  /* Los que apoyan a esta área desde afuera. Se arma la misma fila que usan las tarjetas de
+     cargo para no tener dos formas de describir un puesto. */
+  const apoyosAqui = useMemo(
+    () => (actual ? apoyosDeUnidad(actual, org).map(a => ({
+      ...filaDeCargo(a.cargo, org),
+    })) : []),
+    [actual, org],
+  )
 
   const entrar = id => setRuta(r => [...r, id])
   const irA = i => setRuta(r => r.slice(0, i))
@@ -1307,6 +1025,22 @@ function VistaCards({ org, busca, setBusca, onAbrir, onEditarUnidad }) {
               ? <p className="og-vacio">Esta unidad todavía no tiene cargos definidos.</p>
               : <div className="og-grid">{cargosAqui.map(f => <CargoCard key={f.cargo.id} fila={f} onAbrir={onAbrir} />)}</div>}
 
+            {/* QUIÉNES APOYAN A ESTA ÁREA desde afuera. En sección aparte y no mezclados con los
+                cargos: no son del área y no entran en su cuenta, igual que en el dibujo no suman
+                al conteo de la píldora. La tarjeta va en azul, que es el color con el que se
+                dibujan sus cuadros prestados. */}
+            {apoyosAqui.length > 0 && (
+              <>
+                <Seccion
+                  titulo="Apoyo funcional"
+                  conteo={`${apoyosAqui.length} ${apoyosAqui.length === 1 ? 'puesto de otra área' : 'puestos de otras áreas'}`}
+                />
+                <div className="og-grid">
+                  {apoyosAqui.map(f => <CargoCard key={`f-${f.cargo.id}`} fila={f} onAbrir={onAbrir} funcional />)}
+                </div>
+              </>
+            )}
+
             {subsAqui.length > 0 && (
               <>
                 <Seccion titulo={`Sub-unidades de ${nombreActual}`} conteo={`${subsAqui.length} ${subsAqui.length === 1 ? 'unidad' : 'unidades'}`} />
@@ -1329,13 +1063,15 @@ function VistaTabla({ org, busca, setBusca, onAbrir }) {
   const [colapsados, setColapsados] = useState({})
   const grupos = useMemo(() => filasTabla(org), [org])
 
-  const q = busca.trim().toLowerCase()
+  /* La misma normalización que el buscador del gráfico: sin tildes ni eñes de un lado ni del
+     otro, o "nunez" no encuentra a Núñez y la tabla contesta distinto que el dibujo. */
+  const q = normalizar(busca.trim())
   const visibles = useMemo(() => {
     if (!q) return grupos
     const coincide = f =>
-      f.cargo.nombre.toLowerCase().includes(q) ||
-      f.ocupantes.some(p => p.name.toLowerCase().includes(q)) ||
-      (f.unidad?.nombre || '').toLowerCase().includes(q)
+      normalizar(f.cargo.nombre).includes(q) ||
+      f.ocupantes.some(p => normalizar(p.name).includes(q)) ||
+      normalizar(f.unidad?.nombre).includes(q)
     return grupos
       .map(g => ({ ...g, filas: g.filas.filter(coincide) }))
       .filter(g => g.filas.length > 0)
@@ -1392,26 +1128,35 @@ function VistaTabla({ org, busca, setBusca, onAbrir }) {
                         </div>
                       </td>
                       <td className="og-td-codigo">{f.cargo.codigo || '—'}</td>
-                      <td><span className="og-pertenece">{f.unidad?.corto || '—'}</span></td>
+                      <td>
+                        <span className="og-pertenece">{f.unidad?.corto || '—'}</span>
+                        {/* Las áreas que APOYA, al lado de la que le pertenece. Van en esta
+                            columna y no en la de Tipo porque contestan la misma pregunta —en qué
+                            áreas está— y porque funcional no es un tipo de puesto: el Community
+                            Manager es un colaborador que además ayuda en otra área. En azul y
+                            punteadas, el mismo lenguaje que su cuadro en el dibujo. */}
+                        {areasQueApoya(f.cargo).map(id => (
+                          <span
+                            key={id}
+                            className="og-pertenece og-pertenece-func"
+                            title={`Apoya a ${getUnidad(id, org)?.nombre}`}
+                          >
+                            {getUnidad(id, org)?.corto || getUnidad(id, org)?.nombre}
+                          </span>
+                        ))}
+                      </td>
                       <td><TipoPill tipo={f.tipo} /></td>
                       <td>
                         {f.ocupantes.length ? (
                           <span className="og-td-persona">
-                            {f.ocupantes.slice(0, 3).map(p => <Avatar key={p.id} persona={p} size={22} />)}
-                            {/* El nombre solo cuando el puesto está completo con una persona.
-                                Con plazas libres manda la cuenta: en una tabla de cien filas es
-                                lo que se recorre buscando qué falta cubrir. */}
-                            {f.ocupantes.length === 1 && f.libres === 0
-                              ? f.ocupantes[0].name
-                              : `${f.ocupantes.length} de ${f.plazas}`}
+                            <Avatar persona={f.ocupantes[0]} size={22} />
+                            {f.ocupantes[0].name}
                           </span>
                         ) : (
                           <span className="og-td-persona">
                             <span className="og-av og-av-vacio"><Minus size={11} /></span>
                             <em className="og-td-vacio">
-                              {f.plazas > 1
-                                ? `${f.plazas} plazas por cubrir`
-                                : f.tipo === 'outsourcing' ? 'Sin prestador asignado' : 'Sin colaborador asignado'}
+                              {f.tipo === 'outsourcing' ? 'Sin prestador asignado' : 'Sin colaborador asignado'}
                             </em>
                           </span>
                         )}
@@ -1421,6 +1166,7 @@ function VistaTabla({ org, busca, setBusca, onAbrir }) {
                         <button onClick={() => onAbrir(f.cargo)} title="Editar cargo"><Pencil size={13} /></button>
                       </td>
                     </tr>
+
                   ))}
                 </Fragment>
               )
@@ -1477,7 +1223,7 @@ function BotonCrear({ onCargo, onUnidad, sinAreas }) {
               <strong>Cargo / puesto</strong>
               <small>{sinAreas
                 ? 'Primero hace falta un área donde ponerlo'
-                : 'Una posición del organigrama, con sus plazas'}</small>
+                : 'Una posición del organigrama'}</small>
             </div>
           </button>
 
@@ -1583,7 +1329,6 @@ export default function Organigrama() {
   }
   const [editando, setEditando] = useState(null)      // { cargo } | { cargo: null } para alta
   const [editandoUnidad, setEditandoUnidad] = useState(null) // { unidad } | { unidad: null }
-
   /* Las vistas leen la estructura recortada a la sede; los modales, la completa: al elegir
      jefe o unidad hay que poder apuntar a algo que el filtro dejó fuera de pantalla. */
   /* Primero el área y después la sede: los dos recortan y se aplican uno sobre el otro, así que
@@ -1605,10 +1350,10 @@ export default function Organigrama() {
      control que no cambia nada enseña a ignorar la fila donde vive. */
   const cuantosFuncionales = useMemo(() => {
     const hay = c => org.cargos.some(x => x.id === c)
+    /* En "Ver por cargos" solo se dibujan los que tienen jefe funcional: los demás cuelgan de
+       la píldora del área, que ahí no existe. El número tiene que contar lo que se va a ver, o
+       promete cuadros que no aparecen. */
     return orgVisible.cargos.reduce((n, c) => n + funcionalesDe(c).filter(f => (
-      /* En "Ver por cargos" solo se dibujan los que tienen jefe funcional: los demás cuelgan de
-         la píldora del área, que ahí no existe. El número tiene que contar lo que se va a ver,
-         o promete cuadros que no aparecen. */
       pestana === 'completo' ? true : hay(f.reportaA)
     )).length, 0)
   }, [org, orgVisible, pestana])
@@ -1990,7 +1735,12 @@ export default function Organigrama() {
           )}
           {vista === 'tabla' && !vacio && (
             <div className="og-scroll">
-              <VistaTabla org={orgVisible} busca={busca} setBusca={setBusca} onAbrir={c => setEditando({ cargo: c })} />
+              <VistaTabla
+                org={orgVisible}
+                busca={busca}
+                setBusca={setBusca}
+                onAbrir={c => setEditando({ cargo: c })}
+              />
             </div>
           )}
 
@@ -2027,6 +1777,7 @@ export default function Organigrama() {
           onAbrirCargo={c => { setEditandoUnidad(null); setEditando({ cargo: c }) }}
         />
       )}
+
     </div>
   )
 }

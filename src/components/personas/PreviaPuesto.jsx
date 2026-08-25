@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
-import { User, Star, Users, Briefcase, MapPin, CornerDownRight, Building2 } from 'lucide-react'
-import { sucursales, getUnidad, tipoDe, ocupantesDe, getPersona, rotuloVacantes } from '../../data/organigramaData'
+import { User, Users, Briefcase, MapPin, CornerDownRight, Building2 } from 'lucide-react'
+import { sucursales, getUnidad, tipoDe, ocupantesDe, getPersona } from '../../data/organigramaData'
 import Avatar from './Avatar'
 import { Desglosadas } from './OrgNodos'
 
@@ -18,19 +18,15 @@ import { Desglosadas } from './OrgNodos'
    el resto se declara en un `+N`, que es la regla del resto del producto: ninguna lista sin
    tope, y el truncado se dice. */
 
-const ICONO = { colaborador: User, jefe: Star, staff: Users, outsourcing: Briefcase }
+const ICONO = { colaborador: User, staff: Users, outsourcing: Briefcase }
 
 /* Cuántos hermanos se dibujan antes de resumir. Una dirección con doce reportes convertiría
    la previa en la lista de otro puesto. */
 const MAX_HERMANOS = 4
 
-/* Cuántas caras entran en el cuadro antes de contarse. Es el mismo tope que usa la tarjeta del
-   árbol: la previa tiene que verse como el organigrama, no parecerse. */
-const MAX_CARAS = 3
-
 const genteDe = cargo => ocupantesDe(cargo).map(getPersona).filter(Boolean)
 
-function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, marca, gente, plazas }) {
+function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, marca, gente }) {
   const Icon = ICONO[tipo] || User
   const clases = ['og-pv-card']
   if (tipo === 'staff') clases.push('og-pv-staff')
@@ -48,28 +44,8 @@ function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, marca, ge
           no haber elegido a nadie. */}
       {gente?.length ? (
         <span className="og-pv-gente">
-          {gente.length === 1 ? (
-            <>
-              <Avatar persona={gente[0]} size={15} clase="og-chip-av" />
-              <span className="og-pv-gente-nom">{gente[0].name}</span>
-            </>
-          ) : (
-            <>
-              <span className="og-caras">
-                {gente.slice(0, MAX_CARAS).map(p => (
-                  <Avatar key={p.id} persona={p} size={15} clase="og-chip-av" />
-                ))}
-                {gente.length > MAX_CARAS && (
-                  <span className="og-chip-av og-cara-mas">+{gente.length - MAX_CARAS}</span>
-                )}
-              </span>
-              {/* Contra el cupo, igual que el cuadro del árbol: con cuatro plazas y dos
-                  cubiertas dice "2 de 4" y no "2 personas", que escondía lo que falta. */}
-              <span className="og-pv-gente-nom">
-                {plazas > gente.length ? `${gente.length} de ${plazas}` : `${gente.length} personas`}
-              </span>
-            </>
-          )}
+          <Avatar persona={gente[0]} size={15} clase="og-chip-av" />
+          <span className="og-pv-gente-nom">{gente[0].name}</span>
         </span>
       ) : estado && <span className="og-pv-estado">{estado}</span>}
     </div>
@@ -88,7 +64,6 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
 
   /* Cuántas caben. Con el cupo en la mano la previa cuenta las vacantes igual que el cuadro
      de verdad, así que subir una plaza se ve en el dibujo sin salir de la pestaña Básico. */
-  const plazas = Math.max(1, form.plazas || 1, ocupantes.length)
 
   /* Los hermanos son la línea de mando: los laterales del mismo jefe no van en esa fila,
      porque en el árbol tampoco van ahí. */
@@ -106,11 +81,9 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
 
   const area = getUnidad(form.unidadId, org)?.nombre
   const areaJefe = jefe ? getUnidad(jefe.unidadId, org)?.nombre : null
-  const marcadas = sucursales.filter(s => form.sucursalIds.includes(s.id))
-  /* Sin ninguna marcada el puesto existe en todas: es la misma regla que dice el formulario,
-     y el pie tiene que decir lo mismo que el campo. */
-  const sedes = marcadas.length ? marcadas : sucursales
-  const todas = sedes.length === sucursales.length
+  /* Un puesto pertenece a UNA sede; sin ninguna, no está atado a ninguna sucursal. Es la misma
+     regla que dice el formulario, y el pie tiene que decir lo mismo que el campo. */
+  const sede = sucursales.find(s => s.id === form.sucursalIds[0]) || null
 
   const foco = (
     <>
@@ -120,29 +93,16 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
       nombre={form.nombre.trim() || 'Sin nombre todavía'}
       tipo={form.tipo}
       gente={ocupantes}
-      plazas={plazas}
-      /* El estado solo habla cuando no hay nadie: con gente elegida, lo que se muestra son las
-         caras. Y cuenta las plazas, igual que la etiqueta del dibujo: con cuatro plazas vacías
-         la previa decía "Vacante" en singular mientras el cuadro de al lado iba a decir
-         "4 vacantes". */
-      estado={form.tipo === 'outsourcing'
-        ? `${rotuloVacantes(plazas)} · sin prestador`
-        : rotuloVacantes(plazas)}
+      /* El estado solo habla cuando no hay nadie: con alguien elegido, lo que se muestra es su
+         cara y su nombre. */
+      estado={form.tipo === 'outsourcing' ? 'Vacante · sin prestador' : 'Vacante'}
     />
-    {/* Y colgando, UNA CAJITA POR PLAZA: las cubiertas con su persona y las libres como huecos
-        punteados. Subir el cupo a cuatro dibuja cuatro casillas y se van llenando a medida que
-        se marca gente, así que "cuántos puestos me quedan libres" se cuenta mirando en vez de
-        leyendo un número. Es el mismo componente que usa el organigrama al desplegar un cuadro,
-        no una copia: la previa tiene que verse como el dibujo, no parecerse.
-
-        SIEMPRE, también con una sola plaza. Se probó dibujándolas recién a partir de dos —con
-        una, el cuadro ya dice "Vacante" y la casilla parecía repetirlo— y el resultado fue peor:
-        la primera plaza no se veía y la segunda hacía aparecer dos de golpe, así que la regla
-        "una cajita por plaza" dejaba de leerse como una regla. */}
+    {/* Y colgando, la cajita de quien lo ocupa: el mismo componente que usa el organigrama al
+        desplegar un cuadro, no una copia —la previa tiene que verse como el dibujo, no
+        parecerse—. Vacante no dibuja nada: el cuadro ya lo dice. */}
     <Desglosadas
       ocupantes={ocupantes}
       cargo={form.nombre.trim() || 'Sin nombre todavía'}
-      libres={plazas - ocupantes.length}
     />
     </>
   )
@@ -169,7 +129,7 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
       {jefe && <div className="og-pv-rot">Depende de</div>}
 
       <div className="og-pv-tree">
-        {jefe && <MiniCargo nombre={jefe.nombre} tipo={tipoDe(jefe, org)} area={areaJefe} gente={genteDe(jefe)} />}
+        {jefe && <MiniCargo nombre={jefe.nombre} tipo={tipoDe(jefe)} area={areaJefe} gente={genteDe(jefe)} />}
 
         <div className={`og-pv-rama${jefe ? '' : ' og-pv-rama-raiz'}`}>
           {/* El lateral va antes que la línea de mando, como en el dibujo grande: primero lo
@@ -189,7 +149,7 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
             <Fragment key={c.id}>
               {!alCostado && i === lugar && <div className="og-pv-hijo">{foco}</div>}
               <div className="og-pv-hijo">
-                <MiniCargo nombre={c.nombre} tipo={tipoDe(c, org)} />
+                <MiniCargo nombre={c.nombre} tipo={tipoDe(c)} />
               </div>
             </Fragment>
           ))}
@@ -207,13 +167,9 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
         </p>
       )}
 
-      {/* Con tres sucursales la lista cabe; con cincuenta, no. Arriba de tres se cuenta en
-          vez de enumerar: un renglón con veinte ciudades no lo lee nadie. */}
       <p className="og-pv-pie">
         <MapPin size={11} />
-        {todas ? 'Existe en todas las sedes'
-          : sedes.length <= 3 ? `Existe en ${sedes.map(s => s.ciudad).join(', ')}`
-          : `Existe en ${sedes.length} de las ${sucursales.length} sedes`}
+        {sede ? `Pertenece a ${sede.ciudad}` : 'Toda la empresa'}
       </p>
       {aCargo > 0 && (
         <p className="og-pv-pie">
