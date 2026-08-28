@@ -3781,6 +3781,14 @@ select.pl-input:focus {
    quedar. Las medidas son las del detalle de ruta del módulo de onboarding, para que los dos
    modales grandes del producto se abran del mismo tamaño. */
 .og-modal-puesto { width: 1040px; max-width: 96vw; max-height: 88vh; }
+
+/* La unidad pide cuatro campos cortos —código, nombre, nombre corto y de qué cuelga— y estaba
+   usando el ancho del cargo, que tiene el doble: la caja de "COD-001" medía media pantalla.
+   Lleva su propio ancho, y el reparto va al revés que en el cargo: manda el dibujo de dónde va
+   a quedar, que es lo que se está decidiendo, y los campos ocupan lo que su contenido pide. */
+.og-modal-unidad { width: 740px; }
+.og-modal-unidad .og-pv { flex: 0 0 400px; padding: 24px 24px 28px; }
+.og-modal-unidad .og-unidad-campos { padding: 22px 22px 26px; }
 .og-puesto-cuerpo { display: flex; flex: 1; min-height: 0; }
 .og-form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; align-items: start; }
 .og-col-2 { grid-column: 1 / -1; }
@@ -4266,8 +4274,26 @@ select.pl-input:focus {
 /* "Todas las sedes" encabeza la lista y se despega de las sedes concretas: es la regla que
    las abarca, no una más. */
 .og-sede-todas { margin-bottom: 4px; padding-bottom: 9px; border-bottom: 1px solid var(--border-soft); border-radius: 8px 8px 0 0; }
-/* La lista sube cuando abajo no cabe: si no, el pie del modal la corta por la mitad. */
-.og-lista-arriba { top: auto; bottom: calc(100% + 6px); }
+/* Las líneas del árbol dentro del desplegable de áreas: una vertical por escalón y el codo en
+   el último, igual que las ramas del organigrama. Sin ellas la jerarquía era solo sangría, y
+   una lista sangrada se lee como una lista despareja. */
+.og-op-hija { position: relative; }
+.og-op-guia { position: absolute; top: -5px; bottom: -5px; width: 0; border-left: 1.5px dashed var(--og-linea); pointer-events: none; }
+.og-op-codo { bottom: 50%; }
+/* La vertical del último escalón muere en el codo; las de los escalones de arriba siguen de
+   largo porque esas ramas continúan más abajo. */
+.og-op-codo::after { content: ''; position: absolute; left: 0; bottom: 0; width: 9px; border-bottom: 1.5px dashed var(--og-linea); }
+/* El área de adentro pesa menos que la que la contiene: la de arriba manda. */
+.og-op-hija .og-sede-nom { font-weight: 600; color: var(--text-body); }
+
+/* La lista se dibuja en coordenadas de ventana, y sube cuando abajo no cabe. Pegada al campo se
+   recortaba contra el pie del modal, que oculta lo que se le sale: en el formulario de unidad
+   se veía una fila y media de áreas. El alto sube a 320 px porque ya no hay caja que la apriete,
+   y `right: auto` desarma el estirado del `.pl-dropdown-menu` de siempre. */
+/* El alto lo pone el componente según el espacio real que hay: acá solo se declara que la caja
+   manda y que lo que scrollea adentro es la lista, no el buscador. */
+.og-lista-fija { position: fixed; right: auto; display: flex; flex-direction: column; }
+.og-lista-fija .og-sedes-check { max-height: none; flex: 1; min-height: 0; }
 
 /* Organigrama sin dibujar */
 .og-vacio-caja { max-width: 520px; margin: 40px auto; padding: 32px 30px; text-align: center; background: var(--surface-card); border: 1px solid var(--border); border-radius: 16px; }

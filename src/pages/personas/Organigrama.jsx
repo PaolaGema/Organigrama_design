@@ -17,7 +17,7 @@ import { colaboradoresData } from './colaboradoresData'
 import { useOnboardingData } from '../../context/OnboardingDataContext'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
 import {
-  empresa, sucursales, getUnidad, nuevoId, tipoDe, TIPOS_CARGO,
+  empresa, sucursales, getUnidad, nuevoId, tipoDe, TIPOS_CARGO, esTipoDeclarado,
   buildOrgTree, filasTabla, buscarCargos, normalizar, unidadesRaiz, subunidadesDe,
   tarjetaUnidad, cargosDeUnidad, filtrarPorSucursal, TODAS_SUCURSALES, estaEnSucursal,
   eliminarCargo, eliminarUnidad, bloqueoUnidad, unidadesPadrePosibles, cabezaDe, paresDe, moverEntrePares,
@@ -54,13 +54,17 @@ const TIPOS_PUESTO = [
   { key: 'outsourcing', label: 'Outsourcing', sub: 'Lo cubre un prestador externo', Icon: Briefcase },
 ]
 
-/* El formulario del puesto va en pestañas, como en el diseño: son cuatro preguntas de
-   naturaleza distinta y verlas todas de una vez es lo que lo hacía pesado. Solo hay pestañas
-   para lo que el modelo sabe contestar: "Perfil" y "Laboral" del diseño quedan fuera hasta
-   que exista el dato detrás, porque una pestaña vacía promete algo que no está. */
+/* El formulario del puesto va en pestañas, como en el diseño: son preguntas de naturaleza
+   distinta y verlas todas de una vez es lo que lo hacía pesado. Solo hay pestañas para lo que
+   el modelo sabe contestar: "Perfil" y "Laboral" del diseño quedan fuera hasta que exista el
+   dato detrás, porque una pestaña vacía promete algo que no está.
+
+   "Básico" —código y nombre— era una pestaña de dos renglones, y encima la única que casi no
+   movía el dibujo del costado: se abría el formulario y parecía que no pasaba nada. Sus dos
+   campos se subieron acá arriba, así lo primero que se ve es qué es el puesto y dónde va, y
+   el dibujo se arma mientras se escribe. */
 const PESTANAS_CARGO = [
-  { key: 'basico', label: 'Básico', Icon: ClipboardList },
-  { key: 'jerarquia', label: 'Jerarquía', Icon: Network },
+  { key: 'cargo', label: 'Cargo', Icon: ClipboardList },
   { key: 'funcional', label: 'Funcional', Icon: Share2 },
   { key: 'donde', label: 'Localización', Icon: MapPin },
 ]
@@ -92,6 +96,16 @@ function Buscador({ value, onChange }) {
   )
 }
 
+/* De quién depende un área que todavía no tiene a nadie adentro. Mientras está vacía el dato
+   vive en la unidad —no hay cargo donde ponerlo—; el primer puesto que entra lo hereda, y a
+   partir de ahí el dueño del dato es el cargo. Así el área no se muda de sitio en el dibujo
+   por el solo hecho de poblarse. */
+const jefeDeUnidadVacia = (unidadId, org) => {
+  const u = getUnidad(unidadId, org)
+  if (!u || org.cargos.some(c => c.unidadId === unidadId)) return null
+  return u.mandoId ?? null
+}
+
 /* ---------- Modal: alta y detalle de un cargo ---------- */
 
 /* `base` son los valores que el gesto ya decidió: al soltar una cajita sobre un cuadro, de
@@ -103,16 +117,18 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
      clic al costado: perder seis campos por errarle al modal por veinte píxeles no es un
      accidente del usuario, es un descuido del diseño. */
   const inicial = useRef(null)
-  const [hoja, setHoja] = useState('basico')
+  const [hoja, setHoja] = useState('cargo')
   const [form, setForm] = useState(() => ({
     codigo: cargo?.codigo || '',
     nombre: cargo?.nombre || '',
     /* Los valores por defecto salen de la estructura que hay, no de ids sembrados: en un
        organigrama recién empezado no existe ni 'gg' ni una unidad en la segunda posición. */
     unidadId: cargo?.unidadId || base?.unidadId || org.unidades[0]?.id || '',
+    /* El primer cargo de un área vacía nace colgado de quien esa área declaró como su mando:
+       es el jefe que el dibujo ya le estaba dando al área. */
     reportaA: cargo ? cargo.reportaA
       : base && 'reportaA' in base ? base.reportaA
-      : (org.cargos[0]?.id ?? null),
+      : (jefeDeUnidadVacia(base?.unidadId || org.unidades[0]?.id, org) ?? org.cargos[0]?.id ?? null),
     ocupantes: cargo ? ocupantesDe(cargo) : [],
     /* Áreas donde trabaja sin pertenecer. Al cambiar de área propia hay que sacarla de acá si
        estaba marcada, o el puesto quedaría apoyándose a sí mismo. */
@@ -167,8 +183,8 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
   const externo = form.tipo === 'outsourcing'
   /* Los dos obligatorios quedaron en pestañas distintas, así que no alcanza con saber que
      falta algo: hay que saber en cuál. */
-  const faltaEn = { basico: !form.nombre.trim(), jerarquia: !form.unidadId }
-  const valido = !faltaEn.basico && !faltaEn.jerarquia
+  const faltaEn = { cargo: !form.nombre.trim() || !form.unidadId }
+  const valido = !faltaEn.cargo
 
   /* Solo se guarda lo que no se puede deducir: Jefe y Colaborador salen de la propia
      estructura, así que declararlos sería dejar en el dato una etiqueta que se contradice
@@ -250,7 +266,7 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
             </div>
 
           <div className="pl-modal-body og-cargo-campos">
-            {hoja === 'basico' && (
+            {hoja === 'cargo' && (
             <section className="og-bloque">
 
               <label className="pl-label">
@@ -286,20 +302,22 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
                 />
               </label>
 
-            </section>
-            )}
-
-            {hoja === 'jerarquia' && (
-            <section className="og-bloque">
 
               <label className="pl-label">
                 <span className="og-label-fila">
-                  Unidad organizacional <em className="og-req">*</em>
-                  <AyudaCampo>Área, gerencia o departamento al que pertenece el puesto.</AyudaCampo>
+                  {/* "Unidad organizacional" a secas, con la pestaña Funcional al lado hablando
+                      también de áreas, no decía cuál de las dos es esta. */}
+                  Unidad organizacional a la que pertenece <em className="og-req">*</em>
+                  <AyudaCampo>
+                    Su área de verdad: la que lo evalúa y donde se lo cuenta. Si además ayuda a
+                    otras, eso se declara en la pestaña <strong>Funcional</strong>.
+                  </AyudaCampo>
                 </span>
                 <SelectorLista
                   valor={form.unidadId}
-                  onCambio={v => set('unidadId', v)}
+                  /* Cambiar de área puede cambiar el jefe: si la elegida está vacía, el puesto
+                     entra colgado del mando que ella declaró. */
+                  onCambio={v => setForm(f => ({ ...f, unidadId: v, reportaA: jefeDeUnidadVacia(v, org) ?? f.reportaA }))}
                   placeholder="Elige la unidad"
                   opciones={org.unidades.map(u => ({
                     id: u.id,
@@ -430,7 +448,7 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
             {hoja === 'funcional' && (
             <section className="og-bloque">
               <p className="og-modal-nota og-nota-suelta">
-                Un puesto <strong>pertenece</strong> a un área —la de Jerarquía— y puede{' '}
+                Un puesto <strong>pertenece</strong> a un área —la que se elige en <strong>Cargo</strong>— y puede{' '}
                 <strong>trabajar</strong> en otras. En cada área que apoya se dibuja como un
                 cuadro más, en azul, y sigue siendo el mismo puesto: no se cuenta dos veces.
               </p>
@@ -472,7 +490,7 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
                               Quién le dirige el trabajo dentro de esa área. Es opcional: se
                               puede apoyar a un área sin tener un jefe ahí, y entonces el cuadro
                               cuelga del área. No reemplaza a su jefe de verdad, que es el de
-                              la pestaña <strong>Jerarquía</strong>.
+                              la pestaña <strong>Cargo</strong>.
                             </AyudaCampo>
                           </span>
                           <SelectorLista
@@ -631,17 +649,20 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
 
 /* Qué se lleva puesto cambiar de quién depende una unidad. Devuelve null cuando no arrastra
    nada, y entonces no se dice nada: avisar de un cambio que no ocurre entrena a ignorar los
-   avisos. Ver la misma idea en el resto del constructor. */
-function avisoDeMudanza(unidad, nuevoPadreId, org) {
-  if (!unidad || nuevoPadreId === unidad.padreId) return null
+   avisos. Ver la misma idea en el resto del constructor.
+
+   El área con cargos no guarda su mando aparte: el dato es el "Reporta a" de su cabeza, y este
+   aviso es el que dice en voz alta que tocar el campo del área va a mover ese cargo. */
+function avisoDeMudanza(unidad, form, org) {
+  if (!unidad) return null
   const cabeza = cabezaDe(unidad.id, org)
-  if (!cabeza) return `Al guardar, ${unidad.nombre} se mueve de lugar. Todavía no tiene cargos, así que no le cambia el jefe a nadie.`
-  if (!nuevoPadreId) return `Al guardar, ${cabeza.nombre} deja de tener jefe y ${unidad.nombre} pasa a colgar de la empresa.`
-  const nueva = cabezaDe(nuevoPadreId, org)
-  const nombrePadre = getUnidad(nuevoPadreId, org)?.nombre ?? 'la unidad elegida'
-  if (!nueva) return `${nombrePadre} todavía no tiene ningún cargo, así que ${cabeza.nombre} se queda con el jefe que tiene y el gráfico no cambia.`
-  if (nueva.id === cabeza.reportaA) return null
-  return `Al guardar, ${cabeza.nombre} pasa a reportar a ${nueva.nombre}.`
+  if (!cabeza) return null
+  const mando = form.mandoId ?? null
+  if (mando === (cabeza.reportaA ?? null)) return null
+  const jefe = mando ? org.cargos.find(c => c.id === mando) : null
+  if (jefe) return `Al guardar, ${cabeza.nombre} pasa a reportar a ${jefe.nombre}.`
+  const donde = form.padreId ? getUnidad(form.padreId, org)?.nombre ?? 'su área' : empresa.nombre
+  return `Al guardar, ${cabeza.nombre} deja de tener jefe y ${unidad.nombre} cuelga de ${donde}.`
 }
 
 /* ---------- Modal: alta y detalle de una unidad organizacional ---------- */
@@ -655,6 +676,10 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
     padreId: unidad ? unidad.padreId
       : base && 'padreId' in base ? base.padreId
       : (org.unidades[0]?.id ?? null),
+    /* De qué cargo depende el área. Mientras no tiene cargos adentro el dato vive acá, porque
+       no hay dónde más ponerlo; en cuanto tiene cabeza, el dueño del dato es esa cabeza y el
+       campo lo lee de ella. Una sola verdad, mostrada desde el lado en que se está parado. */
+    mandoId: (unidad ? cabezaDe(unidad.id, org)?.reportaA ?? unidad.mandoId : base?.mandoId) ?? null,
   }))
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -665,26 +690,31 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
   const bloqueo = unidad ? bloqueoUnidad(unidad.id, org) : null
   const apoyos = unidad ? apoyosDeUnidad(unidad.id, org) : []
   const padres = unidadesPadrePosibles(unidad?.id, org)
-  const mudanza = avisoDeMudanza(unidad, form.padreId, org)
+  const mudanza = avisoDeMudanza(unidad, form, org)
+  /* Los cargos entre los que se elige el mando: los del área que la contiene. El jefe de un
+     área es alguien de la de arriba; ofrecer el organigrama entero convertiría el campo en una
+     línea de mando paralela.
+
+     Sin staff ni outsourcing: la leyenda del gráfico ya dice que el staff "asiste sin mandar",
+     y el dibujo lo cumple al pie —un cargo lateral se dibuja al costado y no lleva nada
+     colgando—, así que un área puesta bajo su mando desaparecía del organigrama entero. */
+  const cargosDelPadre = form.padreId
+    ? org.cargos.filter(c => c.unidadId === form.padreId && !esTipoDeclarado(tipoDe(c, org)))
+    : []
 
   /* Un desplegable plano con veinte unidades no dice dónde queda la que se está colocando:
      "Marketing Digital" y "Marketing" se leen como hermanas cuando una está dentro de la otra.
-     Las opciones salen en orden de árbol y sangradas, así el propio desplegable dibuja la
-     jerarquía. */
-  const opciones = []
+     Van con su `padreId` y el desplegable las dibuja como árbol plegable: una empresa grande
+     llega a cincuenta áreas, y cincuenta renglones abiertos no se recorren, se sufren. */
   const permitidas = new Set(padres.map(u => u.id))
-  const recorrer = (padreId, nivel) => {
-    for (const u of org.unidades.filter(x => x.padreId === padreId)) {
-      if (permitidas.has(u.id)) opciones.push({ u, nivel })
-      recorrer(u.id, nivel + 1)
-    }
-  }
-  recorrer(null, 0)
+  const opciones = org.unidades
+    .filter(u => permitidas.has(u.id))
+    .map(u => ({ id: u.id, nombre: u.nombre, padreId: u.padreId }))
 
 
   return (
     <div className="pl-overlay" onClick={intentarCerrar}>
-      <div className="pl-modal og-modal-puesto" onClick={e => e.stopPropagation()}>
+      <div className="pl-modal og-modal-puesto og-modal-unidad" onClick={e => e.stopPropagation()}>
         <CabeceraModal
           Icon={nueva ? FolderPlus : Building2}
           titulo={nueva ? 'Nueva unidad organizacional' : 'Detalle de la unidad'}
@@ -717,7 +747,7 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
           </label>
 
           <label className="pl-label">
-            Nombre de la unidad
+            <span className="og-label-fila">Nombre de la unidad <em className="og-req">*</em></span>
             <input
               className="pl-input"
               value={form.nombre}
@@ -745,24 +775,64 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
           <div className="pl-label">
             <span className="og-label-fila">
               Dentro de
+              {/* Decía "es contención, no mando", que es la idea correcta contada en el idioma
+                  del modelo de datos: hay que saber qué significa contención para entenderla.
+                  Un ejemplo de área adentro de otra la explica sola. */}
               <AyudaCampo>
-                En qué unidad está esta. Es contención, no mando: una unidad no le reporta a otra,
-                está adentro. Quien reporta es el <strong>cargo</strong>, y eso se define en su
-                propio formulario.
+                El área que la contiene. Por ejemplo, <strong>Selección</strong> va dentro de{' '}
+                <strong>Recursos Humanos</strong>.<br /><br />
+                Dice dónde está, no de quién depende: eso se elige en el campo de abajo.
               </AyudaCampo>
             </span>
             <SelectorLista
               valor={form.padreId}
-              onCambio={v => set('padreId', v)}
+              /* Cambiar de madre invalida el mando: el cargo elegido era de la otra área. */
+              onCambio={v => setForm(f => ({ ...f, padreId: v, mandoId: null }))}
               vacia={`Ninguna: cuelga de ${empresa.nombre}`}
-              opciones={opciones.map(({ u, nivel }) => ({ id: u.id, nombre: u.nombre, nivel }))}
+              opciones={opciones}
+              arbol
+            />
+          </div>
+
+          {/* DE QUIÉN DEPENDE, que es distinto de dónde está. "Dentro de" agrupa; esto dibuja la
+              línea. Se intentó deducirlo —colgar el área de la cabeza de su madre— y se cae en
+              cuanto la madre tiene tres cargos sin jefe: el dibujo elegía uno adivinando. */}
+          <div className="pl-label">
+            <span className="og-label-fila">
+              Bajo el mando de
+              <AyudaCampo>
+                El cargo del que depende esta área. Por ejemplo, <strong>Ventas</strong> bajo el
+                mando del <strong>CEO</strong>: así se dibuja debajo de él y no a su lado.
+                <br /><br />
+                Se elige entre los cargos del área que la contiene.
+              </AyudaCampo>
+            </span>
+            <SelectorLista
+              valor={form.mandoId}
+              onCambio={v => set('mandoId', v)}
+              vacia="Nadie: cuelga del área"
+              opciones={cargosDelPadre.map(c => ({
+                id: c.id,
+                nombre: c.nombre,
+                detalle: filaDeCargo(c, org).ocupantes[0]?.name || 'Vacante',
+              }))}
             />
 
+            {!form.padreId && (
+              <p className="og-field-nota">
+                Al colgar de {empresa.nombre} el área no depende de ningún cargo.
+              </p>
+            )}
+            {form.padreId && cargosDelPadre.length === 0 && (
+              <p className="og-field-nota">
+                {getUnidad(form.padreId, org)?.nombre} todavía no tiene cargos: cuando tenga uno
+                se podrá elegir aquí.
+              </p>
+            )}
+
             {/* El organigrama tiene dos jerarquías: la de cargos y la de unidades. El dibujo
-                principal se arma con la de cargos, así que mover una unidad de madre sin tocar
-                a nadie más la movía solo en la pestaña "Ver por unidades" y en el gráfico se
-                quedaba donde estaba. Se arrastra la cabeza —y se dice acá, antes de guardar,
-                a quién le cambia el jefe. */}
+                principal se arma con la de cargos, así que cambiar el mando de un área que ya
+                tiene gente le cambia el jefe a su cabeza. Se dice acá, antes de guardar. */}
             {mudanza && <p className="og-field-nota">{mudanza}</p>}
           </div>
 
@@ -824,6 +894,7 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
               nombre: form.nombre.trim(),
               corto: form.corto.trim() || form.nombre.trim(),
               padreId: form.padreId,
+              mandoId: form.mandoId ?? null,
             })}
           >
             {nueva ? 'Crear unidad' : 'Guardar cambios'}
@@ -1413,19 +1484,18 @@ export default function Organigrama() {
         ? prev.unidades.map(u => (u.id === anterior.id ? { ...u, ...form } : u))
         : [...prev.unidades, { id: nuevoId('area', prev.unidades), ...form }]
 
-      /* Mover una unidad de madre tiene que mover también su cabeza, o el cambio se ve en
-         "Ver por unidades" y no en el gráfico: son dos jerarquías y el dibujo principal usa la
-         de cargos. Lo que se recuelga es solo la cabeza; todo lo que colgaba de ella la sigue
-         sin tocar nada más. */
-      if (!anterior || form.padreId === anterior.padreId) return { ...prev, unidades }
-      const cabeza = cabezaDe(anterior.id, prev)
-      if (!cabeza) return { ...prev, unidades }
-      const nuevoJefe = form.padreId ? cabezaDe(form.padreId, prev) : null
-      if (form.padreId && !nuevoJefe) return { ...prev, unidades }
+      /* El mando declarado por el área y el "Reporta a" de su cabeza son el mismo dato visto
+         desde los dos lados. Guardar por los dos a la vez es lo que evita que se contradigan:
+         sin esto, el área se movía en "Ver por unidades" y en el gráfico —que se arma con la
+         jerarquía de cargos— se quedaba donde estaba. Se recuelga solo la cabeza; todo lo que
+         colgaba de ella la sigue sin tocar nada más. */
+      const cabeza = anterior ? cabezaDe(anterior.id, prev) : null
+      const mando = form.mandoId ?? null
+      if (!cabeza || (cabeza.reportaA ?? null) === mando) return { ...prev, unidades }
       return {
         ...prev,
         unidades,
-        cargos: prev.cargos.map(c => (c.id === cabeza.id ? { ...c, reportaA: nuevoJefe?.id ?? null } : c)),
+        cargos: prev.cargos.map(c => (c.id === cabeza.id ? { ...c, reportaA: mando } : c)),
       }
     })
     setEditandoUnidad(null)

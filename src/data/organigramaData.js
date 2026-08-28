@@ -458,9 +458,14 @@ function colgarUnidadesVacias(hijosRaiz, org, conFuncionales) {
      un lugar del árbol —abre píldora cada vez que un jefe de otra unidad tiene hijos suyos—;
      se toma la primera para no duplicar la sub-unidad en todas. */
   const pildoras = new Map()
+  /* Y dónde quedó cada cargo, para colgar el área del cuadro que su formulario declaró. El
+     mando puede ser cualquiera del área madre, no solo su cabeza, así que no alcanza con
+     mirar los hijos directos de la píldora. */
+  const nodosPorCargo = new Map()
   const recorrer = nodos => {
     for (const n of nodos) {
       if (n.tipo === 'unidad' && n.unidad && !pildoras.has(n.unidad.id)) pildoras.set(n.unidad.id, n)
+      if (n.tipo === 'cargo' && !nodosPorCargo.has(n.cargo.id)) nodosPorCargo.set(n.cargo.id, n)
       if (n.hijos?.length) recorrer(n.hijos)
     }
   }
@@ -482,10 +487,24 @@ function colgarUnidadesVacias(hijosRaiz, org, conFuncionales) {
   for (const u of vacias.filter(x => !x.padreId || !idsVacias.has(x.padreId))) {
     const nodo = construir(u)
     const madre = u.padreId ? pildoras.get(u.padreId) : null
-    if (madre) madre.hijos.push(nodo)
+    if (madre) engancheDe(madre, u, nodosPorCargo).hijos.push(nodo)
     else alPie.push(nodo)
   }
   return [...hijosRaiz, ...alPie]
+}
+
+/* De qué cuadro cuelga una sub-unidad que todavía no tiene cargos.
+
+   Colgaba de la píldora de su madre, y entonces un área nueva salía AL LADO del jefe que la
+   dirige: con "Dirección General" conteniendo al CEO, crear "Ventas" adentro la dibujaba de par
+   del CEO, como si nadie la mandara.
+
+   El primer intento fue deducirlo —colgarla de la cabeza del área madre—, y se cae solo: si la
+   madre tiene tres cargos sin jefe, el dibujo elegía uno adivinando. De quién depende un área
+   es una decisión, no un cálculo, y se declara en su formulario: `mandoId`. Sin declarar, se
+   queda en la píldora, que es el organigrama recién empezado donde todavía no hay un cargo. */
+function engancheDe(pildora, unidad, nodosPorCargo) {
+  return (unidad.mandoId && nodosPorCargo.get(unidad.mandoId)) || pildora
 }
 
 /* Forma común de una fila/tarjeta de cargo: la comparten la tabla, las cards y el buscador. */

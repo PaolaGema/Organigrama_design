@@ -72,6 +72,20 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
     </>
   )
 
+  /* El cargo del que depende, cuando está declarado: el área cuelga de ÉL y no del área madre,
+     así que el dibujo tiene que mostrarlo. Sin esto la previa prometía una cosa —Ventas debajo
+     de Dirección General— y el gráfico dibujaba otra —Ventas debajo del CEO—. */
+  const mando = form.mandoId ? org.cargos.find(c => c.id === form.mandoId) : null
+  const rama = mando ? (
+    <>
+      <div className="og-pv-card">
+        <span className="og-pv-nom"><User size={11} /> {mando.nombre}</span>
+        <span className="og-pv-sub">Manda esta área</span>
+      </div>
+      <div className="og-pv-rama"><div className="og-pv-hijo">{foco}</div></div>
+    </>
+  ) : foco
+
   /* Cada escalón del camino contiene al siguiente, y el último contiene al foco. La sangría se
      acumula porque las ramas quedan una dentro de otra, no una al lado de la otra. */
   const escalon = i => (
@@ -79,7 +93,7 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
       <div className="og-pv-hijo">
         {i < camino.length
           ? <><MiniPildora nombre={camino[i].nombre} />{escalon(i + 1)}</>
-          : foco}
+          : rama}
       </div>
     </div>
   )
