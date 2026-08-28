@@ -69,7 +69,7 @@ function alCostado(padre, lateral, aLaIzquierda) {
 }
 
 export default function OrgGrafico({
-  tree, org, onAbrirCargo, onAbrirUnidad, desplazamientos, onMover, onAcomodar,
+  tree, org, onAbrirCargo, onAbrirUnidad, crear, desplazamientos, onMover, onAcomodar,
   modo, onModo, funcionales,
 }) {
   const { canvasRef, stageRef, zoom, setZoom, arrastrando, empezarArrastre, ajustar, centrar, estiloStage } =
@@ -271,7 +271,7 @@ export default function OrgGrafico({
         </svg>
 
         <ul className="og-tree og-tree-libre">
-          <Rama nodo={tree} onAbrir={onAbrirCargo} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} />
+          <Rama nodo={tree} onAbrir={onAbrirCargo} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} />
         </ul>
       </div>
 

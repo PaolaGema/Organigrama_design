@@ -1,5 +1,6 @@
 import { User, Star, Briefcase, ChevronUp, ChevronDown } from 'lucide-react'
 import Avatar from './Avatar'
+import { MasEnNodo } from './MenuCrear'
 
 /* El dibujo del árbol: la tarjeta de un cargo, la píldora de una unidad y la rama que las
    cuelga. Se mira y se abre con doble clic; la estructura se cambia en el formulario.
@@ -83,7 +84,7 @@ export function Desglosadas({ ocupantes, cargo }) {
   )
 }
 
-export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, hallado }) {
+export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, hallado, crear }) {
   const { cargo, vacante, funcional } = nodo
   /* El MISMO cargo puede tener dos cuadros: el suyo, en su área, y el de apoyo en el área donde
      ayuda. La clave del acomodo la trae el nodo para que arrastrar uno no arrastre al otro. */
@@ -146,6 +147,16 @@ export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, halla
         <div className="og-card-de">Funcional · de {nodo.deArea}</div>
       )}
       <Ocupante nodo={nodo} externo={externo} desglose={desglose} />
+      {/* El cuadro de apoyo no lleva "+": es el MISMO puesto dibujado prestado en otra área,
+          así que colgarle algo desde aquí dejaría al hijo en un área donde el padre solo está
+          de visita. Se crea desde su cuadro propio, el del área a la que pertenece. */}
+      {crear && !funcional && (
+        <MasEnNodo
+          titulo="Agregar bajo este cargo"
+          rotulo={`Agregar algo bajo ${cargo.nombre}`}
+          opciones={() => crear.deCargo(cargo)}
+        />
+      )}
       {plegable}
     </div>
     {abierto && <Desglosadas ocupantes={nodo.ocupantes} cargo={cargo.nombre} />}
@@ -153,7 +164,7 @@ export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, halla
   )
 }
 
-function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, hallado }) {
+function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, hallado, crear }) {
   if (nodo.tipo === 'empresa') {
     return <div className="og-empresa">{nodo.empresa.nombre}{plegable}</div>
   }
@@ -173,11 +184,18 @@ function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, halla
         onDoubleClick={() => onAbrirUnidad?.(nodo.unidad)}
       >
         <span className="og-unidad-nom">{nodo.unidad.nombre}</span>
+        {crear && (
+          <MasEnNodo
+            titulo="Agregar en esta área"
+            rotulo={`Agregar algo en ${nodo.unidad.nombre}`}
+            opciones={() => crear.deUnidad(nodo.unidad)}
+          />
+        )}
         {plegable}
       </div>
     )
   }
-  return <TarjetaCargo nodo={nodo} onAbrir={onAbrir} plegable={plegable} acomodo={acomodo} desglose={desglose} hallado={hallado} />
+  return <TarjetaCargo nodo={nodo} onAbrir={onAbrir} plegable={plegable} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} />
 }
 
 /* Cuántos cargos se esconden al plegar. Se cuenta lo que hay ABAJO —la rama entera, con los
@@ -211,7 +229,7 @@ function BotonPlegar({ nodo, ocultos, pliegue }) {
   )
 }
 
-export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose, hallado }) {
+export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose, hallado, crear }) {
   const hijos = nodo.hijos || []
   const laterales = nodo.staff || []
 
@@ -223,6 +241,9 @@ export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose,
   const derecha = laterales.filter((_, i) => i % 2 === 0)
   const izquierda = laterales.filter((_, i) => i % 2 === 1)
 
+  /* SIN "+" EN LOS LATERALES. De un puesto de staff no cuelga nada: `nodoCargo` los arma con
+     `nodoSuelto`, que no trae `hijos`, así que un cargo que le reportara se guardaría bien y
+     no aparecería en el dibujo nunca. Un botón que ofrece eso miente. */
   const bloque = (lista, lado) => (
     <div className={`og-staff og-staff-${lado}`}>
       {lista.map(s => <TarjetaCargo key={s.id} nodo={s} onAbrir={onAbrir} acomodo={acomodo} desglose={desglose} hallado={hallado} />)}
@@ -252,13 +273,14 @@ export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose,
           acomodo={acomodo}
           desglose={desglose}
           hallado={hallado}
+          crear={crear}
           plegable={ocultos > 0 && <BotonPlegar nodo={nodo} ocultos={ocultos} pliegue={pliegue} />}
         />
         {derecha.length > 0 && bloque(derecha, 'der')}
       </div>
       {hijos.length > 0 && !plegado && (
         <ul>
-          {hijos.map(h => <Rama key={h.id} nodo={h} onAbrir={onAbrir} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} />)}
+          {hijos.map(h => <Rama key={h.id} nodo={h} onAbrir={onAbrir} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} />)}
         </ul>
       )}
     </li>

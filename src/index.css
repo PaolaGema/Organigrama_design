@@ -3283,7 +3283,7 @@ select.pl-input:focus {
   .og-atajos, .og-ayuda-burbuja, .og-zoom, .og-crear, .og-modos, .og-buscar { display: none !important; }
   /* Los controles no son el dibujo: plegar una rama y desplegar la gente son cosas que se
      hacen en pantalla, y en el papel solo son manchitas sin función. */
-  .og-plegar, .og-chip-flecha { display: none !important; }
+  .og-plegar, .og-chip-flecha, .og-mas { display: none !important; }
   @page { size: A4 landscape; margin: 10mm; }
 }
 
@@ -3601,6 +3601,49 @@ select.pl-input:focus {
 }
 .og-unidad .og-plegar:hover, .og-empresa .og-plegar:hover { background: #fff; color: var(--navy); transform: scale(1.08); }
 .og-unidad .og-plegar.on, .og-empresa .og-plegar.on { background: #fff; border-color: #fff; color: var(--navy); }
+
+/* EL "+" DEL CUADRO. Va CENTRADO en el borde de abajo, sobre el conector que baja hacia los
+   hijos: es exactamente por donde va a colgar lo que se cree, así que el botón queda parado en
+   el sitio que promete. En una esquina era un control más del cuadro; en el centro es el
+   principio de la rama.
+
+   El de plegar se queda en la esquina derecha y no estorban: hablan de cosas distintas —uno
+   esconde lo que ya existe, el otro agrega— y separados no se toca uno queriendo el otro.
+   Arriba no cabía: ahí ya están la estrella de destacado y la etiqueta de vacante.
+
+   EN REPOSO NO SE VE. Un organigrama de cuarenta cuadros con cuarenta "+" encendidos deja de
+   ser un dibujo y pasa a ser una grilla de botones. Aparece al pasar por encima y se queda
+   mientras su menú está abierto: la misma regla que ya sigue la flechita del chip. */
+.og-mas {
+  position: absolute; z-index: 5; left: 50%; bottom: -10px; transform: translateX(-50%);
+  display: flex; align-items: center; justify-content: center;
+  width: 21px; height: 21px; padding: 0;
+  border: 1px solid var(--border-dark); border-radius: 50%;
+  background: var(--surface-card); color: var(--navy);
+  cursor: pointer; box-shadow: var(--sh-sm);
+  opacity: 0; pointer-events: none;
+  transition: opacity .12s, background .12s, color .12s;
+}
+/* Escondido no puede seguir atajando clics: sin esto, la esquina del cuadro deja de responder
+   al doble clic que abre la ficha aunque no se vea nada ahí. */
+.og-card:hover .og-mas, .og-unidad:hover .og-mas, .og-mas.on, .og-mas:focus-visible {
+  opacity: 1; pointer-events: auto;
+}
+.og-mas:hover, .og-mas.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+/* Sobre la píldora del área va sólido y blanco. Translúcido sobre el navy se lee como una
+   mancha del dibujo y no como un botón: es la misma decisión que ya tomó el de plegar. */
+.og-unidad .og-mas {
+  background: #fff; border-color: rgba(255,255,255,.9); color: var(--navy);
+  box-shadow: 0 1px 3px rgba(0,0,0,.28);
+}
+/* El `translateX` va repetido porque es lo que lo mantiene centrado: un `transform` con solo
+   la escala lo devolvería a arrancar en la mitad del cuadro. */
+.og-unidad .og-mas:hover, .og-unidad .og-mas.on { background: #fff; color: var(--navy); transform: translateX(-50%) scale(1.08); }
+
+/* El menú de ese "+" se dibuja contra la PANTALLA, no dentro del lienzo: el escenario vive en
+   un `transform: scale()` que arranca en 0.55 y baja hasta 0.15, así que un menú dibujado
+   adentro se encogería con el dibujo justo cuando más lejos se está mirando. */
+.og-mas-menu { position: fixed; z-index: 60; transition: opacity .1s; }
 
 /* Leyenda de colores. Es la misma en los dos organigramas pero se cuelga de dos sitios con
    fondos opuestos —el recuadro oscuro de los atajos y la paleta clara del lienzo—, así que la

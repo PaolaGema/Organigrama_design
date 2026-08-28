@@ -11,6 +11,7 @@ import PreviaPuesto from '../../components/personas/PreviaPuesto'
 import PreviaUnidad from '../../components/personas/PreviaUnidad'
 import AyudaCampo from '../../components/personas/AyudaCampo'
 import SelectorLista from '../../components/personas/SelectorLista'
+import { ListaCrear } from '../../components/personas/MenuCrear'
 import Avatar from '../../components/personas/Avatar'
 import { exportarPNG, exportarSVG, imprimir } from '../../components/personas/exportarOrganigrama'
 import { colaboradoresData } from './colaboradoresData'
@@ -1281,31 +1282,23 @@ function BotonCrear({ onCargo, onUnidad, sinAreas }) {
   return (
     <div className="og-crear" ref={caja}>
       {abierto && (
-        <div className="og-crear-menu">
-          <div className="og-crear-hd">Agregar al organigrama</div>
-
-          <button
-            className="og-crear-op"
-            disabled={sinAreas}
-            onClick={() => elegir(onCargo)}
-          >
-            <span className="og-crear-ico"><User size={15} /></span>
-            <div>
-              <strong>Cargo / puesto</strong>
-              <small>{sinAreas
-                ? 'Primero hace falta un área donde ponerlo'
-                : 'Una posición del organigrama'}</small>
-            </div>
-          </button>
-
-          <button className="og-crear-op" onClick={() => elegir(onUnidad)}>
-            <span className="og-crear-ico"><Building2 size={15} /></span>
-            <div>
-              <strong>Unidad organizacional</strong>
-              <small>Un área que agrupa cargos y otras áreas</small>
-            </div>
-          </button>
-        </div>
+        <ListaCrear
+          titulo="Agregar al organigrama"
+          onElegir={o => elegir(o.accion)}
+          opciones={[
+            {
+              id: 'cargo', Icon: User, titulo: 'Cargo / puesto',
+              detalle: 'Una posición del organigrama',
+              bloqueo: sinAreas ? 'Primero hace falta un área donde ponerlo' : null,
+              accion: onCargo,
+            },
+            {
+              id: 'unidad', Icon: Building2, titulo: 'Unidad organizacional',
+              detalle: 'Un área que agrupa cargos y otras áreas',
+              accion: onUnidad,
+            },
+          ]}
+        />
       )}
 
       <button
@@ -1442,6 +1435,56 @@ export default function Organigrama() {
   const baseDelAlcance = unidadVista
     ? { unidadId: unidadVista.id, padreId: unidadVista.id }
     : undefined
+  /* QUÉ OFRECE EL "+" DE CADA CUADRO. Son las mismas dos cosas que ofrece el botón de la
+     esquina —un cargo y un área— pero dichas desde donde se está parado: en una píldora
+     quieren decir "adentro" y en un cuadro quieren decir "debajo". Ese es todo el ahorro:
+     el gesto ya contestó en qué área y bajo qué jefe, así que el formulario abre con esos
+     dos campos puestos en vez de con dos desplegables que hay que volver a recorrer.
+
+     Se arma aquí y no en el dibujo porque abrir un formulario con valores predecididos es
+     cosa de la pantalla; `OrgNodos` solo dibuja. */
+  const crearEnNodo = useMemo(() => ({
+    deUnidad: u => {
+      /* El jefe que le toca a un puesto nuevo del área es la cabeza del área. Mientras el
+         área está vacía no hay cabeza y el dato vive en la unidad, en `mandoId`; sin
+         ninguno de los dos se omite y decide el formulario, como en cualquier alta. */
+      const jefe = cabezaDe(u.id, org)?.id ?? u.mandoId ?? null
+      return [
+        {
+          id: 'cargo', Icon: User, titulo: 'Cargo / puesto aquí',
+          detalle: `Un puesto de ${u.nombre}`,
+          accion: () => setEditando({
+            cargo: null,
+            base: jefe ? { unidadId: u.id, reportaA: jefe } : { unidadId: u.id },
+          }),
+        },
+        {
+          id: 'unidad', Icon: Building2, titulo: 'Subárea dentro',
+          detalle: `Un área que cuelga de ${u.nombre}`,
+          accion: () => setEditandoUnidad({ unidad: null, base: { padreId: u.id, mandoId: jefe } }),
+        },
+      ]
+    },
+    deCargo: c => [
+      {
+        id: 'cargo', Icon: User, titulo: 'Cargo que le reporta',
+        detalle: `Cuelga de ${c.nombre}, en ${getUnidad(c.unidadId, org)?.nombre ?? 'su área'}`,
+        accion: () => setEditando({ cargo: null, base: { reportaA: c.id, unidadId: c.unidadId } }),
+      },
+      {
+        id: 'unidad', Icon: Building2, titulo: 'Área bajo su mando',
+        detalle: `Un área nueva que responde a ${c.nombre}`,
+        /* La misma regla que ya aplica el desplegable de mando: staff y outsourcing quedan
+           fuera. Un área bajo un cuadro lateral desaparecía del dibujo entero, así que el
+           motivo se dice en vez de dejar crear algo que no se va a ver. */
+        bloqueo: esTipoDeclarado(tipoDe(c))
+          ? 'Un puesto de apoyo o tercerizado no encabeza un área'
+          : null,
+        accion: () => setEditandoUnidad({ unidad: null, base: { padreId: c.unidadId, mandoId: c.id } }),
+      },
+    ],
+  }), [org])
+
   /* Las áreas del desplegable, en orden de árbol y sangradas: un listado plano de veinte no dice
      que Marketing Digital está DENTRO de Marketing, que es justo lo que hay que saber para
      elegir el alcance. Cada una con cuántos cargos trae, para no elegir a ciegas. */
@@ -1789,6 +1832,7 @@ export default function Organigrama() {
               }}
               onAbrirCargo={nodo => setEditando({ cargo: nodo.cargo })}
               onAbrirUnidad={unidad => setEditandoUnidad({ unidad })}
+              crear={crearEnNodo}
               desplazamientos={org.desplazamientos}
               onMover={mover}
               onAcomodar={acomodar}
