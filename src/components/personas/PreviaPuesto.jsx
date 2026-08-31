@@ -26,7 +26,9 @@ const MAX_HERMANOS = 4
 
 const genteDe = cargo => ocupantesDe(cargo).map(getPersona).filter(Boolean)
 
-function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, marca, gente }) {
+/* Se exporta porque la previa de lectura (`PreviaLugar`) dibuja los mismos cuadros: dos
+   versiones de esta pieza harían que la ficha y el editor se vean como dos productos. */
+export function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, marca, gente }) {
   const Icon = ICONO[tipo] || User
   const clases = ['og-pv-card']
   if (tipo === 'staff') clases.push('og-pv-staff')
@@ -109,7 +111,11 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
 
   return (
     <aside className="og-pv">
-      <div className="og-pv-hd">Cómo va a quedar en el organigrama</div>
+      {/* En futuro solo cuando de verdad es futuro: sobre un puesto que existe hace años,
+          "cómo va a quedar" se lee como si estuviera por pasar algo. */}
+      <div className="og-pv-hd">
+        {nuevo ? 'Cómo va a quedar en el organigrama' : 'Su lugar en el organigrama'}
+      </div>
 
       {/* La unidad encabeza el panel porque es la primera respuesta a "¿dónde queda?": el
           organigrama dibuja los cargos dentro de la píldora de su área. Antes iba de renglón
@@ -163,7 +169,7 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
       {alCostado && (
         <p className="og-pv-nota">
           No entra en la fila de reportes de <strong>{jefe.nombre}</strong>: en el organigrama
-          cuelga a su costado, con línea punteada.
+          se engancha con línea punteada al trazo que baja de su cuadro, por debajo y al costado.
         </p>
       )}
 

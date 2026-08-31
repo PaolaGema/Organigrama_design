@@ -100,7 +100,9 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
 
   return (
     <aside className="og-pv">
-      <div className="og-pv-hd">Cómo va a quedar en el organigrama</div>
+      <div className="og-pv-hd">
+        {nueva ? 'Cómo va a quedar en el organigrama' : 'Su lugar en el organigrama'}
+      </div>
 
       {/* La empresa encabeza siempre: es de donde cuelga todo, y una unidad sin madre cuelga
           directamente de ella. */}

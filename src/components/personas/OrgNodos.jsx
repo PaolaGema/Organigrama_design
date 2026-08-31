@@ -84,7 +84,7 @@ export function Desglosadas({ ocupantes, cargo }) {
   )
 }
 
-export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, hallado, crear }) {
+export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, hallado, crear, atenuado, escalon = 0 }) {
   const { cargo, vacante, funcional } = nodo
   /* El MISMO cargo puede tener dos cuadros: el suyo, en su área, y el de apoyo en el área donde
      ayuda. La clave del acomodo la trae el nodo para que arrastrar uno no arrastre al otro. */
@@ -114,6 +114,10 @@ export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, halla
   if (corrido) clases.push('og-card-corrido')
   if (acomodo?.enMano === clave) clases.push('og-card-arrastrando')
   if (hallado === cargo.id) clases.push('og-card-hallado')
+  /* FILTRADO POR TIPO O ESTADO: el cuadro se apaga, no se va. Sacarlo dejaría a sus
+     subordinados colgando de la nada y partiría la línea de mando, que es lo que uno vino a
+     mirar. Apagado sigue estando —se ve dónde encaja lo que sí coincide— y sigue abriéndose. */
+  if (atenuado?.(cargo)) clases.push('og-card-apagada')
   /* La misma condición que abre el chip: un estado abierto que quedó guardado de antes no
      tiene que dibujar una cajita de nadie. */
   const abierto = desglose?.abiertos.has(cargo.id) && hayQueDesplegar(nodo)
@@ -121,7 +125,12 @@ export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, halla
   /* El corrimiento se aplica a la COLUMNA y no al cuadro: al acomodarlo a mano, las personas
      colgadas tienen que irse con él o quedarían flotando sobre el lugar que dejó. */
   return (
-    <div className="og-card-col" style={corrido ? { transform: `translate(${corrido.dx}px, ${corrido.dy}px)` } : undefined}>
+    <div className="og-card-col" style={(corrido || escalon) ? {
+      ...(corrido ? { transform: `translate(${corrido.dx}px, ${corrido.dy}px)` } : null),
+      /* El escalón de la fila de cabeza va en la COLUMNA del cuadro y no en el `li`: acá lo
+         que baja es solo esta tarjeta, porque su rama —si la tiene— cuelga del nodo entero. */
+      ...(escalon ? { marginTop: escalon } : null),
+    } : undefined}>
     <div
       className={clases.join(' ')}
       title={acomodo ? 'Doble clic para ver el detalle · arrastra para acomodarlo' : 'Doble clic para ver el detalle'}
@@ -135,6 +144,11 @@ export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, halla
     >
       {cargo.destacado && <Star size={11} className="og-card-star" />}
       {vacante && <span className="og-card-tag">Vacante</span>}
+      {/* SIN INSIGNIA DE NIVEL EN EL CUADRO. Se dibujó y se sacó: en el dibujo el nivel ya lo
+          dice el ESCALÓN —el que pesa menos está medio cuadro más abajo— y un rótulo repetido en
+          los treinta cuadros agrega un renglón a una tarjeta de 176 px para contar lo que la
+          posición ya contó. El nombre del nivel vive donde se compara y se filtra, que es la
+          tabla, y donde se declara, que es el formulario. */}
       <div className="og-card-title">
         {externo
           ? <Briefcase size={11} className="og-card-ico" />
@@ -164,7 +178,7 @@ export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, halla
   )
 }
 
-function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, hallado, crear }) {
+function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, hallado, crear, atenuado, escalon = 0 }) {
   if (nodo.tipo === 'empresa') {
     return <div className="og-empresa">{nodo.empresa.nombre}{plegable}</div>
   }
@@ -195,7 +209,7 @@ function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, halla
       </div>
     )
   }
-  return <TarjetaCargo nodo={nodo} onAbrir={onAbrir} plegable={plegable} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} />
+  return <TarjetaCargo nodo={nodo} onAbrir={onAbrir} plegable={plegable} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} atenuado={atenuado} escalon={escalon} />
 }
 
 /* Cuántos cargos se esconden al plegar. Se cuenta lo que hay ABAJO —la rama entera, con los
@@ -229,9 +243,53 @@ function BotonPlegar({ nodo, ocultos, pliegue }) {
   )
 }
 
-export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose, hallado, crear }) {
+/* EL ESCALÓN: medio cuadro, 32 px. Es lo que dice que dos puestos de la misma fila no pesan
+   igual, y es la ÚNICA forma de decirlo cuando entre ellos no hay línea —tres cabezas sin jefe
+   se dibujan idénticas, porque no hay reporte del cual colgar la diferencia—.
+
+   Medio cuadro y no una fila entera: a 96 px los cuadros dejan de tocarse de costado y el ojo
+   completa la línea que falta, o sea que se lee "el de abajo le reporta al de arriba", que es
+   justo lo contrario de lo que pasa. A 32 se siguen solapando y se leen como una fila. */
+const PASO_ESCALON = 32
+
+/* El nivel más ALTO de una fila de hermanos, que es la referencia contra la cual bajan los
+   demás. Se mide por fila y no contra el catálogo entero: una fila de puros mandos bajos se
+   dibuja pareja, sin quedar hundida contra un techo que en ese lugar del dibujo no está. */
+const techoDe = hermanos => {
+  const ordenes = hermanos.map(n => n.grado?.orden).filter(Boolean)
+  return ordenes.length ? Math.min(...ordenes) : 0
+}
+
+export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose, hallado, crear, atenuado, techo = 0 }) {
   const hijos = nodo.hijos || []
   const laterales = nodo.staff || []
+  /* Sin nivel declarado no se mueve de su sitio. Declarar el de UNO no puede correr a los otros
+     seis: lo que no se dijo no es "el más alto", es que todavía no se dijo. */
+  const escalon = techo && nodo.grado ? (nodo.grado.orden - techo) * PASO_ESCALON : 0
+  const techoHijos = techoDe(hijos)
+
+  /* Las otras cabezas van a los dos costados por la misma razón que los laterales: apiladas de
+     un solo lado corren el cuadro y lo despegan del conector que baja hacia sus hijos. */
+  const pares = nodo.pares || []
+  const cabeza = pares.length > 0
+  const paresIzq = pares.filter((_, i) => i % 2 === 1)
+  const paresDer = pares.filter((_, i) => i % 2 === 0)
+  /* El techo de la fila de cabeza se mide entre las cabezas y nada más: son la fila. */
+  const techoCabeza = cabeza ? techoDe([nodo, ...pares]) : 0
+  const escalonCabeza = n => (techoCabeza && n.grado ? (n.grado.orden - techoCabeza) * PASO_ESCALON : 0)
+  const cardPar = par => (
+    <TarjetaCargo
+      key={par.id}
+      nodo={par}
+      onAbrir={onAbrir}
+      acomodo={acomodo}
+      desglose={desglose}
+      hallado={hallado}
+      atenuado={atenuado}
+      crear={crear}
+      escalon={escalonCabeza(par)}
+    />
+  )
 
   /* Los laterales se reparten a los dos costados en vez de apilarse en una columna. Apilados,
      un jefe con dos puestos de apoyo estiraba su fila hacia abajo y empujaba a todos sus
@@ -246,7 +304,7 @@ export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose,
      no aparecería en el dibujo nunca. Un botón que ofrece eso miente. */
   const bloque = (lista, lado) => (
     <div className={`og-staff og-staff-${lado}`}>
-      {lista.map(s => <TarjetaCargo key={s.id} nodo={s} onAbrir={onAbrir} acomodo={acomodo} desglose={desglose} hallado={hallado} />)}
+      {lista.map(s => <TarjetaCargo key={s.id} nodo={s} onAbrir={onAbrir} acomodo={acomodo} desglose={desglose} hallado={hallado} atenuado={atenuado} />)}
     </div>
   )
 
@@ -258,29 +316,61 @@ export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose,
      además su corrimiento propio, que pasa a ser relativo al del grupo. */
   const rama = nodo.tipo === 'unidad' ? acomodo?.corrimiento(`u:${nodo.unidad.id}`) : null
 
+  /* El escalón va en el `li` y no en la tarjeta: baja el cuadro CON su rama, que si no el jefe
+     se separaría de sus reportes. Y va como margen y no como `transform` —al revés que el
+     acomodo a mano— porque este sí tiene que ocupar lugar: es parte del acomodo automático. */
+  const estilo = (rama || escalon)
+    ? {
+      ...(rama ? { transform: `translate(${rama.dx}px, ${rama.dy}px)` } : null),
+      ...(escalon ? { marginTop: escalon } : null),
+    }
+    : undefined
+
   return (
-    <li style={rama ? { transform: `translate(${rama.dx}px, ${rama.dy}px)` } : undefined}>
+    <li style={estilo}>
       <div className="og-nodo">
-        {/* Con un solo lateral la izquierda queda vacía, pero el hueco se dibuja igual: sin él
-            la tarjeta se corre y deja de caer sobre el conector que baja hacia sus hijos. */}
-        {izquierda.length > 0
-          ? bloque(izquierda, 'izq')
-          : laterales.length > 0 && <div className="og-lateral-hueco" aria-hidden="true" />}
-        <Nodo
-          nodo={nodo}
-          onAbrir={onAbrir}
-          onAbrirUnidad={onAbrirUnidad}
-          acomodo={acomodo}
-          desglose={desglose}
-          hallado={hallado}
-          crear={crear}
-          plegable={ocultos > 0 && <BotonPlegar nodo={nodo} ocultos={ocultos} pliegue={pliegue} />}
-        />
-        {derecha.length > 0 && bloque(derecha, 'der')}
+        <div className="og-nodo-fila">
+          {/* LAS OTRAS CABEZAS, flanqueando a esta. No son sus reportes —de hecho no le reportan
+              a nadie— y por eso no se les dibuja ni una línea desde este cuadro: cuelgan de la
+              misma píldora que él. Están acá adentro solo para quedar cerca, que es lo único que
+              hace legible el escalón. Se reparten a los dos lados como los laterales, y el lado
+              vacío se rellena para que este cuadro siga cayendo en el centro de su rama. */}
+          {cabeza && (paresIzq.length > 0
+            ? <div className="og-pares og-pares-izq">{paresIzq.map(cardPar)}</div>
+            : <div className="og-lateral-hueco" aria-hidden="true" />)}
+          <Nodo
+            nodo={nodo}
+            onAbrir={onAbrir}
+            onAbrirUnidad={onAbrirUnidad}
+            acomodo={acomodo}
+            desglose={desglose}
+            hallado={hallado}
+            crear={crear}
+            atenuado={atenuado}
+            escalon={cabeza ? escalonCabeza(nodo) : 0}
+            plegable={ocultos > 0 && <BotonPlegar nodo={nodo} ocultos={ocultos} pliegue={pliegue} />}
+          />
+          {cabeza && (paresDer.length > 0
+            ? <div className="og-pares og-pares-der">{paresDer.map(cardPar)}</div>
+            : <div className="og-lateral-hueco" aria-hidden="true" />)}
+        </div>
+        {/* LOS LATERALES VAN DEBAJO DEL CUADRO, no a su costado. Antes salían de la pared de la
+            tarjeta del jefe y a su misma altura; ahora cuelgan del tramo que baja del jefe hacia
+            sus reportes, que es de donde de verdad dependen. Es también lo que la previa del
+            modal viene dibujando desde siempre, así que los dos dibujos por fin coinciden.
+
+            Los dos lados se dibujan aunque uno esté vacío: el centro de esta fila es lo que
+            marca por dónde baja la línea, y con un solo bloque se correría a un costado. */}
+        {laterales.length > 0 && (
+          <div className="og-nodo-lat">
+            {izquierda.length > 0 ? bloque(izquierda, 'izq') : <div className="og-lateral-hueco" aria-hidden="true" />}
+            {derecha.length > 0 ? bloque(derecha, 'der') : <div className="og-lateral-hueco" aria-hidden="true" />}
+          </div>
+        )}
       </div>
       {hijos.length > 0 && !plegado && (
         <ul>
-          {hijos.map(h => <Rama key={h.id} nodo={h} onAbrir={onAbrir} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} />)}
+          {hijos.map(h => <Rama key={h.id} nodo={h} onAbrir={onAbrir} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} atenuado={atenuado} techo={techoHijos} />)}
         </ul>
       )}
     </li>

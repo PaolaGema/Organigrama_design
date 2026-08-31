@@ -1451,7 +1451,25 @@ select.pl-input:focus {
 }
 
 .pl-del-title { font-size: 17px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px; }
-.pl-del-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+/* SE TIENE QUE LEER. Los dos renglones de este diálogo iban en `--text-muted` (#94a3b8), que
+   sobre blanco da 2.7:1 de contraste —por debajo de lo que se lee cómodo— y el de abajo encima
+   en 11 px. Son justo los dos textos que importan: uno dice qué se lleva puesto el borrado y el
+   otro, el único paso que falta para que ocurra. Un aviso que no se lee no avisa.
+
+   Vale para todo el producto: este diálogo es también el de desasignar una ruta y el de borrar
+   una carpeta. */
+.pl-del-desc { font-size: 13.5px; color: var(--text-heading); line-height: 1.55; }
+
+.pl-del-confirmar { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+.pl-del-pedido { font-size: 13px; line-height: 1.5; color: var(--text-heading); }
+/* La palabra a copiar va como ficha y no en negrita a secas: así se lee como un dato que hay
+   que transcribir literal y no como una palabra enfatizada de la frase. */
+.pl-del-pedido strong {
+  display: inline-block; padding: 1px 7px; margin: 0 1px;
+  border-radius: 6px; background: var(--surface-hover); border: 1px solid var(--border-soft);
+  font-weight: 700; letter-spacing: .01em; color: var(--text-heading);
+}
 
 /* ══════════════════════════════════════════════════
    ASIGNACIONES — Tabla
@@ -3179,6 +3197,10 @@ select.pl-input:focus {
    distinguía de un puesto normal a un metro de la pantalla, que es la distancia a la que se
    mira un organigrama proyectado. */
 .og-page {
+  /* Ancla de lo que flota encima del organigrama: el panel de filtros, el botón de crear y los
+     controles del lienzo. Sin esto el panel se colgaba de un ancestro más alto y le quedaba el
+     borde por debajo de la pantalla. */
+  position: relative;
   --og-marca: var(--navy);
   /* El área en un tono más bajo que la empresa. Los dos usaban el mismo color de marca y el
      dibujo tenía dos niveles pintados igual: SoulyHR pesa lo mismo que Marketing. Mezclado con
@@ -3189,24 +3211,64 @@ select.pl-input:focus {
   --og-marca-area: var(--og-marca);
   --og-marca-area: color-mix(in srgb, var(--og-marca) 76%, #fff);
   --og-linea: #8fa3b5;
-  --og-vacante: #d97706;  --og-vacante-bg: #fef3c7;  --og-vacante-txt: #92400e;
-  --og-staff: #0d9488;    --og-staff-bg: #ccfbf1;    --og-staff-txt: #115e59;
-  --og-ext: #7c3aed;      --og-ext-bg: #ede9fe;      --og-ext-txt: #5b21b6;
-  /* Azul para el apoyo funcional: es el que quedaba libre entre los cuatro estados que ya
-     tiene el dibujo, y no se confunde con el violeta del outsourcing a la distancia a la que
-     se mira un organigrama proyectado. */
-  --og-func: #2563eb;     --og-func-bg: #dbeafe;     --og-func-txt: #1e40af;
+
+  /* LA LEYENDA DEL DIBUJO, y ahora configurable por la empresa.
+     Cada color tiene UN significado y solo uno. El tono base se elige en "Configurar colores"
+     —llega como `--og-*-el`— y el relleno y el texto se DERIVAN de él en vez de escribirse a
+     mano: cuatro tintes elegidos a ojo se sostienen mientras los elige uno, pero con un color
+     libre por empresa el que no derive queda con un relleno que no tiene nada que ver.
+
+     Azul para el apoyo funcional: es el que quedaba libre entre los cuatro, y no se confunde
+     con el violeta del outsourcing a la distancia a la que se mira un organigrama proyectado. */
+}
+
+/* LA DERIVACIÓN VA EN SU PROPIA REGLA y con dos selectores, porque el modal donde se eligen los
+   colores tiene que poder mostrar los cuadros con el tono que se está probando AHORA. Un
+   `--og-staff-el` puesto dentro del modal no alcanzaba: `--og-staff` ya se resolvió arriba, en
+   `.og-page`, y lo que baja heredado es el resultado, no la fórmula. Con la fórmula repetida en
+   el modal, el modal la vuelve a resolver con SU valor y el cuadro se pinta en vivo. */
+.og-page, .og-colores {
+  /* El aclarado de la marca va acá y no solo en `.og-page` por lo mismo que los otros: el modal
+     tiene que poder resolverlo con el tono que se está probando. */
+  --og-marca-area: color-mix(in srgb, var(--og-marca) 76%, #fff);
+  --og-vacante: var(--og-vacante-el, #d97706);
+  --og-staff:   var(--og-staff-el,   #0d9488);
+  --og-ext:     var(--og-ext-el,     #7c3aed);
+  --og-func:    var(--og-func-el,    #2563eb);
+
+  --og-vacante-bg: color-mix(in srgb, var(--og-vacante) 20%, #fff);
+  --og-staff-bg:   color-mix(in srgb, var(--og-staff)   20%, #fff);
+  --og-ext-bg:     color-mix(in srgb, var(--og-ext)     18%, #fff);
+  --og-func-bg:    color-mix(in srgb, var(--og-func)    18%, #fff);
+
+  --og-vacante-txt: color-mix(in srgb, var(--og-vacante) 72%, #000);
+  --og-staff-txt:   color-mix(in srgb, var(--og-staff)   72%, #000);
+  --og-ext-txt:     color-mix(in srgb, var(--og-ext)     72%, #000);
+  --og-func-txt:    color-mix(in srgb, var(--og-func)    72%, #000);
 }
 /* La línea del organigrama tiene tono propio y no el gris de los bordes: sobre el fondo
    punteado del lienzo, `--border-dark` (#cbd5e1) se perdía y el dibujo quedaba con los cuadros
    flotando sin de dónde cuelgan. En oscuro pasa lo contrario —hay que aclararla— y por eso es
    una variable y no un color escrito en cada regla. */
-.dark .og-page {
-  --og-linea: rgba(255,255,255,.34);
-  --og-vacante: #fbbf24;  --og-vacante-bg: rgba(245,158,11,.18);  --og-vacante-txt: #fcd34d;
-  --og-staff: #2dd4bf;    --og-staff-bg: rgba(45,212,191,.16);    --og-staff-txt: #5eead4;
-  --og-ext: #a78bfa;      --og-ext-bg: rgba(167,139,250,.18);     --og-ext-txt: #c4b5fd;
-  --og-func: #60a5fa;     --og-func-bg: rgba(96,165,250,.18);      --og-func-txt: #93c5fd;
+/* En oscuro el MISMO tono elegido se aclara antes de usarse: un violeta pensado para papel
+   blanco desaparece contra el lienzo oscuro, y pedirle a la empresa que elija dos colores por
+   significado sería pedirle que resuelva un problema nuestro. */
+.dark .og-page { --og-linea: rgba(255,255,255,.34); }
+.dark .og-page, .dark .og-colores {
+  --og-vacante: color-mix(in srgb, var(--og-vacante-el, #d97706) 58%, #fff);
+  --og-staff:   color-mix(in srgb, var(--og-staff-el,   #0d9488) 58%, #fff);
+  --og-ext:     color-mix(in srgb, var(--og-ext-el,     #7c3aed) 58%, #fff);
+  --og-func:    color-mix(in srgb, var(--og-func-el,    #2563eb) 58%, #fff);
+
+  --og-vacante-bg: color-mix(in srgb, var(--og-vacante) 18%, transparent);
+  --og-staff-bg:   color-mix(in srgb, var(--og-staff)   16%, transparent);
+  --og-ext-bg:     color-mix(in srgb, var(--og-ext)     18%, transparent);
+  --og-func-bg:    color-mix(in srgb, var(--og-func)    18%, transparent);
+
+  --og-vacante-txt: color-mix(in srgb, var(--og-vacante) 72%, #fff);
+  --og-staff-txt:   color-mix(in srgb, var(--og-staff)   72%, #fff);
+  --og-ext-txt:     color-mix(in srgb, var(--og-ext)     72%, #fff);
+  --og-func-txt:    color-mix(in srgb, var(--og-func)    72%, #fff);
 }
 .og-page {
   position: relative;
@@ -3228,6 +3290,115 @@ select.pl-input:focus {
   padding: 11px 20px; background: var(--navy);
 }
 .og-empresa-nombre { flex-shrink: 0; font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -.01em; }
+
+/* EL BOTÓN DE FILTRAR. Sustituye a los dos desplegables que vivían aquí. El número dice
+   cuántos recortes hay puestos, que es lo único que hace falta saber sin abrir el panel: dos
+   desplegables que dicen "Todas las sucursales" y "Toda la empresa" ocupan media barra para
+   informar de que no estás filtrando. */
+.og-filtrar {
+  display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px;
+  border: none; border-radius: 9px; background: rgba(255,255,255,.12); color: #fff;
+  font-family: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+}
+.og-filtrar:hover { background: rgba(255,255,255,.2); }
+.og-filtrar.on { background: #fff; color: var(--navy); }
+.og-filtrar-n {
+  padding: 0 6px; border-radius: 5px; background: var(--green); color: #06331F;
+  font-size: 10.5px; font-weight: 800;
+}
+.og-filtrar.on .og-filtrar-n { background: var(--navy); color: #fff; }
+
+/* LAS FICHAS DE LO ACTIVO. La fila solo existe cuando hay algo recortando: en reposo no se
+   dibuja, porque un renglón que dice "sin filtros" es un renglón gastado en decir que no pasa
+   nada. */
+.og-fichas {
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  padding: 10px 20px; background: var(--surface-card); border-bottom: 1px solid var(--border);
+}
+.og-fichas-rot { font-size: 9.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--text-muted); }
+.og-ficha-f {
+  display: inline-flex; align-items: center; gap: 4px; padding: 4px 5px 4px 11px;
+  border: 1px solid var(--border-soft); border-radius: 999px; background: var(--surface-hover);
+  font-size: 11.5px; font-weight: 600; color: var(--navy);
+}
+.og-ficha-f button {
+  display: flex; align-items: center; justify-content: center; width: 17px; height: 17px;
+  padding: 0; border: none; border-radius: 50%; background: none; color: currentColor;
+  opacity: .55; cursor: pointer;
+}
+.og-ficha-f button:hover { opacity: 1; background: rgba(12,45,64,.1); }
+/* Cada tipo con el color que ya tiene en la leyenda del dibujo: la ficha dice qué recorta sin
+   necesidad de leerla. */
+.og-ficha-f-staff { background: var(--og-staff-bg); border-color: var(--og-staff); color: var(--og-staff-txt); }
+.og-ficha-f-outsourcing { background: var(--og-ext-bg); border-color: var(--og-ext); color: var(--og-ext-txt); }
+.og-ficha-f-vacante { background: var(--og-vacante-bg); border-color: var(--og-vacante); color: var(--og-vacante-txt); }
+.og-fichas-limpiar {
+  margin-left: 4px; border: none; background: none; font-family: inherit;
+  font-size: 11.5px; font-weight: 600; color: var(--text-muted);
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
+.og-fichas-limpiar:hover { color: var(--navy); }
+
+/* EL PANEL. Cuelga del borde derecho, por debajo de la barra: tapa un pedazo del dibujo
+   mientras está abierto —es el costo conocido de esta forma— pero el resto se sigue viendo, que
+   es lo que un modal no permitía. */
+/* UNA TARJETA QUE FLOTA, no una columna de borde a borde. Con las listas metidas en
+   desplegables el panel mide lo que mide su contenido, y estirado hasta abajo dejaba medio
+   panel vacío que se leía como algo a medio cargar. Crece con lo que tiene y no pasa del alto
+   de la pantalla. */
+.og-fp {
+  position: absolute; top: 62px; right: 14px; z-index: 25;
+  width: 292px; max-height: calc(100% - 84px);
+  display: flex; flex-direction: column;
+  background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(12,45,64,.16);
+}
+.og-fp-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--navy);
+}
+.og-fp-x { display: flex; padding: 3px; border: none; border-radius: 7px; background: none; color: var(--text-muted); cursor: pointer; }
+.og-fp-x:hover { background: var(--surface-hover); color: var(--navy); }
+.og-fp-cuerpo { flex: 1; min-height: 0; overflow-y: auto; padding: 0 14px; }
+.og-fp-grupo { display: flex; flex-direction: column; gap: 4px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.og-fp-grupo:last-child { border-bottom: none; }
+.og-fp-rot { margin-bottom: 5px; font-size: 9.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--text-muted); }
+.og-fp-op {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px;
+  border: none; border-radius: 8px; background: none; font-family: inherit;
+  font-size: 12px; color: var(--navy); text-align: left; cursor: pointer;
+}
+.og-fp-op:hover { background: var(--surface-hover); }
+.og-fp-box {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; border: 1.5px solid var(--border-dark); border-radius: 4px; color: #fff;
+}
+.og-fp-box.on { background: var(--navy); border-color: var(--navy); }
+.og-fp-muestra { flex-shrink: 0; width: 9px; height: 9px; border-radius: 3px; }
+.og-fp-txt { min-width: 0; font-weight: 500; }
+.og-fp-txt em { font-style: normal; margin-left: 5px; font-size: 10.5px; color: var(--text-muted); }
+/* Los dos desplegables del grupo "Dónde", separados entre sí. */
+.og-fp-grupo .pl-dropdown-wrap + .pl-dropdown-wrap { margin-top: 6px; }
+.og-fp-seg { display: flex; flex-direction: column; gap: 2px; }
+.og-fp-seg button {
+  display: flex; align-items: center; gap: 7px; padding: 7px 9px; border: none; border-radius: 8px;
+  background: none; font-family: inherit; font-size: 12px; font-weight: 600;
+  color: var(--text-muted); text-align: left; cursor: pointer;
+}
+.og-fp-seg button:hover { background: var(--surface-hover); }
+.og-fp-seg button.on { background: var(--surface-hover); color: var(--navy); box-shadow: inset 0 0 0 1px var(--border-dark); }
+.og-fp-pie {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 16px; border-top: 1px solid var(--border);
+}
+.og-fp-cuenta { font-size: 12px; color: var(--text-muted); }
+.og-fp-cuenta strong { font-size: 14px; color: var(--navy); }
+.og-fp-limpiar {
+  padding: 7px 14px; border: 1px solid var(--border-soft); border-radius: 9px;
+  background: var(--surface-card); font-family: inherit; font-size: 12px; font-weight: 600;
+  color: var(--navy); cursor: pointer;
+}
+.og-fp-limpiar:hover { border-color: var(--border-dark); background: var(--surface-hover); }
 
 /* Los dos filtros juntos: son lo que se está MIRANDO, y las acciones de la derecha son lo que
    se puede HACER. La línea que los separa se dibuja en el borde del grupo de acciones y no como
@@ -3264,6 +3435,135 @@ select.pl-input:focus {
 .og-export-op small { display: block; margin-top: 1px; font-size: 10px; line-height: 1.35; color: var(--text-muted); }
 .og-marca-btn:disabled { opacity: .6; cursor: default; }
 
+/* El engranaje va SIN palabra: la barra ya lleva seis controles con texto y "Configuración" es
+   la etiqueta más larga de todas para lo que menos se usa. El nombre de cada ajuste está en el
+   menú que abre, que es donde hace falta leerlo. */
+.og-config-btn { padding: 7px 9px; }
+
+/* ── NIVELES DE MANDO ─────────────────────────────────────────────
+   Un renglón por peldaño: el número que sale del orden, el nombre editable, y las tres cosas
+   que se le pueden hacer. Angosto a propósito —la lista suele tener tres o cuatro— y sin
+   recuadro alrededor de cada fila: son renglones de una lista, no tarjetas. */
+.og-modal-mandos { width: 560px; }
+.og-mandos-intro { margin: 0 0 18px; font-size: 12.5px; line-height: 1.6; color: var(--text-muted); }
+.og-mandos-intro strong { color: var(--text-heading); font-weight: 600; }
+
+.og-mandos-lista { display: flex; flex-direction: column; gap: 9px; }
+.og-mando-fila { display: flex; align-items: flex-start; gap: 12px; }
+/* El número es de lectura, no un campo: sale del lugar en la lista y se renumera solo al
+   moverlo. Tabular para que uno y dos dígitos no muevan el nombre de sitio. */
+.og-mando-n {
+  flex-shrink: 0; width: 28px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface-hover); color: var(--text-heading);
+  font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
+}
+.og-mando-campo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.og-mando-campo .pl-input { height: 34px; }
+.og-mando-pie, .og-mando-error { font-size: 10.5px; font-weight: 600; padding-left: 2px; }
+.og-mando-pie { color: var(--text-muted); }
+.og-mando-error { color: var(--red); }
+.og-mando-fila.con-error .pl-input { border-color: var(--red); }
+
+.og-mando-acc { display: flex; align-items: center; gap: 4px; height: 34px; flex-shrink: 0; }
+.og-mando-acc button {
+  width: 28px; height: 28px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); background: var(--surface-card);
+  color: var(--icon-muted); cursor: pointer;
+}
+.og-mando-acc button:hover:not(:disabled) { border-color: var(--border-dark); color: var(--text-heading); }
+/* Apagado y no escondido: el primero nunca sube y el último nunca baja, y un botón que
+   desaparece en los extremos deja la fila de controles cambiando de ancho renglón a renglón. */
+.og-mando-acc button:disabled { opacity: .3; cursor: default; }
+.og-mando-x:hover { border-color: var(--red) !important; color: var(--red) !important; }
+
+.og-mandos-add {
+  width: 100%; margin-top: 12px; padding: 11px;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  border: 1.5px dashed var(--border-dark); border-radius: 10px; background: none;
+  font-family: inherit; font-size: 12px; font-weight: 700; color: var(--text-muted); cursor: pointer;
+}
+.og-mandos-add:hover { border-color: var(--navy); color: var(--text-heading); }
+
+.og-mandos-vacio {
+  display: flex; align-items: flex-start; gap: 8px; margin: 14px 0 0; padding: 11px 13px;
+  border-radius: 10px; background: var(--og-vacante-bg); color: var(--og-vacante-txt);
+  font-size: 11.5px; line-height: 1.5;
+}
+.og-mandos-vacio svg { flex-shrink: 0; margin-top: 2px; }
+
+/* ── COLORES DE LA LEYENDA ────────────────────────────────────────
+   Cada renglón lleva el CUADRO DE VERDAD y no un círculo de color: lo que hay que decidir es
+   cómo va a quedar un borde punteado con su relleno detrás y su texto encima, y eso una muestra
+   redonda no lo enseña. Es el mismo `.og-card` del dibujo, encogido. */
+.og-modal-colores { width: 620px; }
+.og-col-lista { display: flex; flex-direction: column; gap: 4px; }
+.og-col-fila {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 4px; border-bottom: 1px solid var(--border-soft);
+}
+.og-col-fila:last-child { border-bottom: none; }
+
+/* Tamaño fijo y sin sombra: acá no es un nodo que se arrastra, es una muestra. */
+.og-col-muestra {
+  flex-shrink: 0; width: 150px; min-width: 0; max-width: none;
+  box-shadow: none; cursor: default; transform: scale(.92); transform-origin: left center;
+}
+.og-col-muestra:hover { border-color: var(--border); box-shadow: none; }
+
+.og-col-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.og-col-txt strong { font-size: 12.5px; font-weight: 700; color: var(--text-heading); }
+.og-col-txt small { font-size: 11px; line-height: 1.5; color: var(--text-muted); }
+
+.og-col-acc { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+/* El `input[type=color]` lo dibuja el sistema operativo y no hay dos iguales: se esconde
+   detrás de una muestra propia que sí combina con el resto del producto. */
+.og-col-pick { position: relative; display: block; width: 34px; height: 34px; cursor: pointer; }
+.og-col-pick span {
+  position: absolute; inset: 0; border-radius: 9px;
+  box-shadow: 0 0 0 1px var(--border-dark), inset 0 0 0 2px rgba(255,255,255,.55);
+}
+.og-col-pick input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+.og-col-reset {
+  width: 28px; height: 28px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); background: var(--surface-card);
+  color: var(--icon-muted); cursor: pointer;
+}
+.og-col-reset:hover { border-color: var(--border-dark); color: var(--text-heading); }
+
+/* El colaborador: se lista para contestar la pregunta, no para tocarlo. */
+.og-col-fija { opacity: .8; }
+
+.og-col-pie {
+  margin: 18px 0 0; padding: 12px 14px; border-radius: 10px;
+  background: var(--surface-hover); font-size: 11.5px; line-height: 1.6; color: var(--text-muted);
+}
+.og-col-pie strong { color: var(--text-heading); font-weight: 600; }
+
+/* Los dos grupos del modal. El rótulo es lo que dice que la leyenda y la marca no son la misma
+   cosa: sin él son ocho controles de color en una lista y hay que deducir la diferencia. */
+.og-col-rot {
+  font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 10px;
+}
+.og-col-rot-sep { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--border-soft); }
+
+.og-col-marca { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+/* La misma píldora del dibujo, madre e hija: el color de una unidad anidada se aclara, así que
+   con una sola no se ve la mitad de lo que el tono va a hacer. */
+.og-col-marca-previa {
+  flex: 1; min-width: 190px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  padding: 16px 18px; border-radius: 12px; background: var(--bg-app);
+}
+.og-col-pildora { cursor: default; }
+/* Las dos cosas que el tono pinta, y no la misma dos veces: el nodo de la empresa lleva el
+   color tal cual y la píldora de un área lo lleva aclarado. Con dos píldoras iguales, la mitad
+   de lo que hace el tono quedaba sin mostrarse. */
+.og-col-empresa { background: var(--og-marca); color: #fff; font-size: 12px; font-weight: 800; padding: 10px 22px; border-radius: 10px; }
+.og-col-marca-elegir { display: flex; flex-direction: column; gap: 11px; flex-shrink: 0; }
+
 /* ---- papel ----
    Imprimir no es hacer una foto de la pantalla: se esconde la aplicación entera, el árbol
    vuelve a tamaño natural —el `transform` del zoom se anula con `!important`, que es lo único
@@ -3280,7 +3580,7 @@ select.pl-input:focus {
     transform: scale(var(--og-print-escala, 1)) !important; transform-origin: 0 0 !important;
   }
   .og-canvas { overflow: visible !important; background: none !important; }
-  .og-atajos, .og-ayuda-burbuja, .og-zoom, .og-crear, .og-modos, .og-buscar { display: none !important; }
+  .og-atajos, .og-ayuda-burbuja, .og-zoom, .og-crear, .og-fp, .og-buscar { display: none !important; }
   /* Los controles no son el dibujo: plegar una rama y desplegar la gente son cosas que se
      hacen en pantalla, y en el papel solo son manchitas sin función. */
   .og-plegar, .og-chip-flecha, .og-mas { display: none !important; }
@@ -3384,7 +3684,21 @@ select.pl-input:focus {
 .og-tree li:only-child { padding-top: 0; }
 .og-tree li:only-child::before, .og-tree li:only-child::after { display: none; }
 
-.og-nodo { position: relative; display: flex; align-items: flex-start; justify-content: center; }
+/* Columna y no fila: arriba el cuadro, debajo la fila de laterales. Centrada, porque el centro
+   del cuadro es por donde baja la línea y de ahí se enganchan los dos. */
+.og-nodo { position: relative; display: flex; flex-direction: column; align-items: center; }
+
+/* LA FILA DE CABEZA. Las otras raíces —cabezas sin jefe, no reportes— flanquean a esta para
+   quedar cerca: el escalón que dice cuál pesa más solo se compara de cerca, y dibujadas como
+   hermanas del árbol quedaban a media pantalla, porque el `li` de la que tiene la empresa
+   debajo mide lo que mide la empresa.
+
+   Los dos lados miden lo mismo aunque uno esté vacío: el cuadro del medio tiene que seguir
+   cayendo en el centro de su rama o se despega del conector que baja hacia sus hijos. */
+.og-nodo-fila { display: flex; align-items: flex-start; justify-content: center; }
+.og-pares { flex-shrink: 0; width: 200px; display: flex; flex-direction: column; gap: 18px; }
+.og-pares-der { margin-left: 56px; }
+.og-pares-izq { margin-right: 56px; }
 
 /* El cuadro y su gente son una columna: lo que se acomoda a mano y lo que empuja a los hijos
    hacia abajo es el conjunto, no el cuadro suelto. El ancho lo sigue mandando el cuadro. */
@@ -3537,25 +3851,43 @@ select.pl-input:focus {
 
 .og-chip-vacio { justify-content: center; background: transparent; border: 1px dashed var(--border-dark); color: var(--text-muted); }
 
-/* Staff y outsourcing no mandan: cuelgan de lado con línea punteada, fuera de la cadena. */
-/* El bloque lateral ocupa ancho real en lugar de flotar con `position: absolute`. Flotando
+/* Staff y outsourcing no mandan: cuelgan de lado con línea punteada, fuera de la cadena.
+
+   DE LA LÍNEA, NO DE LA CAJA. La primera versión sacaba el trazo de la pared de la tarjeta del
+   jefe y ponía al lateral a su misma altura, y así se leía como un segundo cuadro puesto al
+   lado —dos puestos hombro con hombro— en vez de como alguien que depende de él. Ahora el
+   lateral baja: cae en el tramo que va del jefe a sus reportes y se engancha al mismo trazo que
+   sigue hacia abajo. Es la convención de cualquier organigrama impreso, y es lo que la previa
+   del modal dibujaba desde el principio.
+
+   El bloque lateral ocupa ancho real en lugar de flotar con `position: absolute`. Flotando
    se montaba sobre la fila de hijos del mismo jefe, y como el <ul> de esa fila se dibuja
    después, era el <ul> el que recibía el clic: las tarjetas laterales se veían pero no se
    podían abrir. Ahora el árbol les reserva su lugar y nada se pisa.
 
    El `gap` tampoco es estético: la etiqueta (Externo / Vacante) sobresale por arriba de su
    tarjeta y sin aire se monta sobre la de encima. */
+.og-nodo-lat { position: relative; display: flex; align-items: flex-start; justify-content: center; padding-top: 24px; }
+/* LA BAJADA es la misma línea de mando que sigue hacia los reportes, así que atraviesa la fila
+   entera y empalma con el conector del <ul> de abajo sin cortes. */
+.og-nodo-lat::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 1.5px dashed var(--og-linea); }
+/* Salvo que abajo no haya nada: sin reportes la línea termina en el codo del último lateral en
+   vez de dejar un cabo colgando en el vacío. Plegado cuenta como sin reportes: el <ul> no está. */
+.og-tree li:not(:has(> ul)) > .og-nodo > .og-nodo-lat::before { bottom: auto; height: 50px; }
+
 .og-staff { position: relative; flex-shrink: 0; width: 200px; display: flex; flex-direction: column; gap: 18px; }
 .og-staff-der { margin-left: 56px; }
-/* El bloque de la izquierda ocupa el hueco que ya estaba reservado, así que mide lo mismo
-   —200 + 56— y el árbol no se corre ni un píxel al repartir los laterales. */
+/* El bloque de la izquierda mide lo mismo que el de la derecha —200 + 56— y el lado que queda
+   sin laterales se rellena con el hueco: el centro de la fila tiene que caer sobre el centro
+   del cuadro, que es por donde baja la línea. */
 .og-staff-izq { margin-right: 56px; }
 .og-lateral-hueco { flex-shrink: 0; width: 256px; }
-/* A la altura del cuerpo de la tarjeta, no a la mitad del bloque: así la línea sale del
-   jefe aunque le cuelguen varios cargos al costado. */
-.og-staff::before { content: ''; position: absolute; top: 38px; width: 56px; border-top: 1.5px dashed var(--og-linea); }
-.og-staff-der::before { right: 100%; }
-.og-staff-izq::before { left: 100%; }
+/* El codo va en cada tarjeta y no una vez por bloque: con dos laterales del mismo lado, el
+   segundo se quedaba sin línea y flotaba suelto al costado. */
+.og-staff > .og-card-col { position: relative; }
+.og-staff > .og-card-col::before { content: ''; position: absolute; top: 26px; width: 56px; border-top: 1.5px dashed var(--og-linea); }
+.og-staff-der > .og-card-col::before { right: 100%; }
+.og-staff-izq > .og-card-col::before { left: 100%; }
 
 /* ---- controles flotantes ---- */
 
@@ -3718,6 +4050,13 @@ select.pl-input:focus {
 /* El cuadro al que se saltó. El destaque late un momento y se apaga solo: una marca permanente
    sobre un dibujo que se mira mucho tiempo deja de decir "es este" y pasa a decir "este tiene
    algo raro". */
+/* NO PASA EL FILTRO DE TIPO O ESTADO: apagado, no ausente. Sacarlo partiría la línea de mando
+   —sus subordinados quedarían colgando de la nada— y el dibujo dejaría de contestar la pregunta
+   por la que uno lo abrió. Apagado se sigue viendo dónde encaja lo que sí coincide, y el cuadro
+   se sigue pudiendo abrir. */
+.og-card-apagada { opacity: .3; }
+.og-card-apagada:hover { opacity: .65; }
+
 .og-card-hallado { animation: og-hallazgo 2.6s ease-out; }
 @keyframes og-hallazgo {
   0%, 55% { box-shadow: 0 0 0 4px var(--green), var(--sh-md); }
@@ -3778,7 +4117,8 @@ select.pl-input:focus {
 .og-tree-libre ul::before,
 .og-tree-libre li::before,
 .og-tree-libre li::after,
-.og-tree-libre .og-staff::before { display: none; }
+.og-tree-libre .og-nodo-lat::before,
+.og-tree-libre .og-staff > .og-card-col::before { display: none; }
 .og-mando { position: absolute; top: 0; left: 0; overflow: visible; pointer-events: none; }
 /* LLENA. Antes estaba todo punteado, y el punteado en un organigrama significa algo:
    relación indirecta. Con todas las líneas iguales, el dibujo perdía su única forma de
@@ -3823,13 +4163,30 @@ select.pl-input:focus {
 /* El del puesto es más ancho porque son dos columnas: los campos y el dibujo de dónde va a
    quedar. Las medidas son las del detalle de ruta del módulo de onboarding, para que los dos
    modales grandes del producto se abran del mismo tamaño. */
-.og-modal-puesto { width: 1040px; max-width: 96vw; max-height: 88vh; }
+/* ALTURA DEFINIDA, NO LA DEL CONTENIDO. Con solo `max-height` el modal medía lo que midiera
+   lo de adentro: un cargo sin reportes salía cortito y el de al lado, con cinco, ocupaba media
+   pantalla más. Abrir dos cuadros seguidos era ver la caja saltar de tamaño, y el pie —donde
+   viven Eliminar y Editar— cambiaba de sitio entre uno y otro.
+
+   El alto es el mismo mirando y editando; lo único que cambia entre los dos modos es el ancho.
+   Dentro, las dos columnas ya scrollean por su cuenta (`.og-pv` y `.pl-modal-body`), así que
+   fijar el alto no esconde nada: lo que no entra se recorre.
+
+   `min()` con la altura de la ventana para que en una pantalla baja no se salga por abajo. */
+.og-modal-puesto { width: 1040px; max-width: 96vw; height: min(760px, 88vh); }
+
+/* MIRANDO, EL MODAL ES MÁS ANGOSTO. Los 1040 px son la medida del formulario, que tiene tres
+   pestañas y una reja de sedes; la ficha son ocho renglones de rótulo y valor, y a ese ancho
+   quedaban nadando —el valor a medio metro de su etiqueta y media columna en blanco—. */
+.og-modal-ficha { width: 860px; }
 
 /* La unidad pide cuatro campos cortos —código, nombre, nombre corto y de qué cuelga— y estaba
    usando el ancho del cargo, que tiene el doble: la caja de "COD-001" medía media pantalla.
    Lleva su propio ancho, y el reparto va al revés que en el cargo: manda el dibujo de dónde va
    a quedar, que es lo que se está decidiendo, y los campos ocupan lo que su contenido pide. */
-.og-modal-unidad { width: 740px; }
+/* El área tiene menos que contar que un cargo, así que su caja es más baja. Pero también fija:
+   el problema era el salto, no el tamaño. */
+.og-modal-unidad { width: 740px; height: min(620px, 88vh); }
 .og-modal-unidad .og-pv { flex: 0 0 400px; padding: 24px 24px 28px; }
 .og-modal-unidad .og-unidad-campos { padding: 22px 22px 26px; }
 .og-puesto-cuerpo { display: flex; flex: 1; min-height: 0; }
@@ -3878,6 +4235,59 @@ select.pl-input:focus {
 .og-bloque-hd { display: flex; align-items: center; gap: 8px; margin: 0; padding-bottom: 2px; font-size: 11.5px; font-weight: 800; color: var(--navy); }
 .og-bloque-hd > span { display: inline-flex; align-items: center; justify-content: center; width: 19px; height: 19px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 10px; font-weight: 800; }
 .og-label-fila { display: flex; align-items: center; gap: 6px; }
+
+/* MIRANDO SE VE EL MISMO FORMULARIO. Se probó una ficha —los valores sin marco, el tipo
+   reducido a la tarjeta elegida, la sede en una sola línea— y se leía como otra pantalla: el
+   formulario que uno conoce dejaba de estar donde estaba. Así que los campos quedan tal cual y
+   lo único que cambia es que no responden.
+
+   Los controles van `disabled` de verdad —no solo sin puntero— para que el teclado tampoco
+   entre. Lo que estas reglas deshacen es el gris con que el navegador los apaga: ese gris dice
+   "no se puede", y aquí lo cierto es "todavía no". */
+/* LA HOJA DE DATOS. Ocupa la columna derecha cuando el modal se abre para mirar, al lado del
+   mismo dibujo de siempre.
+
+   Renglones de rótulo y valor separados por una línea fina: sin marcos, porque no hay dónde
+   escribir, y sin pestañas, porque en lectura cabe todo de una vez. Se llegó aquí después de
+   probar el formulario con los campos apagados —enseñaba lo que se puede cambiar, no lo que uno
+   quiere saber— y una versión que se comía el dibujo. */
+.og-ficha { flex: 1; min-width: 0; gap: 0; padding: 14px 24px 22px; }
+.og-ficha-fila {
+  display: grid; grid-template-columns: 118px 1fr; gap: 14px; align-items: baseline;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.og-ficha-fila:last-child { border-bottom: none; }
+.og-ficha-rot {
+  padding-top: 2px; font-size: 9.5px; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.og-ficha-val { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.og-ficha-val strong { font-size: 13px; font-weight: 600; color: var(--navy); }
+.og-ficha-val em { font-style: normal; font-size: 11px; font-weight: 500; color: var(--text-muted); }
+.og-ficha-gente { display: flex; align-items: center; gap: 9px; }
+.og-ficha-linea { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.og-ficha-linea + .og-ficha-linea { margin-top: 9px; }
+
+/* Lo que falta se dice y se dice apagado: en gris no se confunde con un dato cargado. */
+.og-ficha-falta { font-style: italic; font-size: 12.5px; color: var(--text-muted); }
+/* El apoyo funcional se abre: el dato es del cargo y se cambia en su formulario, así que desde
+   aquí solo se ofrece el camino a esa puerta. */
+.og-ficha-abrir {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+  padding: 8px 10px; border: 1px solid var(--border-soft); border-radius: 9px;
+  background: var(--surface-card); color: inherit; font-family: inherit; cursor: pointer;
+}
+.og-ficha-abrir + .og-ficha-abrir { margin-top: 6px; }
+.og-ficha-abrir:hover { border-color: var(--border-dark); background: var(--surface-hover); }
+.og-ficha-abrir .og-ficha-linea { flex: 1; }
+
+/* El botón destructivo se va al extremo opuesto del pie. Pegado a "Cerrar" y "Editar"
+   está a un dedo de los dos botones que uno aprieta sin pensar; empujado al otro lado hay que
+   ir a buscarlo. */
+.og-btn-eliminar { margin-right: auto; }
+
+/* El botón de pasar a editar. Lleva ícono, así que necesita ser una fila. */
+.og-btn-editar { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .og-req { font-style: normal; font-weight: 700; color: #ef4444; }
 .og-contador { margin-left: auto; font-size: 10.5px; font-weight: 600; color: var(--text-muted); }
 
@@ -4093,6 +4503,19 @@ select.pl-input:focus {
 .og-th-codigo, .og-td-codigo { width: 90px; white-space: nowrap; }
 .og-td-codigo { font-size: 11.5px; font-weight: 600; color: var(--text-muted); }
 .og-pertenece { display: inline-block; background: var(--surface-hover); color: var(--navy); font-size: 10.5px; font-weight: 600; padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
+
+/* EL NIVEL DE MANDO, y en gris a propósito. En el organigrama el color ya está repartido y
+   significa otra cosa —ámbar vacante, teal staff, violeta tercerizado, azul apoyo—, así que un
+   quinto color en la tabla enseñaría un código que el dibujo no usa. El número adelante es lo
+   que hace comparables dos niveles de un vistazo, y va tabular para que la columna alinee. */
+.og-nivel-pill {
+  display: inline-block; background: var(--surface-hover); color: var(--text-heading);
+  font-size: 10.5px; font-weight: 700; font-variant-numeric: tabular-nums;
+  padding: 4px 10px; border-radius: 6px; white-space: nowrap;
+}
+/* Falta declararlo, no es un nivel. Sin fondo y en cursiva: se lee como un hueco y no como un
+   valor más, que es lo que hace de esta columna la lista de lo que queda por completar. */
+.og-nivel-sin { font-size: 10.5px; font-style: italic; color: var(--text-muted); }
 .og-tipo { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; padding: 4px 9px; border-radius: 6px; white-space: nowrap; }
 /* EL AMARILLO ES DE LAS VACANTES, en las tres vistas. Esta píldora lo usaba para decir
    "Jefe / Director", así que un puesto de jefatura vacante mostraba amarillo dos veces

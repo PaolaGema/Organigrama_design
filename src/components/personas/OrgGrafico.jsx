@@ -31,46 +31,53 @@ const UMBRAL = 5
 /* Cuántos resultados de búsqueda se listan antes de pedir que se afine el texto. */
 const TOPE_BUSQUEDA = 7
 
-/* QUÉ DIBUJA EL ÁRBOL. Vivían como pestañas de página, arriba, en negrita y con subrayado: se
-   veían más importantes que el selector Gráfico/Cards/Tabla del que dependen —solo existen en
-   Gráfico—, y al cambiar de vista la fila desaparecía y todo el contenido saltaba 46 px.
-
-   Son opciones del DIBUJO, así que viven con el dibujo: flotando sobre el lienzo, como el zoom
-   y la ayuda. Los tres nombres se rehicieron en paralelo —antes eran un sustantivo y dos
-   verbos— para que se comparen de un vistazo. */
-const MODOS = [
-  { key: 'completo', label: 'Áreas y cargos', title: 'Las áreas con sus cargos adentro' },
-  { key: 'cargos', label: 'Solo cargos', title: 'Solo la línea de mando, sin áreas' },
-  { key: 'unidades', label: 'Solo áreas', title: 'Solo la estructura de áreas, sin cargos' },
-]
-
 /* El codo de la línea de mando: baja del padre, dobla a media altura y entra por arriba del
    hijo. Es el mismo trazo que dibujaría el CSS, pero calculado: así sigue al cuadro que se
-   corrió de su lugar. */
-function codo(padre, hijo) {
+   corrió de su lugar.
+
+   `lat` es la fila de laterales del padre, si la tiene. La barra horizontal no puede doblar a
+   media altura cuando ahí abajo hay un cuadro de staff: cruzaba la tarjeta por detrás y salía
+   por el otro lado. Con laterales, el doblez espera a que terminen.
+
+   `techo` es el borde superior del hermano MÁS ALTO de la fila, y existe desde que los cuadros
+   se escalonan por nivel. Sin él cada hijo calculaba su codo a media altura entre su padre y él
+   mismo, así que dos hermanos a distinta altura doblaban a distinta altura: en vez de una barra
+   salían tres escalones sueltos. Con el techo compartido hay UNA barra y de ella bajan tramos de
+   distinto largo, que es como se dibuja un organigrama de toda la vida. */
+function codo(padre, hijo, lat, techo) {
   const x1 = padre.x + padre.w / 2
   const y1 = padre.y + padre.h
   const x2 = hijo.x + hijo.w / 2
   const y2 = hijo.y
   if (Math.abs(x1 - x2) < 1) return `M ${x1} ${y1} L ${x2} ${y2}`
-  const medio = y1 + Math.max(12, (y2 - y1) / 2)
+  const piso = lat ? lat.y + lat.h + 16 : 0
+  const arriba = techo || y2
+  /* Nunca pegado al hijo: el redondeo del codo necesita sitio antes de entrar por arriba. */
+  const medio = Math.min(Math.max(y1 + 12, y1 + (arriba - y1) / 2, piso), arriba - 12)
   const r = Math.min(8, Math.abs(x2 - x1) / 2, Math.max(0, y2 - medio))
   const hacia = x2 > x1 ? 1 : -1
   return `M ${x1} ${y1} L ${x1} ${medio - r} Q ${x1} ${medio} ${x1 + r * hacia} ${medio} `
     + `L ${x2 - r * hacia} ${medio} Q ${x2} ${medio} ${x2} ${medio + r} L ${x2} ${y2}`
 }
 
-/* El lateral no baja: sale del costado del cuadro, a la altura del cuerpo de la tarjeta. */
+/* El lateral cuelga de la LÍNEA, no de la caja: baja por el centro del cuadro —el mismo trazo
+   que sigue hacia los reportes— y recién por debajo dobla al costado. Sacándolo de la pared de
+   la tarjeta, el staff se leía como un segundo cuadro puesto al lado y no como alguien que
+   depende del jefe. */
 function alCostado(padre, lateral, aLaIzquierda) {
+  const x1 = padre.x + padre.w / 2
   const y = lateral.y + 26
-  const x1 = aLaIzquierda ? padre.x : padre.x + padre.w
   const x2 = aLaIzquierda ? lateral.x + lateral.w : lateral.x
-  return `M ${x1} ${padre.y + Math.min(26, padre.h / 2)} L ${x1} ${y} L ${x2} ${y}`
+  const hacia = aLaIzquierda ? -1 : 1
+  /* El mismo redondeo que el codo de la línea de mando, y acotado por lo que haya de sitio:
+     con el cuadro acomodado a mano el lateral puede quedar pegado o incluso por encima. */
+  const r = Math.min(8, Math.abs(x2 - x1) / 2, Math.max(0, y - (padre.y + padre.h)))
+  return `M ${x1} ${padre.y + padre.h} L ${x1} ${y - r} Q ${x1} ${y} ${x1 + r * hacia} ${y} L ${x2} ${y}`
 }
 
 export default function OrgGrafico({
   tree, org, onAbrirCargo, onAbrirUnidad, crear, desplazamientos, onMover, onAcomodar,
-  modo, onModo, funcionales,
+  atenuado,
 }) {
   const { canvasRef, stageRef, zoom, setZoom, arrastrando, empezarArrastre, ajustar, centrar, estiloStage } =
     useLienzo({ tree, ignorarPan: '[data-no-pan]' })
@@ -149,7 +156,12 @@ export default function OrgGrafico({
 
   const trazoDe = (arista, caja) => (arista.lateral
     ? alCostado(caja(arista.padre), caja(arista.hijo), arista.aLaIzquierda)
-    : codo(caja(arista.padre), caja(arista.hijo)))
+    : codo(
+      caja(arista.padre),
+      caja(arista.hijo),
+      arista.lat && caja(arista.lat),
+      arista.hermanos && Math.min(...arista.hermanos.map(h => caja(h).y)),
+    ))
 
   /* Las líneas salen del DOM y no de los ids del árbol: una misma unidad puede abrir píldora en
      dos lugares distintos, así que los ids se repiten y los elementos no. Cada `li` sabe quién
@@ -159,7 +171,13 @@ export default function OrgGrafico({
     if (!stage) return
     const caja = medidor()
 
-    const propio = li => li.querySelector(':scope > .og-nodo > .og-card-col > .og-card, :scope > .og-nodo > .og-unidad, :scope > .og-nodo > .og-empresa')
+    /* Todo cuelga de `.og-nodo-fila`, también la píldora y la empresa: la fila existe siempre,
+       tenga o no cabezas al costado, para que este selector no dependa de eso. */
+    const propio = li => li.querySelector(':scope > .og-nodo > .og-nodo-fila > .og-card-col > .og-card, :scope > .og-nodo > .og-nodo-fila > .og-unidad, :scope > .og-nodo > .og-nodo-fila > .og-empresa')
+    /* Las otras cabezas viven dentro del `li` del tronco, así que el recorrido no las ve como
+       nodos propios. Cuelgan de lo mismo que él —la píldora de su área— y por eso reciben una
+       línea desde el MISMO padre: comparten fila, comparten barra, y entre ellas no hay ninguna. */
+    const paresDe = li => [...li.querySelectorAll(':scope > .og-nodo > .og-nodo-fila > .og-pares > .og-card-col > .og-card')]
     /* DÓNDE se dibuja el cuadro y CÓMO se dibuja su línea son dos preguntas distintas desde que
        el outsourcing baja en la línea como cualquier reporte: la forma del trazo la decide
        `lateral` y el punteado lo decide de quién es el vínculo. */
@@ -170,15 +188,35 @@ export default function OrgGrafico({
       if (!hijo) continue
       const padreLi = li.parentElement?.closest('li')
       const padre = padreLi && propio(padreLi)
-      if (padre) lista.push({ id: `m${lista.length}`, padre, hijo, lateral: false, punteada: externo(hijo) })
+      /* La fila de laterales del PADRE: es lo que hay entre su cuadro y esta rama, y por debajo
+         de lo cual tiene que pasar la barra horizontal. */
+      const lat = padreLi?.querySelector(':scope > .og-nodo > .og-nodo-lat')
+      if (padre) {
+        lista.push({ id: `m${lista.length}`, padre, hijo, lat, lateral: false, punteada: externo(hijo) })
+        for (const par of paresDe(li)) {
+          lista.push({ id: `m${lista.length}`, padre, hijo: par, lat, lateral: false, punteada: externo(par) })
+        }
+      }
 
-      for (const bloque of li.querySelectorAll(':scope > .og-nodo > .og-staff')) {
+      for (const bloque of li.querySelectorAll(':scope > .og-nodo > .og-nodo-lat > .og-staff')) {
         const aLaIzquierda = bloque.classList.contains('og-staff-izq')
         for (const tarjeta of bloque.querySelectorAll(':scope > .og-card-col > .og-card')) {
           lista.push({ id: `l${lista.length}`, padre: hijo, hijo: tarjeta, lateral: true, punteada: true, aLaIzquierda })
         }
       }
     }
+    /* Quiénes comparten barra. Se arma después del recorrido porque una fila solo se conoce
+       entera cuando ya pasaron todos sus `li`, y se guardan los ELEMENTOS y no sus medidas: los
+       trazos se recalculan con cajas frescas en cada zoom y en cada paso de un arrastre. */
+    const porPadre = new Map()
+    for (const a of lista) {
+      if (a.lateral) continue
+      const fila = porPadre.get(a.padre)
+      if (fila) fila.push(a.hijo)
+      else porPadre.set(a.padre, [a.hijo])
+    }
+    for (const a of lista) if (!a.lateral) a.hermanos = porPadre.get(a.padre)
+
     aristas.current = lista
     setTrazos(lista.map(a => ({ id: a.id, d: trazoDe(a, caja), punteada: a.punteada })))
   }, [tree, zoom, desplazamientos, stageRef, pliegue.plegados, desglose.abiertos, medidor])
@@ -262,8 +300,8 @@ export default function OrgGrafico({
         <svg className="og-mando" width={lienzoDim.w} height={lienzoDim.h}>
           {/* Llena la línea de mando común; punteada la que no lo es, que es lo que el punteado
               significa en cualquier organigrama: relación indirecta. Son tres casos y ninguno
-              se resume en "no es de la empresa" —el staff sí lo es—: el staff asiste al costado
-              sin bajar en la línea, el tercerizado cuelga de su jefe sin ser de la casa, y el
+              se resume en "no es de la empresa" —el staff sí lo es—: el staff se engancha a la
+              línea sin bajar por ella, el tercerizado cuelga de su jefe sin ser de la casa, y el
               apoyo funcional viene prestado de otra área. */}
           {trazos.map(t => (
             <path key={t.id} d={t.d} className={`og-mando-linea${t.punteada ? ' og-mando-lateral' : ''}`} />
@@ -271,7 +309,7 @@ export default function OrgGrafico({
         </svg>
 
         <ul className="og-tree og-tree-libre">
-          <Rama nodo={tree} onAbrir={onAbrirCargo} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} />
+          <Rama nodo={tree} onAbrir={onAbrirCargo} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} atenuado={atenuado} />
         </ul>
       </div>
 
@@ -363,48 +401,10 @@ export default function OrgGrafico({
         )}
       </div>
 
-      {/* Qué incluye el dibujo. Arriba a la izquierda porque el árbol nace centrado y baja: es
-          la esquina que casi siempre queda libre, y las de abajo ya las ocupan la ayuda y el
-          zoom. */}
-      <div className="og-modos">
-        <div className="og-modos-seg">
-          {MODOS.map(m => (
-            <button
-              key={m.key}
-              className={modo === m.key ? 'on' : ''}
-              title={m.title}
-              onClick={() => onModo(m.key)}
-            >
-              {m.label}
-            </button>
-          ))}
-
-          {/* DENTRO de la misma pastilla, detrás de una línea que lo separa. Se probaron otros
-              tres lugares: al lado de la pastilla se leía como un control ajeno traído de otra
-              pantalla; en el panel de la leyenda quedaba escondido; y flotando aparte era un
-              objeto más sobre el dibujo, que es lo que el usuario no quiere. Acá no se suma
-              ninguno —es la pastilla que ya estaba— y queda a la vista.
-
-              Lo que evita que se lea como una cuarta opción excluyente: la casilla, y que al
-              encenderse NO toma el fondo blanco de las otras tres. Se llena la casilla, no el
-              botón. */}
-          {modo !== 'unidades' && funcionales?.cuantos > 0 && (
-            <>
-              <span className="og-modos-sep" aria-hidden="true" />
-              <button
-                className={`og-modos-sw${funcionales.activo ? ' on' : ''}`}
-                onClick={funcionales.alternar}
-                title={funcionales.activo
-                  ? 'Esconder los cuadros de apoyo: cada puesto aparece una sola vez, en su área'
-                  : 'Mostrar en cada área los puestos de otras áreas que trabajan ahí'}
-              >
-                <span className="og-modos-caja">{funcionales.activo && <Check size={10} />}</span>
-                Funcionales
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+      {/* Los tres modos del dibujo y el interruptor de apoyos vivían aquí flotando, y ahora
+          están en el panel de filtros con todo lo demás: eran dos controles que decidían qué se
+          ve, separados de los otros cuatro que también deciden qué se ve, y encima invisibles en
+          las vistas de tarjetas y tabla. */}
 
       <div className="og-zoom">
         <button onClick={() => setZoom(z => Math.max(ZOOM_MIN, z - 0.1))} title="Alejar"><Minus size={13} /></button>

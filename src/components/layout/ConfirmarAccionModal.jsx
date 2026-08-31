@@ -39,8 +39,8 @@ export default function ConfirmarAccionModal({
           <h2 className="pl-del-title">{titulo}</h2>
           <p className="pl-del-desc">{descripcion}</p>
           {palabra && (
-            <div style={{ marginTop: 14 }}>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+            <div className="pl-del-confirmar">
+              <span className="pl-del-pedido">
                 Escribe <strong>{palabra}</strong> para confirmar
               </span>
               <input
@@ -53,7 +53,6 @@ export default function ConfirmarAccionModal({
                    en la forma rápida de saltarse justo la fricción que estamos añadiendo. */
                 onKeyDown={e => { if (e.key === 'Enter' && puedeConfirmar) onConfirmar() }}
                 autoFocus
-                style={{ marginTop: 8 }}
               />
             </div>
           )}

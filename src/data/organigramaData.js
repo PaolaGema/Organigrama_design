@@ -79,44 +79,44 @@ export const TIPOS_CARGO = [
    cuadro— y el campo parecía roto. Son los tres ingresos más recientes, así que el dato cuenta
    una historia coherente: entraron y todavía no los ubicaron en la estructura. */
 export const cargos = [
-  { id: 'gg', nombre: 'Gerente General', unidadId: 'direccion', reportaA: null, ocupanteId: 28, destacado: true, sucursalIds: [] },
+  { id: 'gg', nombre: 'Gerente General', unidadId: 'direccion', reportaA: null, ocupanteId: 28, destacado: true, grado: 'superior', sucursalIds: [] },
   { id: 'asist-dir', nombre: 'Asistente de Dirección', unidadId: 'direccion', reportaA: 'gg', ocupanteId: 29, tipo: 'staff', sucursalIds: ['central'] },
   { id: 'legal-ext', nombre: 'Asesoría Legal Externa', unidadId: 'direccion', reportaA: 'gg', ocupanteId: null, tipo: 'outsourcing', sucursalIds: [] },
 
-  { id: 'dir-tec', nombre: 'Dirección de Tecnología', unidadId: 'tecnologia', reportaA: 'gg', ocupanteId: null, sucursalIds: ['central'] },
-  { id: 'dev-back', nombre: 'Desarrollador Backend', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 1, sucursalIds: ['central'] },
+  { id: 'dir-tec', nombre: 'Dirección de Tecnología', unidadId: 'tecnologia', reportaA: 'gg', ocupanteId: null, grado: 'medio', sucursalIds: ['central'] },
+  { id: 'dev-back', nombre: 'Desarrollador Backend', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 1, grado: 'bajo', sucursalIds: ['central'] },
   { id: 'dev-front', nombre: 'Frontend Developer', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 6, sucursalIds: ['lpz'] },
-  { id: 'qa', nombre: 'QA Engineer', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 4, sucursalIds: ['central'] },
+  { id: 'qa', nombre: 'QA Engineer', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 4, grado: 'bajo', sucursalIds: ['central'] },
   { id: 'devops', nombre: 'DevOps Engineer', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 14, sucursalIds: ['central'] },
   { id: 'data', nombre: 'Data Analyst', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 20, sucursalIds: ['central'] },
   { id: 'soporte-ext', nombre: 'Soporte de Infraestructura', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: null, tipo: 'outsourcing', sucursalIds: ['central'] },
 
-  { id: 'dir-rrhh', nombre: 'Especialista RRHH', unidadId: 'rrhh', reportaA: 'gg', ocupanteId: 9, sucursalIds: ['central'] },
-  { id: 'nominas', nombre: 'Analista de Nóminas', unidadId: 'rrhh', reportaA: 'dir-rrhh', ocupanteId: 15, sucursalIds: ['central'] },
+  { id: 'dir-rrhh', nombre: 'Especialista RRHH', unidadId: 'rrhh', reportaA: 'gg', ocupanteId: 9, grado: 'medio', sucursalIds: ['central'] },
+  { id: 'nominas', nombre: 'Analista de Nóminas', unidadId: 'rrhh', reportaA: 'dir-rrhh', ocupanteId: 15, grado: 'bajo', sucursalIds: ['central'] },
   { id: 'recluta', nombre: 'Reclutadora', unidadId: 'rrhh', reportaA: 'dir-rrhh', ocupanteId: null, sucursalIds: ['central'] },
 
-  { id: 'dir-mkt', nombre: 'Líder de Marketing', unidadId: 'marketing', reportaA: 'gg', ocupanteId: 25, sucursalIds: ['central'] },
-  { id: 'jefe-mkt-dig', nombre: 'Jefatura de Marketing Digital', unidadId: 'mkt-digital', reportaA: 'dir-mkt', ocupanteId: null, sucursalIds: ['central'] },
+  { id: 'dir-mkt', nombre: 'Líder de Marketing', unidadId: 'marketing', reportaA: 'gg', ocupanteId: 25, grado: 'medio', sucursalIds: ['central'] },
+  { id: 'jefe-mkt-dig', nombre: 'Jefatura de Marketing Digital', unidadId: 'mkt-digital', reportaA: 'dir-mkt', ocupanteId: null, grado: 'medio', sucursalIds: ['central'] },
   /* El caso de apoyo funcional del sembrado: es de Marketing Digital y ayuda en Contenidos.
      Pertenece a una sola área —la de su jefe— y trabaja en dos. */
   { id: 'cm', nombre: 'Community Manager', unidadId: 'mkt-digital', reportaA: 'jefe-mkt-dig', ocupanteId: 11, sucursalIds: ['central'], funcionales: [{ unidadId: 'contenidos', reportaA: 'analista-mkt' }] },
-  { id: 'seo', nombre: 'Especialista SEO', unidadId: 'mkt-digital', reportaA: 'jefe-mkt-dig', ocupanteId: 26, sucursalIds: ['lpz'] },
+  { id: 'seo', nombre: 'Especialista SEO', unidadId: 'mkt-digital', reportaA: 'jefe-mkt-dig', ocupanteId: 26, grado: 'bajo', sucursalIds: ['lpz'] },
   { id: 'analista-mkt', nombre: 'Analista de Marketing', unidadId: 'contenidos', reportaA: 'dir-mkt', ocupanteId: 13, sucursalIds: ['central'] },
   { id: 'content', nombre: 'Content Creator', unidadId: 'contenidos', reportaA: 'dir-mkt', ocupanteId: 21, sucursalIds: ['central'] },
   { id: 'marca', nombre: 'Ejecutiva de Marca', unidadId: 'contenidos', reportaA: 'dir-mkt', ocupanteId: 27, sucursalIds: ['cbb'] },
 
-  { id: 'lider-ventas', nombre: 'Ejecutivo Senior', unidadId: 'ventas', reportaA: 'gg', ocupanteId: 12, sucursalIds: [] },
+  { id: 'lider-ventas', nombre: 'Ejecutivo Senior', unidadId: 'ventas', reportaA: 'gg', ocupanteId: 12, grado: 'medio', sucursalIds: [] },
   { id: 'ejec-com', nombre: 'Ejecutiva Comercial', unidadId: 'ventas', reportaA: 'lider-ventas', ocupantes: [2], sucursalIds: ['sre'] },
   { id: 'account', nombre: 'Account Manager', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: 7, sucursalIds: ['oru'] },
   { id: 'sdr', nombre: 'SDR Junior', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: 18, sucursalIds: ['pot'] },
   { id: 'pasante', nombre: 'Pasante Comercial', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['eal'] },
 
-  { id: 'coord-log', nombre: 'Coordinador Logístico', unidadId: 'operaciones', reportaA: 'gg', ocupanteId: 16, sucursalIds: ['tja'] },
+  { id: 'coord-log', nombre: 'Coordinador Logístico', unidadId: 'operaciones', reportaA: 'gg', ocupanteId: 16, grado: 'bajo', sucursalIds: ['tja'] },
   { id: 'analista-proc', nombre: 'Analista de Procesos', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: 8, sucursalIds: ['central'] },
   { id: 'asist-op', nombre: 'Asistente Operativo', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: null, sucursalIds: ['oru'] },
   { id: 'limpieza-ext', nombre: 'Servicio de Limpieza', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: null, tipo: 'outsourcing', sucursalIds: [] },
 
-  { id: 'tesorero', nombre: 'Tesorero', unidadId: 'finanzas', reportaA: 'gg', ocupanteId: 23, sucursalIds: ['central'] },
+  { id: 'tesorero', nombre: 'Tesorero', unidadId: 'finanzas', reportaA: 'gg', ocupanteId: 23, grado: 'medio', sucursalIds: ['central'] },
   { id: 'contador', nombre: 'Contador General', unidadId: 'finanzas', reportaA: 'tesorero', ocupanteId: 10, sucursalIds: ['central'] },
   { id: 'analista-fin', nombre: 'Analista Financiera', unidadId: 'finanzas', reportaA: 'tesorero', ocupanteId: 17, sucursalIds: ['central'] },
 
@@ -145,14 +145,91 @@ export const relaciones = [
   { id: 'r6', origen: 'asist-op', destino: 'contador', tipo: 'funcional', calidad: 'supervisor_funcional', desde: '2026-04-02', hasta: null },
 ]
 
+/* NIVELES DE MANDO. El nivel dice cuánto PESA un puesto, y es lo único que puede distinguir a
+   dos cargos entre los que no hay línea: tres cabezas sin jefe —CEO, CTO, jefatura— se dibujan
+   idénticas porque no hay ningún reporte del cual colgar la diferencia.
+
+   No se deduce de la profundidad del árbol. Ese fue el error del cuarto tipo "Jefe / Director"
+   que ya se sacó, y acá ni siquiera podría: las tres raíces están a la misma profundidad.
+
+   ES UNA LISTA Y NO UN ENUM, y el número sale del ORDEN, no se escribe: cada empresa nombra sus
+   tramos a su manera y decide cuántos son. Los tres sembrados son los que usa el cliente; el día
+   que una jefatura de área no pueda estar a la misma altura que un CTO, se intercala un peldaño
+   y ningún cargo hay que reeditarlo, porque lo que se guarda en el cargo es el id y no el número.
+
+   `orgVacio` los trae igual: un organigrama recién empezado tiene niveles antes que cargos. */
+/* LOS COLORES DE LA LEYENDA. Un canal, un significado — la misma regla por la que se eliminó el
+   color por unidad: si el color también dijera de qué área es, dejaría de decir qué es el puesto.
+
+   EL COLOR DICE LA CLASE DEL PUESTO. La etiqueta VACANTE dice el estado. Son dos preguntas y
+   por eso van por dos canales: un servicio tercerizado sin prestador sigue siendo violeta —no
+   deja de ser tercerizado por estar vacío— y lo que avisa de la vacante es la etiqueta.
+
+   El cuadro toma el PRIMERO que le aplica de esta lista, y por eso el orden importa:
+     1. Apoyo funcional — viene prestado de otra área. Gana sobre todo: es lo más raro del
+        dibujo y lo que peor se lee si no se marca, porque el mismo puesto sale dos veces.
+     2. Outsourcing     — no es gente de la casa.
+     3. Staff           — asiste sin mandar.
+     4. Vacante         — nadie lo ocupa.
+     5. Colaborador     — BLANCO, y no es un color que falta: es el caso normal y son cuatro de
+        cada cinco cuadros. Pintarlo dejaría el organigrama entero de colores y la leyenda
+        dejaría de señalar nada. El blanco es lo que hace que los otros cuatro resalten.
+
+   El colaborador VACANTE es la única excepción y es deliberada: como no tiene color de clase
+   que perder, el cuadro queda libre para avisar del puesto por cubrir, que es lo que uno vino a
+   buscar. Con clase declarada el ámbar no pasa por encima —ahí avisa la etiqueta—. */
+export const COLORES_LEYENDA = [
+  { key: 'func', var: '--og-func-el', porOmision: '#2563eb', label: 'Apoyo funcional', desc: 'Viene prestado de otra área' },
+  { key: 'ext', var: '--og-ext-el', porOmision: '#7c3aed', label: 'Outsourcing', desc: 'Lo cubre un prestador de servicios' },
+  { key: 'staff', var: '--og-staff-el', porOmision: '#0d9488', label: 'Staff', desc: 'Asiste al costado, sin mandar' },
+  { key: 'vacante', var: '--og-vacante-el', porOmision: '#d97706', label: 'Vacante', desc: 'El puesto no lo ocupa nadie' },
+]
+
+/* Las variables que hay que ponerle a `.og-page`. Lo no elegido no se escribe: así el color de
+   fábrica sigue viniendo del CSS y no queda copiado en el dato de cada empresa, donde
+   envejecería la primera vez que cambiemos la paleta. */
+export function estiloColores(org) {
+  const elegidos = org?.colores || {}
+  const estilo = {}
+  for (const c of COLORES_LEYENDA) {
+    if (elegidos[c.key] && elegidos[c.key] !== c.porOmision) estilo[c.var] = elegidos[c.key]
+  }
+  return estilo
+}
+
+export const NIVELES_MANDO = [
+  { id: 'superior', nombre: 'Mando superior' },
+  { id: 'medio', nombre: 'Mando medio' },
+  { id: 'bajo', nombre: 'Mando bajo' },
+]
+
 /* Estructura de arranque. La pantalla la clona en su estado persistido y a partir de ahí
    trabaja sobre la copia; esta constante nunca se muta. */
-export const orgSeed = { unidades, cargos, relaciones }
+export const orgSeed = { unidades, cargos, relaciones, niveles: NIVELES_MANDO }
 
 /* Con qué arranca una demo reseteada. Las sucursales NO están aquí: son datos de la empresa
    —existen antes de que nadie dibuje un organigrama— y por eso sobreviven al reseteo. Lo que
    se construye desde cero son las áreas y los cargos. */
-export const orgVacio = { unidades: [], cargos: [], relaciones: [] }
+export const orgVacio = { unidades: [], cargos: [], relaciones: [], niveles: NIVELES_MANDO }
+
+/* El catálogo de un `org` cualquiera. Va con respaldo porque lo guardado antes de que el campo
+   existiera no lo trae, y sin esto esa demo abriría sin un solo nivel para elegir. */
+export const nivelesDe = (org = orgSeed) => org?.niveles ?? NIVELES_MANDO
+
+/* El nivel de un cargo, ya resuelto para dibujar: el número es la posición en la lista, así que
+   nadie lo escribe y reordenar el catálogo lo renumera todo solo. Devuelve null cuando el cargo
+   no declaró nivel —el caso común y el de todo lo guardado antes—, y también cuando declaró uno
+   que ya no existe: un peldaño borrado no puede dejar cuadros mostrando una insignia fantasma.
+
+   SE LLAMA `grado` Y NO `nivel` a propósito, aunque en pantalla diga "Nivel de mando": `nivel`
+   ya está tomado en `filasTabla`, donde es la profundidad de la sangría de cada renglón. Con el
+   mismo nombre, el spread de `datosFila` y la sangría se pisaban y la tabla perdía la columna. */
+export function gradoDe(cargo, org = orgSeed) {
+  if (!cargo?.grado) return null
+  const lista = nivelesDe(org)
+  const i = lista.findIndex(n => n.id === cargo.grado)
+  return i < 0 ? null : { ...lista[i], orden: i + 1 }
+}
 
 const personaPorId = new Map(colaboradoresData.map(c => [c.id, c]))
 
@@ -285,8 +362,13 @@ const estadoDeOcupantes = cargo => {
   return { ocupantes, vacante: ocupantes.length === 0 }
 }
 
-const nodoSuelto = cargo => ({
+/* El nivel viaja RESUELTO en el nodo y no se busca al dibujar: el cuadro necesita el nombre
+   para la insignia y el número para el escalón, y hacer esa cuenta en cada tarjeta en cada
+   repintado —con el árbol entero volviéndose a medir en cada paso de un arrastre— es trabajo
+   repetido sobre un dato que no cambia mientras el árbol está armado. */
+const nodoSuelto = (cargo, org) => ({
   tipo: 'cargo', id: cargo.id, cargo,
+  grado: gradoDe(cargo, org),
   ...estadoDeOcupantes(cargo),
   staff: [], hijos: [],
 })
@@ -294,11 +376,11 @@ const nodoSuelto = cargo => ({
 /* `vistos` corta los ciclos: al editar "reporta a" se puede dejar a un cargo colgando de su
    propio subordinado, y sin este tope la recursión revienta la pila. */
 function nodoCargo(cargo, org, verUnidades, vistos, conFuncionales) {
-  if (vistos.has(cargo.id)) return nodoSuelto(cargo)
+  if (vistos.has(cargo.id)) return nodoSuelto(cargo, org)
   vistos.add(cargo.id)
   return {
-    ...nodoSuelto(cargo),
-    staff: org.cargos.filter(c => c.reportaA === cargo.id && esLateral(c)).map(nodoSuelto),
+    ...nodoSuelto(cargo, org),
+    staff: org.cargos.filter(c => c.reportaA === cargo.id && esLateral(c)).map(c => nodoSuelto(c, org)),
     hijos: agruparHijos(cargo, org, verUnidades, vistos, conFuncionales),
   }
 }
@@ -351,7 +433,7 @@ function agruparHijos(cargo, org, verUnidades, vistos, conFuncionales) {
    `clave` e `id` llevan el área adelante porque el MISMO cargo aparece en dos lugares del
    dibujo: sin eso React repite claves y arrastrar un cuadro movería al otro. */
 const nodoApoyo = (cargo, unidadId, org) => ({
-  ...nodoSuelto(cargo),
+  ...nodoSuelto(cargo, org),
   id: `f-${unidadId}-${cargo.id}`,
   clave: `f:${unidadId}:${cargo.id}`,
   funcional: true,
@@ -385,6 +467,36 @@ const nodoUnidad = (unidad, org, id = `u-${unidad?.id}`, conFuncionales = true) 
 /* `conFuncionales` es de VISTA y no del dato: enciende y apaga los cuadros de apoyo que llegan
    de otras áreas. Se decide afuera y baja hasta acá porque lo que cambia es el árbol que se
    arma, no el estilo de algo ya dibujado. */
+/* LA FILA DE CABEZA. Varias raíces son varias cabezas sin jefe —el caso de una empresa donde el
+   CEO, el CTO y una jefatura son los tres máxima autoridad y ninguno manda sobre los otros—, y
+   dibujadas como hermanas cualquiera el árbol las manda a los extremos: cada `li` ocupa el ancho
+   de SU rama, y la que tiene la empresa entera debajo mide mil quinientos píxeles. Las otras dos
+   terminan a media pantalla del CEO, y ahí el escalón de 32 px que dice quién pesa más no se
+   puede ver: dos cuadros lejos no se comparan en altura.
+
+   Así que las que no tienen rama se meten DENTRO de la que sí, como `pares`, y se dibujan
+   flanqueándola en la misma fila. Es acomodo y no dato: ninguna pasa a reportarle a la otra
+   —siguen con `reportaA: null`— y entre ellas no se traza una sola línea. Las tres cuelgan de la
+   píldora de su área, que es lo que ya las agrupaba.
+
+   DOS CONDICIONES, y las dos importan:
+   - Una sola raíz con rama. Con dos, cada una necesita su propio abanico debajo y no hay forma
+     de meter una adentro de la otra sin partirle la rama a alguna.
+   - Misma área. Una raíz de otra área metida acá se dibujaría bajo una píldora que no es la
+     suya, que es peor que estar lejos. */
+function juntarCabeza(nodos) {
+  if (nodos.length < 2) return nodos
+  const conRama = nodos.filter(n => n.hijos.length > 0)
+  if (conRama.length !== 1) return nodos
+  const tronco = conRama[0]
+  const pares = nodos.filter(n => n !== tronco && n.cargo.unidadId === tronco.cargo.unidadId)
+  if (!pares.length) return nodos
+  const dentro = new Set(pares)
+  return nodos
+    .filter(n => n === tronco || !dentro.has(n))
+    .map(n => (n === tronco ? { ...n, pares } : n))
+}
+
 export function buildOrgTree(modo = 'completo', org = orgSeed, opciones = {}) {
   const { funcionales: conFuncionales = true, vacias: conVacias = true } = opciones
   if (modo === 'unidades') {
@@ -409,7 +521,7 @@ export function buildOrgTree(modo = 'completo', org = orgSeed, opciones = {}) {
      veces si el dato quedó encadenado de forma rara. */
   const raices = org.cargos.filter(c => c.reportaA === null)
   const vistos = new Set()
-  const nodos = raices.map(r => nodoCargo(r, org, modo === 'completo', vistos, conFuncionales))
+  const nodos = juntarCabeza(raices.map(r => nodoCargo(r, org, modo === 'completo', vistos, conFuncionales)))
 
   /* "Ver por cargos" es solo la línea de mando: ahí no se dibuja ninguna unidad, ni siquiera
      las que todavía no tienen a nadie. */
@@ -516,6 +628,7 @@ export const filaDeCargo = (cargo, org = orgSeed) => datosFila(cargo, org)
 const datosFila = (cargo, org) => ({
   cargo,
   unidad: getUnidad(cargo.unidadId, org),
+  grado: gradoDe(cargo, org),
   tipo: tipoDe(cargo, org),
   sedes: sucursalesDe(cargo, org),
   ...estadoDeOcupantes(cargo),
@@ -664,6 +777,45 @@ export const TODAS_SUCURSALES = 'todas'
 
 /* Las sucursales del cargo. Lista vacía = en todas, incluidas las que se abran mañana: es lo
    correcto a futuro, y enumerarlas dejaría al puesto fuera de la novena. */
+/* ---------- Filtros por tipo y por estado ---------- */
+
+/* DOS RECORTES BLANDOS. A diferencia de los de sede y área, estos NO sacan al cargo del árbol:
+   quitar del dibujo a los que no son staff dejaría a sus subordinados colgando de la nada y
+   partiría la línea de mando, que es justo lo que uno vino a mirar. Es el mismo criterio que ya
+   sigue el buscador del lienzo.
+
+   Así que en el gráfico deciden si el cuadro se dibuja encendido o apagado, y en tarjetas y
+   tabla —donde no hay línea que romper— sí deciden si aparece. */
+
+export const TIPOS_FILTRO = ['colaborador', 'staff', 'outsourcing']
+export const ESTADOS_FILTRO = ['todos', 'vacantes', 'cubiertos']
+
+export const esVacante = cargo => ocupantesDe(cargo).map(getPersona).filter(Boolean).length === 0
+
+/* `tipos` vacío quiere decir TODOS, igual que `sucursalIds` vacío quiere decir "toda la
+   empresa": es la ausencia de recorte, no un recorte que no deja pasar nada. */
+export function coincideCargo(cargo, { tipos = [], estado = 'todos', grados = [] } = {}) {
+  if (tipos.length && !tipos.includes(tipoDe(cargo))) return false
+  /* Un puesto sin nivel declarado NO entra en un recorte por nivel. "Ver los mandos superiores"
+     es una pregunta sobre lo que alguien declaró, y no haberlo declarado no es una respuesta. */
+  if (grados.length && !grados.includes(cargo.grado)) return false
+  if (estado === 'vacantes' && !esVacante(cargo)) return false
+  if (estado === 'cubiertos' && esVacante(cargo)) return false
+  return true
+}
+
+/* Cuántos recortes están puestos. Sirve para el número del botón y para saber si hace falta
+   dibujar la fila de fichas: sin recortes no hay nada que mostrar ni que limpiar. */
+export function recortesActivos({ sedeId, unidadId, tipos = [], estado = 'todos', grados = [] } = {}) {
+  let n = 0
+  if (sedeId && sedeId !== TODAS_SUCURSALES) n++
+  if (unidadId && unidadId !== TODAS_UNIDADES) n++
+  n += tipos.length
+  n += grados.length
+  if (estado !== 'todos') n++
+  return n
+}
+
 export const sucursalesDe = (cargo, org = orgSeed) => {
   const ids = cargo.sucursalIds || []
   return sucursales.filter(s => ids.includes(s.id))
