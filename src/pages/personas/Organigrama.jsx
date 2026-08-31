@@ -1800,9 +1800,9 @@ export default function Organigrama() {
         </button>
 
         <div className="og-topbar-actions">
-          /* El color de la empresa se mudó a "Configurar colores": eran los dos juegos de color
-             del organigrama repartidos en dos botones distintos de la misma barra, y nadie tenía
-             por qué adivinar que la leyenda y la marca eran cosas distintas. */
+          {/* El color de la empresa se mudó a "Configurar colores": eran los dos juegos de color
+              del organigrama repartidos en dos botones distintos de la misma barra, y nadie tenía
+              por qué adivinar que la leyenda y la marca eran cosas distintas. */}
           {/* Exportar. Tres formatos porque son tres usos: la imagen que se pega en una
               presentación, el archivo que escala sin pixelarse, y el papel. */}
           <div className="og-marca">
