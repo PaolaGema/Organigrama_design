@@ -42,6 +42,11 @@
   --sh-sm: 0 1px 3px rgba(12,45,64,.06);
   --sh-md: 0 4px 16px rgba(12,45,64,.08);
   --shadow-card: 0 8px 24px rgba(12,45,64,.08);
+  /* NAVY PARA LETRAS. `--navy` es el azul de la marca y pinta dos cosas distintas: fondos
+     —un botón activo, una píldora— y TEXTO. En oscuro no invierte, y no puede: los fondos
+     navy tienen que seguir siendo oscuros. El texto no, así que va por su propia variable.
+     En claro son el mismo color, así que el tema claro no cambia ni un píxel. */
+  --navy-txt: var(--navy);
   --focus: var(--navy);
 }
 
@@ -76,6 +81,7 @@
   --shadow-card: 0 8px 30px rgba(0,0,0,.25);
   --sh-sm: 0 1px 3px rgba(0,0,0,.2);
   --sh-md: 0 4px 16px rgba(0,0,0,.25);
+  --navy-txt: var(--text-heading);
   --focus: var(--green);
 }
 
@@ -1039,7 +1045,7 @@ button.chip-link {
 .pl-st-activa { background: rgba(0,224,145,.1); color: var(--green); }
 /* Inactivo lleva el navy de la marca y no un gris apagado: la ruta sigue entera y se puede
    volver a poner en uso en un clic, así que no debe leerse como descarte. */
-.pl-st-inactiva { background: rgba(12,45,64,.08); color: var(--navy); }
+.pl-st-inactiva { background: rgba(12,45,64,.08); color: var(--navy-txt); }
 .pl-st-borrador { background: rgba(245,158,11,.1); color: var(--yellow); }
 
 /* ── EMPTY STATE (inline "sin datos aún" boxes) ─── */
@@ -1158,7 +1164,7 @@ button.chip-link {
   overflow-y: auto; padding: 4px; border: 1px solid var(--border); border-radius: 10px;
   background: var(--surface-card); box-shadow: 0 8px 26px rgba(12,45,64,.16);
 }
-.cel-opcion { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 7px 9px; border: none; border-radius: 7px; background: none; font-family: inherit; font-size: 11.5px; color: var(--navy); text-align: left; cursor: pointer; }
+.cel-opcion { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 7px 9px; border: none; border-radius: 7px; background: none; font-family: inherit; font-size: 11.5px; color: var(--navy-txt); text-align: left; cursor: pointer; }
 .cel-opcion:hover { background: var(--surface-hover); }
 .cel-opcion.on { background: var(--green-tint); font-weight: 700; }
 .cel-vacio { padding: 8px 9px; font-size: 11px; color: var(--text-muted); }
@@ -1295,7 +1301,7 @@ select.pl-input:focus {
 .pl-dropdown-item:hover { background: var(--surface-hover); color: var(--text-heading); }
 .pl-dropdown-item.selected {
   background: var(--green-tint);
-  color: var(--navy);
+  color: var(--navy-txt);
   font-weight: 600;
 }
 .pl-dropdown-item.selected svg { color: var(--green); }
@@ -3319,7 +3325,7 @@ select.pl-input:focus {
 .og-ficha-f {
   display: inline-flex; align-items: center; gap: 4px; padding: 4px 5px 4px 11px;
   border: 1px solid var(--border-soft); border-radius: 999px; background: var(--surface-hover);
-  font-size: 11.5px; font-weight: 600; color: var(--navy);
+  font-size: 11.5px; font-weight: 600; color: var(--navy-txt);
 }
 .og-ficha-f button {
   display: flex; align-items: center; justify-content: center; width: 17px; height: 17px;
@@ -3337,7 +3343,7 @@ select.pl-input:focus {
   font-size: 11.5px; font-weight: 600; color: var(--text-muted);
   text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
 }
-.og-fichas-limpiar:hover { color: var(--navy); }
+.og-fichas-limpiar:hover { color: var(--navy-txt); }
 
 /* EL PANEL. Cuelga del borde derecho, por debajo de la barra: tapa un pedazo del dibujo
    mientras está abierto —es el costo conocido de esta forma— pero el resto se sigue viendo, que
@@ -3355,10 +3361,10 @@ select.pl-input:focus {
 }
 .og-fp-hd {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--navy);
+  padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--navy-txt);
 }
 .og-fp-x { display: flex; padding: 3px; border: none; border-radius: 7px; background: none; color: var(--text-muted); cursor: pointer; }
-.og-fp-x:hover { background: var(--surface-hover); color: var(--navy); }
+.og-fp-x:hover { background: var(--surface-hover); color: var(--navy-txt); }
 .og-fp-cuerpo { flex: 1; min-height: 0; overflow-y: auto; padding: 0 14px; }
 .og-fp-grupo { display: flex; flex-direction: column; gap: 4px; padding: 13px 0; border-bottom: 1px solid var(--border); }
 .og-fp-grupo:last-child { border-bottom: none; }
@@ -3366,7 +3372,7 @@ select.pl-input:focus {
 .og-fp-op {
   display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px;
   border: none; border-radius: 8px; background: none; font-family: inherit;
-  font-size: 12px; color: var(--navy); text-align: left; cursor: pointer;
+  font-size: 12px; color: var(--navy-txt); text-align: left; cursor: pointer;
 }
 .og-fp-op:hover { background: var(--surface-hover); }
 .og-fp-box {
@@ -3386,17 +3392,17 @@ select.pl-input:focus {
   color: var(--text-muted); text-align: left; cursor: pointer;
 }
 .og-fp-seg button:hover { background: var(--surface-hover); }
-.og-fp-seg button.on { background: var(--surface-hover); color: var(--navy); box-shadow: inset 0 0 0 1px var(--border-dark); }
+.og-fp-seg button.on { background: var(--surface-hover); color: var(--navy-txt); box-shadow: inset 0 0 0 1px var(--border-dark); }
 .og-fp-pie {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   padding: 12px 16px; border-top: 1px solid var(--border);
 }
 .og-fp-cuenta { font-size: 12px; color: var(--text-muted); }
-.og-fp-cuenta strong { font-size: 14px; color: var(--navy); }
+.og-fp-cuenta strong { font-size: 14px; color: var(--navy-txt); }
 .og-fp-limpiar {
   padding: 7px 14px; border: 1px solid var(--border-soft); border-radius: 9px;
   background: var(--surface-card); font-family: inherit; font-size: 12px; font-weight: 600;
-  color: var(--navy); cursor: pointer;
+  color: var(--navy-txt); cursor: pointer;
 }
 .og-fp-limpiar:hover { border-color: var(--border-dark); background: var(--surface-hover); }
 
@@ -3428,7 +3434,7 @@ select.pl-input:focus {
 .og-marca-pie { margin: 10px 0 0; font-size: 10px; line-height: 1.45; color: var(--text-muted); }
 
 .og-export-menu { width: 236px; }
-.og-export-op { display: flex; align-items: flex-start; gap: 9px; width: 100%; text-align: left; padding: 9px 10px; border: 1px solid transparent; border-radius: 9px; background: none; color: var(--navy); font-family: inherit; cursor: pointer; }
+.og-export-op { display: flex; align-items: flex-start; gap: 9px; width: 100%; text-align: left; padding: 9px 10px; border: 1px solid transparent; border-radius: 9px; background: none; color: var(--navy-txt); font-family: inherit; cursor: pointer; }
 .og-export-op:hover { background: var(--surface-hover); border-color: var(--border); }
 .og-export-op svg { flex-shrink: 0; margin-top: 1px; color: var(--icon-muted); }
 .og-export-op strong { display: block; font-size: 12px; font-weight: 700; }
@@ -3790,7 +3796,7 @@ select.pl-input:focus {
   padding: 30px 20px; border: 1.5px dashed var(--border-dark); border-radius: 12px;
   color: var(--icon-muted); text-align: center;
 }
-.og-func-vacio strong { font-size: 12.5px; color: var(--navy); }
+.og-func-vacio strong { font-size: 12.5px; color: var(--navy-txt); }
 .og-func-vacio span { font-size: 11px; color: var(--text-muted); }
 
 /* El mismo dato en la ficha del área, para mirar y saltar al puesto. Punteado como en el
@@ -3814,7 +3820,7 @@ select.pl-input:focus {
   border-radius: 12px; padding: 11px 13px; box-shadow: var(--sh-sm); transition: box-shadow .15s, border-color .15s;
 }
 .og-card:hover { border-color: var(--border-dark); box-shadow: var(--sh-md); }
-.og-card-title { display: flex; align-items: flex-start; gap: 5px; font-size: 11.5px; font-weight: 700; color: var(--navy); line-height: 1.3; margin-bottom: 8px; }
+.og-card-title { display: flex; align-items: flex-start; gap: 5px; font-size: 11.5px; font-weight: 700; color: var(--navy-txt); line-height: 1.3; margin-bottom: 8px; }
 .og-card-ico { color: var(--icon-muted); flex-shrink: 0; margin-top: 1px; }
 .og-card-star { position: absolute; top: 7px; right: 8px; color: var(--yellow); fill: var(--yellow); }
 .og-card-tag { position: absolute; top: -8px; right: 10px; background: var(--og-vacante); color: #fff; font-size: 8.5px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; }
@@ -3839,7 +3845,7 @@ select.pl-input:focus {
   text-transform: uppercase; color: var(--og-func-txt); opacity: .85;
 }
 
-.og-chip { display: flex; align-items: center; gap: 6px; background: var(--surface-hover); border-radius: 7px; padding: 4px 8px; font-size: 10.5px; font-weight: 600; color: var(--navy); }
+.og-chip { display: flex; align-items: center; gap: 6px; background: var(--surface-hover); border-radius: 7px; padding: 4px 8px; font-size: 10.5px; font-weight: 600; color: var(--navy-txt); }
 .og-chip-av { width: 16px; height: 16px; border-radius: 50%; color: #fff; font-size: 6.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 /* La foto va ENCIMA de la inicial, no en su lugar: si no carga, abajo sigue estando la letra
    sobre el color de la persona y no el ícono de imagen rota. El recorte lo hace el contenedor,
@@ -3912,7 +3918,7 @@ select.pl-input:focus {
   display: inline-flex; align-items: center; gap: 2px; height: 21px; min-width: 21px;
   justify-content: center; padding: 0 5px;
   border: 1px solid var(--border-dark); border-radius: 11px;
-  background: var(--surface-card); color: var(--navy);
+  background: var(--surface-card); color: var(--navy-txt);
   font-family: inherit; font-size: 9.5px; font-weight: 800; line-height: 1;
   cursor: pointer; box-shadow: var(--sh-sm);
 }
@@ -3951,7 +3957,7 @@ select.pl-input:focus {
   display: flex; align-items: center; justify-content: center;
   width: 21px; height: 21px; padding: 0;
   border: 1px solid var(--border-dark); border-radius: 50%;
-  background: var(--surface-card); color: var(--navy);
+  background: var(--surface-card); color: var(--navy-txt);
   cursor: pointer; box-shadow: var(--sh-sm);
   opacity: 0; pointer-events: none;
   transition: opacity .12s, background .12s, color .12s;
@@ -4021,13 +4027,13 @@ select.pl-input:focus {
 .og-buscar-campo:focus-within { border-color: var(--navy); }
 .og-buscar-campo input {
   flex: 1; min-width: 0; border: none; background: none; outline: none;
-  font-family: inherit; font-size: 12px; font-weight: 600; color: var(--navy);
+  font-family: inherit; font-size: 12px; font-weight: 600; color: var(--navy-txt);
 }
 .og-buscar-campo input::placeholder { color: var(--text-muted); font-weight: 500; }
 .og-buscar-campo button {
   display: flex; border: none; background: none; padding: 0; color: var(--icon-muted); cursor: pointer;
 }
-.og-buscar-campo button:hover { color: var(--navy); }
+.og-buscar-campo button:hover { color: var(--navy-txt); }
 
 .og-buscar-lista {
   margin-top: 6px; max-height: 320px; overflow-y: auto; padding: 5px;
@@ -4040,7 +4046,7 @@ select.pl-input:focus {
   font-family: inherit; text-align: left; cursor: pointer;
 }
 .og-buscar-lista button:hover { background: var(--surface-hover); }
-.og-buscar-nom { font-size: 11.5px; font-weight: 700; color: var(--navy); }
+.og-buscar-nom { font-size: 11.5px; font-weight: 700; color: var(--navy-txt); }
 .og-buscar-sub {
   font-size: 10px; font-weight: 500; color: var(--text-muted);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;
@@ -4093,12 +4099,12 @@ select.pl-input:focus {
 /* Bloqueado se explica en su propio subtítulo, así que el botón no necesita gritar: se apaga
    y el motivo se lee ahí mismo. */
 .og-crear-op:disabled { cursor: default; opacity: .5; }
-.og-crear-op strong { display: block; font-size: 12px; font-weight: 700; color: var(--navy); }
+.og-crear-op strong { display: block; font-size: 12px; font-weight: 700; color: var(--navy-txt); }
 .og-crear-op small { display: block; margin-top: 1px; font-size: 10.5px; line-height: 1.35; color: var(--text-muted); }
 .og-crear-ico {
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   width: 30px; height: 30px; border-radius: 8px;
-  background: var(--surface-hover); color: var(--navy);
+  background: var(--surface-hover); color: var(--navy-txt);
 }
 
 
@@ -4146,7 +4152,7 @@ select.pl-input:focus {
    "¿qué hay debajo del puntero?" se contestaría siempre con él mismo. */
 
 .og-rel-par { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; margin: 0; padding: 16px 18px 4px; font-size: 12px; color: var(--text-muted); text-align: center; }
-.og-rel-par b { font-weight: 700; color: var(--navy); }
+.og-rel-par b { font-weight: 700; color: var(--navy-txt); }
 
 /* ---- vistas Cards y Tabla ---- */
 
@@ -4204,8 +4210,8 @@ select.pl-input:focus {
 .og-hojas-col { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 480px; }
 .og-hojas { display: flex; gap: 2px; flex-shrink: 0; padding: 12px 24px 0; border-bottom: 1px solid var(--border); }
 .og-hoja { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px 10px; border: none; border-bottom: 2px solid transparent; background: none; color: var(--text-muted); font-family: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-.og-hoja:hover { color: var(--navy); }
-.og-hoja.on { color: var(--navy); border-bottom-color: var(--navy); }
+.og-hoja:hover { color: var(--navy-txt); }
+.og-hoja.on { color: var(--navy-txt); border-bottom-color: var(--navy); }
 .og-hoja-falta { width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
 
 .og-cargo-campos { flex: 1; min-height: 0; gap: 14px; padding: 22px 24px 26px; }
@@ -4232,7 +4238,7 @@ select.pl-input:focus {
 .og-cargo-campos .og-tipo-card em { color: #64748b; }
 
 .og-bloque { display: flex; flex-direction: column; gap: 13px; }
-.og-bloque-hd { display: flex; align-items: center; gap: 8px; margin: 0; padding-bottom: 2px; font-size: 11.5px; font-weight: 800; color: var(--navy); }
+.og-bloque-hd { display: flex; align-items: center; gap: 8px; margin: 0; padding-bottom: 2px; font-size: 11.5px; font-weight: 800; color: var(--navy-txt); }
 .og-bloque-hd > span { display: inline-flex; align-items: center; justify-content: center; width: 19px; height: 19px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 10px; font-weight: 800; }
 .og-label-fila { display: flex; align-items: center; gap: 6px; }
 
@@ -4262,7 +4268,7 @@ select.pl-input:focus {
   text-transform: uppercase; color: var(--text-muted);
 }
 .og-ficha-val { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.og-ficha-val strong { font-size: 13px; font-weight: 600; color: var(--navy); }
+.og-ficha-val strong { font-size: 13px; font-weight: 600; color: var(--navy-txt); }
 .og-ficha-val em { font-style: normal; font-size: 11px; font-weight: 500; color: var(--text-muted); }
 .og-ficha-gente { display: flex; align-items: center; gap: 9px; }
 .og-ficha-linea { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
@@ -4300,7 +4306,7 @@ select.pl-input:focus {
 
 .og-tipo-card { position: relative; display: flex; flex-direction: column; gap: 3px; text-align: left; padding: 10px 11px; border: 1px solid var(--border-soft); border-radius: 11px; background: var(--surface-card); font-family: inherit; cursor: pointer; transition: border-color .15s, background .15s; }
 .og-tipo-card:hover { border-color: var(--border-dark); }
-.og-tipo-card-hd { display: flex; align-items: center; gap: 5px; padding-right: 24px; font-size: 12px; font-weight: 700; color: var(--navy); }
+.og-tipo-card-hd { display: flex; align-items: center; gap: 5px; padding-right: 24px; font-size: 12px; font-weight: 700; color: var(--navy-txt); }
 .og-tipo-card em { font-style: normal; font-size: 10.5px; font-weight: 500; line-height: 1.35; color: var(--text-muted); }
 /* Cada opción se pinta con el color que el cuadro va a tomar, y lo enseña antes de marcarla
    con una muestra. El verde de "seleccionado" del resto del producto no servía acá: elegir
@@ -4335,7 +4341,7 @@ select.pl-input:focus {
 .og-pv-hijo:last-child::before { bottom: auto; height: 34px; }
 
 .og-pv-card { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 11px 13px; border: 1px solid var(--border); border-radius: 11px; background: var(--surface-card); box-shadow: var(--sh-sm); }
-.og-pv-nom { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; line-height: 1.3; color: var(--navy); }
+.og-pv-nom { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; line-height: 1.3; color: var(--navy-txt); }
 .og-pv-nom svg { flex-shrink: 0; color: var(--icon-muted); }
 .og-pv-sub, .og-pv-estado { font-size: 9.5px; font-weight: 600; color: var(--text-muted); }
 
@@ -4360,7 +4366,7 @@ select.pl-input:focus {
 .og-pv-foco { border: 1.5px solid var(--blue); box-shadow: 0 0 0 3px var(--blue-bg); }
 .og-pv-foco.og-pv-staff { border: 1.5px dashed var(--og-staff); }
 .og-pv-foco.og-pv-ext { border: 1.5px dashed var(--og-ext); }
-.og-pv-foco .og-pv-estado { color: var(--navy); }
+.og-pv-foco .og-pv-estado { color: var(--navy-txt); }
 .og-pv-tag { position: absolute; top: -7px; right: 10px; padding: 1px 6px; border-radius: 5px; background: var(--blue); color: #fff; font-size: 8px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
 /* Sin jefe, la bajada nace del bloque del área: el primer hijo estira su tramo hacia arriba
    hasta tocar el borde de abajo del encabezado. */
@@ -4377,7 +4383,7 @@ select.pl-input:focus {
 .og-pv-hijo-rot:last-child::before { height: 49px; }
 .og-pv-rotulo { display: block; margin-bottom: 4px; font-size: 9px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; color: var(--text-muted); }
 .og-pv-nota { margin: 18px 0 0; padding: 11px 13px; border-radius: 11px; background: var(--surface-card); border: 1px solid var(--border); font-size: 10.5px; line-height: 1.5; color: var(--text-muted); }
-.og-pv-nota strong { color: var(--navy); font-weight: 700; }
+.og-pv-nota strong { color: var(--navy-txt); font-weight: 700; }
 .og-pv-pie { display: flex; align-items: center; gap: 6px; margin: 16px 0 0; font-size: 11px; font-weight: 600; color: var(--text-muted); }
 .og-pv-pie + .og-pv-pie { margin-top: 6px; }
 .og-pv-pie svg { flex-shrink: 0; opacity: .7; }
@@ -4390,8 +4396,8 @@ select.pl-input:focus {
 
 /* Dos mitades: los campos y la vista de dónde queda. */
 
-.og-vista-empresa { font-weight: 700; color: var(--navy); }
-.og-vista-esta { font-weight: 800; color: var(--navy); }
+.og-vista-empresa { font-weight: 700; color: var(--navy-txt); }
+.og-vista-esta { font-weight: 800; color: var(--navy-txt); }
 
 @media (max-width: 780px) {
   .og-unidad-body { grid-template-columns: 1fr; }
@@ -4399,24 +4405,24 @@ select.pl-input:focus {
 
 .og-camino { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; margin: 7px 0 0; font-size: 10.5px; color: var(--text-muted); }
 .og-camino svg { flex-shrink: 0; opacity: .6; }
-.og-camino b { font-weight: 700; color: var(--navy); }
+.og-camino b { font-weight: 700; color: var(--navy-txt); }
 
-.og-field-nota { margin: 7px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--blue-bg, #eff6ff); border: 1px solid var(--border-soft, #dbeafe); font-size: 10.5px; line-height: 1.45; color: var(--navy); }
+.og-field-nota { margin: 7px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--blue-bg, #eff6ff); border: 1px solid var(--border-soft, #dbeafe); font-size: 10.5px; line-height: 1.45; color: var(--navy-txt); }
 .og-vacio { margin: 0 0 22px; font-size: 12px; color: var(--text-muted); }
 
 /* ---- vista Cards: navegación por niveles ---- */
 
 .og-crumbs { display: flex; align-items: center; gap: 6px; padding: 8px 24px; background: var(--surface-card); border-bottom: 1px solid var(--border); }
-.og-crumb-back { display: flex; align-items: center; gap: 3px; margin-right: 6px; padding: 4px 8px; border: none; background: none; color: var(--navy); font-size: 11.5px; font-weight: 700; font-family: inherit; cursor: pointer; }
+.og-crumb-back { display: flex; align-items: center; gap: 3px; margin-right: 6px; padding: 4px 8px; border: none; background: none; color: var(--navy-txt); font-size: 11.5px; font-weight: 700; font-family: inherit; cursor: pointer; }
 .og-crumb-back:hover { color: var(--green); }
 .og-crumb { padding: 5px 11px; border: none; background: none; border-radius: 7px; color: var(--text-muted); font-size: 11.5px; font-weight: 600; font-family: inherit; cursor: pointer; }
-.og-crumb:hover { color: var(--navy); background: var(--surface-hover); }
-.og-crumb.on { background: var(--green-tint); color: var(--navy); font-weight: 700; }
+.og-crumb:hover { color: var(--navy-txt); background: var(--surface-hover); }
+.og-crumb.on { background: var(--green-tint); color: var(--navy-txt); font-weight: 700; }
 .og-crumb-sep { color: var(--border-dark); flex-shrink: 0; }
 .og-crumbs .og-buscador { margin: 0 0 0 auto; }
 
 .og-seccion { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 14px; padding-left: 10px; border-left: 3px solid var(--navy); }
-.og-seccion h3 { margin: 0; font-size: 13px; font-weight: 700; color: var(--navy); }
+.og-seccion h3 { margin: 0; font-size: 13px; font-weight: 700; color: var(--navy-txt); }
 .og-seccion span { font-size: 11.5px; color: var(--text-muted); }
 .og-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 16px; margin-bottom: 26px; }
 
@@ -4430,9 +4436,9 @@ select.pl-input:focus {
 .og-un-jefe svg { color: var(--yellow); fill: var(--yellow); flex-shrink: 0; }
 .og-un-ft { display: flex; align-items: center; gap: 18px; padding: 12px 16px; }
 .og-un-stat { display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
-.og-un-stat b { font-size: 17px; font-weight: 800; color: var(--navy); }
+.og-un-stat b { font-size: 17px; font-weight: 800; color: var(--navy-txt); }
 .og-un-stat span { font-size: 10px; color: var(--text-muted); }
-.og-un-cta { margin-left: auto; background: var(--surface-hover); color: var(--navy); font-size: 9.5px; font-weight: 700; padding: 5px 9px; border-radius: 6px; white-space: nowrap; }
+.og-un-cta { margin-left: auto; background: var(--surface-hover); color: var(--navy-txt); font-size: 9.5px; font-weight: 700; padding: 5px 9px; border-radius: 6px; white-space: nowrap; }
 .og-un:hover .og-un-cta { background: var(--green-tint); }
 
 /* tarjeta de cargo */
@@ -4444,21 +4450,21 @@ select.pl-input:focus {
 .og-ico-staff { color: var(--og-staff-txt); }
 .og-ico-ext { color: #8b5cf6; }
 .og-cc-hd-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.og-cc-hd-txt strong { font-size: 13.5px; font-weight: 700; color: var(--navy); line-height: 1.25; }
+.og-cc-hd-txt strong { font-size: 13.5px; font-weight: 700; color: var(--navy-txt); line-height: 1.25; }
 .og-cc-hd-txt span { font-size: 11.5px; font-weight: 600; color: var(--text-muted); }
 .og-cc-reporta { display: flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 10.5px; color: var(--text-muted); }
-.og-cc-reporta strong { color: var(--navy); font-weight: 700; }
+.og-cc-reporta strong { color: var(--navy-txt); font-weight: 700; }
 .og-cc-sedes { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 8px; font-size: 10.5px; color: var(--text-muted); }
 .og-cc-sedes svg { flex-shrink: 0; }
 .og-cc-sedes span { background: var(--surface-hover); border-radius: 5px; padding: 2px 7px; font-weight: 600; }
 .og-cc-sep { height: 1px; background: var(--border); margin: 12px 0 10px; }
 .og-cc-label { font-size: 10.5px; color: var(--text-muted); margin-bottom: 7px; }
-.og-cc-persona { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 9px; background: var(--surface-hover); font-size: 12px; font-weight: 600; color: var(--navy); }
+.og-cc-persona { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 9px; background: var(--surface-hover); font-size: 12px; font-weight: 600; color: var(--navy-txt); }
 .og-cc-persona-vacia { justify-content: flex-start; background: var(--og-vacante-bg); border: 1px solid var(--yellow); color: var(--og-vacante-txt); font-weight: 700; }
 
 .og-cc-edit { position: absolute; top: 13px; right: 13px; display: flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 1px solid var(--border-soft); background: var(--surface-card); color: var(--icon-muted); border-radius: 8px; cursor: pointer; opacity: 0; transition: opacity .15s; }
 .og-cc:hover .og-cc-edit { opacity: 1; }
-.og-cc-edit:hover { border-color: var(--navy); color: var(--navy); }
+.og-cc-edit:hover { border-color: var(--navy); color: var(--navy-txt); }
 .og-cc-tag { position: absolute; top: -8px; right: 14px; background: var(--og-vacante); color: #fff; font-size: 8.5px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; padding: 2px 7px; border-radius: 5px; }
 /* Va después de las dos etiquetas que modifica —la del gráfico y la de las cards— porque
    pisa su color y con la misma especificidad gana la que se declara al final. */
@@ -4473,7 +4479,7 @@ select.pl-input:focus {
 
 .og-buscador-fila { display: flex; margin-bottom: 14px; }
 .og-buscador { display: flex; align-items: center; gap: 8px; width: 300px; margin-left: auto; padding: 8px 12px; background: var(--surface-card); border: 1px solid var(--border); border-radius: 10px; color: var(--icon-muted); }
-.og-buscador input { flex: 1; min-width: 0; border: none; background: none; outline: none; font-family: inherit; font-size: 12px; color: var(--navy); }
+.og-buscador input { flex: 1; min-width: 0; border: none; background: none; outline: none; font-family: inherit; font-size: 12px; color: var(--navy-txt); }
 .og-buscador input::placeholder { color: var(--text-muted); }
 .og-buscador button { display: flex; border: none; background: none; color: var(--icon-muted); cursor: pointer; }
 
@@ -4481,7 +4487,7 @@ select.pl-input:focus {
 .og-tabla { width: 100%; border-collapse: collapse; }
 .og-tabla th { text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); background: var(--table-head-bg); padding: 11px 16px; white-space: nowrap; }
 .og-th-acc { text-align: center; }
-.og-tabla td { padding: 9px 16px; font-size: 12px; color: var(--navy); border-top: 1px solid var(--border); vertical-align: middle; }
+.og-tabla td { padding: 9px 16px; font-size: 12px; color: var(--navy-txt); border-top: 1px solid var(--border); vertical-align: middle; }
 .og-tabla tbody tr:hover td { background: var(--surface-hover); }
 
 /* Banda de área. La unidad raíz va en navy y las áreas en un azul más claro para que
@@ -4495,14 +4501,16 @@ select.pl-input:focus {
 .og-grupo-in button { margin-left: auto; display: flex; align-items: center; gap: 3px; border: none; background: none; color: rgba(255,255,255,.75); font-size: 10.5px; font-weight: 600; font-family: inherit; cursor: pointer; }
 .og-grupo-in button:hover { color: #fff; }
 
-.og-tabla tbody tr.og-fila-top td { background: #ecfdf3; }
-.og-tabla tbody tr.og-fila-top:hover td { background: #dcfce7; }
+/* Por variable y no por hex: el verde claro escrito a mano no invertia, asi que en oscuro la
+   fila destacada quedaba con letras claras sobre un fondo casi blanco. */
+.og-tabla tbody tr.og-fila-top td { background: var(--green-tint); }
+.og-tabla tbody tr.og-fila-top:hover td { background: var(--green-bg); }
 .og-cargo-cel { display: flex; align-items: center; gap: 8px; }
 .og-sangria { width: 10px; height: 12px; margin-bottom: 5px; border-left: 1.5px solid var(--border-dark); border-bottom: 1.5px solid var(--border-dark); border-radius: 0 0 0 3px; flex-shrink: 0; }
-.og-cargo-nom { font-size: 12px; font-weight: 700; color: var(--navy); }
+.og-cargo-nom { font-size: 12px; font-weight: 700; color: var(--navy-txt); }
 .og-th-codigo, .og-td-codigo { width: 90px; white-space: nowrap; }
 .og-td-codigo { font-size: 11.5px; font-weight: 600; color: var(--text-muted); }
-.og-pertenece { display: inline-block; background: var(--surface-hover); color: var(--navy); font-size: 10.5px; font-weight: 600; padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
+.og-pertenece { display: inline-block; background: var(--surface-hover); color: var(--navy-txt); font-size: 10.5px; font-weight: 600; padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
 
 /* EL NIVEL DE MANDO, y en gris a propósito. En el organigrama el color ya está repartido y
    significa otra cosa —ámbar vacante, teal staff, violeta tercerizado, azul apoyo—, así que un
@@ -4536,13 +4544,14 @@ select.pl-input:focus {
 
 .og-tipo-staff { background: var(--og-staff-bg); color: var(--og-staff-txt); }
 .og-tipo-ext { background: var(--og-ext-bg); color: var(--og-ext-txt); }
-.og-tipo-colab { background: var(--surface-hover); color: #475569; }
+/* El gris del colaborador tambien era fijo y desaparecia sobre la superficie oscura. */
+.og-tipo-colab { background: var(--surface-hover); color: var(--text-body); }
 .og-td-persona { display: flex; align-items: center; gap: 8px; }
 .og-td-vacio { color: var(--text-muted); font-style: italic; }
 .og-reporta { color: var(--text-muted); font-size: 11.5px; }
 .og-td-acc { text-align: center; }
 .og-td-acc button { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 1px solid var(--border-soft); background: var(--surface-card); color: var(--icon-muted); border-radius: 8px; cursor: pointer; }
-.og-td-acc button:hover { border-color: var(--navy); color: var(--navy); }
+.og-td-acc button:hover { border-color: var(--navy); color: var(--navy-txt); }
 
 /* ---- modales ---- */
 
@@ -4552,7 +4561,7 @@ select.pl-input:focus {
 .og-modal-back { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(12,45,64,.45); }
 .og-modal { display: flex; flex-direction: column; width: 100%; max-width: 440px; max-height: 90vh; background: var(--surface-card); border-radius: 16px; box-shadow: 0 20px 50px rgba(12,45,64,.25); }
 .og-modal-hd { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); }
-.og-modal-hd h3 { margin: 0; font-size: 14px; font-weight: 700; color: var(--navy); }
+.og-modal-hd h3 { margin: 0; font-size: 14px; font-weight: 700; color: var(--navy-txt); }
 .og-modal-hd button { display: flex; border: none; background: none; color: var(--icon-muted); cursor: pointer; }
 .og-modal-body { display: flex; flex-direction: column; gap: 12px; padding: 16px 18px; overflow-y: auto; }
 .og-modal-nota { margin: 0; font-size: 11px; line-height: 1.5; color: var(--text-muted); }
@@ -4560,11 +4569,11 @@ select.pl-input:focus {
 /* Orden entre pares: dos flechas y el lugar que ocupa. No es un campo de texto —no se escribe
    un número— sino un empujón a la izquierda o a la derecha, que es como se piensa el gesto. */
 .og-orden { align-self: flex-start; display: inline-flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface-card); }
-.og-orden button { display: flex; align-items: center; justify-content: center; width: 28px; height: 26px; border: none; border-radius: 7px; background: none; color: var(--navy); cursor: pointer; }
+.og-orden button { display: flex; align-items: center; justify-content: center; width: 28px; height: 26px; border: none; border-radius: 7px; background: none; color: var(--navy-txt); cursor: pointer; }
 .og-orden button:hover:not(:disabled) { background: var(--surface-hover); }
 .og-orden button:disabled { color: var(--border-dark); cursor: default; }
 .og-orden-txt { min-width: 62px; text-align: center; font-size: 11px; color: var(--text-muted); }
-.og-orden-txt strong { color: var(--navy); font-weight: 700; }
+.og-orden-txt strong { color: var(--navy-txt); font-weight: 700; }
 
 /* ---- piezas rehechas tras un borrado accidental de esta hoja ---- */
 
@@ -4575,7 +4584,7 @@ select.pl-input:focus {
 }
 .og-pv-gente-nom {
   min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-size: 10px; font-weight: 700; color: var(--navy);
+  font-size: 10px; font-weight: 700; color: var(--navy-txt);
 }
 
 /* Qué tiene dentro un área, en la previa de su ficha. */
@@ -4585,13 +4594,13 @@ select.pl-input:focus {
   padding: 10px 8px; border: 1px solid var(--border); border-radius: 10px;
   background: var(--surface-card);
 }
-.og-vista-conteo b { font-size: 16px; font-weight: 800; color: var(--navy); }
+.og-vista-conteo b { font-size: 16px; font-weight: 800; color: var(--navy-txt); }
 .og-vista-conteo span { font-size: 9.5px; font-weight: 600; color: var(--text-muted); }
 
 /* El enlace chico dentro de la etiqueta de un campo. Es texto que se toca, no un botón. */
 .og-solo {
   border: none; background: none; padding: 0; font-family: inherit;
-  font-size: 10.5px; font-weight: 700; color: var(--navy);
+  font-size: 10.5px; font-weight: 700; color: var(--navy-txt);
   text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
 }
 .og-cargo-campos .og-solo { color: var(--text-heading); }
@@ -4640,14 +4649,14 @@ select.pl-input:focus {
    significado que el control no tiene. El verde no dice nada en el organigrama: acá solo dice
    "encendido". El tilde va oscuro porque el verde es brillante y el blanco encima se pierde. */
 .og-modos-sw.on .og-modos-caja {
-  background: var(--green); border-color: var(--green); color: var(--navy);
+  background: var(--green); border-color: var(--green); color: var(--navy-txt);
 }
 
 /* El "?" de cada campo y su globo. El globo va con `fixed` —lo posiciona el componente— para
    no recortarse contra el borde de la columna de campos, que scrollea, y por encima del modal
    (z-index 1000), que es lo único que puede haber debajo. */
 .og-ayuda { display: inline-flex; align-items: center; color: var(--icon-muted); cursor: help; }
-.og-ayuda:hover, .og-ayuda:focus-visible { color: var(--navy); outline: none; }
+.og-ayuda:hover, .og-ayuda:focus-visible { color: var(--navy-txt); outline: none; }
 .og-ayuda-globo {
   position: fixed; z-index: 1200; padding: 9px 11px; border-radius: 10px;
   background: var(--navy); color: #fff; font-size: 10.5px; font-weight: 500; line-height: 1.5;
@@ -4660,13 +4669,13 @@ select.pl-input:focus {
    código visual con el que se dibuja una relación que no es línea de mando. */
 .og-coord { border: 1px dashed var(--border-dark); border-radius: 10px; padding: 11px 12px; display: flex; flex-direction: column; gap: 7px; }
 .og-coord-count { margin-left: auto; font-size: 10px; font-weight: 700; color: var(--text-muted); background: var(--surface-hover); padding: 1px 7px; border-radius: 20px; }
-.og-coord-fila { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--navy); }
+.og-coord-fila { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--navy-txt); }
 .og-coord-cargo { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .og-coord-rol { font-size: 9.5px; font-weight: 800; padding: 2px 7px; border-radius: 20px; flex-shrink: 0; text-transform: uppercase; letter-spacing: .03em; }
 .og-coord-par { background: var(--surface-hover); color: var(--text-muted); }
 .og-coord-supervisor { background: var(--blue-bg); color: var(--blue); }
 .og-coord-supervisado { background: #fef3c7; color: #b45309; }
-.og-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--border-soft); background: var(--surface-card); color: var(--navy); font-size: 12px; font-weight: 700; font-family: inherit; padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+.og-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--border-soft); background: var(--surface-card); color: var(--navy-txt); font-size: 12px; font-weight: 700; font-family: inherit; padding: 8px 14px; border-radius: 8px; cursor: pointer; }
 .og-btn-ghost:hover { background: var(--surface-hover); }
 /* La baja va a la izquierda, separada de Cancelar/Guardar: es la acción que no se deshace. */
 
@@ -4763,13 +4772,13 @@ select.pl-input:focus {
 
 /* Organigrama sin dibujar */
 .og-vacio-caja { max-width: 520px; margin: 40px auto; padding: 32px 30px; text-align: center; background: var(--surface-card); border: 1px solid var(--border); border-radius: 16px; }
-.og-vacio-ico { display: inline-flex; align-items: center; justify-content: center; width: 62px; height: 62px; margin-bottom: 16px; border-radius: 18px; background: var(--green-tint); color: var(--navy); }
-.og-vacio-caja h2 { margin: 0 0 8px; font-size: 17px; font-weight: 800; color: var(--navy); }
+.og-vacio-ico { display: inline-flex; align-items: center; justify-content: center; width: 62px; height: 62px; margin-bottom: 16px; border-radius: 18px; background: var(--green-tint); color: var(--navy-txt); }
+.og-vacio-caja h2 { margin: 0 0 8px; font-size: 17px; font-weight: 800; color: var(--navy-txt); }
 .og-vacio-caja > p { margin: 0 0 22px; font-size: 12.5px; line-height: 1.6; color: var(--text-muted); }
 .og-vacio-sedes { margin-bottom: 22px; padding: 13px 15px; text-align: left; background: var(--surface-hover); border-radius: 12px; }
-.og-vacio-sedes-hd { display: flex; align-items: center; gap: 6px; margin-bottom: 9px; font-size: 11px; font-weight: 700; color: var(--navy); }
+.og-vacio-sedes-hd { display: flex; align-items: center; gap: 6px; margin-bottom: 9px; font-size: 11px; font-weight: 700; color: var(--navy-txt); }
 .og-vacio-sedes-lista { display: flex; flex-wrap: wrap; gap: 6px; }
-.og-vacio-sede { background: var(--surface-card); border: 1px solid var(--border); border-radius: 7px; padding: 4px 9px; font-size: 11px; font-weight: 600; color: var(--navy); }
+.og-vacio-sede { background: var(--surface-card); border: 1px solid var(--border); border-radius: 7px; padding: 4px 9px; font-size: 11px; font-weight: 600; color: var(--navy-txt); }
 .og-vacio-sede em { font-style: normal; color: var(--text-muted); }
 
 
@@ -4779,7 +4788,7 @@ select.pl-input:focus {
 .og-un-edit:hover { background: rgba(255,255,255,.24); }
 .og-sede-menu button.on { background: var(--green-tint); font-weight: 700; }
 .og-drop { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 26px 16px; border: 1.5px dashed var(--border-dark); border-radius: 12px; color: var(--icon-muted); cursor: pointer; }
-.og-drop strong { font-size: 12.5px; color: var(--navy); }
+.og-drop strong { font-size: 12.5px; color: var(--navy-txt); }
 .og-drop span { font-size: 11px; color: var(--text-muted); }
 .og-drop:hover { border-color: var(--navy); background: var(--surface-hover); }
 
