@@ -28,12 +28,14 @@ const ALTO_LISTA = 320
 const ALTO_MINIMO = 180
 /* Aire contra el borde de la ventana. */
 const MARGEN = 12
+/* Lo que mide la lista cuando el control que la abre es una píldora de la frase. */
+const ANCHO_HUECO = 300
 /* Cuánto sangra cada escalón. */
 const SANGRIA = 20
 
 export default function SelectorLista({
   valor, valores, onCambio, opciones, vacia, placeholder = 'Elegir…', multiple = false,
-  arbol = false,
+  arbol = false, comoHueco = false, vaciaN,
 }) {
   const [abierto, setAbierto] = useState(false)
   /* Dónde dibujar la lista, en coordenadas de ventana. Iba pegada al campo con `absolute`, y
@@ -61,9 +63,13 @@ export default function SelectorLista({
        quedaba con el valor del cálculo anterior —arriba y abajo a la vez— y entre dos bordes
        que se cruzan el navegador resuelve la altura en cero: la lista existía, medía 16 px y
        estaba fuera de la pantalla. Se veía como un campo que no abre. */
+    /* EL ANCHO DE LA LISTA NO ES EL DEL CONTROL cuando este es un hueco de la frase. En un
+       formulario el campo es ancho y la lista hereda bien; en la frase el control es una píldora
+       de 140 px, y con eso la lista cortaba todos los nombres: «Tecnolo…», «Marketi…». */
+    const ancho = comoHueco ? Math.min(ANCHO_HUECO, window.innerWidth - MARGEN * 2) : r.width
     setPos({
-      left: Math.max(MARGEN, Math.min(r.left, window.innerWidth - r.width - MARGEN)),
-      width: r.width,
+      left: Math.max(MARGEN, Math.min(r.left, window.innerWidth - ancho - MARGEN)),
+      width: ancho,
       maxHeight: Math.max(ALTO_MINIMO, Math.min(ALTO_LISTA, arriba ? encima : abajo)),
       top: arriba ? 'auto' : r.bottom + 6,
       bottom: arriba ? window.innerHeight - r.top + 6 : 'auto',
@@ -86,7 +92,7 @@ export default function SelectorLista({
 
   /* La opción vacía es una opción más —"sin jefe", "vacante"— y entra primera, que es donde
      la busca quien quiere dejar el campo en blanco. */
-  const todas = vacia ? [{ id: null, nombre: vacia, vacia: true }, ...opciones] : opciones
+  const todas = vacia ? [{ id: null, nombre: vacia, vacia: true, n: vaciaN }, ...opciones] : opciones
   const marcadas = multiple ? (valores || []) : []
   const estaMarcada = o => (multiple
     /* Con nada elegido, la que queda marcada es la fila vacía: "nadie asignado" también es
@@ -133,7 +139,11 @@ export default function SelectorLista({
 
   const fila = (o, { nivel = 0, camino = '' } = {}) => {
     const marcada = estaMarcada(o)
-    const detalle = camino || o.detalle
+    /* EL ÁREA MADRE SOLO CUANDO HACE FALTA. En el árbol la sangría ya dice de quién cuelga
+       cada una, así que repetir «Dirección General» debajo de cada hija era una línea gris que
+       pesaba más que el nombre al que acompañaba. Buscando sí se escribe: ahí la lista se
+       aplana y la sangría desaparece. */
+    const detalle = camino || (arbol && !camino ? null : o.detalle)
     return (
       <button
         key={o.id ?? '__vacia'}
@@ -162,6 +172,9 @@ export default function SelectorLista({
           <span className="og-sede-nom">{o.nombre}</span>
           {detalle && <em>{detalle}</em>}
         </span>
+        {/* Cuántos cargos hay ahí. Es lo que evita recortar por un área y encontrarse el dibujo
+            vacío, y es el mismo dato que ya muestran el menú de al lado y la leyenda. */}
+        {o.n != null && <span className="og-sede-n">{o.n}</span>}
       </button>
     )
   }
@@ -176,17 +189,22 @@ export default function SelectorLista({
     <div className="pl-dropdown-wrap" ref={caja}>
       <button
         type="button"
-        className={`pl-dropdown-trigger og-sedes-trigger${abierto ? ' open' : ''}`}
+        /* `comoHueco` lo disfraza de palabra subrayada dentro de una frase: es el mismo
+           desplegable —con su buscador y su árbol sangrado— pero sin marco ni fondo, para que se
+           lea como parte de una oración y no como un campo de formulario. */
+        className={comoHueco
+          ? `og-hueco${abierto ? ' on' : ''}`
+          : `pl-dropdown-trigger og-sedes-trigger${abierto ? ' open' : ''}`}
         onClick={() => {
           ubicar()
           setAbierto(a => !a)
         }}
         aria-expanded={abierto}
       >
-        <span className={`og-sedes-resumen${elegida?.vacia || !elegida ? ' og-selector-vacio' : ''}`}>
+        <span className={comoHueco ? undefined : `og-sedes-resumen${elegida?.vacia || !elegida ? ' og-selector-vacio' : ''}`}>
           {elegida ? elegida.nombre : placeholder}
         </span>
-        <ChevronDown size={14} className="pl-dropdown-chevron" />
+        <ChevronDown size={comoHueco ? 12 : 14} className={comoHueco ? 'og-hueco-flecha' : 'pl-dropdown-chevron'} />
       </button>
 
       {abierto && pos && (

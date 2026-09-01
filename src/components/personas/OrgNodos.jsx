@@ -1,5 +1,6 @@
-import { User, Star, Briefcase, ChevronUp, ChevronDown } from 'lucide-react'
+import { User, Star, Briefcase, ChevronUp, ChevronDown, Layers } from 'lucide-react'
 import Avatar from './Avatar'
+import { sucursales } from '../../data/organigramaData'
 import { MasEnNodo } from './MenuCrear'
 
 /* El dibujo del árbol: la tarjeta de un cargo, la píldora de una unidad y la rama que las
@@ -136,6 +137,15 @@ export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, halla
          que baja es solo esta tarjeta, porque su rama —si la tiene— cuelga del nodo entero. */
       ...(escalon ? { marginTop: escalon } : null),
     } : undefined}>
+    {/* LA COSTURA. Cuántos cargos quedaron en el medio cuando el filtro los sacó: el cuadro se
+        fue pero la línea de mando no se falsea, y se ve que hay algo escondido ahí. Solo aparece
+        con un filtro puesto —el número lo escribe la poda, no el dato— así que en el organigrama
+        sin filtrar no existe. */}
+    {cargo.ocultos > 0 && (
+      <span className="og-costura" title={`El filtro sacó ${cargo.ocultos} ${cargo.ocultos === 1 ? 'cargo' : 'cargos'} entre este puesto y su jefe`}>
+        {cargo.ocultos} oculto{cargo.ocultos === 1 ? '' : 's'}
+      </span>
+    )}
     <div
       className={clases.join(' ')}
       title={acomodo ? 'Doble clic para ver el detalle · arrastra para acomodarlo' : 'Doble clic para ver el detalle'}
@@ -284,7 +294,133 @@ const techoDe = hermanos => {
   return ordenes.length ? Math.min(...ordenes) : 0
 }
 
+/* ---------- Un cargo que es varios puestos ----------
+
+   UN SOLO CUADRO, como cualquier otro, que se abre y muestra sus puestos. Es el mismo gesto con
+   el que un cargo muestra a quién lo ocupa: el organigrama ya sabe decir «este cuadro tiene cosas
+   adentro» y la gente ya sabe abrirlo.
+
+   Antes eran N cuadros apilados con un riel al costado. Eso inventaba un idioma para este caso —y
+   encima crecía: cinco cargos de cinco puestos pasaban de cinco cuadros a veinticinco, y el dibujo
+   dejaba de mostrar la empresa para mostrar la planilla—. Cerrado, cada cargo vuelve a ocupar un
+   cuadro; el que quiere ver los cinco, abre.
+
+   EL AMARILLO SOLO SI NO HAY NADIE. Con tres de cuatro cubiertos, pintar el cuadro de vacante
+   sería falso: un grupo incompleto y un grupo vacío son dos noticias distintas. Lo que dice cuánto
+   falta es el renglón de la cuenta. */
+function Pila({ nodo, onAbrir, acomodo, desglose, hallado, atenuado, condenado }) {
+  const total = nodo.puestos.length
+  const cubiertos = nodo.puestos.filter(p => !p.vacante)
+  const porCubrir = total - cubiertos.length
+  /* Los nodos del árbol ya traen a la gente resuelta, no sus ids: es lo mismo que dibuja el
+     chip de un cuadro con una sola persona. */
+  const gente = cubiertos.flatMap(p => p.ocupantes).filter(Boolean)
+  const abierto = desglose?.abiertos.has(nodo.id)
+
+  const clases = ['og-card', 'og-card-grupo']
+  if (!cubiertos.length) clases.push('og-card-vacante')
+  if (acomodo?.enMano === nodo.id) clases.push('og-card-arrastrando')
+  if (nodo.puestos.some(p => hallado === p.cargo.id)) clases.push('og-card-hallado')
+  /* Apagado solo si TODOS lo están: con uno que coincide, el grupo sigue siendo parte de la
+     respuesta y apagarlo escondería justo lo que se buscaba. */
+  if (atenuado && nodo.puestos.every(p => atenuado(p.cargo))) clases.push('og-card-apagada')
+  if (condenado && nodo.puestos.some(p => condenado(p.cargo))) clases.push('og-card-condenada')
+
+  const corrido = acomodo?.corrimiento(nodo.id)
+  if (corrido) clases.push('og-card-corrido')
+
+  return (
+    <div className="og-nodo">
+      <div className="og-nodo-fila">
+        <div className="og-card-col" style={corrido ? { transform: `translate(${corrido.dx}px, ${corrido.dy}px)` } : undefined}>
+          <div
+            className={clases.join(' ')}
+            title={acomodo ? 'Doble clic para ver el detalle · arrastra para acomodarlo' : 'Doble clic para ver el detalle'}
+            data-no-pan={acomodo ? '' : undefined}
+            data-clave={acomodo ? nodo.id : undefined}
+            onPointerDown={acomodo ? e => acomodo.tomar(nodo.id, false, e) : undefined}
+            onDoubleClick={() => onAbrir?.(nodo.puestos[0])}
+          >
+            {!cubiertos.length && <span className="og-card-tag">Vacante</span>}
+            <div className="og-card-title">
+              <Layers size={11} className="og-card-ico" />
+              <span>{nodo.cargo.nombre}</span>
+            </div>
+
+            {/* EL RENGLÓN ES EL BOTÓN, igual que el chip de la persona: ya está donde está lo que
+                se quiere ver y no agrega otro control al cuadro. Las caras adelantan quiénes son
+                sin abrir; el número dice cuántos faltan, que es la única pregunta que el cuadro
+                cerrado no contesta solo. */}
+            <button
+              type="button"
+              className="og-grupo-chip"
+              onClick={e => { e.stopPropagation(); desglose?.alternar(nodo.id) }}
+              onDoubleClick={e => e.stopPropagation()}
+              onPointerDown={e => e.stopPropagation()}
+              title={abierto ? 'Ocultar los puestos' : `Ver los ${total} puestos`}
+            >
+              {gente.length > 0 && (
+                <span className="og-grupo-caras">
+                  {gente.slice(0, 2).map(p => <Avatar key={p.id} persona={p} size={16} clase="og-chip-av" />)}
+                </span>
+              )}
+              <span className="og-grupo-cuenta">
+                {total} puestos{porCubrir > 0 && <em> · {porCubrir} por cubrir</em>}
+              </span>
+              <ChevronDown size={11} className={`og-grupo-ch${abierto ? ' on' : ''}`} />
+            </button>
+          </div>
+
+          {/* Los puestos, por el mismo peine punteado con el que baja la gente de un cuadro. */}
+          {abierto && (
+            <div className="og-personas">
+              {nodo.puestos.map((p, i) => {
+                const quien = p.ocupantes[0]
+                const sede = sucursales.find(s => s.id === p.cargo.sucursalIds?.[0])
+                const donde = [p.cargo.codigo, sede?.ciudad].filter(Boolean).join(' · ')
+                return (
+                  <div
+                    key={p.cargo.id}
+                    className={`og-persona${quien ? '' : ' og-persona-libre'}`}
+                    title={`${p.cargo.codigo || `Puesto ${i + 1}`} · ${nodo.cargo.nombre}`}
+                    onDoubleClick={e => { e.stopPropagation(); onAbrir?.(p) }}
+                  >
+                    {quien
+                      ? <Avatar persona={quien} size={18} clase="og-chip-av" />
+                      : <span className="og-persona-n">{i + 1}</span>}
+                    <span className="og-persona-txt">
+                      <strong>{quien ? quien.name : (p.cargo.codigo || `Puesto ${i + 1}`)}</strong>
+                      <em>{quien ? (donde || nodo.cargo.nombre) : [sede?.ciudad || 'Toda la empresa', 'Vacante'].join(' · ')}</em>
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose, hallado, crear, atenuado, condenado, nivelJefe = 0, techo = 0 }) {
+  /* La pila entra por acá como cualquier hijo, pero no es un nodo del árbol: no tiene rama ni
+     escalón de mando que medir. Se dibuja y se sale. */
+  if (nodo.tipo === 'pila') {
+    return (
+      <li>
+        <Pila
+          nodo={nodo}
+          onAbrir={onAbrir}
+          acomodo={acomodo}
+          desglose={desglose}
+          hallado={hallado}
+          atenuado={atenuado}
+          condenado={condenado}
+        />
+      </li>
+    )
+  }
   const hijos = nodo.hijos || []
   const laterales = nodo.staff || []
   /* EL ESCALÓN MIDE CONTRA EL JEFE, no contra los hermanos de la fila. La pregunta que contesta

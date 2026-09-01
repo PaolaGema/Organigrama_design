@@ -115,6 +115,14 @@ export const cargos = [
   { id: 'analista-proc', nombre: 'Analista de Procesos', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: 8, sucursalIds: ['central'] },
   { id: 'asist-op', nombre: 'Asistente Operativo', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: null, sucursalIds: ['oru'] },
   { id: 'limpieza-ext', nombre: 'Servicio de Limpieza', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: null, tipo: 'outsourcing', sucursalIds: [] },
+  /* CINCO PUESTOS INTERCAMBIABLES: mismo nombre, misma área, mismo jefe y ninguno con gente
+     debajo. Es el caso que se apila. Tres están en Santa Cruz y dos en La Paz, para que se vea
+     cuándo la sede pasa a ser lo que los distingue. */
+  { id: 'ec-1', nombre: 'Ejecutivo Comercial', codigo: 'EC-001', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['central'] },
+  { id: 'ec-2', nombre: 'Ejecutivo Comercial', codigo: 'EC-002', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['central'] },
+  { id: 'ec-3', nombre: 'Ejecutivo Comercial', codigo: 'EC-003', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['central'] },
+  { id: 'ec-4', nombre: 'Ejecutivo Comercial', codigo: 'EC-004', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['lpz'] },
+  { id: 'ec-5', nombre: 'Ejecutivo Comercial', codigo: 'EC-005', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['lpz'] },
 
   { id: 'tesorero', nombre: 'Tesorero', unidadId: 'finanzas', reportaA: 'gg', ocupanteId: 23, grado: 'medio', sucursalIds: ['central'] },
   { id: 'contador', nombre: 'Contador General', unidadId: 'finanzas', reportaA: 'tesorero', ocupanteId: 10, sucursalIds: ['central'] },
@@ -576,8 +584,185 @@ function juntarCabeza(nodos) {
     .map(n => (n === tronco ? { ...n, pares } : n))
 }
 
+/* PODAR CON COSTURA. El filtro saca el cuadro del dibujo —que es lo que uno espera de un
+   filtro— sin partir la línea de mando.
+
+   Antes estos tres recortes solo APAGABAN el cuadro en el gráfico, porque sacarlo dejaba a sus
+   subordinados colgando de la nada. El precio era un organigrama de veintiséis cuadros grises
+   alrededor de ocho encendidos, que no es un dibujo filtrado sino un dibujo con ruido. Y encima
+   el contador mentía: decía "8 a la vista" con 34 dibujados.
+
+   La salida no es reenganchar al huérfano con su abuelo y callarse —eso dibuja una línea de
+   mando que no existe— sino reengancharlo Y DEJAR LA MARCA de cuántos quedaron en el medio.
+   `ocultos` es ese número; el dibujo lo convierte en una marquita sobre la línea. El cuadro se
+   fue, la jerarquía no se falseó, y se ve que hay algo escondido ahí.
+
+   Se poda por LÍNEA DE MANDO y no por área: quien cuelga de un cargo que no pasó el filtro sube
+   por `reportaA`, esté donde esté su unidad. */
+export function podarConCostura(org, pasa) {
+  const vive = new Map()
+  for (const c of org.cargos) vive.set(c.id, pasa(c))
+
+  const porId = new Map(org.cargos.map(c => [c.id, c]))
+
+  /* El primer ancestro que sí pasó, contando los que se saltaron por el camino. `vueltas` corta
+     un dato con ciclo: sin eso, un cargo que termina reportando a su propio subordinado colgaría
+     el navegador en vez de dibujarse mal. */
+  const arriba = cargo => {
+    let actual = cargo.reportaA
+    let ocultos = 0
+    let vueltas = 0
+    while (actual && vueltas++ < org.cargos.length) {
+      if (vive.get(actual)) return { reportaA: actual, ocultos }
+      const padre = porId.get(actual)
+      if (!padre) break
+      ocultos++
+      actual = padre.reportaA
+    }
+    return { reportaA: null, ocultos }
+  }
+
+  return {
+    ...org,
+    cargos: org.cargos.filter(c => vive.get(c.id)).map(c => {
+      const { reportaA, ocultos } = arriba(c)
+      return ocultos > 0 ? { ...c, reportaA, ocultos } : { ...c, reportaA }
+    }),
+  }
+}
+
+/* APILAR LOS PUESTOS INTERCAMBIABLES.
+
+   Cincuenta vendedores y tres jefes regionales no son el mismo caso, aunque los dos sean «varios
+   cuadros con el mismo nombre». Los vendedores son SILLAS INTERCAMBIABLES —ninguno manda sobre
+   nadie y lo único que los distingue es el código y la sede—, así que se apilan y el árbol no se
+   estira a lo ancho. Los tres jefes son la cabeza de tres operaciones distintas: cada uno tiene
+   gente debajo y necesita su propia rama.
+
+   De ahí la regla, y es una sola: SE APILA LO QUE NO TIENE A NADIE DEBAJO. Un cuadro apilado no
+   podría abrir su rama sin empujar a los de abajo o cruzarles la línea por encima, así que en
+   cuanto uno tiene equipo el grupo entero vuelve a dibujarse como ramas.
+
+   Se agrupa por nombre + área + clase, que es lo que hace que dos puestos sean el mismo puesto
+   repetido. El jefe no hace falta compararlo: ya son hermanos, cuelgan del mismo. */
+
+const apilable = n => n.tipo === 'cargo'
+  && !n.funcional
+  && !(n.hijos || []).length
+  && !(n.staff || []).length
+  && !(n.pares || []).length
+
+const claveDePila = n => `${n.cargo.nombre}|${n.cargo.unidadId}|${n.cargo.tipo || 'colaborador'}`
+
+function apilarHermanos(nodos) {
+  if (!nodos || nodos.length < 2) return nodos
+
+  /* Cuántos hay de cada clave, mirando SOLO los apilables: si uno de los cinco tiene equipo, ese
+     no entra en la cuenta y los otros cuatro igual se apilan. Con el grupo entero convertido en
+     ramas —que era la otra opción— cuarenta y nueve vendedores pagaban por uno. */
+  const cuenta = new Map()
+  for (const n of nodos) {
+    if (!apilable(n)) continue
+    const k = claveDePila(n)
+    cuenta.set(k, (cuenta.get(k) || 0) + 1)
+  }
+
+  const salida = []
+  const pilas = new Map()
+  for (const n of nodos) {
+    const k = apilable(n) ? claveDePila(n) : null
+    if (!k || cuenta.get(k) < 2) { salida.push(n); continue }
+    let pila = pilas.get(k)
+    if (!pila) {
+      /* La pila ocupa el lugar del PRIMERO del grupo: el orden de la fila lo sigue decidiendo el
+         árbol, no la agrupación. */
+      pila = {
+        tipo: 'pila',
+        id: `pila-${n.cargo.unidadId}-${n.cargo.id}`,
+        cargo: n.cargo,
+        puestos: [],
+        hijos: [],
+        staff: [],
+      }
+      pilas.set(k, pila)
+      salida.push(pila)
+    }
+    pila.puestos.push(n)
+  }
+
+  /* Primero los cubiertos y después los vacantes, cada grupo por código. Sin esto el orden lo
+     decide el azar de la creación y una vacante en el medio parte visualmente el equipo. */
+  for (const pila of pilas.values()) {
+    pila.puestos.sort((a, b) => {
+      if (a.vacante !== b.vacante) return a.vacante ? 1 : -1
+      return (a.cargo.codigo || '').localeCompare(b.cargo.codigo || '')
+    })
+    /* Hasta ocho nace abierta; de ahí para arriba, plegada. Cincuenta cajitas abiertas de entrada
+       hacen el árbol impracticable, y el gesto para abrirla es el mismo que ya pliega ramas. */
+  }
+  return salida
+}
+
+/* Se aplica de una sola vez sobre el árbol ya armado, y no en cada sitio que crea hermanos: los
+   hijos de un cuadro, los de una píldora y las raíces se arman en tres lugares distintos, y
+   agrupar en los tres era garantizar que el cuarto se olvidara. */
+function apilarArbol(nodo) {
+  if (!nodo || typeof nodo !== 'object') return nodo
+  if (nodo.hijos?.length) {
+    nodo.hijos = apilarHermanos(nodo.hijos)
+    for (const h of nodo.hijos) {
+      if (h.tipo === 'pila') continue
+      apilarArbol(h)
+    }
+  }
+  for (const l of nodo.staff || []) apilarArbol(l)
+  return nodo
+}
+
 export function buildOrgTree(modo = 'completo', org = orgSeed, opciones = {}) {
-  const { funcionales: conFuncionales = true, vacias: conVacias = true } = opciones
+  /*  tiene TRES posiciones y no dos: sin los prestados, con los prestados, o solo
+     los prestados. Son las tres respuestas posibles a «¿qué hago con los apoyos?», y por eso van
+     en un mismo control en vez de repartirse entre un modo y un interruptor. Se acepta el
+     booleano de antes para no romper a quien todavía pase true/false. */
+  /* El interruptor de funcionales tiene TRES posiciones y no dos: sin los prestados, con los
+     prestados, o solo los prestados. Son las tres respuestas posibles a la misma pregunta, y por
+     eso van en un mismo control en vez de repartirse entre un modo y un interruptor. Se sigue
+     aceptando el booleano de antes para no romper a quien todavía pase true o false. */
+  const { funcionales = 'con', vacias: conVacias = true } = opciones
+  const modoFunc = funcionales === true ? 'con' : funcionales === false ? 'sin' : funcionales
+  /* SOLO LOS PRESTADOS. Es la tercera posición del interruptor de funcionales y no un cuarto modo
+     de dibujo: contesta la misma pregunta que las otras dos —qué hago con los apoyos— pero con la
+     respuesta extrema.
+
+     Acá el dibujo deja de ser un árbol de MANDO y pasa a ser un mapa de COLABORACIÓN: cada área con
+     los puestos que recibe prestados de otras. Por eso no se dibuja ni un cargo propio ni una sola
+     línea de jefatura —un préstamo no es una jerarquía— y el cuadro cuelga de la píldora del área
+     que lo recibe.
+
+     Y las áreas que no reciben a nadie no se dibujan. Es la misma regla que ya vale al filtrar por
+     sede: si acá no hay nada que mostrar, el área no está. Sin esto quedarían siete píldoras vacías
+     y una con un cuadro. */
+  if (modoFunc === 'solo') {
+    const conApoyo = u => {
+      /* TODOS los apoyos del área, no solo los que cuelgan de su píldora. Un apoyo que declaró
+         jefe funcional cuelga de esa persona en el organigrama completo —y acá no hay personas—,
+         así que usando solo los «sin jefe» el mapa salía vacío justo en las áreas donde el
+         préstamo está mejor declarado. */
+      const apoyos = apoyosDeUnidad(u.id, org).map(a => nodoApoyo(a.cargo, u.id, org))
+      const nodo = nodoUnidad(u, org, undefined, false)
+      const hijas = org.unidades.filter(x => x.padreId === u.id).map(conApoyo).filter(Boolean)
+      /* Una madre sin apoyos propios se queda SI alguna hija recibe: es el eslabón que hace falta
+         para llegar hasta ella, igual que la cadena de áreas del organigrama completo. */
+      if (!apoyos.length && !hijas.length) return null
+      return { ...nodo, sinCargos: true, hijos: [...apoyos, ...hijas] }
+    }
+    return {
+      tipo: 'empresa', id: 'empresa', empresa, staff: [],
+      hijos: org.unidades.filter(u => u.padreId === null).map(conApoyo).filter(Boolean),
+    }
+  }
+
+  const conFuncionales = modoFunc === 'con'
   if (modo === 'unidades') {
     /* SIN APOYOS, aunque el interruptor esté encendido. Esta vista es la estructura de áreas y
        nada más: no dibuja un solo cargo, así que un cuadro de apoyo sería el único cargo del
@@ -588,7 +773,7 @@ export function buildOrgTree(modo = 'completo', org = orgSeed, opciones = {}) {
       ...nodoUnidad(u, org, undefined, false),
       hijos: org.unidades.filter(x => x.padreId === u.id).map(rama),
     })
-    return { tipo: 'empresa', id: 'empresa', empresa, staff: [], hijos: org.unidades.filter(u => u.padreId === null).map(rama) }
+    return apilarArbol({ tipo: 'empresa', id: 'empresa', empresa, staff: [], hijos: org.unidades.filter(u => u.padreId === null).map(rama) })
   }
 
   /* RAÍCES, en plural. Antes se tomaba solo la primera y cualquier otro cargo sin jefe —con
@@ -605,7 +790,7 @@ export function buildOrgTree(modo = 'completo', org = orgSeed, opciones = {}) {
   /* "Ver por cargos" es solo la línea de mando: ahí no se dibuja ninguna unidad, ni siquiera
      las que todavía no tienen a nadie. */
   if (modo !== 'completo') {
-    return { tipo: 'empresa', id: 'empresa', empresa, staff: [], hijos: nodos }
+    return apilarArbol({ tipo: 'empresa', id: 'empresa', empresa, staff: [], hijos: nodos })
   }
 
   /* En "completo" cada raíz entra envuelta en la píldora de su unidad, igual que cualquier
@@ -623,13 +808,65 @@ export function buildOrgTree(modo = 'completo', org = orgSeed, opciones = {}) {
     grupo.hijos.push(nodo)
   }
   for (const grupo of porUnidad.values()) grupo.hijos.push(...grupo.apoyos)
+  /* Antes de que ninguna se plante en la raíz: la que tiene área madre se anida adentro. */
+  const cimas = anidarPorArea(grupos, org, conFuncionales)
   /* Las áreas sin cargos se rescatan solo cuando se está mirando la empresa entera. Ese
      rescate existe para el organigrama que recién se empieza —un área creada todavía sin
      puestos tiene que verse para poder llenarla—, pero al filtrar por sede significaba otra
      cosa: dibujaba "Finanzas" en El Alto, donde Finanzas no tiene un solo puesto. Un filtro
      contesta qué hay ACÁ, y un área sin cargos acá no está. */
-  const hijos = conVacias ? colgarUnidadesVacias(grupos, org, conFuncionales) : grupos
-  return { tipo: 'empresa', id: 'empresa', empresa, staff: [], hijos }
+  const hijos = conVacias ? colgarUnidadesVacias(cimas, org, conFuncionales) : cimas
+  return apilarArbol({ tipo: 'empresa', id: 'empresa', empresa, staff: [], hijos })
+}
+
+/* CADA PÍLDORA DENTRO DE LA DE SU ÁREA MADRE, TAMBIÉN EN LA RAÍZ.
+
+   El árbol se arma desde los CARGOS: se buscan los que no tienen jefe y esos son las raíces. Cada
+   raíz se envuelve en la píldora de su área, y hasta acá todo bien mientras haya jefes encadenados
+   —la cadena de áreas se abre siguiendo la línea de mando—.
+
+   El problema aparece con un área VACÍA en el medio. Creando «Directorio» bajo la empresa y
+   «Gerencia General» dentro de Directorio: el Gerente General no tiene jefe, así que su píldora
+   llegaba a la raíz; y Directorio, sin un solo cargo, no tenía nada que la arrastrara al dibujo, así
+   que la recogía el rescate de áreas vacías y la dejaba también colgando de la empresa. Las dos
+   terminaban hermanas. El dato estaba bien —Gerencia General declara a Directorio como madre— y el
+   dibujo decía otra cosa.
+
+   La causa de fondo: al armar las raíces se miraba de quién depende cada CARGO y nunca de qué área
+   depende cada ÁREA. Acá se mira. Una píldora que iba a plantarse en la raíz pregunta primero si su
+   área tiene madre, y si la tiene se anida adentro —creando la píldora de la madre si no existe,
+   que es justo lo que un área sin cargos necesita—.
+
+   `vistas` corta un `padreId` con ciclo: sin eso, dos áreas declaradas madres una de la otra se
+   llamarían para siempre. */
+function anidarPorArea(grupos, org, conFuncionales) {
+  const dibujadas = new Map()
+  for (const g of grupos) if (g.unidad && !dibujadas.has(g.unidad.id)) dibujadas.set(g.unidad.id, g)
+
+  const raices = []
+  const vistas = new Set()
+
+  const pildoraDe = u => {
+    if (dibujadas.has(u.id)) return dibujadas.get(u.id)
+    /* La madre que no tiene cargos se dibuja igual, vacía: es lo que un Directorio sin puestos
+       es, y sin ella la cadena no se puede mostrar. */
+    const nodo = { ...nodoUnidad(u, org, `u-madre-${u.id}`, conFuncionales), sinCargos: true }
+    nodo.hijos.push(...nodo.apoyos)
+    dibujadas.set(u.id, nodo)
+    colocar(nodo, u)
+    return nodo
+  }
+
+  const colocar = (nodo, u) => {
+    if (!u || vistas.has(u.id)) { raices.push(nodo); return }
+    vistas.add(u.id)
+    const madre = u.padreId ? getUnidad(u.padreId, org) : null
+    if (madre) pildoraDe(madre).hijos.push(nodo)
+    else raices.push(nodo)
+  }
+
+  for (const g of grupos) colocar(g, g.unidad)
+  return raices
 }
 
 /* Una unidad sin ningún cargo no tiene de dónde colgarse en un árbol que se arma desde los
@@ -892,18 +1129,6 @@ export function coincideCargo(cargo, { tipos = [], estado = 'todos', grados = []
   return true
 }
 
-/* Cuántos recortes están puestos. Sirve para el número del botón y para saber si hace falta
-   dibujar la fila de fichas: sin recortes no hay nada que mostrar ni que limpiar. */
-export function recortesActivos({ sedeId, unidadId, tipos = [], estado = 'todos', grados = [] } = {}) {
-  let n = 0
-  if (sedeId && sedeId !== TODAS_SUCURSALES) n++
-  if (unidadId && unidadId !== TODAS_UNIDADES) n++
-  n += tipos.length
-  n += grados.length
-  if (estado !== 'todos') n++
-  return n
-}
-
 export const sucursalesDe = (cargo, org = orgSeed) => {
   const ids = cargo.sucursalIds || []
   return sucursales.filter(s => ids.includes(s.id))
@@ -1068,49 +1293,6 @@ export function descendientesDe(cargoId, org) {
   return dentro
 }
 
-/* Los pares de un cargo: los que se dibujan en su misma fila. Se pregunta por la lateralidad
-   y no por el tipo porque el árbol dibuja dos filas distintas —la línea de mando abajo, los
-   laterales al costado— y mover un staff entre los reportes de su jefe no lo movería de lugar
-   en el dibujo. Salen en el orden en que se dibujan, que es el de la lista de cargos. */
-/* Y LA MISMA ÁREA, que no es lo mismo que el mismo jefe. Un gerente de Ventas y un CTO de
-   Dirección General pueden reportarle los dos al CEO y no compartir fila: el árbol envuelve a
-   cada hijo de otra área en la píldora de esa área, así que se dibujan a distinto nivel y en
-   ramas distintas. Contándolos juntos, el campo "Orden entre sus pares" decía "3.º de 6"
-   mientras en la fila había dos, y las flechas movían el cuadro contra vecinos que no eran. */
-export function paresDe(cargo, org) {
-  if (!cargo) return []
-  const lateral = esLateral(cargo)
-  return org.cargos.filter(c => (
-    c.reportaA === cargo.reportaA
-    && esLateral(c) === lateral
-    && c.unidadId === cargo.unidadId
-  ))
-}
-
-/* Mover un cargo entre sus pares. El orden del dibujo ES el orden de la lista de cargos, así
-   que no hace falta un campo nuevo: se reordena la lista. Los pares vuelven a los mismos
-   lugares que ocupaban —solo cambia cuál va en cada uno— para no alterar la posición de nadie
-   más ni el orden en que se leen las otras ramas.
-
-   Y sí cambia el dibujo de verdad: entre los laterales, el orden decide de qué lado del jefe
-   cae cada uno; entre los reportes, quién queda a la izquierda. */
-export function moverEntrePares(cargoId, nuevaPos, org) {
-  const cargo = org.cargos.find(c => c.id === cargoId)
-  const pares = paresDe(cargo, org)
-  const actual = pares.findIndex(c => c.id === cargoId)
-  const destino = Math.max(0, Math.min(pares.length - 1, nuevaPos))
-  if (actual < 0 || actual === destino) return org
-
-  const orden = pares.filter(c => c.id !== cargoId)
-  orden.splice(destino, 0, cargo)
-
-  const huecos = []
-  org.cargos.forEach((c, i) => { if (pares.some(p => p.id === c.id)) huecos.push(i) })
-  const cargos = [...org.cargos]
-  huecos.forEach((hueco, i) => { cargos[hueco] = orden[i] })
-  return { ...org, cargos }
-}
-
 /* Al borrar un cargo sus subordinados suben un escalón y quedan colgando del jefe que
    tenía el borrado, en vez de desaparecer del árbol. */
 /* LA RAMA DE UN CARGO: él y todo lo que cuelga de él, por línea de mando. Es la unidad natural
@@ -1132,6 +1314,38 @@ export function ramaDe(cargoId, org) {
   }
   bajar(cargoId)
   return ids
+}
+
+/* LA SERIE DE CÓDIGOS. Crear cinco puestos de una vez pide cinco códigos, y escribirlos a mano es
+   justo el trabajo que el «cuántos» vino a evitar.
+
+   Se numera desde el código base: «EC-001» da EC-002, EC-003…; «EC» solo da EC-001, EC-002…; y sin
+   base no se inventa nada —quedan vacíos— porque un código que el sistema se sacó de la manga no
+   sirve para lo único que sirve un código: coincidir con la planilla de RRHH.
+
+   El ancho se conserva: si el base tiene tres dígitos, los siguientes también. Un EC-009 seguido de
+   un EC-10 rompe el orden alfabético, que es con el que se ordenan las pilas y las listas. */
+export function codigosDeSerie(base, cuantos, org = orgSeed) {
+  const limpio = (base || '').trim()
+  if (!limpio) return Array.from({ length: cuantos }, () => '')
+
+  const m = limpio.match(/^(.*?)(\d+)$/)
+  const raiz = m ? m[1] : `${limpio}-`
+  const desde = m ? Number(m[2]) : 1
+  const ancho = m ? m[2].length : 3
+
+  /* Se saltan los que ya existen: agregar un sexto a un cargo que llega hasta EC-005 tiene que
+     dar EC-006 y no chocar con uno guardado. */
+  const usados = new Set(org.cargos.map(c => c.codigo).filter(Boolean))
+  const salida = []
+  let n = desde
+  while (salida.length < cuantos) {
+    const cod = raiz + String(n).padStart(ancho, '0')
+    if (!usados.has(cod) || (salida.length === 0 && cod === limpio)) salida.push(cod)
+    n++
+    if (n > desde + cuantos + 999) break
+  }
+  return salida
 }
 
 export function eliminarCargo(cargoId, org) {

@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { User, Users, Briefcase, MapPin, CornerDownRight, Building2 } from 'lucide-react'
+import { User, Users, Briefcase, MapPin, CornerDownRight, Building2, Layers, Share2, Trash2 } from 'lucide-react'
 import { sucursales, getUnidad, tipoDe, ocupantesDe, getPersona } from '../../data/organigramaData'
 import Avatar from './Avatar'
 import { Desglosadas } from './OrgNodos'
@@ -54,7 +54,9 @@ export function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, ma
   )
 }
 
-export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
+export default function PreviaPuesto({
+  form, org, cargoId, ocupantes, nuevo, conCodigos = true, sel = null, onSel, onBorrar,
+}) {
   const jefe = form.reportaA ? org.cargos.find(c => c.id === form.reportaA) : null
   /* Solo el staff va al costado. El outsourcing baja en la línea como cualquier reporte, así
      que acá también: la previa tiene que dibujar lo mismo que el árbol o promete un lugar que
@@ -81,9 +83,9 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
     : org.cargos.filter(c => !c.reportaA)
   ).filter(c => c.id !== cargoId && c.tipo !== 'staff' && c.tipo !== 'outsourcing' && c.unidadId === form.unidadId)
 
-  /* Dónde cae este puesto dentro de la fila. Sin posición declarada —un cargo nuevo— va al
-     final, que es donde lo va a poner la lista. */
-  const lugar = form.posicion >= 0 ? form.posicion : hermanos.length
+  /* Al final de la fila, que es donde lo pone la lista. El campo para reordenarlo se sacó del
+     formulario: el orden entre iguales no es un dato del puesto, es cómo quedó dibujado. */
+  const lugar = hermanos.length
   const visibles = hermanos.slice(0, MAX_HERMANOS)
   const resto = hermanos.length - visibles.length
   const aCargo = cargoId ? org.cargos.filter(c => c.reportaA === cargoId).length : 0
@@ -101,8 +103,83 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
   /* Un puesto pertenece a UNA sede; sin ninguna, no está atado a ninguna sucursal. Es la misma
      regla que dice el formulario, y el pie tiene que decir lo mismo que el campo. */
   const sede = sucursales.find(s => s.id === form.sucursalIds[0]) || null
+  /* La ciudad de un puesto de la bandeja: es lo único que los distingue cuando comparten nombre. */
+  const sedeDe = p => sucursales.find(s => s.id === p.sucursalIds?.[0])?.ciudad || null
 
-  const foco = (
+  /* CON VARIOS PUESTOS, EL PANEL DEJA DE SER UNA ESTAMPA Y SE VUELVE EL MENÚ.
+
+     Antes dibujaba la pila y ya; los campos de cada puesto vivían en fichas plegables del
+     formulario, así que había dos listas de lo mismo —los cuadros acá y las fichas allá— que
+     podían desincronizarse. Ahora hay una sola: el cuadro que se toca es el puesto que se edita.
+
+     El CARGO va arriba y sus puestos cuelgan del peine, igual que en el dibujo grande. No se
+     dibuja como un cuadro más porque no lo es —los puestos cuelgan del jefe, no de él—: va como
+     el rótulo de la rama, más ancho y con su cuenta.
+
+     El peine, y no una cadena: encadenados uno debajo de otro el dibujo diría que el segundo le
+     reporta al primero, que es exactamente lo contrario. */
+  const varios = (form.puestos || []).length > 1
+  const foco = varios ? (
+    <div className="og-pv-grupo">
+      <button
+        type="button"
+        className={`og-pv-cargo${sel === 'cargo' ? ' on' : ''}`}
+        onClick={() => onSel?.('cargo')}
+      >
+        <Layers size={13} />
+        <span className="og-pv-cargo-txt">
+          <strong>{form.nombre.trim() || 'Sin nombre todavía'}</strong>
+          <em>{form.puestos.length} puestos · {area || 'Sin área'}</em>
+        </span>
+      </button>
+
+      <div className="og-pv-peine">
+        {form.puestos.map((p, i) => {
+          const gente = (p.ocupantes || []).map(getPersona).filter(Boolean)
+          return (
+            <div
+              key={p.id ?? i}
+              className={`og-pv-pz${sel === i ? ' on' : ''}${nuevo ? ' nuevo' : ''}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => onSel?.(i)}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSel?.(i) } }}
+            >
+              <span className="og-pv-pz-n">{i + 1}</span>
+              <span className="og-pv-pz-txt">
+                <span className="og-pv-pz-nom">{form.nombre.trim() || 'Sin nombre todavía'}</span>
+                {/* QUIÉN LO OCUPA, A LA VISTA. Es la protección más barata que hay: se ve que hay
+                    alguien adentro antes de que la mano llegue al tacho, y no después. */}
+                <span className="og-pv-pz-sub">
+                  {[conCodigos && p.codigo, sedeDe(p)].filter(Boolean).join(' · ')}
+                  {gente.length ? (
+                    <>
+                      {' · '}
+                      <Avatar persona={gente[0]} size={13} clase="og-chip-av" />
+                      {gente[0].name}
+                    </>
+                  ) : <em className="og-pv-pz-vac"> · Vacante</em>}
+                </span>
+              </span>
+              {(p.funcionales || []).length > 0 && (
+                <span className="og-pv-pz-ap"><Share2 size={10} />{p.funcionales.length}</span>
+              )}
+              {onBorrar && (
+                <button
+                  type="button"
+                  className="og-pv-pz-x"
+                  title={`${nuevo ? 'Quitar' : 'Eliminar'} este puesto`}
+                  onClick={e => { e.stopPropagation(); onBorrar(i) }}
+                >
+                  <Trash2 size={12} />
+                </button>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  ) : (
     <>
     <MiniCargo
       foco

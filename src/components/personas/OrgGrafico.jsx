@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Plus, Minus, Home, Maximize2, X, Wand2, Check, Search } from 'lucide-react'
+import { createPortal } from 'react-dom'
+import { Plus, Minus, Home, Maximize2, X, Wand2, Check, Search, Network, Users, Building2, Layers } from 'lucide-react'
 import { Rama } from './OrgNodos'
 import { buscarCargos } from '../../data/organigramaData'
+import { useLocalStorage } from '../../hooks/useLocalStorage'
 import { usePliegue, useDesglose } from './vistaArbol'
 import { useLienzo, ZOOM_MIN, ZOOM_MAX } from './useLienzo'
 
@@ -70,9 +72,25 @@ function alCostado(padre, lateral, aLaIzquierda) {
   return `M ${x1} ${padre.y + padre.h} L ${x1} ${y - r} Q ${x1} ${y} ${x1 + r * hacia} ${y} L ${x2} ${y}`
 }
 
+/* Los tres modos del dibujo. La etiqueta va en minúscula porque también se lee dentro de una
+   frase en la barra de arriba —«dibujando áreas y cargos»— y una mayúscula ahí canta. */
+const MODOS = [
+  { key: 'completo', label: 'áreas y cargos', Icon: Network },
+  { key: 'cargos', label: 'solo los cargos', Icon: Users },
+  { key: 'unidades', label: 'solo las áreas', Icon: Building2 },
+]
+
+/* Las tres posiciones del interruptor de apoyos. El rótulo va en una palabra porque se lee como
+   continuación del rótulo de al lado: «Funcionales: sin / con / solo». */
+const APOYOS = [
+  { key: 'sin', label: 'sin', ayuda: 'Solo los puestos que pertenecen a cada área' },
+  { key: 'con', label: 'con', ayuda: 'Los propios más los que vienen prestados de otras áreas' },
+  { key: 'solo', label: 'solo', ayuda: 'Únicamente los préstamos: el mapa de quién presta gente a quién' },
+]
+
 export default function OrgGrafico({
   tree, org, onAbrirCargo, onAbrirUnidad, crear, desplazamientos, onMover, onAcomodar,
-  atenuado, condenado,
+  atenuado, condenado, vista, ranuraBuscador,
 }) {
   const { canvasRef, stageRef, zoom, setZoom, arrastrando, empezarArrastre, ajustar, centrar, estiloStage } =
     useLienzo({ tree, ignorarPan: '[data-no-pan]' })
@@ -82,6 +100,10 @@ export default function OrgGrafico({
   /* El recuadro de ayuda se cierra y queda como burbuja. Se recuerda entre sesiones porque a
      la tercera vez que uno lo lee ya no lo necesita, y volver a cerrarlo cada vez que entra a
      la pantalla lo convierte en un estorbo con instrucciones. */
+
+  /* Abierto o cerrado, recordado entre sesiones: quien ya se sabe los colores no quiere volver a
+     cerrar el panel cada vez que entra a la pantalla. */
+  const [abierto, setAbierto] = useLocalStorage('organigramaDibujo', true)
 
   /* La búsqueda del lienzo. `hallado` es el cargo al que se acaba de saltar: se destaca un
      momento y se apaga solo, porque una marca permanente en un dibujo que se mira mucho tiempo
@@ -303,6 +325,52 @@ export default function OrgGrafico({
     ? { w: stageRef.current.offsetWidth, h: stageRef.current.offsetHeight }
     : { w: 0, h: 0 }
 
+  /* EL BUSCADOR SE MUDÓ A LA BARRA DE ARRIBA, junto a la frase de filtros: son la misma
+     familia —las dos formas de acotar lo que estás mirando— y flotando sobre el dibujo tapaba
+     una esquina del organigrama para siempre. Se dibuja donde la página deje la ranura; si no
+     hay ranura —o si algún día se usa el lienzo suelto— vuelve a flotar en su rincón. */
+  const buscador = (
+        <div className="og-buscar" ref={cajaBusca}>
+          <div className="og-buscar-campo">
+            <Search size={14} />
+            <input
+              value={busca}
+              onChange={e => { setBusca(e.target.value); setListaAbierta(true) }}
+              onFocus={() => setListaAbierta(true)}
+              placeholder="Buscar en el organigrama"
+            />
+            {busca && (
+              <button onClick={() => { setBusca(''); setHallado(null) }} title="Limpiar">
+                <X size={13} />
+              </button>
+            )}
+          </div>
+  
+          {listaAbierta && busca.trim() && (
+            <div className="og-buscar-lista">
+              {hallazgos.length === 0 && (
+                <p className="og-buscar-vacio">Nada coincide con “{busca.trim()}”.</p>
+              )}
+              {hallazgos.slice(0, TOPE_BUSQUEDA).map(f => (
+                <button key={f.cargo.id} onClick={() => irA(f.cargo.id)}>
+                  <span className="og-buscar-nom">{f.cargo.nombre}</span>
+                  <span className="og-buscar-sub">
+                    {f.unidad?.nombre || 'Sin área'}
+                    {f.ocupantes.length > 0 && ` · ${f.ocupantes.map(p => p.name).join(', ')}`}
+                  </span>
+                </button>
+              ))}
+              {/* Ninguna lista sin tope, y el truncado se dice. */}
+              {hallazgos.length > TOPE_BUSQUEDA && (
+                <p className="og-buscar-vacio">
+                  y {hallazgos.length - TOPE_BUSQUEDA} más. Escribe un poco más para achicar la lista.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+  )
+
   return (
     <div
       ref={canvasRef}
@@ -338,70 +406,96 @@ export default function OrgGrafico({
           gestos que se hacen sobre el lienzo, y sin ellas no hay vuelta atrás. Aparecen solo
           cuando hay algo que deshacer: un botón para revertir lo que nadie hizo enseña a ignorar
           la esquina donde vive. */}
-      {(pliegue.plegados.size > 0 || movidos > 0) && (
-        <div className="og-deshacer">
-          {pliegue.plegados.size > 0 && (
-            <button className="og-atajo og-atajo-btn" onClick={pliegue.abrirTodo}>
-              <Maximize2 size={10} /> Abrir las {pliegue.plegados.size} ramas plegadas
-            </button>
-          )}
-          {movidos > 0 && (
-            <button className="og-atajo og-atajo-btn" onClick={onAcomodar}>
-              <Wand2 size={10} /> Reacomodar solo ({movidos} a mano)
-            </button>
-          )}
-        </div>
-      )}
+      {/* LA ESQUINA DE ABAJO A LA IZQUIERDA. Las dos piezas van apiladas en un mismo
+          contenedor y no sueltas en la misma coordenada: el panel se cerraba y se abría, y los
+          botones de deshacer aparecían y desaparecían, así que en absoluto se encimaban.
 
-      {/* BUSCAR EN EL DIBUJO. En la tabla y en las cards alcanza con filtrar la lista; acá el
-          árbol mide miles de píxeles, así que encontrar el nombre no sirve si después hay que
-          cazar el cuadro a mano. Elegir un resultado LLEVA la vista hasta él y lo destaca un
-          momento. No filtra el árbol: esconder los cuadros que no coinciden rompería la
-          jerarquía, que es justo lo que uno vino a mirar. */}
-      <div className="og-buscar" ref={cajaBusca}>
-        <div className="og-buscar-campo">
-          <Search size={14} />
-          <input
-            value={busca}
-            onChange={e => { setBusca(e.target.value); setListaAbierta(true) }}
-            onFocus={() => setListaAbierta(true)}
-            placeholder="Buscar en el organigrama"
-          />
-          {busca && (
-            <button onClick={() => { setBusca(''); setHallado(null) }} title="Limpiar">
-              <X size={13} />
-            </button>
-          )}
-        </div>
-
-        {listaAbierta && busca.trim() && (
-          <div className="og-buscar-lista">
-            {hallazgos.length === 0 && (
-              <p className="og-buscar-vacio">Nada coincide con “{busca.trim()}”.</p>
-            )}
-            {hallazgos.slice(0, TOPE_BUSQUEDA).map(f => (
-              <button key={f.cargo.id} onClick={() => irA(f.cargo.id)}>
-                <span className="og-buscar-nom">{f.cargo.nombre}</span>
-                <span className="og-buscar-sub">
-                  {f.unidad?.nombre || 'Sin área'}
-                  {f.ocupantes.length > 0 && ` · ${f.ocupantes.map(p => p.name).join(', ')}`}
-                </span>
+          ABAJO Y NO ARRIBA: el panel horizontal mide casi 700 px y arriba a la izquierda le
+          tapaba la caja de la organización, que es la cabeza del dibujo. Abajo no hay nada que
+          tapar, y es donde cualquier gráfico pone su leyenda. */}
+      <div className="og-esquina">
+        {(pliegue.plegados.size > 0 || movidos > 0) && (
+          <div className="og-deshacer">
+            {pliegue.plegados.size > 0 && (
+              <button className="og-atajo og-atajo-btn" onClick={pliegue.abrirTodo}>
+                <Maximize2 size={10} /> Abrir las {pliegue.plegados.size} ramas plegadas
               </button>
-            ))}
-            {/* Ninguna lista sin tope, y el truncado se dice. */}
-            {hallazgos.length > TOPE_BUSQUEDA && (
-              <p className="og-buscar-vacio">
-                y {hallazgos.length - TOPE_BUSQUEDA} más. Escribe un poco más para achicar la lista.
-              </p>
+            )}
+            {movidos > 0 && (
+              <button className="og-atajo og-atajo-btn" onClick={onAcomodar}>
+                <Wand2 size={10} /> Reacomodar solo ({movidos} a mano)
+              </button>
             )}
           </div>
         )}
-      </div>
 
-      {/* Los tres modos del dibujo y el interruptor de apoyos vivían aquí flotando, y ahora
-          están en el panel de filtros con todo lo demás: eran dos controles que decidían qué se
-          ve, separados de los otros cuatro que también deciden qué se ve, y encima invisibles en
-          las vistas de tarjetas y tabla. */}
+        {/* QUÉ SE DIBUJA. No recorta a nadie —cambia el papel— y por eso vive acá y no en la
+            franja de arriba, que es donde están los filtros.
+
+            PASTILLA NAVY, COMO EL ZOOM: el lenguaje de las herramientas del lienzo. Estos tres
+            modos ya vivieron acá con esta misma piel y en horizontal; volvieron.
+
+            SE CIERRA, y cerrada deja un botón con su nombre, no un círculo mudo: en un lienzo que
+            ya tiene el "+" redondo abajo a la derecha, otro círculo sin rótulo sería una
+            adivinanza. */}
+        {abierto ? (
+          <div className="og-capas">
+            <div className="og-capas-fila">
+              {MODOS.map(m => (
+                <button
+                  key={m.key}
+                  type="button"
+                  className={`og-capa${vista.pestana === m.key ? ' on' : ''}`}
+                  onClick={() => vista.setPestana(m.key)}
+                  aria-pressed={vista.pestana === m.key}
+                >
+                  <m.Icon size={13} /> {m.label}
+                </button>
+              ))}
+            {/* LOS PRESTADOS, después de una línea y en TRES POSICIONES. La línea es lo que dice
+                que no es un cuarto modo: los tres de la izquierda se excluyen entre sí y este
+                decide qué hacer con los apoyos dentro del modo elegido.
+
+                Tres y no dos porque son las tres respuestas posibles a la misma pregunta —sin
+                ellos, con ellos, o solo ellos— y repartirlas entre un modo y un interruptor
+                obligaría a explicar en qué se diferencian.
+
+                En «solo áreas» no aparece: ahí no hay ni un cargo que prestar. */}
+            {vista.pestana !== 'unidades' && vista.cuantosFuncionales > 0 && (
+              <>
+                <span className="og-capas-linea" aria-hidden="true" />
+                <span className="og-capas-rot">Funcionales <em>{vista.cuantosFuncionales}</em></span>
+                <span className="og-tri" role="group" aria-label="Qué hacer con los cargos funcionales">
+                  {APOYOS.map(a => (
+                    <button
+                      key={a.key}
+                      type="button"
+                      className={vista.verFuncionales === a.key ? 'on' : undefined}
+                      onClick={() => vista.setVerFuncionales(a.key)}
+                      aria-pressed={vista.verFuncionales === a.key}
+                      title={a.ayuda}
+                    >
+                      {a.label}
+                    </button>
+                  ))}
+                </span>
+              </>
+            )}
+              <button className="og-capas-x" onClick={() => setAbierto(false)} title="Cerrar el panel">
+                <X size={12} />
+              </button>
+            </div>
+  
+          </div>
+        ) : (
+          <button className="og-capas-cerrado" onClick={() => setAbierto(true)} title="Qué se dibuja">
+            <Layers size={13} /> Qué se dibuja
+          </button>
+        )}
+      </div>
+      {/* Si la página dio ranura, el buscador se dibuja allá arriba; si no, se queda flotando
+          en su rincón de siempre. */}
+      {ranuraBuscador ? createPortal(buscador, ranuraBuscador) : buscador}
 
       <div className="og-zoom">
         <button onClick={() => setZoom(z => Math.max(ZOOM_MIN, z - 0.1))} title="Alejar"><Minus size={13} /></button>
