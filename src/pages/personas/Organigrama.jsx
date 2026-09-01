@@ -1,9 +1,9 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import {
-  FileDown, FileUp, Network, LayoutGrid, Table2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
+  ArrowDownToLine, ArrowUpFromLine, Network, LayoutGrid, Table2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
   X, Building2, UploadCloud, FileSpreadsheet, Check, User, Search, Pencil, Star, Users,
   Minus, Plus, ArrowUp, Briefcase, MapPin, Trash2, FolderPlus, Printer, Image, FileCode2,
-  ClipboardList, Share2, SlidersHorizontal, Settings, Layers, Palette,
+  ClipboardList, Share2, SlidersHorizontal, Settings, Layers, Palette, GitBranch,
 } from 'lucide-react'
 import OrgGrafico from '../../components/personas/OrgGrafico'
 import CabeceraModal from '../../components/personas/CabeceraModal'
@@ -27,13 +27,18 @@ import {
   empresa, sucursales, getUnidad, nuevoId, tipoDe, TIPOS_CARGO, esTipoDeclarado, nivelesDe,
   buildOrgTree, filasTabla, buscarCargos, normalizar, unidadesRaiz, subunidadesDe,
   tarjetaUnidad, cargosDeUnidad, filtrarPorSucursal, TODAS_SUCURSALES, estaEnSucursal,
-  eliminarCargo, eliminarUnidad, bloqueoUnidad, unidadesPadrePosibles, cabezaDe, paresDe, moverEntrePares,
+  eliminarCargo, ramaDe, eliminarUnidad, bloqueoUnidad, unidadesPadrePosibles, cabezaDe, paresDe, moverEntrePares,
   filtrarPorUnidad, cargosEnRama, TODAS_UNIDADES,
   ocupantesDe, funcionalesDe, areasQueApoya, apoyosDeUnidad,
   coincideCargo, recortesActivos, estiloColores,
   filaDeCargo,
   coordinacionesDe,
 } from '../../data/organigramaData'
+
+/* Un valor que no coincide con ninguna opción del selector: con él, el campo muestra su
+   marcador en vez de una respuesta que nadie dio. `undefined` no sirve para eso porque el
+   selector lo compara como texto vacío y lo confundiría con 'sin jefe', que sí es una respuesta. */
+const SIN_ELEGIR = '__sin_elegir__'
 
 /* Lo visual de cada tipo. Los textos viven en `TIPOS_CARGO` (el modelo) y aquí solo se les
    suma ícono y clase: antes había dos mapas de etiquetas —uno en las cards, otro en la
@@ -119,7 +124,7 @@ const jefeDeUnidadVacia = (unidadId, org) => {
 /* `base` son los valores que el gesto ya decidió: al soltar una cajita sobre un cuadro, de
    quién depende y en qué unidad queda ya están dichos, y volver a preguntarlos sería deshacer
    con el formulario lo que se acaba de hacer con la mano. */
-function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, org, abrirEnEdicion }) {
+function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminarRama, onCerrar, org, abrirEnEdicion }) {
   const nuevo = !cargo
   /* SE ABRE PARA MIRAR, NO PARA CAMBIAR. Un cuadro del organigrama se abre muchas más veces
      para consultarlo que para editarlo, y entrando directo al formulario cualquier descuido
@@ -131,6 +136,10 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
      accidental—: lo que se protege es el gesto de abrir, no el de pedir el editor. */
   const [editar, setEditar] = useState(nuevo || abrirEnEdicion)
   const soloVer = !editar
+  /* Qué se lleva puesto el borrado en cadena: él y todo lo que cuelga. Se calcula acá porque el
+     botón lleva el número por delante —"Eliminar la rama · 7"— y ese número es la mitad de la
+     advertencia: sin él, el botón parece decir lo mismo que el de al lado. */
+  const rama = cargo ? ramaDe(cargo.id, org) : []
   /* Lo que había al abrir. Sirve para saber si se escribió algo y no cerrar el formulario de un
      clic al costado: perder seis campos por errarle al modal por veinte píxeles no es un
      accidente del usuario, es un descuido del diseño. */
@@ -146,7 +155,12 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
        es el jefe que el dibujo ya le estaba dando al área. */
     reportaA: cargo ? cargo.reportaA
       : base && 'reportaA' in base ? base.reportaA
-      : (jefeDeUnidadVacia(base?.unidadId || org.unidades[0]?.id, org) ?? org.cargos[0]?.id ?? null),
+      /* SIN JEFE INVENTADO. El último recurso era `org.cargos[0]` —el primer cargo de la
+         lista—, así que un puesto creado sin contexto nacía colgado de alguien que nadie eligió
+         y nadie se enteraba. Ahora queda `undefined`: "todavía no se decidió", y hay que
+         decidirlo. Solo cuando no existe ningún otro cargo nace en `null`, que ahí no es una
+         omisión sino el único hecho posible: es el primer puesto del organigrama. */
+      : (jefeDeUnidadVacia(base?.unidadId || org.unidades[0]?.id, org) ?? (org.cargos.length ? undefined : null)),
     ocupantes: cargo ? ocupantesDe(cargo) : [],
     /* Áreas donde trabaja sin pertenecer. Al cambiar de área propia hay que sacarla de acá si
        estaba marcada, o el puesto quedaría apoyándose a sí mismo. */
@@ -204,8 +218,15 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
   const externo = form.tipo === 'outsourcing'
   /* Los dos obligatorios quedaron en pestañas distintas, así que no alcanza con saber que
      falta algo: hay que saber en cuál. */
-  const faltaEn = { cargo: !form.nombre.trim() || !form.unidadId }
+  const faltaEn = { cargo: !form.nombre.trim() || !form.unidadId || form.reportaA === undefined }
   const valido = !faltaEn.cargo
+  /* Los cargos de los que este puesto podría colgar. Vacío quiere decir que es el primero del
+     organigrama, y entonces "de quién depende" deja de ser una pregunta. */
+  const jefesPosibles = org.cargos.filter(c => c.id !== cargo?.id)
+  /* Si queda alguna otra área donde este puesto podría apoyar. Manda sobre el botón de agregar
+     y sobre lo que dice el vacío: los dos tienen que contar la misma historia, o la pantalla
+     invita a apretar algo que no está. */
+  const hayAreasLibres = org.unidades.some(u => u.id !== form.unidadId && !form.funcionales.some(x => x.unidadId === u.id))
 
   /* Solo se guarda lo que no se puede deducir: Jefe y Colaborador salen de la propia
      estructura, así que declararlos sería dejar en el dato una etiqueta que se contradice
@@ -233,13 +254,13 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
   const pares = cargo ? paresDe(cargo, org) : []
   const mismaFila = !nuevo
     && form.reportaA === cargo.reportaA
-    && t.lateral === (cargo.tipo === 'staff')
+    && t.lateral === (cargo.tipo === 'staff' || cargo.tipo === 'outsourcing')
 
   const guardar = () => onGuardar({
     codigo: form.codigo.trim() || null,
     nombre: form.nombre.trim(),
     unidadId: form.unidadId,
-    reportaA: form.reportaA,
+    reportaA: form.reportaA ?? null,
     ocupantes: form.ocupantes,
     /* Se descartan las filas a medio llenar y la propia área: una asignación sin área no dice
        nada, y apoyarse a uno mismo tampoco. */
@@ -254,7 +275,12 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
     ocupanteId: null,
     /* Los tres se declaran, así que el tipo se guarda tal cual viene del formulario. */
     tipo: form.tipo,
-    grado: form.grado || null,
+    /* EL NIVEL SE LIMPIA SI EL PUESTO YA NO ES COLABORADOR. El campo desaparece del formulario
+       para staff y outsourcing, y dejar el valor viejo guardado por debajo sería un dato que
+       nadie ve y que nadie eligió: la ficha lo seguiría mostrando, la lista de niveles lo
+       contaría entre sus cargos, y al volver el puesto a Colaborador reaparecería un nivel que
+       nunca se declaró. */
+    grado: (form.tipo === 'colaborador' && form.grado) || null,
     sucursalIds: form.sucursalIds.slice(0, 1),
   }, mismaFila ? form.posicion : null)
 
@@ -304,9 +330,9 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
                   onClick={() => setHoja(h.key)}
                 >
                   <h.Icon size={13} /> {h.label}
-                  {/* El punto avisa dónde falta algo obligatorio: sin esto, con el botón de
-                      guardar apagado y la pestaña equivocada abierta, no hay forma de saber
-                      qué falta. */}
+                  {/* El punto avisa donde falta algo obligatorio: sin esto, con el boton de
+                      guardar apagado y la pestana equivocada abierta, no hay forma de saber
+                      que falta. */}
                   {faltaEn[h.key] && <span className="og-hoja-falta" />}
                 </button>
               ))}
@@ -316,89 +342,129 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
             {hoja === 'cargo' && (
             <section className="og-bloque">
 
-              <label className="pl-label">
-                <span className="og-label-fila">
-                  Código
-                  <AyudaCampo>
-                    El identificador del puesto en planilla o en los reportes de RRHH. Es
-                    opcional: si la empresa no los usa, se deja vacío.
-                  </AyudaCampo>
-                </span>
-                <input
-                  className="pl-input"
-                  value={form.codigo}
-                  maxLength={20}
-                  onChange={e => set('codigo', e.target.value)}
-                  placeholder="Ej. CAR-001"
-                />
-              </label>
+              {/* EL CÓDIGO Y EL NOMBRE COMPARTEN RENGLÓN. Uno mide veinte caracteres y el otro
+                  sesenta, así que en renglones separados el del código dejaba media línea vacía y
+                  empujaba todo lo demás un escalón hacia abajo. Juntos entran cómodos y el
+                  formulario arranca con lo que de verdad identifica al puesto. En pantalla
+                  angosta se vuelven a apilar. */}
+              <div className="og-fila-campos">
+                <label className="pl-label">
+                  <span className="og-label-fila">
+                    Nombre del cargo / puesto <em className="og-req">*</em>
+                    <AyudaCampo>El título del cargo, no el nombre de quien lo ocupa.</AyudaCampo>
+                    <span className="og-contador">{form.nombre.length}/60</span>
+                  </span>
+                  <input
+                    className="pl-input"
+                    value={form.nombre}
+                    maxLength={60}
+                    onChange={e => set('nombre', e.target.value)}
+                    placeholder="Ej. Analista de Marketing Digital"
+                    autoFocus={nuevo}
+                  />
+                </label>
 
-              <label className="pl-label">
-                <span className="og-label-fila">
-                  Nombre del cargo / puesto <em className="og-req">*</em>
-                  <AyudaCampo>El título del cargo, no el nombre de quien lo ocupa.</AyudaCampo>
-                  <span className="og-contador">{form.nombre.length}/60</span>
-                </span>
-                <input
-                  className="pl-input"
-                  value={form.nombre}
-                  maxLength={60}
-                  onChange={e => set('nombre', e.target.value)}
-                  placeholder="Ej. Analista de Marketing Digital"
-                  autoFocus={nuevo}
-                />
-              </label>
+                <label className="pl-label og-campo-codigo">
+                  <span className="og-label-fila">
+                    Código
+                    <AyudaCampo>
+                      El identificador del puesto en planilla o en los reportes de RRHH. Es
+                      opcional: si la empresa no los usa, se deja vacío.
+                    </AyudaCampo>
+                  </span>
+                  <input
+                    className="pl-input"
+                    value={form.codigo}
+                    maxLength={20}
+                    onChange={e => set('codigo', e.target.value)}
+                    placeholder="Ej. CAR-001"
+                  />
+                </label>
 
+              </div>
 
-              <label className="pl-label">
-                <span className="og-label-fila">
-                  {/* "Unidad organizacional" a secas, con la pestaña Funcional al lado hablando
-                      también de áreas, no decía cuál de las dos es esta. */}
-                  Unidad organizacional a la que pertenece <em className="og-req">*</em>
-                  <AyudaCampo>
-                    Su área de verdad: la que lo evalúa y donde se lo cuenta. Si además ayuda a
-                    otras, eso se declara en la pestaña <strong>Funcional</strong>.
-                  </AyudaCampo>
-                </span>
-                <SelectorLista
-                  valor={form.unidadId}
-                  /* Cambiar de área puede cambiar el jefe: si la elegida está vacía, el puesto
-                     entra colgado del mando que ella declaró. */
-                  onCambio={v => setForm(f => ({ ...f, unidadId: v, reportaA: jefeDeUnidadVacia(v, org) ?? f.reportaA }))}
-                  placeholder="Elige la unidad"
-                  opciones={org.unidades.map(u => ({
-                    id: u.id,
-                    nombre: u.nombre,
-                    detalle: getUnidad(u.padreId, org)?.nombre,
-                  }))}
-                />
-                {/* Igual que con la sede: si el área vino puesta por el alcance que se está
-                    mirando, se dice acá en vez de suponerlo. Un puesto creado fuera del área
-                    filtrada se guardaría bien y desaparecería del dibujo en el mismo instante. */}
-                {nuevo && base?.unidadId && base.unidadId === form.unidadId && (
-                  <p className="og-modal-nota">
-                    Viene elegida <strong>{getUnidad(base.unidadId, org)?.nombre}</strong> porque
-                    es el área que estás viendo.
-                  </p>
-                )}
-              </label>
-
-              <label className="pl-label">
-                <span className="og-label-fila">
-                  Reporta a
-                  <AyudaCampo>El cargo al que le responde este puesto. De acá sale la línea de mando: quién aprueba y a quién le llega la bandeja.</AyudaCampo>
-                </span>
-                <SelectorLista
-                  valor={form.reportaA}
-                  onCambio={v => set('reportaA', v)}
-                  vacia="Sin jefe: queda como raíz"
-                  opciones={org.cargos.filter(c => c.id !== cargo?.id).map(c => ({
-                    id: c.id,
-                    nombre: c.nombre,
-                    detalle: getUnidad(c.unidadId, org)?.nombre,
-                  }))}
-                />
-              </label>
+              {/* EL ÁREA Y EL JEFE, EN EL MISMO RENGLÓN. Son las dos mitades de una sola
+                  pregunta —dónde queda este puesto— y además se condicionan: al cambiar de área,
+                  la lista de jefes posibles cambia con ella. Separados por un renglón entero, esa
+                  relación no se veía y el formulario pedía dos veces lo que en la cabeza es una
+                  decisión sola. */}
+              <div className="og-fila-campos og-fila-mitades">
+                <label className="pl-label">
+                  <span className="og-label-fila">
+                    {/* "Unidad organizacional" a secas, con la pestaña Funcional al lado hablando
+                        también de áreas, no decía cuál de las dos es esta. */}
+                    Unidad organizacional a la que pertenece <em className="og-req">*</em>
+                    <AyudaCampo>
+                      Su área de verdad: la que lo evalúa y donde se lo cuenta. Si además ayuda a
+                      otras, eso se declara en la pestaña <strong>Funcional</strong>.
+                    </AyudaCampo>
+                  </span>
+                  <SelectorLista
+                    valor={form.unidadId}
+                    /* Cambiar de área puede cambiar el jefe: si la elegida está vacía, el puesto
+                       entra colgado del mando que ella declaró. */
+                    onCambio={v => setForm(f => ({ ...f, unidadId: v, reportaA: jefeDeUnidadVacia(v, org) ?? f.reportaA }))}
+                    placeholder="Elige la unidad"
+                    /* EN CASCADA, como el selector del área madre. Antes era una lista plana con
+                       el nombre de la madre de subtítulo, y eso obliga a reconstruir el árbol
+                       leyendo: con doce áreas anidadas hay que ir renglón por renglón atando
+                       "Ventas · dentro de Comercial" con "Comercial · dentro de Dirección". El
+                       componente ya sabe sangrar —solo necesita el `padreId`— y sangrado se ve de
+                       un vistazo qué cuelga de qué. El subtítulo se va porque la sangría ya lo
+                       dice, y al buscar el componente muestra el camino completo igual. */
+                    opciones={org.unidades.map(u => ({
+                      id: u.id,
+                      nombre: u.nombre,
+                      padreId: u.padreId,
+                    }))}
+                    arbol
+                  />
+                  {/* Igual que con la sede: si el área vino puesta por el alcance que se está
+                      mirando, se dice acá en vez de suponerlo. Un puesto creado fuera del área
+                      filtrada se guardaría bien y desaparecería del dibujo en el mismo instante. */}
+                  {nuevo && base?.unidadId && base.unidadId === form.unidadId && (
+                    <p className="og-modal-nota">
+                      Viene elegida <strong>{getUnidad(base.unidadId, org)?.nombre}</strong> porque
+                      es el área que estás viendo.
+                    </p>
+                  )}
+                </label>
+  
+                <label className="pl-label">
+                  <span className="og-label-fila">
+                    De quién depende {jefesPosibles.length > 0 && <em className="og-req">*</em>}
+                    <AyudaCampo>El cargo del que depende este puesto. De acá sale la línea de mando: quién aprueba y a quién le llega la bandeja.</AyudaCampo>
+                  </span>
+                  {/* EL PRIMER CARGO DEL ORGANIGRAMA no tiene de quién depender: no hay ningún
+                      otro. Ofrecerle un desplegable con una sola opción —y encima la de "sin
+                      jefe"— es pedir una decisión que ya está tomada por los hechos. */}
+                  {jefesPosibles.length === 0 ? (
+                    <p className="og-modal-nota og-nota-suelta">
+                      Es el <strong>primer puesto</strong> del organigrama, así que no depende de
+                      nadie: va arriba de todo. Cuando existan otros, vas a poder colgarlo de uno.
+                    </p>
+                  ) : (
+                    <SelectorLista
+                      /* SIN VALOR HASTA QUE ALGUIEN ELIJA. `undefined` es "todavía no se decidió"
+                         y `null` es "no depende de nadie" —dos cosas distintas que antes se
+                         confundían—, así que se manda un valor que no coincide con ninguna opción
+                         para que el campo muestre su marcador y no una respuesta que nadie dio. */
+                      valor={form.reportaA === undefined ? SIN_ELEGIR : form.reportaA}
+                      onCambio={v => set('reportaA', v)}
+                      placeholder="Elige de quién depende"
+                      /* No es un detalle técnico: es declarar otra cabeza de la organización, que
+                         se dibuja arriba de todo junto a la primera. Dicho así, nadie la elige
+                         creyendo que significa "todavía no sé". */
+                      vacia="Sin jefe · es otra cabeza de la organización"
+                      opciones={jefesPosibles.map(c => ({
+                        id: c.id,
+                        nombre: c.nombre,
+                        detalle: getUnidad(c.unidadId, org)?.nombre,
+                      }))}
+                    />
+                  )}
+                </label>
+              </div>
 
               {/* Dónde queda dentro de su fila. Es lo único del dibujo que se puede acomodar a
                   mano, y por eso vive acá y no en un gesto del lienzo: no es una posición
@@ -438,6 +504,8 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
                 </div>
               )}
 
+
+
               {/* Tres tarjetas y no un desplegable: son tres cosas distintas —una en planilla,
                   una al costado de la línea, una que presta un tercero— y en un `select` se leen
                   como tres palabras hasta que alguien las abre una por una. Jefe no está entre
@@ -468,39 +536,49 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
                 </div>
               </div>
 
-              {/* NIVEL DE MANDO. Va acá abajo del tipo porque son las dos preguntas que el
-                  puesto contesta sobre sí mismo —de qué clase es y cuánto pesa— y son ejes
-                  distintos: un staff puede ser del nivel más alto.
+              {/* NIVEL DE MANDO, Y SOLO PARA COLABORADOR. Va abajo del tipo porque son las dos
+                  preguntas que el puesto contesta sobre sí mismo —de qué clase es y cuánto pesa—,
+                  pero la segunda no aplica a las otras dos clases, y por razones distintas:
 
-                  Es opcional, y a propósito: los puestos guardados antes de que el campo
-                  existiera no tienen ninguno, y forzar a completarlos convertiría abrir
-                  cualquier ficha vieja en una tarea. Sin declarar, el cuadro no se mueve de su
-                  fila y la tabla lo dice en gris. */}
-              <label className="pl-label">
-                <span className="og-label-fila">
-                  Nivel de mando
-                  <AyudaCampo>
-                    Dice <strong>cuánto pesa</strong> el puesto en la empresa, y es independiente
-                    de quién reporta a quién: dos cargos sin jefe pueden tener niveles distintos,
-                    y ahí el nivel es lo único que los diferencia. En el dibujo, el que declara un
-                    nivel más bajo que sus pares se dibuja medio cuadro más abajo, en la misma
-                    fila.
-                  </AyudaCampo>
-                </span>
-                <SelectorLista
-                  valor={form.grado}
-                  onCambio={v => set('grado', v)}
-                  vacia="Sin nivel"
-                  placeholder="Sin nivel"
-                  opciones={nivelesDe(org).map((n, i) => ({
-                    id: n.id,
-                    nombre: n.nombre,
-                    /* El número no se guarda: sale del orden del catálogo. Se muestra porque es
-                       lo que hace comparable un nivel con otro de un vistazo. */
-                    detalle: `Nivel ${i + 1} de ${nivelesDe(org).length}`,
-                  }))}
-                />
-              </label>
+                  · El STAFF asiste al costado de la línea, no en una fila. El dibujo nunca lo
+                    escalona —los laterales se pintan sin ese dato— así que el campo se pedía y no
+                    hacía absolutamente nada. Pedir algo que no tiene efecto es peor que no
+                    pedirlo: quien lo llena cree que declaró algo.
+                  · El OUTSOURCING sí baja en la línea y el escalón le funcionaría, pero un
+                    servicio tercerizado no está en la estructura de grados de la empresa: no se
+                    le paga por banda, se le paga por contrato. Preguntarle su nivel de mando es
+                    meterlo en una escala que no es la suya.
+
+                  Es opcional incluso para el colaborador, y a propósito: los puestos guardados
+                  antes de que el campo existiera no tienen ninguno, y forzar a completarlos
+                  convertiría abrir cualquier ficha vieja en una tarea. Sin declarar, el cuadro no
+                  se mueve de su sitio y la tabla lo dice en gris. */}
+              {form.tipo === 'colaborador' && (
+                <label className="pl-label">
+                  <span className="og-label-fila">
+                    Nivel de mando
+                    <AyudaCampo>
+                      Dice <strong>cuánto pesa</strong> el puesto en la empresa, y es independiente
+                      de quién reporta a quién: dos cargos sin jefe pueden tener niveles distintos,
+                      y ahí el nivel es lo único que los diferencia. En el dibujo, el que se salta
+                      un peldaño respecto del de su jefe se dibuja una caja más abajo.
+                    </AyudaCampo>
+                  </span>
+                  <SelectorLista
+                    valor={form.grado}
+                    onCambio={v => set('grado', v)}
+                    vacia="Sin nivel"
+                    placeholder="Sin nivel"
+                    opciones={nivelesDe(org).map((n, i) => ({
+                      id: n.id,
+                      nombre: n.nombre,
+                      /* El número no se guarda: sale del orden del catálogo. Se muestra porque es
+                         lo que hace comparable un nivel con otro de un vistazo. */
+                      detalle: `Nivel ${i + 1} de ${nivelesDe(org).length}`,
+                    }))}
+                  />
+                </label>
+              )}
 
               {/* Las coordinaciones no se editan aquí —se trazan sobre el lienzo— pero sí se
                   muestran: son la otra mitad de con quién trabaja el puesto. */}
@@ -526,94 +604,8 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
             </section>
             )}
 
-            {hoja === 'funcional' && (
-            <section className="og-bloque">
-              <p className="og-modal-nota og-nota-suelta">
-                Un puesto <strong>pertenece</strong> a un área —la que se elige en <strong>Cargo</strong>— y puede{' '}
-                <strong>trabajar</strong> en otras. En cada área que apoya se dibuja como un
-                cuadro más, en azul, y sigue siendo el mismo puesto: no se cuenta dos veces.
-              </p>
-
-              {form.funcionales.length === 0 ? (
-                <div className="og-func-vacio">
-                  <Network size={20} />
-                  <strong>Solo trabaja en su área</strong>
-                  <span>Agrega un área si este puesto también apoya a otra.</span>
-                </div>
-              ) : (
-                <div className="og-func-lista">
-                  {form.funcionales.map((f, i) => {
-                    /* El jefe funcional se elige entre los cargos DEL ÁREA que se apoya: es
-                       quien le dirige el trabajo ahí. Ofrecer el organigrama entero convertiría
-                       el campo en una segunda línea de mando sin relación con el área. */
-                    const deEsaArea = org.cargos.filter(c => c.unidadId === f.unidadId && c.id !== cargo?.id)
-                    return (
-                      <div key={i} className="og-func-fila">
-                        <div className="pl-label">
-                          <span className="og-label-fila">Área donde apoya <em className="og-req">*</em></span>
-                          <SelectorLista
-                            valor={f.unidadId}
-                            onCambio={v => setFuncional(i, { unidadId: v, reportaA: null })}
-                            placeholder="Elige el área"
-                            /* Fuera la suya y las que ya están en la lista: repetir un área no
-                               agrega nada y deja dos filas diciendo lo mismo. */
-                            opciones={org.unidades
-                              .filter(u => u.id !== form.unidadId)
-                              .filter(u => u.id === f.unidadId || !form.funcionales.some(x => x.unidadId === u.id))
-                              .map(u => ({ id: u.id, nombre: u.nombre, detalle: getUnidad(u.padreId, org)?.nombre }))}
-                          />
-                        </div>
-
-                        <div className="pl-label">
-                          <span className="og-label-fila">
-                            Le responde a
-                            <AyudaCampo>
-                              Quién le dirige el trabajo dentro de esa área. Es opcional: se
-                              puede apoyar a un área sin tener un jefe ahí, y entonces el cuadro
-                              cuelga del área. No reemplaza a su jefe de verdad, que es el de
-                              la pestaña <strong>Cargo</strong>.
-                            </AyudaCampo>
-                          </span>
-                          <SelectorLista
-                            valor={f.reportaA}
-                            onCambio={v => setFuncional(i, { reportaA: v })}
-                            vacia="Nadie: cuelga del área"
-                            placeholder={f.unidadId ? 'Nadie: cuelga del área' : 'Elige primero el área'}
-                            opciones={deEsaArea.map(c => ({ id: c.id, nombre: c.nombre }))}
-                          />
-                        </div>
-
-                        <button
-                          type="button"
-                          className="og-func-quitar"
-                          title="Quitar esta área"
-                          onClick={() => set('funcionales', form.funcionales.filter((_, j) => j !== i))}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-
-              {/* Solo si queda alguna por elegir: un botón que abre una fila sin opciones es
-                  una fila que hay que borrar a mano. */}
-              {org.unidades.filter(u => u.id !== form.unidadId && !form.funcionales.some(x => x.unidadId === u.id)).length > 0 && (
-                <button
-                  type="button"
-                  className="og-func-agregar"
-                  onClick={() => set('funcionales', [...form.funcionales, { unidadId: '', reportaA: null }])}
-                >
-                  <Plus size={14} /> Agregar un área
-                </button>
-              )}
-            </section>
-            )}
-
             {hoja === 'donde' && (
             <section className="og-bloque">
-
                 {/* UNA SOLA SEDE. Un puesto es un puesto: tiene su código y está en un lugar. Se
                     elegían varias cuando un cargo era un cuadro con N plazas —"una gerencia
                     regional es un cargo con dos sedes"—, y eso se cayó con el cupo: si la
@@ -705,6 +697,98 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
             </section>
 
             )}
+            {hoja === 'funcional' && (
+            <section className="og-bloque">
+              <p className="og-modal-nota og-nota-suelta">
+                Un puesto <strong>pertenece</strong> a un área —la que se elige en <strong>Cargo</strong>— y puede{' '}
+                <strong>trabajar</strong> en otras. En cada área que apoya se dibuja como un
+                cuadro más, en azul, y sigue siendo el mismo puesto: no se cuenta dos veces.
+              </p>
+
+              {form.funcionales.length === 0 ? (
+                <div className="og-func-vacio">
+                  <Network size={20} />
+                  <strong>Solo trabaja en su área</strong>
+                  {/* El vacío tiene DOS motivos y decía lo mismo en los dos: "agrega un área"
+                      invitaba a apretar un botón que no está cuando no queda ninguna otra área
+                      donde apoyar —se esconde a propósito, para no abrir una fila sin opciones—.
+                      Con una sola unidad en el organigrama, la pantalla pedía algo imposible. */}
+                  <span>
+                    {hayAreasLibres
+                      ? 'Agrega un área si este puesto también apoya a otra.'
+                      : 'No hay otras áreas todavía. En cuanto crees una, va a poder elegirse acá.'}
+                  </span>
+                </div>
+              ) : (
+                <div className="og-func-lista">
+                  {form.funcionales.map((f, i) => {
+                    /* El jefe funcional se elige entre los cargos DEL ÁREA que se apoya: es
+                       quien le dirige el trabajo ahí. Ofrecer el organigrama entero convertiría
+                       el campo en una segunda línea de mando sin relación con el área. */
+                    const deEsaArea = org.cargos.filter(c => c.unidadId === f.unidadId && c.id !== cargo?.id)
+                    return (
+                      <div key={i} className="og-func-fila">
+                        <div className="pl-label">
+                          <span className="og-label-fila">Área donde apoya <em className="og-req">*</em></span>
+                          <SelectorLista
+                            valor={f.unidadId}
+                            onCambio={v => setFuncional(i, { unidadId: v, reportaA: null })}
+                            placeholder="Elige el área"
+                            /* Fuera la suya y las que ya están en la lista: repetir un área no
+                               agrega nada y deja dos filas diciendo lo mismo. */
+                            opciones={org.unidades
+                              .filter(u => u.id !== form.unidadId)
+                              .filter(u => u.id === f.unidadId || !form.funcionales.some(x => x.unidadId === u.id))
+                              .map(u => ({ id: u.id, nombre: u.nombre, detalle: getUnidad(u.padreId, org)?.nombre }))}
+                          />
+                        </div>
+
+                        <div className="pl-label">
+                          <span className="og-label-fila">
+                            Le responde a
+                            <AyudaCampo>
+                              Quién le dirige el trabajo dentro de esa área. Es opcional: se
+                              puede apoyar a un área sin tener un jefe ahí, y entonces el cuadro
+                              cuelga del área. No reemplaza a su jefe de verdad, que es el de
+                              la pestaña <strong>Cargo</strong>.
+                            </AyudaCampo>
+                          </span>
+                          <SelectorLista
+                            valor={f.reportaA}
+                            onCambio={v => setFuncional(i, { reportaA: v })}
+                            vacia="Nadie: cuelga del área"
+                            placeholder={f.unidadId ? 'Nadie: cuelga del área' : 'Elige primero el área'}
+                            opciones={deEsaArea.map(c => ({ id: c.id, nombre: c.nombre }))}
+                          />
+                        </div>
+
+                        <button
+                          type="button"
+                          className="og-func-quitar"
+                          title="Quitar esta área"
+                          onClick={() => set('funcionales', form.funcionales.filter((_, j) => j !== i))}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              {/* Solo si queda alguna por elegir: un botón que abre una fila sin opciones es
+                  una fila que hay que borrar a mano. */}
+              {hayAreasLibres && (
+                <button
+                  type="button"
+                  className="og-func-agregar"
+                  onClick={() => set('funcionales', [...form.funcionales, { unidadId: '', reportaA: null }])}
+                >
+                  <Plus size={14} /> Agregar un área
+                </button>
+              )}
+            </section>
+            )}
 
           </div>
           </div>
@@ -723,9 +807,21 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onCerrar, 
 
                   Va al extremo opuesto de la fila: separado de los otros dos, no se aprieta
                   queriendo cerrar. */}
+              {/* DOS BORRADOS, y la diferencia es qué pasa con los que cuelgan. "Eliminar" saca
+                  este puesto y sube sus reportes un escalón; "Eliminar la rama" se lleva todo lo
+                  que depende de él. En el dibujo, el segundo es el gesto que de verdad se pide
+                  —se cerró un área entera— y hacerlo de a uno son nueve confirmaciones.
+
+                  Solo aparece cuando hay algo colgando: con un cargo sin reportes las dos
+                  puertas hacen exactamente lo mismo y hay que elegir entre dos botones iguales. */}
               <button className="pl-btn-delete og-btn-eliminar" onClick={() => onEliminar(cargo)}>
                 <Trash2 size={13} /> Eliminar
               </button>
+              {rama.length > 1 && (
+                <button className="pl-btn-delete og-btn-rama" onClick={() => onEliminarRama(cargo)}>
+                  <GitBranch size={13} /> Eliminar la rama · {rama.length}
+                </button>
+              )}
               <button className="pl-btn-cancel" onClick={onCerrar}>Cerrar</button>
               <button className="pl-btn-save og-btn-editar" onClick={() => setEditar(true)}>
                 <Pencil size={13} /> Editar
@@ -1050,7 +1146,7 @@ function ImportarModal({ onCerrar }) {
           </button>
           <p className="og-modal-nota">
             La plantilla espera una fila por cargo con las columnas <strong>Cargo</strong>, <strong>Unidad</strong>,
-            <strong> Reporta a</strong> y <strong>Ocupante</strong>. Las filas sin ocupante se cargan como vacantes.
+            <strong> Depende de</strong> y <strong>Ocupante</strong>. Las filas sin ocupante se cargan como vacantes.
           </p>
         </div>
         <div className="pl-modal-footer">
@@ -1072,7 +1168,23 @@ function Seccion({ titulo, conteo }) {
   )
 }
 
-function CargoCard({ fila, onAbrir, funcional }) {
+/* LA BARRA DE LO SELECCIONADO. Una sola, usada por la tabla y por Cards: son la misma decisión
+   —cuántos hay, soltarlos, borrarlos— y tenerla escrita dos veces terminaba en dos barras que se
+   ven iguales hasta que alguien toca una de las dos. */
+function BarraSeleccion({ cuantos, onSoltar, onEliminar }) {
+  if (!cuantos) return null
+  return (
+    <div className="og-barra-sel">
+      <strong>{cuantos} {cuantos === 1 ? 'cargo seleccionado' : 'cargos seleccionados'}</strong>
+      <button type="button" className="og-barra-quitar" onClick={onSoltar}>Quitar la selección</button>
+      <button type="button" className="og-barra-borrar" onClick={onEliminar}>
+        <Trash2 size={13} /> Eliminar
+      </button>
+    </div>
+  )
+}
+
+function CargoCard({ fila, onAbrir, funcional, elegido, onElegir }) {
   const { cargo, tipo, ocupantes, vacante, jefeNombre, sedes } = fila
   const t = tipoVisual(tipo)
   const externo = tipo === 'outsourcing'
@@ -1085,10 +1197,17 @@ function CargoCard({ fila, onAbrir, funcional }) {
   /* Prestado de otra área: gana sobre el color de tipo, porque lo que hace falta saber acá es
      que no es un puesto de esta área. */
   if (funcional) clases.push('og-cc-func')
+  if (elegido) clases.push('og-cc-elegida')
 
   return (
     <div className={clases.join(' ')} onDoubleClick={() => onAbrir(cargo)}>
       {vacante && <span className="og-cc-tag">Vacante</span>}
+      {/* LA CASILLA. Solo en las tarjetas de cargo: la grilla mezcla cargos con sub-unidades y
+          un área con gente adentro no se puede borrar —lo impide su propia regla—, así que una
+          casilla que a veces borra y a veces avisa que no puede es peor que no tenerla. */}
+      {onElegir && (<label className="og-cc-check" onClick={e => e.stopPropagation()}>
+        <Casilla marcado={!!elegido} onCambiar={onElegir} etiqueta={`Seleccionar ${cargo.nombre}`} />
+      </label>)}
       {/* El lápiz dice "Editar" y va derecho al editor. El doble clic sobre la tarjeta abre el
           detalle bloqueado: es el gesto que se dispara sin querer, no este. */}
       <button className="og-cc-edit" onClick={() => onAbrir(cargo, true)} title="Editar cargo"><Pencil size={12} /></button>
@@ -1102,7 +1221,7 @@ function CargoCard({ fila, onAbrir, funcional }) {
       </div>
 
       {jefeNombre && (
-        <div className="og-cc-reporta"><ArrowUp size={10} /> Reporta a <strong>{jefeNombre}</strong></div>
+        <div className="og-cc-reporta"><ArrowUp size={10} /> Depende de <strong>{jefeNombre}</strong></div>
       )}
 
       {/* Un puesto pertenece a una sede; sin ninguna declarada, a ninguna en particular. */}
@@ -1155,7 +1274,7 @@ function UnidadCard({ datos, onEntrar, onEditar }) {
   )
 }
 
-function VistaCards({ org, busca, setBusca, onAbrir, onEditarUnidad }) {
+function VistaCards({ org, busca, setBusca, onAbrir, onEditarUnidad, onEliminarVarios }) {
   const [ruta, setRuta] = useState([])
 
   const actual = ruta.length ? ruta[ruta.length - 1] : null
@@ -1176,6 +1295,31 @@ function VistaCards({ org, busca, setBusca, onAbrir, onEditarUnidad }) {
     })) : []),
     [actual, org],
   )
+
+  /* LO SELECCIONADO, igual que en la tabla y por las mismas razones. Cards es una grilla que se
+     navega —un explorador de archivos— y ahí la casilla en la esquina de la tarjeta es el gesto
+     que ya conoce cualquiera. */
+  const [elegidos, setElegidos] = useState(() => new Set())
+
+  useEffect(() => {
+    setElegidos(prev => {
+      if (prev.size === 0) return prev
+      const vivos = new Set(org.cargos.map(c => c.id))
+      const quedan = [...prev].filter(id => vivos.has(id))
+      return quedan.length === prev.size ? prev : new Set(quedan)
+    })
+  }, [org.cargos])
+
+  /* Entrar a otra área o buscar otra cosa suelta lo marcado: lo elegido siempre es lo que se
+     está viendo, y arrastrar seis tarjetas de un área a otra pantalla sería una bomba puesta
+     hace rato. */
+  useEffect(() => { setElegidos(new Set()) }, [actual, q])
+
+  const alternar = id => setElegidos(prev => {
+    const s = new Set(prev)
+    if (s.has(id)) s.delete(id); else s.add(id)
+    return s
+  })
 
   const entrar = id => setRuta(r => [...r, id])
   const irA = i => setRuta(r => r.slice(0, i))
@@ -1205,13 +1349,21 @@ function VistaCards({ org, busca, setBusca, onAbrir, onEditarUnidad }) {
         <Buscador value={busca} onChange={setBusca} />
       </div>
 
+      {/* Debajo de las migas y no dentro: la fila de migas crece con la ruta y meter ahí la
+          barra la haría saltar de sitio según lo hondo que uno esté navegando. */}
+      <BarraSeleccion
+        cuantos={elegidos.size}
+        onSoltar={() => setElegidos(new Set())}
+        onEliminar={() => onEliminarVarios([...elegidos])}
+      />
+
       <div className="og-scroll">
         {q ? (
           <>
             <Seccion titulo={`Resultados para "${q}"`} conteo={`${resultados.length} ${resultados.length === 1 ? 'cargo' : 'cargos'}`} />
             {resultados.length === 0
               ? <p className="og-vacio">Ningún cargo, persona ni unidad coincide con la búsqueda.</p>
-              : <div className="og-grid">{resultados.map(f => <CargoCard key={f.cargo.id} fila={f} onAbrir={onAbrir} />)}</div>}
+              : <div className="og-grid">{resultados.map(f => <CargoCard key={f.cargo.id} fila={f} onAbrir={onAbrir} elegido={elegidos.has(f.cargo.id)} onElegir={() => alternar(f.cargo.id)} />)}</div>}
           </>
         ) : !actual ? (
           <>
@@ -1223,7 +1375,7 @@ function VistaCards({ org, busca, setBusca, onAbrir, onEditarUnidad }) {
             <Seccion titulo={`Cargos en ${nombreActual}`} conteo={`${cargosAqui.length} ${cargosAqui.length === 1 ? 'cargo' : 'cargos'}`} />
             {cargosAqui.length === 0
               ? <p className="og-vacio">Esta unidad todavía no tiene cargos definidos.</p>
-              : <div className="og-grid">{cargosAqui.map(f => <CargoCard key={f.cargo.id} fila={f} onAbrir={onAbrir} />)}</div>}
+              : <div className="og-grid">{cargosAqui.map(f => <CargoCard key={f.cargo.id} fila={f} onAbrir={onAbrir} elegido={elegidos.has(f.cargo.id)} onElegir={() => alternar(f.cargo.id)} />)}</div>}
 
             {/* QUIÉNES APOYAN A ESTA ÁREA desde afuera. En sección aparte y no mezclados con los
                 cargos: no son del área y no entran en su cuenta, igual que en el dibujo no suman
@@ -1254,12 +1406,37 @@ function VistaCards({ org, busca, setBusca, onAbrir, onEditarUnidad }) {
   )
 }
 
+/* LA CASILLA. Un checkbox de verdad y no un div con un ícono: el navegador ya sabe marcarlo con
+   la barra espaciadora, anunciarlo a un lector de pantalla y dibujar el tercer estado —el guion
+   de "algunos sí"— que un div tendría que fingir. Solo se le cambia la piel.
+
+   Frena el clic para que no llegue a la fila: la fila abre el cargo al doble clic y marcar dos
+   casillas seguidas rápido no puede terminar abriendo un modal. */
+function Casilla({ marcado, medio, onCambiar, etiqueta }) {
+  const ref = useRef(null)
+  useEffect(() => {
+    if (ref.current) ref.current.indeterminate = !marcado && !!medio
+  }, [marcado, medio])
+  return (
+    <input
+      ref={ref}
+      type="checkbox"
+      className="og-check"
+      checked={marcado}
+      onChange={onCambiar}
+      onClick={e => e.stopPropagation()}
+      onDoubleClick={e => e.stopPropagation()}
+      aria-label={etiqueta}
+    />
+  )
+}
+
 function TipoPill({ tipo }) {
   const t = tipoVisual(tipo)
   return <span className={`og-tipo og-tipo-${t.clase}`} title={t.desc}><t.Icon size={10} /> {t.label}</span>
 }
 
-function VistaTabla({ org, busca, setBusca, onAbrir }) {
+function VistaTabla({ org, busca, setBusca, onAbrir, onEliminarVarios }) {
   const [colapsados, setColapsados] = useState({})
   const grupos = useMemo(() => filasTabla(org), [org])
 
@@ -1277,14 +1454,70 @@ function VistaTabla({ org, busca, setBusca, onAbrir }) {
       .filter(g => g.filas.length > 0)
   }, [grupos, q])
 
+  /* LO ELEGIDO, para borrar de a muchos. Vive acá y no en la pantalla a propósito: al cambiar de
+     vista la tabla se desmonta y la selección se va con ella, que es lo que uno espera —volver
+     al dibujo y encontrar ocho cargos todavía marcados sería una bomba puesta hace rato—. */
+  const [elegidos, setElegidos] = useState(() => new Set())
+
+  /* Lo borrado deja de estar elegido solo. Sin esto la barra seguiría contando cargos que ya no
+     existen y el siguiente "Eliminar" pediría borrar fantasmas. */
+  useEffect(() => {
+    setElegidos(prev => {
+      if (prev.size === 0) return prev
+      const vivos = new Set(org.cargos.map(c => c.id))
+      const quedan = [...prev].filter(id => vivos.has(id))
+      return quedan.length === prev.size ? prev : new Set(quedan)
+    })
+  }, [org.cargos])
+
+  const alternar = id => setElegidos(prev => {
+    const s = new Set(prev)
+    if (s.has(id)) s.delete(id); else s.add(id)
+    return s
+  })
+
+  /* Marcar un grupo entero es marcar sus filas: la unidad en sí no se borra desde acá —un área
+     con cargos adentro está bloqueada por su propia regla— y una casilla que a veces borra un
+     área y a veces no sería imposible de explicar. */
+  const marcarVarios = (ids, poner) => setElegidos(prev => {
+    const s = new Set(prev)
+    for (const id of ids) poner ? s.add(id) : s.delete(id)
+    return s
+  })
+
+  /* Todo lo que se está viendo, filtro incluido: con "ventas" escrito arriba, la casilla del
+     encabezado marca los de ventas y no los 300 de la empresa. */
+  const idsVisibles = useMemo(() => visibles.flatMap(g => g.filas.map(f => f.cargo.id)), [visibles])
+  const todos = idsVisibles.length > 0 && idsVisibles.every(id => elegidos.has(id))
+  const algunos = idsVisibles.some(id => elegidos.has(id))
+
   return (
     <>
-      <div className="og-buscador-fila"><Buscador value={busca} onChange={setBusca} /></div>
+      {/* La barra va en la misma línea del buscador y no en una franja propia: el buscador ya
+          está empujado a la derecha, así que ocupa el hueco de la izquierda y la tabla no se
+          mueve un píxel cuando aparece. */}
+      <div className="og-buscador-fila">
+        <BarraSeleccion
+          cuantos={elegidos.size}
+          onSoltar={() => setElegidos(new Set())}
+          onEliminar={() => onEliminarVarios([...elegidos])}
+        />
+        <Buscador value={busca} onChange={setBusca} />
+      </div>
 
       <div className="og-tabla-wrap">
         <table className="og-tabla">
           <thead>
             <tr>
+              {/* La casilla del encabezado: marca lo que se está viendo, no toda la empresa. */}
+              <th className="og-th-check">
+                <Casilla
+                  marcado={todos}
+                  medio={algunos}
+                  onCambiar={() => marcarVarios(idsVisibles, !todos)}
+                  etiqueta={todos ? 'Desmarcar todos' : 'Marcar todos los cargos a la vista'}
+                />
+              </th>
               <th>Unidad organizacional / Cargo</th>
               {/* El código va después del nombre y no antes: se busca por nombre, se confirma por
                   código. Vacío se muestra con una raya, que dice "no tiene" sin ocupar lugar. */}
@@ -1295,16 +1528,28 @@ function VistaTabla({ org, busca, setBusca, onAbrir }) {
                   cuánto pesa. Es la única vista donde los niveles se comparan de corrido. */}
               <th>Nivel</th>
               <th>Colaborador</th>
-              <th>Reporta a</th>
+              <th>Depende de</th>
               <th className="og-th-acc">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {visibles.map(g => {
               const cerrado = !!colapsados[g.id]
+              const idsGrupo = g.filas.map(f => f.cargo.id)
               return (
                 <Fragment key={g.id}>
                   <tr className={`og-grupo${g.unidad?.padreId === null ? ' og-grupo-raiz' : ''}`}>
+                    {/* La casilla del grupo va en su propia celda y no dentro de la píldora: así
+                        cae en la misma columna que las de abajo y se lee como la cabecera de esa
+                        columna, que es lo que es. */}
+                    <td className="og-td-check">
+                      <Casilla
+                        marcado={idsGrupo.length > 0 && idsGrupo.every(id => elegidos.has(id))}
+                        medio={idsGrupo.some(id => elegidos.has(id))}
+                        onCambiar={() => marcarVarios(idsGrupo, !idsGrupo.every(id => elegidos.has(id)))}
+                        etiqueta={`Marcar los cargos de ${g.unidad?.nombre || 'sin unidad'}`}
+                      />
+                    </td>
                     <td colSpan={8}>
                       <div className="og-grupo-in">
                         <Building2 size={13} />
@@ -1321,9 +1566,16 @@ function VistaTabla({ org, busca, setBusca, onAbrir }) {
                   {!cerrado && g.filas.map(f => (
                     <tr
                       key={f.cargo.id}
-                      className={f.cargo.destacado ? 'og-fila-top' : undefined}
+                      className={[f.cargo.destacado && 'og-fila-top', elegidos.has(f.cargo.id) && 'og-fila-elegida'].filter(Boolean).join(' ') || undefined}
                       onDoubleClick={() => onAbrir(f.cargo)}
                     >
+                      <td className="og-td-check">
+                        <Casilla
+                          marcado={elegidos.has(f.cargo.id)}
+                          onCambiar={() => alternar(f.cargo.id)}
+                          etiqueta={`Marcar ${f.cargo.nombre}`}
+                        />
+                      </td>
                       <td>
                         <div className="og-cargo-cel" style={{ paddingLeft: f.nivel * 22 }}>
                           {f.nivel > 0 && <span className="og-sangria" />}
@@ -1691,6 +1943,17 @@ export default function Organigrama() {
 
   const confirmarBorrado = () => {
     if (!borrando) return
+    /* De a muchos: uno por uno sobre el resultado del anterior, para que la regla de siempre
+       —los reportes suben al jefe del que se va— se aplique en cadena cuando el jefe y el
+       subordinado estaban los dos marcados. */
+    if (borrando.tipo === 'cargos' || borrando.tipo === 'rama') {
+      setOrg(prev => borrando.ids.reduce((o, id) => eliminarCargo(id, o), prev))
+      /* La rama se pide desde la ficha, así que al confirmarla hay que cerrarla: quedaría
+         abierta mostrando un puesto que ya no existe. */
+      setEditando(null)
+      setBorrando(null)
+      return
+    }
     if (borrando.tipo === 'cargo') {
       setOrg(prev => eliminarCargo(borrando.obj.id, prev))
       setEditando(null)
@@ -1711,6 +1974,60 @@ export default function Organigrama() {
         <>
           ¿Eliminar la unidad <strong>{borrando.obj.nombre}</strong>? Está vacía —sin cargos ni
           sub-unidades—, así que no arrastra nada más. No se puede deshacer.
+        </>
+      )
+    }
+    /* LA RAMA. Acá los nombres SÍ se dicen: no son una selección que uno acaba de armar y tiene
+       fresca, son los que el árbol arrastra sin que nadie los haya elegido. Se listan hasta seis
+       y el resto se cuenta, que es donde una lista deja de leerse. Y el dibujo de atrás los tiene
+       pintados en rojo mientras esto se decide. */
+    if (borrando.tipo === 'rama') {
+      const cuelgan = borrando.ids.slice(1).map(id => org.cargos.find(c => c.id === id)?.nombre).filter(Boolean)
+      const gente = borrando.ids.filter(id => {
+        const c = org.cargos.find(x => x.id === id)
+        return c && ocupantesDe(c).length > 0
+      }).length
+      return (
+        <>
+          ¿Eliminar <strong>{borrando.obj.nombre}</strong> y los {cuelgan.length} puestos que dependen
+          de él? No se puede deshacer.
+          {' '}<em>{cuelgan.slice(0, 6).join(', ')}{cuelgan.length > 6 && ` y ${cuelgan.length - 6} más`}.</em>
+          {gente > 0 && (
+            <>
+              {' '}{gente} {gente === 1 ? 'persona se queda' : 'personas se quedan'} sin puesto en el organigrama.
+            </>
+          )}
+        </>
+      )
+    }
+    /* De a muchos, el aviso cuenta lo que arrastra en vez de nombrarlo: con doce elegidos, doce
+       nombres son una lista que nadie lee. Lo que importa es lo que NO se eligió y se mueve
+       igual —los reportes que quedan huérfanos— y la gente que se queda sin cuadro. */
+    if (borrando.tipo === 'cargos') {
+      const n = borrando.ids.length
+      const marcados = new Set(borrando.ids)
+      const huerfanos = org.cargos.filter(c => !marcados.has(c.id) && marcados.has(c.reportaA)).length
+      const conGente = borrando.ids.filter(id => {
+        const c = org.cargos.find(x => x.id === id)
+        return c && ocupantesDe(c).length > 0
+      }).length
+      return (
+        <>
+          {n === 1
+            ? <>¿Eliminar el puesto <strong>{org.cargos.find(x => x.id === borrando.ids[0])?.nombre}</strong>? No se puede deshacer.</>
+            : <>¿Eliminar los <strong>{n} puestos seleccionados</strong>? No se puede deshacer.</>}
+          {huerfanos > 0 && (
+            <>
+              {' '}Otros {huerfanos} {huerfanos === 1 ? 'cargo depende' : 'cargos dependen'}
+              {' '}de {n === 1 ? 'él' : 'alguno de los seleccionados'}:{' '}
+              {huerfanos === 1 ? 'pasa' : 'pasan'} a depender del jefe que quede por encima.
+            </>
+          )}
+          {conGente > 0 && (
+            <>
+              {' '}{conGente} {conGente === 1 ? 'persona se queda' : 'personas se quedan'} sin puesto en el organigrama.
+            </>
+          )}
         </>
       )
     }
@@ -1803,11 +2120,17 @@ export default function Organigrama() {
           {/* El color de la empresa se mudó a "Configurar colores": eran los dos juegos de color
               del organigrama repartidos en dos botones distintos de la misma barra, y nadie tenía
               por qué adivinar que la leyenda y la marca eran cosas distintas. */}
+          {/* Importar y Exportar son el mismo asunto —el archivo que entra y el que sale—, así
+              que van pegados y en ese orden: primero se carga el organigrama, después se lo
+              saca. La configuración se fue al final, que es donde vive un engranaje. */}
+          <button className="og-import" onClick={() => setImportar(true)} title="Importar el organigrama desde un Excel">
+            <ArrowUpFromLine size={13} /> <span className="og-seg-txt">Importar</span>
+          </button>
           {/* Exportar. Tres formatos porque son tres usos: la imagen que se pega en una
               presentación, el archivo que escala sin pixelarse, y el papel. */}
           <div className="og-marca">
             <button className="og-marca-btn" onClick={() => setExportAbierto(v => !v)} disabled={!!exportando} title="Exportar el organigrama">
-              <FileDown size={13} />
+              <ArrowDownToLine size={13} />
               {exportando ? 'Generando…' : 'Exportar'}
             </button>
             {/* El aviso cuelga del botón que falló y se va al volver a intentarlo. Sin él, un
@@ -1881,17 +2204,13 @@ export default function Organigrama() {
                     <Palette size={14} />
                     <div>
                       <strong>Configurar colores</strong>
-                      <small>El tono de cada significado de la leyenda</small>
+                      <small>El tono de cada clase de puesto y el color de tu empresa</small>
                     </div>
                   </button>
                 </div>
               </>
             )}
           </div>
-
-          <button className="og-import" onClick={() => setImportar(true)} title="Importar el organigrama desde un Excel">
-            <FileUp size={13} /> <span className="og-seg-txt">Importar</span>
-          </button>
           <div className="og-seg">
             {VISTAS.map(v => (
               <button
@@ -1940,6 +2259,10 @@ export default function Organigrama() {
               tree={tree}
               org={orgVisible}
               atenuado={noCoincide}
+              /* La rama en rojo mientras se confirma. Se pasa un predicado y no una lista
+                  porque es lo que ya hace el filtro con el atenuado, y una función que devuelve
+                  falso siempre es más barata que repartir un Set vacío por todo el árbol. */
+              condenado={borrando?.tipo === 'rama' ? c => borrando.ids.includes(c.id) : undefined}
               onAbrirCargo={nodo => setEditando({ cargo: nodo.cargo })}
               onAbrirUnidad={unidad => setEditandoUnidad({ unidad })}
               crear={crearEnNodo}
@@ -1955,6 +2278,7 @@ export default function Organigrama() {
               setBusca={setBusca}
               onAbrir={(c, aEditar) => setEditando({ cargo: c, editar: aEditar })}
               onEditarUnidad={u => setEditandoUnidad({ unidad: u, editar: true })}
+              onEliminarVarios={ids => setBorrando({ tipo: 'cargos', ids })}
             />
           )}
           {vista === 'tabla' && !vacio && (
@@ -1964,6 +2288,7 @@ export default function Organigrama() {
                 busca={busca}
                 setBusca={setBusca}
                 onAbrir={(c, aEditar) => setEditando({ cargo: c, editar: aEditar })}
+                onEliminarVarios={ids => setBorrando({ tipo: 'cargos', ids })}
               />
             </div>
           )}
@@ -2029,7 +2354,8 @@ export default function Organigrama() {
           esto la confirmación quedaría detrás de lo que viene a confirmar. */}
       {borrando && (
         <ConfirmarAccionModal
-          titulo={borrando.tipo === 'cargo' ? 'Eliminar cargo / puesto' : 'Eliminar unidad'}
+          titulo={{ cargo: 'Eliminar cargo / puesto', unidad: 'Eliminar unidad', rama: 'Eliminar la rama entera' }[borrando.tipo]
+            || `Eliminar ${borrando.ids?.length} ${borrando.ids?.length === 1 ? 'cargo' : 'cargos'}`}
           descripcion={avisoDeBorrado()}
           palabra="eliminar"
           textoConfirmar="Eliminar"
@@ -2048,6 +2374,13 @@ export default function Organigrama() {
           org={org}
           onGuardar={guardar}
           onEliminar={cargo => setBorrando({ tipo: 'cargo', obj: cargo })}
+          /* La ficha se cierra al pedir la rama, y no al confirmarla: es lo que deja ver el
+             dibujo con la rama pintada de rojo detrás del diálogo, que es la única razón de
+             pintarla. Con la ficha abierta encima, la advertencia volvía a ser un número. */
+          onEliminarRama={cargo => {
+            setBorrando({ tipo: 'rama', obj: cargo, ids: ramaDe(cargo.id, org) })
+            setEditando(null)
+          }}
           onCerrar={() => setEditando(null)}
         />
       )}

@@ -1,14 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import {
-  Plus, Minus, Home, Move, MousePointer2, Lightbulb, ScanSearch, ChevronsDownUp, Maximize2, X,
-  Hand, Wand2, Check, Search,
-} from 'lucide-react'
+import { Plus, Minus, Home, Maximize2, X, Wand2, Check, Search } from 'lucide-react'
 import { Rama } from './OrgNodos'
 import { buscarCargos } from '../../data/organigramaData'
 import { usePliegue, useDesglose } from './vistaArbol'
-import LeyendaColores from './LeyendaColores'
 import { useLienzo, ZOOM_MIN, ZOOM_MAX } from './useLienzo'
-import { useLocalStorage } from '../../hooks/useLocalStorage'
 
 /* El organigrama: el árbol se mira, se navega y se acomoda; la estructura se cambia en el
    formulario que abre el doble clic.
@@ -77,7 +72,7 @@ function alCostado(padre, lateral, aLaIzquierda) {
 
 export default function OrgGrafico({
   tree, org, onAbrirCargo, onAbrirUnidad, crear, desplazamientos, onMover, onAcomodar,
-  atenuado,
+  atenuado, condenado,
 }) {
   const { canvasRef, stageRef, zoom, setZoom, arrastrando, empezarArrastre, ajustar, centrar, estiloStage } =
     useLienzo({ tree, ignorarPan: '[data-no-pan]' })
@@ -87,7 +82,6 @@ export default function OrgGrafico({
   /* El recuadro de ayuda se cierra y queda como burbuja. Se recuerda entre sesiones porque a
      la tercera vez que uno lo lee ya no lo necesita, y volver a cerrarlo cada vez que entra a
      la pantalla lo convierte en un estorbo con instrucciones. */
-  const [ayudaAbierta, setAyudaAbierta] = useLocalStorage('organigramaAyuda', true)
 
   /* La búsqueda del lienzo. `hallado` es el cargo al que se acaba de saltar: se destaca un
      momento y se apaga solo, porque una marca permanente en un dibujo que se mira mucho tiempo
@@ -191,31 +185,52 @@ export default function OrgGrafico({
       /* La fila de laterales del PADRE: es lo que hay entre su cuadro y esta rama, y por debajo
          de lo cual tiene que pasar la barra horizontal. */
       const lat = padreLi?.querySelector(':scope > .og-nodo > .og-nodo-lat')
-      if (padre) {
-        lista.push({ id: `m${lista.length}`, padre, hijo, lat, lateral: false, punteada: externo(hijo) })
+      /* La fila de áreas cuelga del mismo jefe que la de cargos, pero un renglón más abajo. Su
+         codo no puede doblar a media altura —cruzaría los cargos— así que baja por el canal que
+         la fila de cargos deja libre y recién dobla por debajo de ella. Es el mismo `piso` que
+         ya usaban los laterales, con otro suelo. */
+      const enAreas = !!li.parentElement?.closest('.og-fila-areas')
+      const piso = (enAreas && padreLi?.querySelector(':scope > .og-fila-cargos')) || lat
+      const fila = enAreas ? 'areas' : 'cargos'
+      /* El cuadro que encabeza un carril lateral ya recibe su línea por `alCostado`. Sin esta
+         salvedad se le dibujaría ADEMÁS el codo normal desde el jefe —el recorrido lo ve como un
+         `li` cualquiera— y quedarían dos trazos distintos para el mismo vínculo. Lo que cuelga de
+         él sí pasa por acá, como cualquier reporte. */
+      const raizLateral = li.parentElement?.classList.contains('og-lat-rama')
+      if (padre && !raizLateral) {
+        lista.push({ id: `m${lista.length}`, padre, hijo, lat: piso, fila, lateral: false, punteada: externo(hijo) })
         for (const par of paresDe(li)) {
-          lista.push({ id: `m${lista.length}`, padre, hijo: par, lat, lateral: false, punteada: externo(par) })
+          lista.push({ id: `m${lista.length}`, padre, hijo: par, lat: piso, fila, lateral: false, punteada: externo(par) })
         }
       }
 
+      /* Cada lateral es ahora una RAMA y no una tarjeta suelta, así que su cuadro está un par de
+         niveles más adentro. Lo que cuelga de él no se busca acá: son `li` normales y el recorrido
+         de arriba les da su codo como a cualquier reporte. */
       for (const bloque of li.querySelectorAll(':scope > .og-nodo > .og-nodo-lat > .og-staff')) {
         const aLaIzquierda = bloque.classList.contains('og-staff-izq')
-        for (const tarjeta of bloque.querySelectorAll(':scope > .og-card-col > .og-card')) {
-          lista.push({ id: `l${lista.length}`, padre: hijo, hijo: tarjeta, lateral: true, punteada: true, aLaIzquierda })
+        for (const rama of bloque.querySelectorAll(':scope > .og-lat-rama')) {
+          const tarjeta = propio(rama.firstElementChild)
+          if (tarjeta) lista.push({ id: `l${lista.length}`, padre: hijo, hijo: tarjeta, lateral: true, punteada: true, aLaIzquierda })
         }
       }
     }
     /* Quiénes comparten barra. Se arma después del recorrido porque una fila solo se conoce
        entera cuando ya pasaron todos sus `li`, y se guardan los ELEMENTOS y no sus medidas: los
        trazos se recalculan con cajas frescas en cada zoom y en cada paso de un arrastre. */
+    /* Se agrupa por padre Y POR FILA: un jefe con cargos propios y áreas colgando tiene dos
+       renglones, y medirlos juntos daba una sola barra a la altura del de arriba —las áreas
+       doblaban donde estaban los cargos—. */
     const porPadre = new Map()
     for (const a of lista) {
       if (a.lateral) continue
-      const fila = porPadre.get(a.padre)
+      let filas = porPadre.get(a.padre)
+      if (!filas) porPadre.set(a.padre, (filas = new Map()))
+      const fila = filas.get(a.fila)
       if (fila) fila.push(a.hijo)
-      else porPadre.set(a.padre, [a.hijo])
+      else filas.set(a.fila, [a.hijo])
     }
-    for (const a of lista) if (!a.lateral) a.hermanos = porPadre.get(a.padre)
+    for (const a of lista) if (!a.lateral) a.hermanos = porPadre.get(a.padre).get(a.fila)
 
     aristas.current = lista
     setTrazos(lista.map(a => ({ id: a.id, d: trazoDe(a, caja), punteada: a.punteada })))
@@ -309,29 +324,22 @@ export default function OrgGrafico({
         </svg>
 
         <ul className="og-tree og-tree-libre">
-          <Rama nodo={tree} onAbrir={onAbrirCargo} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} atenuado={atenuado} />
+          <Rama nodo={tree} onAbrir={onAbrirCargo} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} atenuado={atenuado} condenado={condenado} />
         </ul>
       </div>
 
-      {/* Qué significa lo que se ve y qué se puede hacer, en el mismo recuadro: son las dos
-          mitades de la misma pregunta y separarlas apilaba dos paneles sobre el dibujo. */}
-      {ayudaAbierta ? (
-        <div className="og-atajos">
-          <button className="og-atajos-x" onClick={() => setAyudaAbierta(false)} title="Esconder la ayuda">
-            <X size={12} />
-          </button>
+      {/* SE FUERON LA LEYENDA Y LOS ATAJOS. Un panel fijo al costado explicando qué significa
+          cada color y cómo se arrastra es documentación en lugar de diseño: tapa el dibujo que
+          viene a explicar y, como nadie lo lee, lo tapa para nada. Arrastrar se descubre
+          arrastrando.
 
-          <LeyendaColores />
-          <div className="og-atajos-sep" />
-          <div className="og-atajos-hd"><Lightbulb size={11} /> Atajos</div>
-          <div className="og-atajo"><Hand size={10} /> Arrastra un cuadro → Acomodarlo</div>
-          <div className="og-atajo"><Move size={10} /> Arrastra el fondo → Mover la vista</div>
-          <div className="og-atajo"><ScanSearch size={10} /> Rueda → Zoom</div>
-          <div className="og-atajo"><MousePointer2 size={10} /> Doble clic → Abrir el detalle</div>
-          <div className="og-atajo"><ChevronsDownUp size={10} /> Flecha del cuadro → Plegar rama</div>
-
-          {/* Los dos botones aparecen solo cuando hay algo que deshacer: uno para revertir lo
-              que nadie hizo enseña a ignorar la fila donde vive. */}
+          LO QUE SÍ QUEDA SON LOS DOS BOTONES, porque no explicaban nada: deshacían algo. Volver a
+          abrir lo plegado y volver al acomodo automático son las dos únicas formas de revertir
+          gestos que se hacen sobre el lienzo, y sin ellas no hay vuelta atrás. Aparecen solo
+          cuando hay algo que deshacer: un botón para revertir lo que nadie hizo enseña a ignorar
+          la esquina donde vive. */}
+      {(pliegue.plegados.size > 0 || movidos > 0) && (
+        <div className="og-deshacer">
           {pliegue.plegados.size > 0 && (
             <button className="og-atajo og-atajo-btn" onClick={pliegue.abrirTodo}>
               <Maximize2 size={10} /> Abrir las {pliegue.plegados.size} ramas plegadas
@@ -343,17 +351,6 @@ export default function OrgGrafico({
             </button>
           )}
         </div>
-      ) : (
-        /* Cerrada, la ayuda no desaparece: se encoge a una burbuja en el mismo lugar. Si se
-           fuera del todo, el que la cerró sin querer se queda sin la leyenda y sin forma de
-           saber que existía. */
-        <button
-          className="og-ayuda-burbuja"
-          onClick={() => setAyudaAbierta(true)}
-          title="Cómo se lee el organigrama y atajos"
-        >
-          <Lightbulb size={17} />
-        </button>
       )}
 
       {/* BUSCAR EN EL DIBUJO. En la tabla y en las cards alcanza con filtrar la lista; acá el

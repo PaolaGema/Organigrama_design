@@ -84,7 +84,7 @@ export function Desglosadas({ ocupantes, cargo }) {
   )
 }
 
-export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, hallado, crear, atenuado, escalon = 0 }) {
+export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, hallado, crear, atenuado, condenado, escalon = 0 }) {
   const { cargo, vacante, funcional } = nodo
   /* El MISMO cargo puede tener dos cuadros: el suyo, en su área, y el de apoyo en el área donde
      ayuda. La clave del acomodo la trae el nodo para que arrastrar uno no arrastre al otro. */
@@ -118,6 +118,11 @@ export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, halla
      subordinados colgando de la nada y partiría la línea de mando, que es lo que uno vino a
      mirar. Apagado sigue estando —se ve dónde encaja lo que sí coincide— y sigue abriéndose. */
   if (atenuado?.(cargo)) clases.push('og-card-apagada')
+  /* CONDENADO: los cuadros que se lleva la rama que se está por borrar, pintados mientras la
+     confirmación está abierta. El diálogo es más chico que el lienzo, así que la rama roja se ve
+     alrededor: se ve QUÉ se va antes de escribir la palabra, en vez de tener que confiar en un
+     número. */
+  if (condenado?.(cargo)) clases.push('og-card-condenada')
   /* La misma condición que abre el chip: un estado abierto que quedó guardado de antes no
      tiene que dibujar una cajita de nadie. */
   const abierto = desglose?.abiertos.has(cargo.id) && hayQueDesplegar(nodo)
@@ -178,9 +183,24 @@ export function TarjetaCargo({ nodo, onAbrir, plegable, acomodo, desglose, halla
   )
 }
 
-function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, hallado, crear, atenuado, escalon = 0 }) {
+function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, hallado, crear, atenuado, condenado, escalon = 0 }) {
+  /* EL RÓTULO VA SOLO ACÁ. Un nombre propio no dice de qué clase es lo que nombra: "SoulyHR"
+     podía leerse igual como un área llamada así, porque esta caja y la píldora de un área son
+     las dos un rectángulo redondeado, oscuro, con texto blanco centrado —de hecho comparten
+     color: la píldora es este mismo tono aclarado un 24 %—. Al zoom con el que se mira un
+     organigrama entero, eso no alcanza para distinguirlos.
+
+     Repetirlo en cada píldora sería ruido: lo que se repite en todos los hermanos no distingue
+     a ninguno. Acá no hay hermanos: la caja de la organización es una sola en todo el dibujo,
+     así que el rótulo se paga una vez y desambigua las dos cosas a la vez. */
   if (nodo.tipo === 'empresa') {
-    return <div className="og-empresa">{nodo.empresa.nombre}{plegable}</div>
+    return (
+      <div className="og-empresa">
+        <span className="og-empresa-rot">Organización</span>
+        {nodo.empresa.nombre}
+        {plegable}
+      </div>
+    )
   }
   if (nodo.tipo === 'unidad') {
     /* La píldora se agarra igual que un cuadro, pero lo que se mueve es su RAMA entera: un
@@ -209,7 +229,7 @@ function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, halla
       </div>
     )
   }
-  return <TarjetaCargo nodo={nodo} onAbrir={onAbrir} plegable={plegable} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} atenuado={atenuado} escalon={escalon} />
+  return <TarjetaCargo nodo={nodo} onAbrir={onAbrir} plegable={plegable} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} atenuado={atenuado} condenado={condenado} escalon={escalon} />
 }
 
 /* Cuántos cargos se esconden al plegar. Se cuenta lo que hay ABAJO —la rama entera, con los
@@ -247,26 +267,80 @@ function BotonPlegar({ nodo, ocultos, pliegue }) {
    igual, y es la ÚNICA forma de decirlo cuando entre ellos no hay línea —tres cabezas sin jefe
    se dibujan idénticas, porque no hay reporte del cual colgar la diferencia—.
 
-   Medio cuadro y no una fila entera: a 96 px los cuadros dejan de tocarse de costado y el ojo
-   completa la línea que falta, o sea que se lee "el de abajo le reporta al de arriba", que es
-   justo lo contrario de lo que pasa. A 32 se siguen solapando y se leen como una fila. */
-const PASO_ESCALON = 32
+   UN CUADRO, NO MEDIO. Empezó en 32 px —medio cuadro— por miedo a que separados del todo se
+   leyeran como dos niveles: sin tocarse de costado, el ojo completa la línea que falta y parece
+   que el de abajo le reporta al de arriba. Puesto en pantalla, el miedo pesaba menos que el
+   problema real: a 32 px la diferencia no se ve, y un escalón que no se nota no dice nada.
 
-/* El nivel más ALTO de una fila de hermanos, que es la referencia contra la cual bajan los
-   demás. Se mide por fila y no contra el catálogo entero: una fila de puros mandos bajos se
-   dibuja pareja, sin quedar hundida contra un techo que en ese lugar del dibujo no está. */
+   Y lo que despeja el miedo es la línea, que no está: los dos bajan de la MISMA barra del mismo
+   jefe, solo que el de menor rango baja con un tramo más largo. Entre ellos no hay ni un trazo,
+   y eso es lo que dice que son hermanos y no uno el jefe del otro. */
+const PASO_ESCALON = 72
+
+/* El nivel más ALTO de una fila de hermanos. Ya solo lo usan las cabezas sin jefe, que se miden
+   entre ellas porque no tienen contra quién más medirse. */
 const techoDe = hermanos => {
   const ordenes = hermanos.map(n => n.grado?.orden).filter(Boolean)
   return ordenes.length ? Math.min(...ordenes) : 0
 }
 
-export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose, hallado, crear, atenuado, techo = 0 }) {
+export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose, hallado, crear, atenuado, condenado, nivelJefe = 0, techo = 0 }) {
   const hijos = nodo.hijos || []
   const laterales = nodo.staff || []
-  /* Sin nivel declarado no se mueve de su sitio. Declarar el de UNO no puede correr a los otros
-     seis: lo que no se dijo no es "el más alto", es que todavía no se dijo. */
-  const escalon = techo && nodo.grado ? (nodo.grado.orden - techo) * PASO_ESCALON : 0
-  const techoHijos = techoDe(hijos)
+  /* EL ESCALÓN MIDE CONTRA EL JEFE, no contra los hermanos de la fila. La pregunta que contesta
+     es "¿cuántos rangos hay entre mi jefe y yo?": un reporte directo un nivel por debajo queda a
+     ras, dos niveles por debajo baja un escalón, y así.
+
+     Antes se medía contra el hermano más alto de la misma fila, y eso se caía justo cuando la
+     fila tiene un solo cuadro: el más alto de la fila era uno mismo, la resta daba cero y no
+     bajaba nada. Con un ejecutivo de mando bajo colgando de un líder y un pasante de nivel
+     asistente colgando de otro líder del mismo rango, los dos se dibujaban a la misma altura
+     aunque uno pese un rango menos que el otro. Medir contra el jefe funciona con un hijo o con
+     seis, y no acumula huecos hacia abajo como lo haría medir contra el catálogo entero.
+
+     CON RESPALDO EN LOS HERMANOS, y hace falta: si el jefe no declaró su nivel no hay contra qué
+     medir, y medir contra nada dejaba a TODOS sus hijos a ras —un líder de mando bajo y un
+     pasante de nivel asistente colgando del mismo jefe sin nivel se dibujaban idénticos, como
+     pares—. Cuando el jefe no dice nada, se vuelve a comparar contra el hermano más alto de la
+     fila, que es lo que hacía la regla anterior y sigue siendo cierto ahí.
+
+     Así que la referencia es una sola cosa con dos orígenes: el peldaño inmediatamente por
+     debajo del jefe si el jefe tiene nivel, y si no, el peldaño más alto que haya en la fila.
+
+     Sin nivel declarado el cuadro no se mueve de su sitio: lo que no se dijo no es "el más
+     alto", es que todavía no se dijo. */
+  const referencia = nivelJefe ? nivelJefe + 1 : techo
+  const escalon = referencia && nodo.grado
+    ? Math.max(0, nodo.grado.orden - referencia) * PASO_ESCALON
+    : 0
+  /* Lo que heredan los hijos. Las píldoras de área y la caja de la empresa no son mando: pasan
+     de largo el nivel que recibieron, porque entre un jefe y su reporte de otra área hay
+     píldoras en el medio y ninguna cambia quién manda a quién. */
+  const nivelParaHijos = nodo.tipo === 'cargo' ? (nodo.grado?.orden ?? 0) : nivelJefe
+
+  /* UNA FILA, UNA CLASE. Un jefe puede tener colgando dos cosas que no se comparan: puestos de
+     su propia área y áreas enteras. Puestas en el mismo renglón se leen como iguales —crear
+     "Recursos Humanos" bajo el Gerente General la dibujaba de par del CTO—, así que los cargos
+     se quedan en su fila y las áreas bajan a una propia.
+
+     Se decide acá y no al armar el árbol a propósito: es dónde se dibuja cada cuadro, no de
+     quién depende. El dato no cambia, y por eso el mismo reparto arregla los dos caminos por
+     los que un área llega a esta fila —la que ya tiene puestos y la que todavía no—.
+
+     Solo se reparte cuando hay de las dos: un jefe que solo manda áreas —el caso corriente— se
+     dibuja exactamente como antes. */
+  const cargosHijos = hijos.filter(h => h.tipo !== 'unidad')
+  const areasHijas = hijos.filter(h => h.tipo === 'unidad')
+  const partido = cargosHijos.length > 0 && areasHijas.length > 0
+  /* El techo de cada renglón, que es el respaldo cuando el jefe no declaró nivel. Se mide por
+     renglón y no entre los dos: partida la fila, cada uno tiene sus propios hermanos. */
+  const techoCargos = partido ? techoDe(cargosHijos) : techoDe(hijos)
+  /* EL CANAL. La fila de cargos se abre al medio y por ahí sigue bajando la línea del jefe hacia
+     las áreas: dos cuadros quedan uno a cada lado, cuatro quedan dos y dos, tres quedan dos y
+     uno. Se probó la alternativa —dejar la fila entera centrada y hacer que la línea rodeara por
+     un carril lateral— y se ve peor: la línea queda por fuera del dibujo, lejos de todo, en vez
+     de seguir bajando por donde uno la busca. */
+  const corte = Math.ceil(cargosHijos.length / 2)
 
   /* Las otras cabezas van a los dos costados por la misma razón que los laterales: apiladas de
      un solo lado corren el cuadro y lo despegan del conector que baja hacia sus hijos. */
@@ -285,7 +359,7 @@ export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose,
       acomodo={acomodo}
       desglose={desglose}
       hallado={hallado}
-      atenuado={atenuado}
+      atenuado={atenuado} condenado={condenado}
       crear={crear}
       escalon={escalonCabeza(par)}
     />
@@ -302,10 +376,32 @@ export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose,
   /* SIN "+" EN LOS LATERALES. De un puesto de staff no cuelga nada: `nodoCargo` los arma con
      `nodoSuelto`, que no trae `hijos`, así que un cargo que le reportara se guardaría bien y
      no aparecería en el dibujo nunca. Un botón que ofrece eso miente. */
+  /* CADA LATERAL ES UNA RAMA, no una tarjeta suelta. Antes era `TarjetaCargo` a secas y por eso
+     lo que colgaba de un staff no se dibujaba en ninguna parte. Ahora el carril lleva un árbol
+     como cualquier otro, así que un asistente con su propio auxiliar se ve completo. */
   const bloque = (lista, lado) => (
     <div className={`og-staff og-staff-${lado}`}>
-      {lista.map(s => <TarjetaCargo key={s.id} nodo={s} onAbrir={onAbrir} acomodo={acomodo} desglose={desglose} hallado={hallado} atenuado={atenuado} />)}
+      {lista.map(s => <ul className="og-lat-rama" key={s.id}>{sub(s)}</ul>)}
     </div>
+  )
+
+  /* Una rama hija, con el nivel de mando de quien la manda: es contra ese nivel que va a medir
+     su escalón, esté sola en la fila o acompañada. */
+  const sub = (h, techoFila = 0) => (
+    <Rama
+      key={h.id}
+      nodo={h}
+      onAbrir={onAbrir}
+      onAbrirUnidad={onAbrirUnidad}
+      pliegue={pliegue}
+      acomodo={acomodo}
+      desglose={desglose}
+      hallado={hallado}
+      crear={crear}
+      atenuado={atenuado} condenado={condenado}
+      nivelJefe={nivelParaHijos}
+      techo={techoFila}
+    />
   )
 
   const ocultos = pliegue ? contarCargos(hijos) : 0
@@ -346,7 +442,7 @@ export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose,
             desglose={desglose}
             hallado={hallado}
             crear={crear}
-            atenuado={atenuado}
+            atenuado={atenuado} condenado={condenado}
             escalon={cabeza ? escalonCabeza(nodo) : 0}
             plegable={ocultos > 0 && <BotonPlegar nodo={nodo} ocultos={ocultos} pliegue={pliegue} />}
           />
@@ -368,10 +464,21 @@ export function Rama({ nodo, onAbrir, onAbrirUnidad, pliegue, acomodo, desglose,
           </div>
         )}
       </div>
-      {hijos.length > 0 && !plegado && (
-        <ul>
-          {hijos.map(h => <Rama key={h.id} nodo={h} onAbrir={onAbrir} onAbrirUnidad={onAbrirUnidad} pliegue={pliegue} acomodo={acomodo} desglose={desglose} hallado={hallado} crear={crear} atenuado={atenuado} techo={techoHijos} />)}
-        </ul>
+      {hijos.length > 0 && !plegado && (partido
+        ? (
+          <>
+            {/* Dos listas y no una partida por dentro: cada mitad sigue siendo un `ul` con sus
+                `li`, que es lo que el trazado de líneas recorre para saber quién cuelga de quién
+                —desde un `li` de adentro, el `li` padre sigue siendo el de siempre—. */}
+            <div className="og-fila-cargos">
+              <ul className="og-lado og-lado-izq">{cargosHijos.slice(0, corte).map(h => sub(h, techoCargos))}</ul>
+              <ul className="og-lado og-lado-der">{cargosHijos.slice(corte).map(h => sub(h, techoCargos))}</ul>
+            </div>
+            {/* Las áreas no llevan escalón: el nivel de mando es del puesto, no del área. */}
+            <ul className="og-fila-areas">{areasHijas.map(h => sub(h))}</ul>
+          </>
+        )
+        : <ul>{hijos.map(h => sub(h, techoCargos))}</ul>
       )}
     </li>
   )

@@ -92,7 +92,7 @@ function TarjetaCargo({ fila }) {
 
       {jefeNombre && (
         <div style={{ fontSize: 5.5, color: '#94a3b8', marginTop: 6 }}>
-          ↑ Reporta a <span style={{ color: '#0C2D40', fontWeight: 700 }}>{jefeNombre}</span>
+          ↑ Depende de <span style={{ color: '#0C2D40', fontWeight: 700 }}>{jefeNombre}</span>
         </div>
       )}
 

@@ -35,7 +35,8 @@
   --bg-sidebar: #ffffff;
   --surface-card: #ffffff;
   --surface-hover: #F1F5F9;
-  --table-head-bg: #EEF2F6;
+  --table-head-bg: #DFE6EE;
+  --table-head-txt: #475569;
   --input-bg: #F9FAFB;
   --r-lg: 20px;
   --r-md: 10px;
@@ -76,7 +77,8 @@
   --bg-sidebar: #081722;
   --surface-card: #102332;
   --surface-hover: #163041;
-  --table-head-bg: #0C1B29;
+  --table-head-bg: #22405A;
+  --table-head-txt: #C6D2DE;
   --input-bg: #102332;
   --shadow-card: 0 8px 30px rgba(0,0,0,.25);
   --sh-sm: 0 1px 3px rgba(0,0,0,.2);
@@ -3450,39 +3452,88 @@ select.pl-input:focus {
    Un renglón por peldaño: el número que sale del orden, el nombre editable, y las tres cosas
    que se le pueden hacer. Angosto a propósito —la lista suele tener tres o cuatro— y sin
    recuadro alrededor de cada fila: son renglones de una lista, no tarjetas. */
-.og-modal-mandos { width: 560px; }
+.og-modal-mandos { width: 860px; max-width: calc(100vw - 40px); }
+/* Partido en dos como el formulario del cargo: lo que se edita a la izquierda, lo que resulta a
+   la derecha. No usa `pl-modal-body` porque ese trae su propio relleno y acá cada mitad tiene el
+   suyo, con un fondo distinto de por medio. */
+.og-mandos-cuerpo { display: grid; grid-template-columns: 1.2fr .8fr; align-items: start; }
+.og-mandos-editar { padding: 20px 24px 24px; min-width: 0; }
+.og-mandos-previa {
+  padding: 20px 22px 24px; min-width: 0; align-self: stretch;
+  background: var(--surface-hover); border-left: 1px solid var(--border);
+}
+.og-mandos-rot {
+  margin: 0 0 14px; font-size: 9.5px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.og-escala { display: block; width: 100%; height: auto; }
+.og-escala-caja { fill: var(--surface-card); stroke: var(--border-dark); stroke-width: 1.3; }
+.og-escala-n { fill: #fff; font-size: 9px; font-weight: 800; text-anchor: middle; }
+.og-escala-txt { fill: var(--text-heading); font-size: 9.5px; font-weight: 700; text-anchor: middle; }
+
 .og-mandos-intro { margin: 0 0 18px; font-size: 12.5px; line-height: 1.6; color: var(--text-muted); }
 .og-mandos-intro strong { color: var(--text-heading); font-weight: 600; }
 
-.og-mandos-lista { display: flex; flex-direction: column; gap: 9px; }
-.og-mando-fila { display: flex; align-items: flex-start; gap: 12px; }
-/* El número es de lectura, no un campo: sale del lugar en la lista y se renumera solo al
-   moverlo. Tabular para que uno y dos dígitos no muevan el nombre de sitio. */
-.og-mando-n {
-  flex-shrink: 0; width: 28px; height: 34px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--surface-hover); color: var(--text-heading);
-  font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
+/* LAS DOS PUNTAS DEL EJE. Sin nombrar los extremos, cinco renglones iguales no dicen para qué
+   lado crece la escalera. */
+.og-mandos-punta {
+  margin: 0 0 7px; padding-left: 45px;
+  font-size: 9.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-muted);
 }
+.og-mandos-punta-fin { margin: 8px 0 0; }
+
+/* Se probó un riel vertical uniendo los discos, como la línea del organigrama, y se sacó: entre
+   discos separados por 8 px quedaban dos píxeles de línea asomando en cada hueco y se leían como
+   suciedad. Los discos apagándose y las puntas del eje ya dicen para qué lado crece. */
+.og-mandos-lista { display: flex; flex-direction: column; gap: 8px; }
+.og-mando-fila { display: flex; align-items: flex-start; gap: 11px; }
+/* El que está en la mano se levanta del resto para que se vea cuál se está moviendo. */
+.og-mando-fila.en-mano { position: relative; z-index: 2; }
+.og-mando-fila.en-mano .pl-input { border-color: var(--navy); box-shadow: 0 6px 16px -8px rgba(12,45,64,.5); }
+
+/* EL DISCO ES EL ASA. Dice en qué posición estás y es con lo que la cambias: en reposo el
+   número, con el mouse encima la agarradera. Así no aparece ningún control nuevo —desaparecen
+   las dos flechas por renglón— y lo que se toca es lo que ya estaba diciendo lo que se va a
+   cambiar. Lleva `touch-action: none` para que el dedo arrastre en vez de hacer scroll. */
+.og-mando-n {
+  flex-shrink: 0; position: relative; touch-action: none; cursor: grab;
+  width: 33px; height: 33px; padding: 0; border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--navy) calc(var(--peso, 1) * 100%), var(--surface-card));
+  color: #fff; font-family: inherit; font-size: 12.5px; font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.og-mando-n:active, .og-mando-fila.en-mano .og-mando-n { cursor: grabbing; }
+.og-mando-asa { position: absolute; opacity: 0; }
+.og-mando-n:hover .og-mando-num,
+.og-mando-n:focus-visible .og-mando-num,
+.og-mando-fila.en-mano .og-mando-num { opacity: 0; }
+.og-mando-n:hover .og-mando-asa,
+.og-mando-n:focus-visible .og-mando-asa,
+.og-mando-fila.en-mano .og-mando-asa { opacity: 1; }
+
 .og-mando-campo { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.og-mando-campo .pl-input { height: 34px; }
-.og-mando-pie, .og-mando-error { font-size: 10.5px; font-weight: 600; padding-left: 2px; }
-.og-mando-pie { color: var(--text-muted); }
-.og-mando-error { color: var(--red); }
+/* El campo y el contador en la MISMA línea: colgado abajo, cada renglón medía distinto y la
+   columna se veía rota. */
+.og-mando-linea { display: flex; align-items: center; gap: 10px; }
+.og-mando-linea .pl-input { flex: 1; min-width: 0; height: 33px; }
+.og-mando-usan {
+  flex-shrink: 0; font-size: 10.5px; font-weight: 700; color: var(--text-muted);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.og-mando-usan.vacio { opacity: .55; font-weight: 600; font-style: italic; }
+.og-mando-error { font-size: 10.5px; font-weight: 600; padding-left: 2px; color: var(--red); }
 .og-mando-fila.con-error .pl-input { border-color: var(--red); }
 
-.og-mando-acc { display: flex; align-items: center; gap: 4px; height: 34px; flex-shrink: 0; }
-.og-mando-acc button {
-  width: 28px; height: 28px; border-radius: 7px;
+/* Suelto y sin recuadro: no compite con el asa, y hace algo de otra naturaleza —una acomoda la
+   escalera, la otra destruye un peldaño—. */
+.og-mando-x {
+  flex-shrink: 0; width: 27px; height: 33px; border: none; background: none;
   display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--border); background: var(--surface-card);
-  color: var(--icon-muted); cursor: pointer;
+  color: var(--icon-muted); cursor: pointer; border-radius: 8px;
 }
-.og-mando-acc button:hover:not(:disabled) { border-color: var(--border-dark); color: var(--text-heading); }
-/* Apagado y no escondido: el primero nunca sube y el último nunca baja, y un botón que
-   desaparece en los extremos deja la fila de controles cambiando de ancho renglón a renglón. */
-.og-mando-acc button:disabled { opacity: .3; cursor: default; }
-.og-mando-x:hover { border-color: var(--red) !important; color: var(--red) !important; }
+.og-mando-x:hover { color: var(--red); background: var(--red-bg); }
 
 .og-mandos-add {
   width: 100%; margin-top: 12px; padding: 11px;
@@ -3498,77 +3549,129 @@ select.pl-input:focus {
   font-size: 11.5px; line-height: 1.5;
 }
 .og-mandos-vacio svg { flex-shrink: 0; margin-top: 2px; }
-
-/* ── COLORES DE LA LEYENDA ────────────────────────────────────────
-   Cada renglón lleva el CUADRO DE VERDAD y no un círculo de color: lo que hay que decidir es
-   cómo va a quedar un borde punteado con su relleno detrás y su texto encima, y eso una muestra
-   redonda no lo enseña. Es el mismo `.og-card` del dibujo, encogido. */
-.og-modal-colores { width: 620px; }
-.og-col-lista { display: flex; flex-direction: column; gap: 4px; }
-.og-col-fila {
-  display: flex; align-items: center; gap: 16px;
-  padding: 12px 4px; border-bottom: 1px solid var(--border-soft);
+/* La regla del escalón: informativa y no una alerta. Va con su dibujo porque en dos cuadros se
+   ve, y en un párrafo hay que leerlo dos veces. */
+.og-mandos-regla {
+  margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 10px;
 }
-.og-col-fila:last-child { border-bottom: none; }
+.og-mandos-regla p { margin: 0; font-size: 11.5px; line-height: 1.55; color: var(--text-muted); }
+.og-mandos-regla strong { color: var(--text-heading); font-weight: 700; }
+.og-mandos-regla svg { width: 124px; height: 46px; }
+.og-mandos-regla .rg-caja { fill: var(--surface-card); stroke: var(--border-dark); stroke-width: 1.5; }
+.og-mandos-regla .rg-baja { stroke: var(--navy); stroke-width: 2; fill: color-mix(in srgb, var(--navy) 10%, var(--surface-card)); }
+.og-mandos-regla .rg-linea { fill: none; stroke: var(--border-dark); stroke-width: 1.5; }
 
-/* Tamaño fijo y sin sombra: acá no es un nodo que se arrastra, es una muestra. */
-.og-col-muestra {
-  flex-shrink: 0; width: 150px; min-width: 0; max-width: none;
-  box-shadow: none; cursor: default; transform: scale(.92); transform-origin: left center;
+/* Angosto: las dos mitades se apilan y la previa pasa a ser un pie, no una columna. */
+@media (max-width: 900px) {
+  .og-mandos-cuerpo { grid-template-columns: 1fr; }
+  .og-mandos-previa { border-left: 0; border-top: 1px solid var(--border); }
+  .og-colores-cuerpo { grid-template-columns: 1fr; }
+  .og-colores-previa { border-left: 0; border-top: 1px solid var(--border); }
 }
-.og-col-muestra:hover { border-color: var(--border); box-shadow: none; }
 
-.og-col-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+
+/* ── COLORES DEL ORGANIGRAMA ──────────────────────────────────────
+   Partido en dos como la escalera de mandos: los cinco tonos a la izquierda y a la derecha UN
+   SOLO dibujo con todos conviviendo. Antes cada color traía su propia muestra suelta y la marca
+   su previa aparte, así que se elegían cinco cosas destinadas a compartir el mismo dibujo sin
+   verlas nunca juntas —y un violeta mirado contra el blanco no dice si se va a distinguir del
+   azul de al lado, que es exactamente lo único que hay que saber—. */
+.og-modal-colores { width: 820px; max-width: calc(100vw - 40px); }
+/* No usa `pl-modal-body`: ese trae su propio relleno y acá cada mitad tiene el suyo, con un
+   fondo distinto de por medio. */
+.og-colores-cuerpo { display: grid; grid-template-columns: 1.15fr .85fr; align-items: start; }
+.og-colores-editar { padding: 20px 24px 24px; min-width: 0; }
+.og-colores-previa {
+  padding: 20px 22px 26px; min-width: 0; align-self: stretch;
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--surface-hover); border-left: 1px solid var(--border);
+}
+
+/* El rótulo es lo que dice que la leyenda y la marca no son la misma cosa: sin él son ocho
+   controles de color en una lista y hay que deducir la diferencia. */
+.og-colores-rot {
+  align-self: flex-start; display: flex; align-items: center; gap: 6px;
+  margin: 0 0 12px; font-size: 9.5px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.og-colores-rot-sep {
+  align-self: stretch; margin-top: 24px; padding-top: 20px;
+  border-top: 1px solid var(--border-soft);
+}
+
+/* ---- los cinco renglones ----
+   Renglones de una lista y no tarjetas: cinco cuadritos enmarcados serían cinco cosas donde hay
+   una sola —la paleta—. */
+.og-col-lista { display: flex; flex-direction: column; }
+.og-col-fila { display: flex; align-items: center; gap: 13px; padding: 9px 2px; }
+.og-col-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .og-col-txt strong { font-size: 12.5px; font-weight: 700; color: var(--text-heading); }
-.og-col-txt small { font-size: 11px; line-height: 1.5; color: var(--text-muted); }
+.og-col-txt small { font-size: 11px; line-height: 1.45; color: var(--text-muted); }
 
-.og-col-acc { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-/* El `input[type=color]` lo dibuja el sistema operativo y no hay dos iguales: se esconde
-   detrás de una muestra propia que sí combina con el resto del producto. */
-.og-col-pick { position: relative; display: block; width: 34px; height: 34px; cursor: pointer; }
+/* Los cinco tonos de la fila. Discos y no cuadros: los cuadros son las muestras del dibujo y
+   los de la marca —que se eligen de a uno para toda la empresa—; estos eligen entre variantes
+   de un mismo significado y conviene que se lean como otra cosa. */
+.og-col-tonos { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+.og-col-tono {
+  width: 17px; height: 17px; padding: 0; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; box-shadow: 0 0 0 1px var(--border-dark);
+}
+.og-col-tono:hover { transform: scale(1.15); }
+/* El elegido crece y se rodea de blanco: sin un aro propio, marcarlo con un borde de color lo
+   confundiría con el disco de al lado. */
+.og-col-tono.on {
+  width: 21px; height: 21px;
+  box-shadow: 0 0 0 2px var(--surface-card), 0 0 0 3.5px var(--text-heading);
+}
+
+/* El `input[type=color]` lo dibuja el sistema operativo y no hay dos iguales: se esconde detrás
+   de una muestra propia que sí combina con el resto. Va al final de la fila y no al principio
+   porque es la salida —cuando ninguno de los cinco sirve—, no la entrada. */
+.og-col-pick { position: relative; display: block; width: 26px; height: 26px; flex-shrink: 0; margin-left: 4px; cursor: pointer; }
 .og-col-pick span {
-  position: absolute; inset: 0; border-radius: 9px;
+  position: absolute; inset: 0; border-radius: 8px;
   box-shadow: 0 0 0 1px var(--border-dark), inset 0 0 0 2px rgba(255,255,255,.55);
 }
 .og-col-pick input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
-.og-col-reset {
-  width: 28px; height: 28px; border-radius: 7px;
+/* Cuando el tono elegido ya está entre los cinco discos, el cuadro no lo repite: muestra el
+   gotero, que es lo que el cuadro hace —abrir la paleta entera—. */
+.og-col-otro {
   display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--border); background: var(--surface-card);
-  color: var(--icon-muted); cursor: pointer;
+  background: var(--surface-card); color: var(--icon-muted);
+  box-shadow: 0 0 0 1px var(--border-dark);
 }
-.og-col-reset:hover { border-color: var(--border-dark); color: var(--text-heading); }
+.og-col-pick:hover .og-col-otro { color: var(--text-heading); box-shadow: 0 0 0 1px var(--text-heading); }
 
-/* El colaborador: se lista para contestar la pregunta, no para tocarlo. */
-.og-col-fija { opacity: .8; }
-
-.og-col-pie {
-  margin: 18px 0 0; padding: 12px 14px; border-radius: 10px;
-  background: var(--surface-hover); font-size: 11.5px; line-height: 1.6; color: var(--text-muted);
+/* ---- el dibujo ----
+   Los cuadros de verdad, encogidos: un círculo de color no enseña cómo va a quedar un borde
+   punteado con su relleno detrás y su texto encima. Muertos al tacto —acá no son nodos que se
+   abren, son el resultado— y por eso sin hover ni cursor de mano. */
+/* Dos por fila y en el mismo orden que la lista de la izquierda: apilados en una sola
+   columna el dibujo medía el doble que los controles que explica, y un modal con media pantalla
+   vacía a un lado se lee como si le faltara algo. */
+.og-colores-cuadros { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.og-colores .og-col-muestra {
+  pointer-events: none; flex-shrink: 0;
+  width: 136px; min-width: 0; max-width: none;
+  padding: 9px 11px; box-shadow: none; transition: none;
 }
-.og-col-pie strong { color: var(--text-heading); font-weight: 600; }
+.og-colores .og-col-muestra .og-card-title { margin-bottom: 6px; }
 
-/* Los dos grupos del modal. El rótulo es lo que dice que la leyenda y la marca no son la misma
-   cosa: sin él son ocho controles de color en una lista y hay que deducir la diferencia. */
-.og-col-rot {
-  font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase;
-  color: var(--text-muted); margin-bottom: 10px;
+/* Las dos cosas que tiñe la marca, y no la misma dos veces: la caja de la organización lleva el
+   tono tal cual y la píldora de un área lo lleva aclarado. */
+.og-col-empresa {
+  background: var(--og-marca); color: #fff; font-size: 12px; font-weight: 800;
+  padding: 10px 22px; border-radius: 10px;
 }
-.og-col-rot-sep { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--border-soft); }
-
-.og-col-marca { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
-/* La misma píldora del dibujo, madre e hija: el color de una unidad anidada se aclara, así que
-   con una sola no se ve la mitad de lo que el tono va a hacer. */
-.og-col-marca-previa {
-  flex: 1; min-width: 190px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
-  padding: 16px 18px; border-radius: 12px; background: var(--bg-app);
-}
-.og-col-pildora { cursor: default; }
-/* Las dos cosas que el tono pinta, y no la misma dos veces: el nodo de la empresa lleva el
-   color tal cual y la píldora de un área lo lleva aclarado. Con dos píldoras iguales, la mitad
-   de lo que hace el tono quedaba sin mostrarse. */
-.og-col-empresa { background: var(--og-marca); color: #fff; font-size: 12px; font-weight: 800; padding: 10px 22px; border-radius: 10px; }
-.og-col-marca-elegir { display: flex; flex-direction: column; gap: 11px; flex-shrink: 0; }
+.og-col-pildora { cursor: default; margin-bottom: 12px; }
+/* El hilo que une la caja con el área: sin él son dos píldoras sueltas y no un pedazo de
+   organigrama, que es lo que tiene que parecer. */
+.og-colores-hilo { width: 2px; height: 18px; background: var(--border-dark); }
+/* Diez muestras en una sola fila: la columna es ancha y con cinco por fila cada cuadro salía
+   más grande que los cuatro renglones de la leyenda de arriba —el color de la marca es UNA
+   decisión y estaba pesando como si fueran diez—. */
+.og-colores-editar .og-marca-grid { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; }
 
 /* ---- papel ----
    Imprimir no es hacer una foto de la pantalla: se esconde la aplicación entera, el árbol
@@ -3586,7 +3689,7 @@ select.pl-input:focus {
     transform: scale(var(--og-print-escala, 1)) !important; transform-origin: 0 0 !important;
   }
   .og-canvas { overflow: visible !important; background: none !important; }
-  .og-atajos, .og-ayuda-burbuja, .og-zoom, .og-crear, .og-fp, .og-buscar { display: none !important; }
+  .og-deshacer, .og-zoom, .og-crear, .og-fp, .og-buscar { display: none !important; }
   /* Los controles no son el dibujo: plegar una rama y desplegar la gente son cosas que se
      hacen en pantalla, y en el papel solo son manchitas sin función. */
   .og-plegar, .og-chip-flecha, .og-mas { display: none !important; }
@@ -3688,6 +3791,21 @@ select.pl-input:focus {
 .og-tree li:last-child::before { border-right: 1.5px dashed var(--og-linea); border-radius: 0 7px 0 0; }
 .og-tree li:first-child::after { border-radius: 7px 0 0 0; }
 .og-tree li:only-child { padding-top: 0; }
+
+/* EL CANAL DE LA FILA DE CARGOS. Dos columnas `1fr` en una grilla que se mide por su contenido
+   salen SIEMPRE iguales, aunque una tenga dos cuadros y la otra uno: por eso el borde entre las
+   dos cae exacto en el centro de la fila, que es por donde baja la línea del jefe hacia las
+   áreas. El hueco sigue abierto hacia abajo por toda la rama y no solo en el primer renglón, así
+   que la línea pasa limpia aunque los cargos tengan equipo debajo.
+
+   Los 20 px son aire para esa línea: con solo el `padding` del `li` baja pegada al borde del
+   cuadro y se lee como si lo rozara, no como un canal. */
+.og-fila-cargos { display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; align-items: start; width: max-content; }
+.og-tree .og-fila-cargos > .og-lado-izq { justify-content: flex-end; }
+.og-tree .og-fila-cargos > .og-lado-der { justify-content: flex-start; }
+/* Un solo cuadro de un lado no puede subirse: `li:only-child` afloja el hueco de arriba, y acá
+   dejaría ese lado más alto que el otro. Enfrentados, los dos empiezan a la misma altura. */
+.og-fila-cargos > .og-lado > li:only-child { padding-top: 26px; }
 .og-tree li:only-child::before, .og-tree li:only-child::after { display: none; }
 
 /* Columna y no fila: arriba el cuadro, debajo la fila de laterales. Centrada, porque el centro
@@ -3745,7 +3863,9 @@ select.pl-input:focus {
 
 /* ---- nodos ---- */
 
-.og-empresa { background: var(--og-marca); color: #fff; font-size: 14px; font-weight: 800; padding: 14px 34px; border-radius: 12px; box-shadow: 0 6px 18px rgba(12,45,64,.22); white-space: nowrap; }
+.og-empresa { background: var(--og-marca); color: #fff; font-size: 14px; font-weight: 800; padding: 11px 34px 13px; border-radius: 12px; box-shadow: 0 6px 18px rgba(12,45,64,.22); white-space: nowrap; text-align: center; }
+/* Apagado y chico: dice de qué clase es la caja sin competirle al nombre, que es lo que se lee. */
+.og-empresa-rot { display: block; font-size: 8.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .62; margin-bottom: 2px; }
 .og-unidad { background: var(--og-marca-area); color: #fff; font-size: 11.5px; font-weight: 700; padding: 10px 24px; border-radius: 10px; box-shadow: 0 4px 12px rgba(12,45,64,.18); text-align: center; line-height: 1.3; max-width: 190px; }
 .og-unidad-nom { display: block; }
 
@@ -3873,7 +3993,8 @@ select.pl-input:focus {
 
    El `gap` tampoco es estético: la etiqueta (Externo / Vacante) sobresale por arriba de su
    tarjeta y sin aire se monta sobre la de encima. */
-.og-nodo-lat { position: relative; display: flex; align-items: flex-start; justify-content: center; padding-top: 24px; }
+.og-nodo-lat { position: relative; display: grid; grid-template-columns: 1fr 1fr; width: max-content; align-items: start; margin: 0 auto; padding-top: 24px; }
+.og-staff-izq { justify-self: end; }
 /* LA BAJADA es la misma línea de mando que sigue hacia los reportes, así que atraviesa la fila
    entera y empalma con el conector del <ul> de abajo sin cortes. */
 .og-nodo-lat::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 1.5px dashed var(--og-linea); }
@@ -3881,34 +4002,41 @@ select.pl-input:focus {
    vez de dejar un cabo colgando en el vacío. Plegado cuenta como sin reportes: el <ul> no está. */
 .og-tree li:not(:has(> ul)) > .og-nodo > .og-nodo-lat::before { bottom: auto; height: 50px; }
 
-.og-staff { position: relative; flex-shrink: 0; width: 200px; display: flex; flex-direction: column; gap: 18px; }
-.og-staff-der { margin-left: 56px; }
-/* El bloque de la izquierda mide lo mismo que el de la derecha —200 + 56— y el lado que queda
-   sin laterales se rellena con el hueco: el centro de la fila tiene que caer sobre el centro
-   del cuadro, que es por donde baja la línea. */
-.og-staff-izq { margin-right: 56px; }
-.og-lateral-hueco { flex-shrink: 0; width: 256px; }
-/* El codo va en cada tarjeta y no una vez por bloque: con dos laterales del mismo lado, el
-   segundo se quedaba sin línea y flotaba suelto al costado. */
-.og-staff > .og-card-col { position: relative; }
-.og-staff > .og-card-col::before { content: ''; position: absolute; top: 26px; width: 56px; border-top: 1.5px dashed var(--og-linea); }
-.og-staff-der > .og-card-col::before { right: 100%; }
-.og-staff-izq > .og-card-col::before { left: 100%; }
+.og-staff { position: relative; display: flex; flex-direction: column; gap: 18px; min-width: 200px; }
+.og-staff-der { margin-left: 56px; justify-self: start; }
+/* LOS DOS LADOS MIDEN IGUAL, y no por un ancho fijo. Antes eran 200 px clavados y el lado vacío
+   se rellenaba con un hueco de 256, que alcanzaba mientras un lateral fuera una tarjeta suelta.
+   Desde que el carril lleva RAMA, un asistente con dos auxiliares mide más que 200 y el ancho
+   fijo lo recortaba. Con dos columnas `1fr` en una grilla medida por su contenido los dos lados
+   salen iguales solos —el mismo recurso que endereza la fila de cargos— y el centro sigue cayendo
+   sobre el cuadro, que es por donde baja la línea. */
+.og-lateral-hueco { min-width: 200px; }
+/* El codo va en cada lateral y no una vez por bloque: con dos del mismo lado, el segundo se
+   quedaba sin línea y flotaba suelto al costado. */
+.og-staff > .og-lat-rama { position: relative; padding-top: 0; }
+.og-staff > .og-lat-rama::before { content: ''; position: absolute; top: 26px; width: 56px; border-top: 1.5px dashed var(--og-linea); }
+.og-staff-der > .og-lat-rama::before { right: 100%; }
+.og-staff-izq > .og-lat-rama::before { left: 100%; }
+/* La rama del carril arranca pegada arriba: el hueco de 26 px que separa a un hijo de su padre
+   acá ya lo puso el propio carril. De su segundo nivel para abajo se comporta como cualquier
+   rama del árbol. */
+.og-lat-rama > li { padding-top: 0; }
 
 /* ---- controles flotantes ---- */
 
-.og-atajos { position: absolute; left: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 6px; background: var(--navy); color: #fff; border-radius: 12px; padding: 11px 14px 12px; box-shadow: var(--sh-md); }
-
-/* La ayuda se cierra y se encoge a una burbuja en el mismo rincón. No desaparece: quien la
-   cerró sin querer perdería la leyenda y, peor, la forma de saber que existía. */
-.og-atajos-x { position: absolute; top: 7px; right: 7px; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; border: none; border-radius: 50%; background: rgba(255,255,255,.1); color: rgba(255,255,255,.75); cursor: pointer; }
-.og-atajos-x:hover { background: rgba(255,255,255,.2); color: #fff; }
-.og-ayuda-burbuja { position: absolute; left: 20px; bottom: 20px; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border: none; border-radius: 50%; background: var(--navy); color: #fff; cursor: pointer; box-shadow: var(--sh-md); transition: transform .15s; }
-.og-ayuda-burbuja:hover { transform: scale(1.06); }
-.og-atajos-hd { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 800; }
-.og-atajo { display: flex; align-items: center; gap: 6px; font-size: 10px; color: rgba(255,255,255,.72); }
-.og-atajo-btn { margin-top: 3px; padding: 5px 8px; border: 1px solid rgba(255,255,255,.22); border-radius: 8px; background: rgba(255,255,255,.08); color: #fff; font-family: inherit; font-weight: 700; cursor: pointer; }
-.og-atajo-btn:hover { background: rgba(255,255,255,.16); }
+/* LOS DOS BOTONES DE DESHACER, en el rincón donde vivía el panel de ayuda. Ese panel se fue
+   —la leyenda y los atajos eran documentación, y la gente no lee— pero estos dos no explicaban
+   nada: son la única forma de revertir lo que se hizo con la mano sobre el lienzo. Van juntos y
+   solo aparecen cuando hay algo que deshacer. */
+.og-deshacer { position: absolute; left: 20px; bottom: 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.og-atajo-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface-card); color: var(--text-heading);
+  font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+  box-shadow: var(--sh-md);
+}
+.og-atajo-btn:hover { border-color: var(--navy); }
 
 /* El botón de plegar: cuelga del borde inferior derecho de la tarjeta —el `+` de crear ya
    ocupa el centro— y dice CUÁNTOS cargos hay debajo. El número es el dato que hace falta para
@@ -3983,37 +4111,6 @@ select.pl-input:focus {
    adentro se encogería con el dibujo justo cuando más lejos se está mirando. */
 .og-mas-menu { position: fixed; z-index: 60; transition: opacity .1s; }
 
-/* Leyenda de colores. Es la misma en los dos organigramas pero se cuelga de dos sitios con
-   fondos opuestos —el recuadro oscuro de los atajos y la paleta clara del lienzo—, así que la
-   forma vive acá y el color lo pone el contenedor. Las muestras repiten los colores de las
-   tarjetas de verdad; si cambian allá, cambian acá. */
-.og-atajos-sep { height: 1px; margin: 4px 0 2px; background: rgba(255,255,255,.16); }
-.og-lc { display: flex; flex-direction: column; gap: 4px; max-width: 208px; }
-.og-lc-hd { display: flex; align-items: center; gap: 5px; padding-right: 22px; font-size: 11px; font-weight: 800; }
-.og-lc-rot { margin-top: 2px; font-size: 9px; font-weight: 700; }
-.og-lc-fila { display: flex; align-items: center; gap: 7px; }
-.og-lc-txt { font-size: 9.5px; line-height: 1.35; }
-.og-lc-txt strong { font-weight: 700; }
-.og-lc-muestra { flex-shrink: 0; width: 19px; height: 12px; border-radius: 4px; }
-/* La muestra de la línea usa el mismo color y el mismo punteado que el dibujo. */
-.og-lc-linea { flex-shrink: 0; width: 19px; height: 0; border-top: 1.8px solid var(--og-linea); }
-.og-lc-linea-pt { border-top-style: dashed; }
-
-/* Sobre el panel oscuro de los atajos. */
-.og-atajos .og-lc-rot { color: rgba(255,255,255,.92); }
-.og-atajos .og-lc-txt { color: rgba(255,255,255,.68); }
-.og-atajos .og-lc-txt strong { color: #fff; }
-
-/* Al pie de la paleta: separada por una línea, pegada abajo aunque la columna quede corta, y
-   con el rótulo en el mismo tono que los otros títulos del panel. */
-
-.og-lc-interno { background: #fff; border: 1px solid #cbd5e1; }
-.og-lc-staff { background: var(--og-staff-bg); border: 1.5px dashed var(--og-staff); }
-.og-lc-ext { background: var(--og-ext-bg); border: 1.5px dashed var(--og-ext); }
-.og-lc-func { background: var(--og-func-bg); border: 1.5px dashed var(--og-func); }
-
-.og-lc-tag { flex-shrink: 0; background: var(--og-vacante); color: #fff; font-size: 7.5px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; padding: 2px 6px; border-radius: 5px; }
-
 /* EL BUSCADOR DEL LIENZO. Arriba a la derecha, la esquina que quedaba libre: los modos están a
    la izquierda, la ayuda abajo a la izquierda, el zoom y los botones de crear abajo a la
    derecha. Superficie blanca y no la pastilla oscura de los modos, porque no es un ajuste del
@@ -4061,6 +4158,36 @@ select.pl-input:focus {
    por la que uno lo abrió. Apagado se sigue viendo dónde encaja lo que sí coincide, y el cuadro
    se sigue pudiendo abrir. */
 .og-card-apagada { opacity: .3; }
+
+/* LA RAMA CONDENADA. Mientras la confirmación está abierta, los cuadros que se lleva quedan en
+   rojo en el dibujo de atrás. El diálogo es más chico que el lienzo, así que se ve alrededor: es
+   la diferencia entre leer "7 puestos" y ver cuáles siete.
+
+   Pisa a los colores de tipo —staff, outsourcing, funcional— a propósito: por un segundo lo
+   único que importa de esos cuadros es que se están por ir. */
+.og-page .og-card-condenada {
+  border: 2px solid var(--red) !important;
+  background: color-mix(in srgb, var(--red) 20%, var(--surface-card)) !important;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--red) 22%, transparent);
+}
+.og-page .og-card-condenada .og-card-title,
+.og-page .og-card-condenada .og-card-ico { color: var(--red); }
+/* El "+" y el de plegar no tienen sentido sobre algo que se está por borrar. */
+.og-page .og-card-condenada .og-mas, .og-page .og-card-condenada .og-plegar { display: none; }
+
+/* El segundo botón de borrar en la ficha. Va al lado del primero y en hueco, no relleno: los dos
+   son destructivos, pero el que se lleva siete puestos no puede parecer el camino cómodo. */
+/* Los dos borrados van juntos a la izquierda, lejos de "Cerrar" y "Editar": el que separa los
+   dos grupos es el último de la izquierda, así que el margen automático se muda al de la rama
+   cuando la rama existe. */
+.pl-modal-footer:has(.og-btn-rama) .og-btn-eliminar { margin-right: 0; }
+.og-btn-rama {
+  margin-left: 8px; margin-right: auto;
+  background: none;
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+.og-btn-rama:hover { background: var(--red); border-color: var(--red); color: #fff; }
 .og-card-apagada:hover { opacity: .65; }
 
 .og-card-hallado { animation: og-hallazgo 2.6s ease-out; }
@@ -4216,20 +4343,21 @@ select.pl-input:focus {
 
 .og-cargo-campos { flex: 1; min-height: 0; gap: 14px; padding: 22px 24px 26px; }
 
-/* Cada bloque es una superficie propia. Antes eran cuatro títulos y doce renglones sueltos
-   sobre el mismo blanco, todos del mismo gris: se leía como una pared de texto y no como
-   cuatro preguntas. Con el fondo apenas marcado, el ojo separa los grupos sin que haya que
-   subrayar nada, y los campos —en blanco— saltan sobre él. */
-.og-cargo-campos .og-bloque, .og-unidad-campos .og-bloque {
-  padding: 15px 16px 17px;
-  border: 1px solid var(--border-soft);
-  border-radius: 14px;
-  background: var(--surface-hover);
-}
+/* SIN MARCO ALREDEDOR DE LOS CAMPOS. El bloque tuvo fondo y borde propios cuando el formulario
+   era una sola tirada larga: cuatro títulos y doce renglones sueltos sobre el mismo blanco se
+   leían como una pared de texto, y el recuadro separaba los grupos. Esa razón se fue cuando el
+   formulario se partió en pestañas —hoy cada pestaña tiene UN bloque—, así que el recuadro dejó
+   de separar nada y quedó siendo una caja adentro de otra caja adentro del modal.
+
+   EL CONTRASTE SE INVIERTE, no desaparece: antes el bloque iba gris y los campos blancos encima.
+   Ahora el fondo es blanco y el gris suave lo llevan los campos, que es lo que hace que un campo
+   se lea como un campo y no como un renglón de texto con un borde. */
 .og-cargo-campos .pl-input,
 .og-cargo-campos .pl-dropdown-trigger,
 .og-cargo-campos .og-tipo-card,
-.og-cargo-campos .pl-tipo-tabs { background: var(--surface-card); }
+.og-cargo-campos .pl-tipo-tabs,
+.og-unidad-campos .pl-input,
+.og-unidad-campos .pl-dropdown-trigger { background: var(--surface-hover); }
 
 /* Las etiquetas de campo eran gris claro sobre blanco: se perdían justo las palabras que
    dicen qué hay que llenar. */
@@ -4238,6 +4366,33 @@ select.pl-input:focus {
 .og-cargo-campos .og-tipo-card em { color: #64748b; }
 
 .og-bloque { display: flex; flex-direction: column; gap: 13px; }
+/* El rótulo de cada grupo. Reemplazó a las pestañas: separaba tres preguntas escondiendo dos, y
+   ahora las tres se ven de corrido. La marca verde solo aparece cuando el "+" de un cuadro ya
+   resolvió esos campos, para que nadie los lea creyendo que hay que llenarlos. */
+.og-grupo-rot {
+  display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+  margin: 4px 0 -2px; font-size: 10px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.og-bloque + .og-bloque .og-grupo-rot { margin-top: 10px; }
+.og-grupo-marca {
+  font-size: 9.5px; font-weight: 700; letter-spacing: .02em; text-transform: none;
+  color: var(--green-txt, #15803d); background: var(--green-bg, #ecfdf5);
+  border: 1px solid var(--green-br, #a7f3d0); border-radius: 999px; padding: 2px 8px;
+}
+/* Dos campos en un renglón, con el corto atado a su ancho y el largo quedándose con el resto.
+   El código son 20 caracteres y el nombre 60: repartir mitad y mitad dejaría al código con el
+   doble del aire que necesita y al nombre corto justo donde más se escribe. */
+/* EL NOMBRE PRIMERO Y ANCHO, el código al lado y angosto. El código son 20 caracteres y el
+   nombre 60, así que repartir mitad y mitad deja al código con el doble del aire que necesita y
+   corto justo el campo donde más se escribe. Y va segundo porque es lo que menos se sabe al
+   crear —muchas veces lo asigna Recursos Humanos después—: abriendo el formulario ocupaba el
+   lugar de más atención para pedir un dato que casi nadie tiene a mano. */
+.og-fila-campos { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 13px; align-items: start; }
+.og-fila-campos > .pl-label { min-width: 0; }
+/* Mitad y mitad cuando los dos campos pesan lo mismo, como el área y su jefe. */
+.og-fila-mitades { grid-template-columns: 1fr 1fr; }
+@media (max-width: 620px) { .og-fila-campos { grid-template-columns: 1fr; } }
 .og-bloque-hd { display: flex; align-items: center; gap: 8px; margin: 0; padding-bottom: 2px; font-size: 11.5px; font-weight: 800; color: var(--navy-txt); }
 .og-bloque-hd > span { display: inline-flex; align-items: center; justify-content: center; width: 19px; height: 19px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 10px; font-weight: 800; }
 .og-label-fila { display: flex; align-items: center; gap: 6px; }
@@ -4355,6 +4510,8 @@ select.pl-input:focus {
 .og-pv-area-rot { font-size: 8.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; opacity: .6; }
 .og-pv-area-nom { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 800; line-height: 1.25; }
 .og-pv-area-nom svg { flex-shrink: 0; opacity: .8; }
+/* Las áreas de arriba, apagadas: ubican sin competirle al nombre del área propia. */
+.og-pv-area-ruta { font-weight: 600; opacity: .58; }
 .og-pv-rot { margin-bottom: 8px; font-size: 8.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--text-muted); }
 .og-pv-staff { border: 1.5px dashed var(--og-staff); background: var(--og-staff-bg); }
 .og-pv-staff .og-pv-nom, .og-pv-staff .og-pv-nom svg { color: var(--og-staff-txt); }
@@ -4429,7 +4586,10 @@ select.pl-input:focus {
 /* tarjeta de unidad: cabecera navy + zócalo blanco con los contadores */
 .og-un { position: relative; border-radius: 14px; overflow: hidden; background: var(--surface-card); border: 1px solid var(--border); cursor: pointer; transition: box-shadow .15s, transform .15s; }
 .og-un:hover { box-shadow: var(--shadow-card); transform: translateY(-2px); }
-.og-un-top { display: flex; flex-direction: column; gap: 7px; padding: 16px 16px 18px; background: linear-gradient(160deg, #1d4a63 0%, #0C2D40 100%); }
+/* La cabecera de la tarjeta de un área toma el COLOR DE LA EMPRESA, igual que la píldora del
+   gráfico. Tenía el degradado escrito a mano —#1d4a63 a #0C2D40— y era el mismo tono por
+   casualidad: al cambiar el color de la empresa, el organigrama cambiaba y las tarjetas no. */
+.og-un-top { display: flex; flex-direction: column; gap: 7px; padding: 16px 16px 18px; background: linear-gradient(160deg, color-mix(in srgb, var(--og-marca) 78%, #fff) 0%, var(--og-marca) 100%); }
 .og-un-ico { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.12); color: #fff; margin-bottom: 10px; }
 .og-un-top strong { font-size: 13.5px; font-weight: 700; color: #fff; }
 .og-un-jefe { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.75); }
@@ -4477,6 +4637,25 @@ select.pl-input:focus {
 .og-cc-ext .og-cc-hd-txt strong { color: var(--og-ext-txt); }
 .og-cc-ext .og-cc-edit { opacity: 1; }
 
+/* LA CASILLA DE UNA TARJETA. Al lado del lápiz y no en la esquina de arriba a la izquierda —que
+   es donde la ponen Drive y Gmail— porque ahí vive el ícono del tipo de puesto, que es el que
+   dice de un vistazo si el cargo es staff, outsourcing o de línea. Tapar eso para ganar una
+   convención sale más caro de lo que rinde.
+
+   Aparece al pasar el puntero, como el lápiz, y se queda visible cuando está marcada: una
+   casilla marcada que desaparece al alejar el puntero deja la tarjeta sin decir que está
+   elegida. */
+.og-cc-check {
+  position: absolute; top: 13px; right: 47px; width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .15s; cursor: pointer;
+}
+.og-cc:hover .og-cc-check, .og-cc-elegida .og-cc-check, .og-cc-check:focus-within { opacity: 1; }
+/* La tarjeta elegida se marca con el aro y no con un relleno: staff, outsourcing y vacante ya
+   traen su propio fondo, y pintarlo encima les borraría el color que dice de qué clase son. */
+.og-cc-elegida { border-color: var(--navy); box-shadow: 0 0 0 1.5px var(--navy); }
+.og-cc-elegida:hover { box-shadow: 0 0 0 1.5px var(--navy), var(--sh-md); }
+
 .og-buscador-fila { display: flex; margin-bottom: 14px; }
 .og-buscador { display: flex; align-items: center; gap: 8px; width: 300px; margin-left: auto; padding: 8px 12px; background: var(--surface-card); border: 1px solid var(--border); border-radius: 10px; color: var(--icon-muted); }
 .og-buscador input { flex: 1; min-width: 0; border: none; background: none; outline: none; font-family: inherit; font-size: 12px; color: var(--navy-txt); }
@@ -4485,7 +4664,10 @@ select.pl-input:focus {
 
 .og-tabla-wrap { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
 .og-tabla { width: 100%; border-collapse: collapse; }
-.og-tabla th { text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); background: var(--table-head-bg); padding: 11px 16px; white-space: nowrap; }
+/* El encabezado tiene su propio tono y no el gris de los textos secundarios: ese gris está
+   pensado para leerse sobre blanco y el encabezado va sobre una banda gris, así que perdía casi
+   todo el contraste justo donde dice qué es cada columna. */
+.og-tabla th { text-align: left; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--table-head-txt); background: var(--table-head-bg); padding: 11px 16px; white-space: nowrap; border-bottom: 1px solid var(--border-dark); }
 .og-th-acc { text-align: center; }
 .og-tabla td { padding: 9px 16px; font-size: 12px; color: var(--navy-txt); border-top: 1px solid var(--border); vertical-align: middle; }
 .og-tabla tbody tr:hover td { background: var(--surface-hover); }
@@ -4494,8 +4676,11 @@ select.pl-input:focus {
    la jerarquía se lea sin sangrar la banda entera. */
 .og-tabla tbody tr.og-grupo td { padding: 0; border-top: none; }
 .og-tabla tbody tr.og-grupo:hover td { background: none; }
-.og-grupo-in { display: flex; align-items: center; gap: 9px; padding: 9px 16px; background: #4B7B95; color: #fff; }
-.og-grupo-raiz .og-grupo-in { background: var(--navy); }
+/* El renglón de un área en la tabla es lo mismo que la píldora en el gráfico, así que lleva el
+   mismo tono derivado y no un gris azulado a mano que solo coincidía por defecto. */
+.og-grupo-in { display: flex; align-items: center; gap: 9px; padding: 9px 16px; background: var(--og-marca-area); color: #fff; }
+/* Y el renglón de la organización, el color de la empresa entero, como su caja en el gráfico. */
+.og-grupo-raiz .og-grupo-in { background: var(--og-marca); }
 .og-grupo-nom { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
 .og-grupo-chip { background: rgba(255,255,255,.2); font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 5px; }
 .og-grupo-in button { margin-left: auto; display: flex; align-items: center; gap: 3px; border: none; background: none; color: rgba(255,255,255,.75); font-size: 10.5px; font-weight: 600; font-family: inherit; cursor: pointer; }
@@ -4505,6 +4690,70 @@ select.pl-input:focus {
    fila destacada quedaba con letras claras sobre un fondo casi blanco. */
 .og-tabla tbody tr.og-fila-top td { background: var(--green-tint); }
 .og-tabla tbody tr.og-fila-top:hover td { background: var(--green-bg); }
+
+/* ── ELEGIR DE A MUCHOS EN LA TABLA ───────────────────────────────
+   La columna de casillas va PRIMERA y ocupa el mismo ancho en las tres clases de renglón —el
+   encabezado, la banda del área y el cargo—, que es lo que la vuelve una columna y no tres
+   casillas sueltas que casualmente están cerca. */
+.og-tabla th.og-th-check, .og-tabla td.og-td-check { width: 42px; padding-left: 16px; padding-right: 0; }
+
+/* Un checkbox del navegador con otra piel: el `appearance: none` se lleva el dibujo del sistema
+   pero deja el comportamiento —foco, barra espaciadora, el tercer estado—, que es justo lo que
+   habría que reescribir a mano si esto fuera un div. */
+.og-check {
+  appearance: none; -webkit-appearance: none;
+  position: relative; flex-shrink: 0; vertical-align: middle;
+  width: 15px; height: 15px; margin: 0; border-radius: 4px;
+  border: 1.5px solid var(--border-dark); background: var(--surface-card); cursor: pointer;
+}
+.og-check:hover { border-color: var(--navy); }
+.og-check:checked, .og-check:indeterminate { background: var(--navy); border-color: var(--navy); }
+.og-check:checked::after {
+  content: ''; position: absolute; left: 4px; top: 1px; width: 3.5px; height: 8px;
+  border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(42deg);
+}
+/* "Algunos sí": una raya y no un tilde a medias. Es el estado que avisa que abajo, plegado,
+   hay filas marcadas que no se están viendo. */
+.og-check:indeterminate::after {
+  content: ''; position: absolute; left: 2.5px; top: 5px; width: 8px; height: 2px;
+  background: #fff; border-radius: 1px;
+}
+.og-check:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+/* La casilla del área vive sobre la banda de color, así que se invierte: en blanco sobre el
+   color, y el tilde toma el color de la banda. Con el borde gris de siempre desaparecía. */
+.og-tabla tbody tr.og-grupo td.og-td-check { padding: 9px 0 9px 16px; background: var(--og-marca-area); }
+.og-tabla tbody tr.og-grupo.og-grupo-raiz td.og-td-check { background: var(--og-marca); }
+.og-grupo .og-check { border-color: rgba(255,255,255,.7); background: rgba(255,255,255,.16); }
+.og-grupo .og-check:checked, .og-grupo .og-check:indeterminate { background: #fff; border-color: #fff; }
+.og-grupo .og-check:checked::after { border-color: var(--og-marca); }
+.og-grupo .og-check:indeterminate::after { background: var(--og-marca); }
+
+/* La fila elegida se tiñe entera: la casilla sola, a 42 px del nombre, obliga a recorrer el
+   renglón con el dedo para saber si este era o no. */
+.og-tabla tbody tr.og-fila-elegida td { background: var(--blue-bg); }
+.og-tabla tbody tr.og-fila-elegida:hover td { background: var(--blue-bg); }
+
+/* La barra de lo elegido: aparece en el hueco que deja el buscador, a la izquierda. */
+.og-barra-sel {
+  display: flex; align-items: center; gap: 12px;
+  padding: 5px 6px 5px 14px; border-radius: 10px;
+  background: var(--surface-card); border: 1px solid var(--border);
+}
+.og-barra-sel strong { font-size: 12px; font-weight: 700; color: var(--text-heading); white-space: nowrap; }
+.og-barra-quitar {
+  border: none; background: none; font-family: inherit; font-size: 11.5px; font-weight: 600;
+  color: var(--text-muted); cursor: pointer; text-decoration: underline; white-space: nowrap;
+}
+.og-barra-quitar:hover { color: var(--text-heading); }
+/* Rojo desde el principio y no un botón neutro que se pone rojo al confirmar: es lo único que
+   hay en la barra que no se puede deshacer. */
+.og-barra-borrar {
+  display: flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 8px;
+  border: 1px solid var(--red); background: var(--red-bg); color: var(--red);
+  font-family: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; white-space: nowrap;
+}
+.og-barra-borrar:hover { background: var(--red); color: #fff; }
 .og-cargo-cel { display: flex; align-items: center; gap: 8px; }
 .og-sangria { width: 10px; height: 12px; margin-bottom: 5px; border-left: 1.5px solid var(--border-dark); border-bottom: 1.5px solid var(--border-dark); border-radius: 0 0 0 3px; flex-shrink: 0; }
 .og-cargo-nom { font-size: 12px; font-weight: 700; color: var(--navy-txt); }
@@ -4768,6 +5017,8 @@ select.pl-input:focus {
 /* El alto lo pone el componente según el espacio real que hay: acá solo se declara que la caja
    manda y que lo que scrollea adentro es la lista, no el buscador. */
 .og-lista-fija { position: fixed; right: auto; display: flex; flex-direction: column; }
+/* Sin tope: la sede vive en su propia pestaña y tiene la columna entera para ella sola, así que
+   la lista se estira y no obliga a scrollear dentro de otro scroll. */
 .og-lista-fija .og-sedes-check { max-height: none; flex: 1; min-height: 0; }
 
 /* Organigrama sin dibujar */

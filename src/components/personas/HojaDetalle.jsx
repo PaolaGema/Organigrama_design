@@ -1,7 +1,7 @@
 import { ChevronRight } from 'lucide-react'
 import Avatar from './Avatar'
 import {
-  getUnidad, TIPOS_CARGO, filaDeCargo, funcionalesDe, coordinacionesDe,
+  getUnidad, TIPOS_CARGO, filaDeCargo, funcionalesDe, coordinacionesDe, nivelesDe,
   cabezaDe, subunidadesDe, cargosDeUnidad, apoyosDeUnidad,
 } from '../../data/organigramaData'
 
@@ -52,7 +52,7 @@ const sinCubrirDicho = (total, faltan) => {
 const ROL = { par: 'Par', supervisor: 'Supervisa', supervisado: 'Lo supervisa' }
 
 export function HojaCargo({ cargo, org }) {
-  const { unidad, tipo, sedes, ocupantes, jefeNombre } = filaDeCargo(cargo, org)
+  const { unidad, tipo, sedes, ocupantes, jefeNombre, grado } = filaDeCargo(cargo, org)
   const madre = getUnidad(unidad?.padreId, org)
   const jefe = cargo.reportaA ? org.cargos.find(c => c.id === cargo.reportaA) : null
   const quienManda = jefe ? filaDeCargo(jefe, org).ocupantes[0] : null
@@ -101,6 +101,21 @@ export function HojaCargo({ cargo, org }) {
           detalle={sinCubrirDicho(reportes.length, sinCubrir)}
         />
       )}
+
+      {/* EL NIVEL DE MANDO FALTABA, y es de las pocas cosas de la ficha que explican el dibujo:
+          es lo que decide cuánto baja el cuadro respecto de su jefe. Sin él había que abrir el
+          formulario para saber por qué un puesto estaba escalonado.
+
+          Se dice también en qué lugar de la escala cae, porque el nombre solo no ubica: "Asistente"
+          no dice si es el tercero o el sexto, y el catálogo lo arma cada empresa.
+
+          Sin nivel declarado no se dibuja el renglón, como con el código: no es un estado, es una
+          información que todavía no existe. */}
+      <Fila
+        rotulo="Nivel de mando"
+        valor={grado?.nombre}
+        detalle={grado && `${grado.orden}.º de ${nivelesDe(org).length} niveles`}
+      />
 
       <Fila rotulo="Tipo" valor={t?.label} detalle={t?.desc} />
 

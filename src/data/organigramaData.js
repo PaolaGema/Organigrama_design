@@ -60,7 +60,7 @@ export const TIPOS_CARGO = [
   { key: 'staff', label: 'Staff', desc: 'Asiste a un cargo sin estar en su línea de mando', lateral: true },
   /* No es lateral: cuelga de su jefe y queda dentro de su área como cualquier otro puesto. Lo
      que dice que es externo es el color y la línea punteada, no el lugar donde se dibuja. */
-  { key: 'outsourcing', label: 'Outsourcing', desc: 'Lo cubre un prestador de servicios', lateral: false },
+  { key: 'outsourcing', label: 'Outsourcing', desc: 'Lo cubre un prestador de servicios', lateral: true },
 ]
 
 /* `sucursalIds` sigue siendo una lista de a lo sumo UNA: un puesto pertenece a una sede y la
@@ -178,11 +178,32 @@ export const relaciones = [
    El colaborador VACANTE es la única excepción y es deliberada: como no tiene color de clase
    que perder, el cuadro queda libre para avisar del puesto por cubrir, que es lo que uno vino a
    buscar. Con clase declarada el ámbar no pasa por encima —ahí avisa la etiqueta—. */
+/* Cada significado trae SUS tonos, y el primero es el de fábrica: así volver atrás es tocar el
+   primero y no hace falta un botón aparte que aparezca y desaparezca según si tocaste algo.
+   Los cinco de cada fila son de la misma familia a propósito —variar el azul dentro del azul—:
+   una paleta única para las cuatro filas dejaría elegir el mismo tono en dos significados, que
+   es justamente lo que la leyenda no puede permitirse. */
 export const COLORES_LEYENDA = [
-  { key: 'func', var: '--og-func-el', porOmision: '#2563eb', label: 'Apoyo funcional', desc: 'Viene prestado de otra área' },
-  { key: 'ext', var: '--og-ext-el', porOmision: '#7c3aed', label: 'Outsourcing', desc: 'Lo cubre un prestador de servicios' },
-  { key: 'staff', var: '--og-staff-el', porOmision: '#0d9488', label: 'Staff', desc: 'Asiste al costado, sin mandar' },
-  { key: 'vacante', var: '--og-vacante-el', porOmision: '#d97706', label: 'Vacante', desc: 'El puesto no lo ocupa nadie' },
+  {
+    key: 'func', var: '--og-func-el', porOmision: '#2563eb',
+    label: 'Apoyo funcional', desc: 'Viene prestado de otra área',
+    tonos: ['#2563eb', '#1d4ed8', '#0284c7', '#0891b2', '#4f46e5'],
+  },
+  {
+    key: 'ext', var: '--og-ext-el', porOmision: '#7c3aed',
+    label: 'Outsourcing', desc: 'Lo cubre un prestador de servicios',
+    tonos: ['#7c3aed', '#6d28d9', '#9333ea', '#c026d3', '#a21caf'],
+  },
+  {
+    key: 'staff', var: '--og-staff-el', porOmision: '#0d9488',
+    label: 'Staff', desc: 'Asiste al costado, sin mandar',
+    tonos: ['#0d9488', '#047857', '#059669', '#16a34a', '#65a30d'],
+  },
+  {
+    key: 'vacante', var: '--og-vacante-el', porOmision: '#d97706',
+    label: 'Vacante', desc: 'El puesto no lo ocupa nadie',
+    tonos: ['#d97706', '#b45309', '#ea580c', '#ca8a04', '#dc2626'],
+  },
 ]
 
 /* Las variables que hay que ponerle a `.og-page`. Lo no elegido no se escribe: así el color de
@@ -247,7 +268,7 @@ export const getUnidad = (id, org = orgSeed) => org.unidades.find(u => u.id === 
 
    Se pregunta por la lateralidad y no por el tipo para que agregar mañana otro tipo lateral no
    obligue a tocar el algoritmo del árbol. */
-const esLateral = c => c.tipo === 'staff'
+const esLateral = c => c.tipo === 'staff' || c.tipo === 'outsourcing'
 
 /* Los tipos que hay que GUARDAR: de nada se deduce que un puesto es externo o de apoyo, así que
    se declaran. Jefe y Colaborador no entran —`tipoDe` los saca de tener o no gente a cargo— y
@@ -380,9 +401,49 @@ function nodoCargo(cargo, org, verUnidades, vistos, conFuncionales) {
   vistos.add(cargo.id)
   return {
     ...nodoSuelto(cargo, org),
-    staff: org.cargos.filter(c => c.reportaA === cargo.id && esLateral(c)).map(c => nodoSuelto(c, org)),
+    /* EL LATERAL SE ARMA COMPLETO, con lo que cuelga de él. Antes se armaba con `nodoSuelto`, que
+       no trae `hijos`, y eso no era una limitación del dibujo: era una fuga. Un cargo que
+       dependiera de un staff se guardaba bien y no aparecía en NINGUNA parte del organigrama —ni
+       escondido ni atenuado: no existía—, porque el árbol baja desde las raíces por `hijos` y ahí
+       se cortaba el camino. El botón "+" no se ofrecía en los laterales justamente por eso, pero
+       el campo "De quién depende" sí los lista, así que el agujero seguía abierto. */
+    staff: org.cargos
+      .filter(c => c.reportaA === cargo.id && esLateral(c))
+      .map(c => nodoCargo(c, org, verUnidades, vistos, conFuncionales)),
     hijos: agruparHijos(cargo, org, verUnidades, vistos, conFuncionales),
   }
+}
+
+/* LAS ÁREAS QUE HAY QUE ATRAVESAR para ir del área del jefe a la del subordinado.
+
+   Antes se metía UNA píldora entre los dos, y eso vale mientras el subordinado esté en un área
+   que cuelga directo de la del jefe. Cuando hay un área intermedia sin cargos deja de valer:
+   con "Comercial" —sin un solo puesto— conteniendo a Ventas, un ejecutivo de Ventas no tiene a
+   quién reportarle dentro de Comercial, así que reporta al Gerente General; y entonces Ventas se
+   dibujaba de par de Comercial, o sea al lado de su propio padre. Peor todavía, su hermana
+   Atención al Cliente sí quedaba adentro, porque estando vacía se colgaba por `padreId`. Dos
+   hermanas del mismo padre en dos niveles distintos, y la única diferencia entre ellas era tener
+   o no un cargo.
+
+   El dato nunca estuvo mal: `padreId` dice dónde ESTÁ el área y `reportaA` a quién le RESPONDE
+   la persona, y las dos cosas son ciertas a la vez. Lo que faltaba era dibujar los dos saltos.
+
+   SE CORTA EN EL ANCESTRO COMÚN. Subiendo sin freno, un cargo de Marketing Digital con un
+   reporte en Contenidos —las dos dentro de Marketing— se llevaría puesta la píldora de Marketing
+   y hasta la de Dirección General, colgadas debajo de una jefatura. Solo entran los eslabones
+   que todavía no están dibujados en el camino. */
+function cadenaDeAreas(deUnidadId, aUnidadId, org) {
+  const arriba = new Set()
+  for (let u = getUnidad(aUnidadId, org); u && !arriba.has(u.id); u = u.padreId ? getUnidad(u.padreId, org) : null) {
+    arriba.add(u.id)
+  }
+  const cadena = []
+  const vistas = new Set()
+  for (let u = getUnidad(deUnidadId, org); u && !arriba.has(u.id) && !vistas.has(u.id); u = u.padreId ? getUnidad(u.padreId, org) : null) {
+    vistas.add(u.id)
+    cadena.unshift(u)
+  }
+  return cadena
 }
 
 /* Un hijo que pertenece a otra unidad que su jefe entra envuelto en la píldora de esa
@@ -403,18 +464,36 @@ function agruparHijos(cargo, org, verUnidades, vistos, conFuncionales) {
 
   const salida = []
   const grupoPorUnidad = new Map()
+  /* Abre la cadena de píldoras y devuelve la última, que es la que recibe el cargo. Las que ya
+     estaban abiertas se reusan: dos áreas hermanas del mismo padre comparten su píldora en vez
+     de dibujarla dos veces. */
+  const abrirCadena = cadena => {
+    let padre = null
+    for (const u of cadena) {
+      let grupo = grupoPorUnidad.get(u.id)
+      if (!grupo) {
+        grupo = nodoUnidad(u, org, `u-${u.id}`, conFuncionales)
+        grupoPorUnidad.set(u.id, grupo)
+        if (padre) padre.hijos.push(grupo)
+        else salida.push(grupo)
+      }
+      padre = grupo
+    }
+    return padre
+  }
   for (const hijo of hijos) {
     if (hijo.unidadId === cargo.unidadId) {
       salida.push(nodoCargo(hijo, org, verUnidades, vistos, conFuncionales))
       continue
     }
-    let grupo = grupoPorUnidad.get(hijo.unidadId)
-    if (!grupo) {
-      grupo = nodoUnidad(getUnidad(hijo.unidadId, org), org, `u-${hijo.unidadId}`, conFuncionales)
-      grupoPorUnidad.set(hijo.unidadId, grupo)
-      salida.push(grupo)
-    }
-    grupo.hijos.push(nodoCargo(hijo, org, verUnidades, vistos, conFuncionales))
+    /* Sin cadena queda el caso raro de un hijo cuya área es ancestro de la del jefe: ahí no hay
+       nada que atravesar hacia abajo y se dibuja la suya sola, como se hacía siempre. */
+    const cadena = cadenaDeAreas(hijo.unidadId, cargo.unidadId, org)
+    const propia = cadena.length ? cadena : [getUnidad(hijo.unidadId, org)].filter(Boolean)
+    const grupo = abrirCadena(propia)
+    const nodo = nodoCargo(hijo, org, verUnidades, vistos, conFuncionales)
+    if (grupo) grupo.hijos.push(nodo)
+    else salida.push(nodo)
   }
   /* Los prestados van al final de cada fila: primero los cargos que el área tiene, después los
      que le ayudan desde afuera. */
@@ -584,19 +663,28 @@ function colgarUnidadesVacias(hijosRaiz, org, conFuncionales) {
   recorrer(hijosRaiz)
 
   const idsVacias = new Set(vacias.map(u => u.id))
+  /* Una vacía puede estar YA DIBUJADA: si es un eslabón de la cadena de áreas que se abrió para
+     llegar a un cargo de más abajo, su píldora existe en el árbol aunque ella no tenga puestos.
+     Es el caso de "Comercial" conteniendo a Ventas. Volver a colocarla la dibujaría dos veces. */
   const construir = u => {
     const nodo = nodoUnidad(u, org, undefined, conFuncionales)
     return {
       ...nodo,
       sinCargos: true,
-      hijos: [...vacias.filter(x => x.padreId === u.id).map(construir), ...nodo.apoyos],
+      hijos: [...vacias.filter(x => x.padreId === u.id && !pildoras.has(x.id)).map(construir), ...nodo.apoyos],
     }
   }
 
   /* Las cimas son las vacías cuya madre NO es otra vacía: las demás ya entran anidadas dentro
-     de ellas y colocarlas otra vez las dibujaría dos veces. */
+     de ellas y colocarlas otra vez las dibujaría dos veces.
+
+     Con una excepción, y es la que devuelve a las hermanas al mismo nivel: si la madre ya está
+     dibujada por la cadena, esta vacía SÍ es una cima —nadie más la va a anidar— y se cuelga de
+     esa píldora. Sin esto, Atención al Cliente esperaba a que la colocara Comercial, y Comercial
+     ya no se coloca porque la cadena la dibujó: desaparecía del organigrama. */
   const alPie = []
-  for (const u of vacias.filter(x => !x.padreId || !idsVacias.has(x.padreId))) {
+  const anidadaEnOtraVacia = u => u.padreId && idsVacias.has(u.padreId) && !pildoras.has(u.padreId)
+  for (const u of vacias.filter(x => !pildoras.has(x.id) && !anidadaEnOtraVacia(x))) {
     const nodo = construir(u)
     const madre = u.padreId ? pildoras.get(u.padreId) : null
     if (madre) engancheDe(madre, u, nodosPorCargo).hijos.push(nodo)
@@ -984,10 +1072,19 @@ export function descendientesDe(cargoId, org) {
    y no por el tipo porque el árbol dibuja dos filas distintas —la línea de mando abajo, los
    laterales al costado— y mover un staff entre los reportes de su jefe no lo movería de lugar
    en el dibujo. Salen en el orden en que se dibujan, que es el de la lista de cargos. */
+/* Y LA MISMA ÁREA, que no es lo mismo que el mismo jefe. Un gerente de Ventas y un CTO de
+   Dirección General pueden reportarle los dos al CEO y no compartir fila: el árbol envuelve a
+   cada hijo de otra área en la píldora de esa área, así que se dibujan a distinto nivel y en
+   ramas distintas. Contándolos juntos, el campo "Orden entre sus pares" decía "3.º de 6"
+   mientras en la fila había dos, y las flechas movían el cuadro contra vecinos que no eran. */
 export function paresDe(cargo, org) {
   if (!cargo) return []
   const lateral = esLateral(cargo)
-  return org.cargos.filter(c => c.reportaA === cargo.reportaA && esLateral(c) === lateral)
+  return org.cargos.filter(c => (
+    c.reportaA === cargo.reportaA
+    && esLateral(c) === lateral
+    && c.unidadId === cargo.unidadId
+  ))
 }
 
 /* Mover un cargo entre sus pares. El orden del dibujo ES el orden de la lista de cargos, así
@@ -1016,6 +1113,27 @@ export function moverEntrePares(cargoId, nuevaPos, org) {
 
 /* Al borrar un cargo sus subordinados suben un escalón y quedan colgando del jefe que
    tenía el borrado, en vez de desaparecer del árbol. */
+/* LA RAMA DE UN CARGO: él y todo lo que cuelga de él, por línea de mando. Es la unidad natural
+   del borrado en el dibujo —un área se cerró y se va entera— y la única selección múltiple que
+   un árbol puede ofrecer sin que nadie se sorprenda: lo que se lleva es exactamente lo que se
+   ve colgando.
+
+   Va por `reportaA` y no por área: un cargo de otra área que reporta a este cuelga de él en el
+   dibujo, así que se va con él. Lleva `vistos` porque un dato viejo con un ciclo —alguien que
+   termina reportando a su propio subordinado— colgaría el navegador en vez de avisar. */
+export function ramaDe(cargoId, org) {
+  const ids = []
+  const vistos = new Set()
+  const bajar = id => {
+    if (vistos.has(id)) return
+    vistos.add(id)
+    ids.push(id)
+    for (const h of org.cargos) if (h.reportaA === id) bajar(h.id)
+  }
+  bajar(cargoId)
+  return ids
+}
+
 export function eliminarCargo(cargoId, org) {
   const cargo = org.cargos.find(c => c.id === cargoId)
   if (!cargo) return org

@@ -59,7 +59,7 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
   /* Solo el staff va al costado. El outsourcing baja en la línea como cualquier reporte, así
      que acá también: la previa tiene que dibujar lo mismo que el árbol o promete un lugar que
      el organigrama no le va a dar. */
-  const lateral = form.tipo === 'staff'
+  const lateral = form.tipo === 'staff' || form.tipo === 'outsourcing'
   /* Al costado solo se puede colgar de alguien: un staff sin jefe es una raíz, y no hay de qué
      colgarlo al costado. */
   const alCostado = lateral && !!jefe
@@ -68,11 +68,18 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
      de verdad, así que subir una plaza se ve en el dibujo sin salir de la pestaña Básico. */
 
   /* Los hermanos son la línea de mando: los laterales del mismo jefe no van en esa fila,
-     porque en el árbol tampoco van ahí. */
+     porque en el árbol tampoco van ahí.
+
+     Y MISMO JEFE NO ALCANZA: hace falta la misma ÁREA. Compartir jefe no es compartir fila —el
+     árbol envuelve a cada hijo de otra área en la píldora de esa área, así que un gerente de
+     Ventas y un CTO de Dirección General le reportan los dos al CEO y sin embargo no se dibujan
+     juntos ni al mismo nivel—. Sin este filtro la previa listaba de par a cargos de media
+     empresa y prometía un lugar que el organigrama no le iba a dar, que es justo lo que este
+     panel existe para no hacer. */
   const hermanos = (jefe
     ? org.cargos.filter(c => c.reportaA === jefe.id)
     : org.cargos.filter(c => !c.reportaA)
-  ).filter(c => c.id !== cargoId && c.tipo !== 'staff')
+  ).filter(c => c.id !== cargoId && c.tipo !== 'staff' && c.tipo !== 'outsourcing' && c.unidadId === form.unidadId)
 
   /* Dónde cae este puesto dentro de la fila. Sin posición declarada —un cargo nuevo— va al
      final, que es donde lo va a poner la lista. */
@@ -83,6 +90,14 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
 
   const area = getUnidad(form.unidadId, org)?.nombre
   const areaJefe = jefe ? getUnidad(jefe.unidadId, org)?.nombre : null
+  /* LA CADENA DE ÁREAS, no solo la última. Un puesto de Ventas dentro de Comercial no queda al
+     lado de los de Dirección General: queda dos píldoras más adentro, y el árbol lo dibuja así.
+     Diciendo solo "Ventas", el panel dejaba abierta justo la pregunta que contesta el dibujo. */
+  const ruta = []
+  for (let u = getUnidad(form.unidadId, org); u && !ruta.some(x => x.id === u.id); u = u.padreId ? getUnidad(u.padreId, org) : null) {
+    ruta.unshift(u)
+  }
+  const ancestros = ruta.slice(0, -1).map(u => u.nombre)
   /* Un puesto pertenece a UNA sede; sin ninguna, no está atado a ninguna sucursal. Es la misma
      regla que dice el formulario, y el pie tiene que decir lo mismo que el campo. */
   const sede = sucursales.find(s => s.id === form.sucursalIds[0]) || null
@@ -123,7 +138,13 @@ export default function PreviaPuesto({ form, org, cargoId, ocupantes, nuevo }) {
           como si fuera el área equivocada. */}
       <div className="og-pv-area og-pv-area-uni">
         <span className="og-pv-area-rot">Unidad organizacional</span>
-        <span className="og-pv-area-nom"><Building2 size={13} /> {area || 'Sin área'}</span>
+        <span className="og-pv-area-nom">
+          <Building2 size={13} />
+          <span>
+            {ancestros.length > 0 && <span className="og-pv-area-ruta">{ancestros.join(' › ')} › </span>}
+            {area || 'Sin área'}
+          </span>
+        </span>
       </div>
 
       {/* Sin jefe no se dibuja ningún cuadro de empresa: el hilo baja del área y ya. El bloque

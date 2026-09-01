@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Palette, RotateCcw, User, Briefcase } from 'lucide-react'
+import { Palette, Pipette, User, Briefcase } from 'lucide-react'
 import CabeceraModal from './CabeceraModal'
+import AyudaCampo from './AyudaCampo'
 import { COLORES_LEYENDA, empresa } from '../../data/organigramaData'
 
 /* LOS COLORES DE LA LEYENDA, elegidos por la empresa.
@@ -9,13 +10,19 @@ import { COLORES_LEYENDA, empresa } from '../../data/organigramaData'
    explicarse. Cambiar el tono sí hace falta —por marca, y sobre todo por daltonismo: el teal
    del staff y el ámbar del vacante son justo el par que más se confunde—.
 
-   Cada renglón trae su cuadro de verdad al lado, con los mismos estilos del dibujo, porque un
-   círculo de color no dice cómo va a quedar un borde punteado con su relleno detrás. */
+   EL MODAL VA PARTIDO EN DOS: los cinco tonos a la izquierda y un pedazo de organigrama a la
+   derecha con los cinco conviviendo. Antes cada color traía su propio cuadrito de muestra y la
+   marca tenía su previa aparte, así que se elegían cinco cosas que iban a compartir un dibujo
+   sin verlas nunca juntas. Y elegir un violeta mirando un cuadrito violeta no dice nada: lo que
+   hay que saber es si ese violeta se distingue del azul y del verde en el mismo dibujo.
 
-/* El colaborador se muestra y NO se puede tocar. Podría haberse omitido, pero entonces la
-   pregunta "¿y el colaborador de qué color va?" queda sin contestar justo en la pantalla que
-   existe para contestarla. Se lista con su cuadro blanco y su motivo. */
-function CuadroMuestra({ clase, nombre, vacante, externo }) {
+   LAS RAZONES SE FUERON DETRÁS DEL "?". Eran tres párrafos para cinco controles —por qué el
+   colaborador va en blanco, por qué un ocupado no cambia de tono, por qué la marca no tiñe los
+   textos—. Son buenas y por eso siguen estando, pero donde alguien las busque. */
+
+/* El cuadro de verdad, con los estilos del dibujo: un círculo de color no dice cómo va a quedar
+   un borde punteado con su relleno detrás. Con `quien`, el cuadro sale ocupado. */
+function CuadroMuestra({ clase, nombre, vacante, externo, quien }) {
   return (
     <div className={`og-col-muestra og-card ${clase}`}>
       {vacante && <span className="og-card-tag">Vacante</span>}
@@ -23,9 +30,18 @@ function CuadroMuestra({ clase, nombre, vacante, externo }) {
         {externo ? <Briefcase size={11} className="og-card-ico" /> : <User size={11} className="og-card-ico" />}
         <span>{nombre}</span>
       </div>
-      <div className="og-chip og-chip-vacio">{externo ? 'Sin prestador' : 'Sin colaborador'}</div>
+      <div className={`og-chip${quien ? '' : ' og-chip-vacio'}`}>
+        {quien || (externo ? 'Sin prestador' : 'Sin colaborador')}
+      </div>
     </div>
   )
+}
+
+const CLASE = {
+  func: 'og-card-func',
+  ext: 'og-card-ext',
+  staff: 'og-card-staff',
+  vacante: 'og-card-vacante',
 }
 
 export default function ConfigColores({ org, marca, paletaMarca, onGuardar, onCerrar }) {
@@ -37,7 +53,6 @@ export default function ConfigColores({ org, marca, paletaMarca, onGuardar, onCe
   const [tonoMarca, setTonoMarca] = useState(marca)
 
   const cambiar = (key, valor) => setElegidos(e => ({ ...e, [key]: valor }))
-  const alDeFabrica = key => cambiar(key, COLORES_LEYENDA.find(c => c.key === key).porOmision)
   const hayCambios = tonoMarca !== marca
     || COLORES_LEYENDA.some(c => elegidos[c.key] !== (org?.colores?.[c.key] || c.porOmision))
 
@@ -48,122 +63,126 @@ export default function ConfigColores({ org, marca, paletaMarca, onGuardar, onCe
   const estiloVivo = { '--og-marca': tonoMarca }
   for (const c of COLORES_LEYENDA) estiloVivo[c.var] = elegidos[c.key]
 
-  const clasePorKey = {
-    func: 'og-card-func',
-    ext: 'og-card-ext',
-    staff: 'og-card-staff',
-    vacante: 'og-card-vacante',
-  }
-
   return (
     <div className="pl-overlay" onClick={onCerrar}>
       <div className="pl-modal og-modal-colores og-colores" onClick={e => e.stopPropagation()} style={estiloVivo}>
-        <CabeceraModal Icon={Palette} titulo="Configurar los colores del organigrama" onCerrar={onCerrar} />
+        <CabeceraModal Icon={Palette} titulo="Colores del organigrama" onCerrar={onCerrar} />
 
-        <div className="pl-modal-body">
-          {/* DOS GRUPOS, y separarlos es la mitad de la explicación: uno dice QUÉ ES cada puesto
-              —la leyenda, que se lee— y el otro es de quién es el dibujo —la marca, que se mira—.
-              Estaban en dos controles distintos de la barra y nadie tenía por qué adivinar que
-              eran cosas distintas; juntos y rotulados, la diferencia se cuenta sola. */}
-          <div className="og-col-rot">La leyenda · qué es cada puesto</div>
-          <p className="og-mandos-intro">
-            En el organigrama <strong>el color dice de qué clase es el puesto</strong> y la
-            etiqueta dice si está vacante: son dos preguntas y van por dos canales. Acá se cambia
-            el tono de cada significado — no cuáles son ni qué pinta cada uno, que es lo que hace
-            que la leyenda se pueda explicar.
-          </p>
+        <div className="og-colores-cuerpo">
+          <div className="og-colores-editar">
+            {/* DOS GRUPOS, y separarlos es la mitad de la explicación: uno dice QUÉ ES cada
+                puesto —la leyenda, que se lee— y el otro de quién es el dibujo —la marca, que se
+                mira—. Estaban en dos botones distintos de la barra y nadie tenía por qué adivinar
+                que eran cosas distintas. */}
+            <p className="og-colores-rot">
+              El color dice qué clase de puesto es
+              <AyudaCampo>
+                El <strong>color</strong> dice de qué clase es el puesto y la <strong>etiqueta</strong>
+                {' '}dice si está vacante: son dos preguntas y van por dos canales. Aquí se cambia el
+                tono de cada significado, no cuáles son ni qué pinta cada uno — eso es lo que hace
+                que la leyenda se pueda explicar.
+                <br /><br />
+                Un puesto ocupado <strong>no cambia de color</strong>: un staff con alguien adentro
+                conserva su color de staff. Dejó de estar vacante, no dejó de ser lo que es. Lo
+                único que se va es la etiqueta.
+              </AyudaCampo>
+            </p>
 
-          <div className="og-col-lista">
-            {COLORES_LEYENDA.map(c => (
-              <div key={c.key} className="og-col-fila">
-                <CuadroMuestra
-                  clase={clasePorKey[c.key]}
-                  nombre={c.label}
-                  vacante={c.key === 'vacante'}
-                  externo={c.key === 'ext'}
-                />
-                <div className="og-col-txt">
-                  <strong>{c.label}</strong>
-                  <small>{c.desc}</small>
-                </div>
-                <div className="og-col-acc">
-                  <label className="og-col-pick" title={`Elegir el color de ${c.label}`}>
-                    <span style={{ background: elegidos[c.key] }} />
+            <div className="og-col-lista">
+              {COLORES_LEYENDA.map(c => (
+                <div key={c.key} className="og-col-fila">
+                  <div className="og-col-txt">
+                    <strong>{c.label}</strong>
+                    <small>{c.desc}</small>
+                  </div>
+                  {/* Los tonos de esta clase, con el de fábrica primero. Antes acá vivía un botón
+                      de deshacer que solo aparecía si habías tocado algo: media fila vacía casi
+                      siempre, y un control que se materializa donde no había nada. Con los tonos
+                      a la vista se elige de un toque y volver al de fábrica es el primero. */}
+                  <div className="og-col-tonos">
+                    {c.tonos.map(t => (
+                      <button
+                        key={t}
+                        type="button"
+                        className={`og-col-tono${elegidos[c.key] === t ? ' on' : ''}`}
+                        style={{ background: t }}
+                        onClick={() => cambiar(c.key, t)}
+                        title={t === c.porOmision ? 'El de fábrica' : t}
+                        aria-label={`Pintar ${c.label} de ${t}`}
+                      />
+                    ))}
+                  </div>
+                  {/* La salida, para el que tiene un color de marca que no está entre los cinco.
+                      Solo muestra un tono cuando ese tono NO es ninguno de los cinco: si no,
+                      repetía al lado del disco ya elegido el mismo color, y dos manchas iguales
+                      pegadas se leen como que una de las dos no hace nada. */}
+                  <label className="og-col-pick" title={`Otro color para ${c.label}`}>
+                    {c.tonos.includes(elegidos[c.key])
+                      ? <span className="og-col-otro"><Pipette size={12} /></span>
+                      : <span style={{ background: elegidos[c.key] }} />}
                     <input
                       type="color"
                       value={elegidos[c.key]}
                       onChange={e => cambiar(c.key, e.target.value)}
-                      aria-label={`Color de ${c.label}`}
+                      aria-label={`Otro color para ${c.label}`}
                     />
                   </label>
-                  {/* Solo cuando hay a qué volver: un botón de deshacer siempre visible enseña a
-                      ignorar la fila donde vive. */}
-                  {elegidos[c.key] !== c.porOmision && (
-                    <button type="button" className="og-col-reset" onClick={() => alDeFabrica(c.key)} title="Volver al color de fábrica">
-                      <RotateCcw size={12} />
-                    </button>
-                  )}
                 </div>
-              </div>
-            ))}
-
-            {/* El quinto renglón, sin control. Contesta la pregunta en vez de dejarla abierta. */}
-            <div className="og-col-fila og-col-fija">
-              <CuadroMuestra clase="" nombre="Colaborador" />
-              <div className="og-col-txt">
-                <strong>Colaborador · en planilla</strong>
-                <small>
-                  Va en blanco y no se configura: son cuatro de cada cinco cuadros, y pintarlos
-                  dejaría el organigrama entero de colores. El blanco es lo que hace resaltar a
-                  los otros cuatro.
-                </small>
-              </div>
+              ))}
             </div>
+
+            {/* EL COLOR DE LA EMPRESA. Estaba en su propio botón de la barra y se mudó acá: son
+                los dos juegos de color del organigrama y tenerlos en dos sitios distintos obligaba
+                a descubrir por separado que existían. */}
+            <p className="og-colores-rot og-colores-rot-sep">
+              El color de tu empresa
+              <AyudaCampo>
+                Tiñe las <strong>superficies</strong>: la caja de la organización y la píldora de
+                cada área. No toca los textos ni los colores de arriba — con una marca naranja los
+                nombres de los cargos saldrían naranjas y el dibujo se volvería ilegible.
+              </AyudaCampo>
+            </p>
+            <div className="og-marca-grid">
+              {paletaMarca.map(c => (
+                <button
+                  key={c}
+                  type="button"
+                  className={`og-marca-op${tonoMarca === c ? ' on' : ''}`}
+                  style={{ background: c }}
+                  onClick={() => setTonoMarca(c)}
+                  title={c}
+                />
+              ))}
+            </div>
+            <label className="og-marca-libre">
+              El de tu marca
+              <input type="color" value={tonoMarca} onChange={e => setTonoMarca(e.target.value)} />
+            </label>
           </div>
 
-          <p className="og-col-pie">
-            {/* Sin nombrar los tonos: son configurables, así que "sigue siendo teal" dejaría de
-                ser cierto en cuanto alguien toque esta misma pantalla. */}
-            <strong>Un puesto ocupado no cambia de color.</strong> Un staff con alguien adentro
-            conserva su color de staff y un tercerizado el suyo: dejaron de estar vacantes, no
-            dejaron de ser lo que son. Lo único que se va es la etiqueta.
-          </p>
-
-          {/* EL COLOR DE LA EMPRESA. Estaba en su propio botón de la barra y se mudó acá: son los
-              dos juegos de color del organigrama y tenerlos en dos sitios distintos obligaba a
-              descubrir por separado que existían. */}
-          <div className="og-col-rot og-col-rot-sep">La marca · de quién es el dibujo</div>
-          <p className="og-mandos-intro">
-            Tiñe las <strong>superficies</strong>: la empresa y las píldoras de cada área. No toca
-            los textos ni la leyenda de arriba — con una marca naranja los nombres de los cargos
-            saldrían naranjas y el dibujo se volvería ilegible.
-          </p>
-
-          <div className="og-col-marca">
-            {/* Las piezas de verdad del dibujo, no un cuadrito: el nodo de la empresa lleva el
-                tono tal cual y la píldora de un área lo lleva aclarado. Mostrar una sola escondía
-                la mitad de lo que el tono hace. */}
-            <div className="og-col-marca-previa">
-              <span className="og-col-empresa">{empresa.nombre}</span>
-              <span className="og-unidad og-col-pildora">Recursos Humanos</span>
-            </div>
-            <div className="og-col-marca-elegir">
-              <div className="og-marca-grid">
-                {paletaMarca.map(c => (
-                  <button
-                    key={c}
-                    type="button"
-                    className={`og-marca-op${tonoMarca === c ? ' on' : ''}`}
-                    style={{ background: c }}
-                    onClick={() => setTonoMarca(c)}
-                    title={c}
-                  />
-                ))}
-              </div>
-              <label className="og-marca-libre">
-                El de tu marca
-                <input type="color" value={tonoMarca} onChange={e => setTonoMarca(e.target.value)} />
-              </label>
+          {/* LO QUE RESULTA. Un pedazo de organigrama con los cinco significados a la vez, más las
+              dos superficies que tiñe la marca. El COLABORADOR vive acá y no en la lista: no se
+              puede configurar, y una fila apagada entre cuatro que responden se lee como un
+              control roto. Dibujado, en cambio, contesta la pregunta sin decir una palabra —se ve
+              que es blanco y se ve por qué: es el fondo contra el que resaltan los otros—.
+              Y el staff sale OCUPADO a propósito: ahí se ve que un puesto con alguien adentro
+              conserva su color, que era el otro párrafo que había que leer. */}
+          <div className="og-colores-previa">
+            <p className="og-colores-rot">Cómo va a verse</p>
+            <span className="og-col-empresa">{empresa.nombre}</span>
+            <div className="og-colores-hilo" />
+            <span className="og-unidad og-col-pildora">Recursos Humanos</span>
+            <div className="og-colores-hilo" />
+            <CuadroMuestra clase="" nombre="Jefe de RRHH" quien="Paola Arce" />
+            <div className="og-colores-hilo" />
+            {/* Los cuatro de abajo van en el MISMO orden que los cuatro renglones de la
+                izquierda: tocar el tercero y ver cambiar el tercero es lo que hace que no haga
+                falta buscar cuál se movió. */}
+            <div className="og-colores-cuadros">
+              <CuadroMuestra clase={CLASE.func} nombre="Diseñadora" quien="Ana Martínez" />
+              <CuadroMuestra clase={CLASE.ext} nombre="Limpieza" externo />
+              <CuadroMuestra clase={CLASE.staff} nombre="Asistente" quien="Lorena Aguirre" />
+              <CuadroMuestra clase={CLASE.vacante} nombre="Reclutadora" vacante />
             </div>
           </div>
         </div>
