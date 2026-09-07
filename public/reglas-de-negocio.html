@@ -1,0 +1,2418 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentación oficial de Souly</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap');
+
+/* La paleta es la de Souly —tinta marina y verde señal— con los neutros inclinados hacia el
+   verde: un gris puro al lado de este verde se ve sucio, y uno con una gota del acento se ve
+   elegido. Todo pasa por variables porque el documento tiene que aguantar los dos temas. */
+:root {
+  --papel: #F4F7F5;
+  --sup: #FFFFFF;
+  --tinta: #0B2635;
+  --tinta-2: #3E5665;
+  --tinta-3: #64808E;
+  --linea: #E2E9E5;
+  --linea-2: #C9D7CF;
+  --verde: #00A870;
+  --verde-vivo: #00E091;
+  --verde-tenue: #E7F7EF;
+  --verde-fantasma: #5FCCA3;
+  --rail: #0B2635;
+  --rail-tinta: #EAF2EE;
+  --rail-mudo: #7C99A7;
+  --rail-linea: rgba(255,255,255,.10);
+  --sombra: 0 1px 2px rgba(11,38,53,.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #09202B;
+    --sup: #0F2C39;
+    --tinta: #EAF3EE;
+    --tinta-2: #B3C6CE;
+    --tinta-3: #7E9AA8;
+    --linea: rgba(255,255,255,.09);
+    --linea-2: rgba(255,255,255,.17);
+    --verde: #00E091;
+    --verde-tenue: rgba(0,224,145,.12);
+    --verde-fantasma: rgba(0,224,145,.55);
+    --rail: #061620;
+    --sombra: none;
+  }
+}
+:root[data-theme="dark"] {
+  --papel: #09202B;
+  --sup: #0F2C39;
+  --tinta: #EAF3EE;
+  --tinta-2: #B3C6CE;
+  --tinta-3: #7E9AA8;
+  --linea: rgba(255,255,255,.09);
+  --linea-2: rgba(255,255,255,.17);
+  --verde: #00E091;
+  --verde-tenue: rgba(0,224,145,.12);
+    --verde-fantasma: rgba(0,224,145,.55);
+  --rail: #061620;
+  --sombra: none;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.72;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; }
+.mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.marco { display: flex; align-items: flex-start; min-height: 100vh; }
+
+/* EL RAIL. El índice de un reglamento no es un apéndice: es la puerta por la que se entra cada
+   vez que alguien viene a consultar una regla concreta. Va en tinta marina y no en papel para
+   que la página tenga peso a la izquierda y el texto respire a la derecha. */
+.rail {
+  position: sticky; top: 0; flex: 0 0 292px; width: 292px; height: 100vh;
+  background: var(--rail); color: var(--rail-tinta);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.rail-cab { padding: 30px 26px 22px; border-bottom: 1px solid var(--rail-linea); }
+.marca { display: flex; align-items: center; gap: 11px; }
+.marca img { height: 25px; width: auto; display: block; }
+.marca span {
+  font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--rail-mudo); padding-top: 2px;
+}
+.rail-tit {
+  font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 25px;
+  line-height: 1.1; letter-spacing: -.02em; margin-top: 14px;
+}
+.rail-sub { font-size: 12.5px; color: var(--rail-mudo); margin-top: 4px; }
+
+.toc { position: relative; flex: 1; overflow-y: auto; padding: 18px 16px 10px; }
+.toc-i {
+  display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: baseline;
+  padding: 9px 12px; border-radius: 9px; text-decoration: none;
+  color: var(--rail-mudo); font-size: 13px; line-height: 1.4;
+  transition: background .18s ease, color .18s ease;
+}
+.toc-i:hover { color: var(--rail-tinta); background: rgba(255,255,255,.05); }
+.toc-n {
+  font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--rail-mudo);
+  font-variant-numeric: tabular-nums;
+}
+.toc-i[aria-current="true"] { color: #06231B; background: var(--verde-vivo); font-weight: 600; }
+.toc-i[aria-current="true"] .toc-n { color: #06231B; }
+.rail-pie {
+  padding: 16px 26px 24px; border-top: 1px solid var(--rail-linea);
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--rail-mudo);
+}
+
+.doc { flex: 1; min-width: 0; padding: 0 clamp(20px, 3vw, 60px); }
+.col { max-width: 1140px; margin: 0 auto; }
+
+/* LA PORTADA se lee entera sin desplazar: dice de qué es esto y cómo se usa, y ya empieza la
+   primera sección. Una portada a pantalla completa se ve bien en una captura y estorba a diario. */
+.portada { padding: 84px 0 38px; }
+.rotulo {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--verde);
+}
+.portada h1 {
+  font-family: 'Fraunces', Georgia, serif; font-weight: 700;
+  font-size: clamp(46px, 7vw, 72px); line-height: .96; letter-spacing: -.035em;
+  margin-top: 18px;
+}
+.entradilla {
+  font-size: 18px; line-height: 1.6; color: var(--tinta-2); margin-top: 22px; max-width: 33em;
+}
+.parte {
+  margin: 78px 0 0; padding: 26px 30px 28px; border-radius: 18px;
+  background: var(--rail); color: var(--rail-tinta);
+}
+.parte-n {
+  font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--verde-vivo);
+}
+.parte h2 {
+  font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: clamp(24px, 3vw, 31px);
+  line-height: 1.12; letter-spacing: -.025em; margin-top: 10px;
+}
+.parte p { margin-top: 8px; font-size: 14px; color: var(--rail-mudo); max-width: 62ch; }
+.parte + .sec { padding-top: 46px; }
+.sec + .sec { border-top: 1px solid var(--linea); margin-top: 58px; }
+.parte + .sec, .parte + .sec + .sec { border-top: 0; }
+.toc-grupo {
+  width: 100%; display: grid; grid-template-columns: 30px 1fr 12px; gap: 9px; align-items: center;
+  margin-top: 16px; padding: 13px 12px 13px 22px; border: 0; border-top: 1px solid rgba(255,255,255,.09);
+  background: none; cursor: pointer; text-align: left; font-family: inherit;
+  font-size: 11.5px; font-weight: 600; line-height: 1.35; color: rgba(255,255,255,.46);
+  transition: color .16s ease;
+}
+.toc-grupo:hover { color: var(--rail-tinta); }
+.toc-grupo:first-child { margin-top: 0; padding-top: 4px; border-top: 0; }
+.toc-grupo b {
+  font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 500;
+  color: var(--verde-vivo);
+}
+.toc-chev {
+  width: 8px; height: 8px; justify-self: end; margin-right: 2px;
+  border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg); transition: transform .2s ease;
+}
+.toc-grupo[aria-expanded="true"] .toc-chev { transform: rotate(45deg); }
+.toc-grupo[aria-expanded="false"] + .toc-cuerpo { display: none; }
+.toc-cuerpo { padding-bottom: 4px; }
+
+.sec { padding: 54px 0 0; scroll-margin-top: 18px; }
+.sec + .sec { border-top: 1px solid var(--linea); margin-top: 58px; }
+.sec-cab { display: grid; grid-template-columns: 118px 1fr; align-items: start; }
+/* El número de sección, grande y en verde: marca dónde empieza cada bloque sin
+   competir con el título, y da al documento su textura de reglamento. */
+.sec-n {
+  font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 50px; line-height: .9;
+  color: var(--verde-fantasma); letter-spacing: -.04em;
+}
+.sec-cab h2 {
+  font-family: 'Fraunces', Georgia, serif; font-weight: 700;
+  font-size: clamp(27px, 3.4vw, 35px); line-height: 1.08; letter-spacing: -.025em;
+}
+
+.sec-lead { font-size: 15px; color: var(--tinta-2); margin-top: 10px; max-width: 64ch; }
+
+/* LAS REGLAS SE CITAN POR SU NÚMERO —«la 2.6» en un pull request— así que el número es dato y
+   no adorno, y cada regla tiene además su propio ancla para poder enlazarla suelta. */
+.reglas { list-style: none; margin: 34px 0 0; padding: 0; display: grid; gap: 9px; }
+.regla {
+  display: grid; grid-template-columns: 52px 1fr; align-items: start;
+  background: var(--sup); border: 1px solid var(--linea); border-radius: 14px;
+  padding: 19px 24px 21px; box-shadow: var(--sombra);
+  transition: border-color .18s ease;
+}
+.regla:hover { border-color: var(--linea-2); }
+.regla-n {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--tinta-3);
+  font-variant-numeric: tabular-nums; padding-top: 4px;
+  transition: color .18s ease;
+}
+.regla:hover .regla-n { color: var(--verde); }
+.regla > div {
+  display: grid; grid-template-columns: minmax(210px, .8fr) 1.45fr; gap: 30px; align-items: start;
+}
+.regla h3 { font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -.01em; }
+.regla p { font-size: 14.5px; color: var(--tinta-2); max-width: 68ch; }
+
+/* La presentación del producto: texto corrido y tres piezas. Comparte la caja y la retícula de
+   las reglas para que el documento se lea como uno solo, pero sin número: no se cita «la 1.2»
+   de una descripción. */
+.prosa { margin-top: 30px; }
+.prosa p {
+  font-size: 21px; line-height: 1.62; color: var(--tinta-2); letter-spacing: -.008em;
+}
+.prosa p strong { color: var(--tinta); font-weight: 600; }
+@media (max-width: 1180px) { .prosa p { font-size: 18px; } }
+.prosa p strong { color: var(--tinta); font-weight: 600; }
+.piezas { display: grid; gap: 9px; margin-top: 22px; }
+.pieza {
+  display: grid; grid-template-columns: minmax(230px, .85fr) 1.5fr; gap: 30px; align-items: start;
+  background: var(--sup); border: 1px solid var(--linea); border-radius: 14px;
+  padding: 19px 24px 21px; box-shadow: var(--sombra);
+}
+.pieza h3 { font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -.01em; }
+.pieza .donde {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--verde); margin-bottom: 6px;
+}
+.pieza p { font-size: 14.5px; color: var(--tinta-2); max-width: 64ch; }
+@media (max-width: 1180px) { .pieza { grid-template-columns: 1fr; gap: 8px; } }
+
+/* Las dos vistas de la web, dentro de su tarjeta: separadas por un filete y no por otra caja,
+   porque son partes de una misma cosa y no dos cosas al lado. */
+.pieza .vista { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--linea); }
+.pieza .vista h4 {
+  margin: 0 0 5px; font-size: 14px; font-weight: 600; line-height: 1.4;
+  color: var(--tinta); letter-spacing: -.005em;
+}
+
+.mod {
+  display: grid; grid-template-columns: minmax(180px, .55fr) 1fr; gap: 18px;
+  padding: 10px 0; border-top: 1px solid var(--linea); font-size: 14px;
+}
+.mod b { color: var(--tinta); font-weight: 600; }
+.mod span { color: var(--tinta-2); }
+@media (max-width: 1180px) { .mod { grid-template-columns: 1fr; gap: 2px; } }
+
+.regla.br > div { display: block; }
+.regla.br h3 { margin-bottom: 6px; }
+.regla.br > div > p { max-width: 74ch; }
+
+.br-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 7px; }
+.br-id {
+  font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .04em;
+  color: var(--verde); font-weight: 500;
+}
+.br-estado {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .12em;
+  text-transform: uppercase; padding: 3px 8px; border-radius: 999px;
+  background: var(--alerta-tenue); color: var(--alerta);
+}
+.br-eq {
+  font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--tinta-3);
+  border: 1px solid var(--linea-2); border-radius: 999px; padding: 2px 8px;
+}
+.escenarios { display: grid; gap: 8px; margin-top: 14px; }
+.esc {
+  border: 1px solid var(--linea); border-radius: 11px; padding: 12px 15px 13px;
+  background: var(--papel);
+}
+.esc-t {
+  display: flex; gap: 8px; align-items: baseline;
+  font-size: 12.5px; font-weight: 600; color: var(--tinta); margin-bottom: 7px;
+}
+.esc-t i { font-style: normal; font-size: 11px; }
+.esc.ok .esc-t i { color: var(--verde); }
+.esc.no .esc-t i { color: var(--alerta); }
+.esc ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+.esc li { font-size: 13px; line-height: 1.55; color: var(--tinta-2); }
+.esc li b {
+  font-family: 'JetBrains Mono', monospace; font-size: 10.5px; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--tinta-3); font-weight: 500; margin-right: 5px;
+}
+.traza {
+  margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--linea-2);
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--tinta-3);
+}
+
+.tabla-caja { margin-top: 26px; overflow-x: auto; border: 1px solid var(--linea);
+              border-radius: 14px; background: var(--sup); box-shadow: var(--sombra); }
+.tabla { width: 100%; border-collapse: collapse; }
+.tabla th, .tabla td { padding: 13px 16px; white-space: nowrap; text-align: center; }
+.tabla thead th {
+  font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--tinta-3); font-weight: 500;
+  border-bottom: 1px solid var(--linea);
+}
+.tabla thead th:first-child, .tabla tbody th { text-align: left; }
+.tabla tbody th { font-size: 14px; font-weight: 600; color: var(--tinta); }
+.tabla tbody tr + tr th, .tabla tbody tr + tr td { border-top: 1px solid var(--linea); }
+.tabla td { font-size: 13.5px; color: var(--tinta-2); }
+/* El alcance se ve antes de leerse: relleno para el acceso completo, contorno para el acotado
+   y nada para lo que no le toca. */
+.tabla td.si::before, .tabla td.parcial::before {
+  content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 8px; vertical-align: 1px;
+}
+.tabla td.si { color: var(--tinta); font-weight: 500; }
+.tabla td.si::before { background: var(--verde); }
+.tabla td.parcial::before { border: 1.5px solid var(--verde); }
+.tabla td.no { color: var(--tinta-3); }
+.tabla.ancha th, .tabla.ancha td { white-space: normal; text-align: left; vertical-align: top; }
+.tabla.ancha tbody th { min-width: 190px; }
+.tabla.ancha .donde-col { color: var(--tinta-2); min-width: 120px; }
+.tabla.ancha .paq { white-space: nowrap; }
+.tabla.ancha .paq b { color: var(--verde); font-weight: 600; }
+
+.tabla.ancha .subs { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+.tabla.ancha .subs li {
+  position: relative; padding-left: 16px; font-size: 13.5px; line-height: 1.55; color: var(--tinta-2);
+}
+.tabla.ancha .subs li::before {
+  content: ''; position: absolute; left: 2px; top: .62em; width: 4px; height: 4px;
+  border-radius: 50%; background: var(--verde); opacity: .6;
+}
+.tabla.ancha .subs em { font-style: normal; color: var(--tinta-3); }
+
+.tabla.ancha .subsub { margin: 6px 0 2px; padding: 0; list-style: none; display: grid; gap: 3px; }
+.tabla.ancha .subsub li { padding-left: 14px; font-size: 13px; color: var(--tinta-3); }
+.tabla.ancha .subsub li::before {
+  content: '–'; position: absolute; left: 2px; top: 0; width: auto; height: auto;
+  border-radius: 0; background: none; color: var(--tinta-3); opacity: 1; font-size: 12px;
+}
+
+.tabla.ancha .prohibido { color: var(--tinta-3); text-decoration: line-through; text-decoration-color: var(--linea-2); }
+
+.nota { font-size: 13px; color: var(--tinta-2); margin-top: 14px; max-width: 66ch; }
+
+.pie {
+  margin-top: 78px; padding: 26px 0 70px; border-top: 1px solid var(--linea);
+  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--tinta-3);
+}
+
+a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); outline-offset: 3px; }
+
+/* Por debajo de 1020 px el rail deja de caber junto al texto: pasa a ser una cabecera con el
+   índice desplazable en horizontal, que es como se navega un documento en un teléfono. */
+@media (max-width: 1020px) {
+  .marco { display: block; }
+  .rail { position: static; width: auto; height: auto; flex: none; }
+  .rail-cab { padding: 22px 22px 16px; }
+  .rail-tit { font-size: 21px; margin-top: 10px; }
+  .toc { display: flex; gap: 6px; overflow-x: auto; padding: 12px; }
+  .toc-i { flex: 0 0 auto; grid-template-columns: auto; gap: 0; white-space: nowrap; font-size: 12px; }
+  .toc-i span:last-child { display: none; }
+  .toc-i .toc-n { display: block; font-size: 12px; }
+  .rail-pie { display: none; }
+  .portada { padding: 44px 0 36px; }
+  .sec-cab { grid-template-columns: 1fr; }
+  .sec-n { font-size: 34px; display: block; margin-bottom: 10px; }
+  .regla { grid-template-columns: 1fr; padding: 17px 19px 19px; }
+  .regla-n { padding: 0 0 7px; }
+}
+@media (max-width: 1180px) {
+  .regla > div { grid-template-columns: 1fr; gap: 0; }
+  .regla p { margin-top: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+@media print {
+  .rail { display: none; }
+  body { background: #fff; }
+  .regla, .tabla-caja { break-inside: avoid; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<div class="marco">
+  <aside class="rail">
+    <div class="rail-cab">
+      <div class="marca">
+        <img src="data:image/png;base64,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" alt="Souly">
+      </div>
+      <div class="rail-tit">Documentación oficial</div>
+      <div class="rail-sub">Souly · B2B HR SaaS</div>
+    </div>
+    <nav class="toc" aria-label="Índice del documento">
+      <button class="toc-grupo" data-grupo="1" aria-expanded="true"><b>1</b><span>Descripción general del producto</span><span class="toc-chev" aria-hidden="true"></span></button>
+      <div class="toc-cuerpo">
+        <a class="toc-i" href="#s-que-es" data-id="s-que-es" data-grupo="1"><span class="toc-n">1.1</span><span>¿Qué es Souly?</span></a>
+        <a class="toc-i" href="#s-clientes" data-id="s-clientes" data-grupo="1"><span class="toc-n">1.2</span><span>¿Quiénes son los clientes de Souly?</span></a>
+        <a class="toc-i" href="#s-usuarios" data-id="s-usuarios" data-grupo="1"><span class="toc-n">1.3</span><span>¿Quiénes son los usuarios de Souly?</span></a>
+        <a class="toc-i" href="#s-vocabulario" data-id="s-vocabulario" data-grupo="1"><span class="toc-n">1.4</span><span>El vocabulario</span></a>
+      </div>
+      <button class="toc-grupo" data-grupo="2" aria-expanded="true"><b>2</b><span>Arquitectura y modelo comercial</span><span class="toc-chev" aria-hidden="true"></span></button>
+      <div class="toc-cuerpo">
+        <a class="toc-i" href="#s-oferta" data-id="s-oferta" data-grupo="2"><span class="toc-n">2.1</span><span>¿Cómo se compone la oferta comercial de Souly?</span></a>
+        <a class="toc-i" href="#s-modulos" data-id="s-modulos" data-grupo="2"><span class="toc-n">2.2</span><span>Los módulos y de qué se componen</span></a>
+      </div>
+      <button class="toc-grupo" data-grupo="3" aria-expanded="true"><b>3</b><span>Reglas transversales</span><span class="toc-chev" aria-hidden="true"></span></button>
+      <div class="toc-cuerpo">
+        <a class="toc-i" href="#s-producto" data-id="s-producto" data-grupo="3"><span class="toc-n">3.1</span><span>Reglas del producto</span></a>
+        <a class="toc-i" href="#s-alta" data-id="s-alta" data-grupo="3"><span class="toc-n">3.2</span><span>Cómo nace una empresa en Souly</span></a>
+        <a class="toc-i" href="#s-accesos" data-id="s-accesos" data-grupo="3"><span class="toc-n">3.3</span><span>Quién ve qué</span></a>
+        <a class="toc-i" href="#s-estados" data-id="s-estados" data-grupo="3"><span class="toc-n">3.4</span><span>Estados: cerrar no es borrar</span></a>
+        <a class="toc-i" href="#s-fichas" data-id="s-fichas" data-grupo="3"><span class="toc-n">3.5</span><span>Reglas de las fichas</span></a>
+        <a class="toc-i" href="#s-tablas" data-id="s-tablas" data-grupo="3"><span class="toc-n">3.6</span><span>Reglas de las tablas</span></a>
+        <a class="toc-i" href="#s-ambito" data-id="s-ambito" data-grupo="3"><span class="toc-n">3.7</span><span>El ámbito: desde dónde estás mirando</span></a>
+        <a class="toc-i" href="#s-convencion" data-id="s-convencion" data-grupo="3"><span class="toc-n">3.8</span><span>Cómo se escribe una regla</span></a>
+      </div>
+      <button class="toc-grupo" data-grupo="4" aria-expanded="true"><b>4</b><span>Reglas por módulo</span><span class="toc-chev" aria-hidden="true"></span></button>
+      <div class="toc-cuerpo">
+        <a class="toc-i" href="#s-m-organizacion" data-id="s-m-organizacion" data-grupo="4"><span class="toc-n">4.1</span><span>Organización</span></a>
+        <a class="toc-i" href="#s-m-personas" data-id="s-m-personas" data-grupo="4"><span class="toc-n">4.2</span><span>Gestión de personas</span></a>
+        <a class="toc-i" href="#s-m-onboarding" data-id="s-m-onboarding" data-grupo="4"><span class="toc-n">4.3</span><span>Onboarding</span></a>
+      </div>
+    </nav>
+    <div class="rail-pie">17 secciones · 70 reglas</div>
+  </aside>
+
+  <main class="doc">
+    <div class="col">
+      <header class="portada">
+        <div class="rotulo">B2B HR SaaS · Para producto y desarrollo</div>
+        <h1>Documentación oficial de Souly</h1>
+        <p class="entradilla">
+          Qué es Souly, cómo se empaca para la venta y cómo debe comportarse. Cada regla dice qué
+          hace el sistema y por qué: el porqué es lo que permite discutirla antes de construirla,
+          en vez de descubrirla rota meses después.
+        </p>
+      </header>
+
+      <div class="parte">
+        <div class="parte-n">Parte 1</div>
+        <h2>Descripción general del producto</h2>
+        <p>Qué es Souly, a quién se le vende y quién lo usa todos los días.</p>
+      </div>
+      <section class="sec" id="s-que-es">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">1.1</span>
+          <div>
+            <h2>¿Qué es Souly?</h2>
+          </div>
+        </header>
+        <div class="prosa">
+          <p>
+            <strong>Souly es una plataforma SaaS B2B de gestión de recursos humanos</strong>
+            diseñada para conectar a los equipos de trabajo y optimizar los procesos internos de la
+            empresa, a través de un ecosistema que combina una potente versión web y una aplicación
+            móvil.
+          </p>
+        </div>
+        <div class="piezas">
+          <div class="pieza">
+            <div>
+              <div class="donde">Versión web</div>
+              <h3>Panel administrativo y portal de autogestión</h3>
+            </div>
+            <div>
+              <p>
+                Funciona como el centro de control principal desde el navegador, dividido en dos
+                grandes vistas.
+              </p>
+              <div class="vista">
+                <h4>Panel administrativo</h4>
+                <p>
+                  Diseñado para que la administración, el equipo de RRHH y la alta dirección realicen
+                  la configuración del sistema y la administración general de los módulos existentes.
+                </p>
+              </div>
+              <div class="vista">
+                <h4>Portal de autogestión — «Mi espacio personal»</h4>
+                <p>
+                  Un módulo diseñado para que cualquier colaborador —incluidos administradores y
+                  directivos— pueda ingresar desde la PC a revisar su información personal con total
+                  comodidad: boletas de pago, perfil, procesos de onboarding y demás.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="pieza">
+            <div>
+              <div class="donde">App móvil · iOS y Android</div>
+              <h3>La app del colaborador</h3>
+            </div>
+            <p>
+              Enfocada en la comodidad y la inmediatez del colaborador para consultar sus boletas,
+              su perfil y sus procesos desde cualquier lugar. Además, si el usuario cumple un rol de
+              liderazgo, la app se adapta automáticamente a la estructura orgánica de la empresa
+              —el organigrama— y le permite revisar y dar seguimiento en tiempo real a los PDI, las
+              evaluaciones y los onboardings del equipo que tiene a su cargo.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="s-clientes">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">1.2</span>
+          <div>
+            <h2>¿Quiénes son los clientes de Souly?</h2>
+            <p class="sec-lead">Quién contrata y quién firma.</p>
+          </div>
+        </header>
+        <div class="prosa">
+          <p>
+            Al tratarse de una solución <strong>B2B (Business to Business) SaaS</strong>, los
+            clientes directos de Souly no son personas naturales, sino organizaciones y empresas de
+            diversos rubros y tamaños que contratan la plataforma para optimizar su gestión de
+            recursos humanos y talento humano.
+          </p>
+        </div>
+      </section>
+
+      <section class="sec" id="s-usuarios">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">1.3</span>
+          <div>
+            <h2>¿Quiénes son los usuarios de Souly?</h2>
+            <p class="sec-lead">Quién entra todos los días, y por dónde entra cada uno.</p>
+          </div>
+        </header>
+        <div class="prosa">
+          <p>
+            Los usuarios finales que interactúan con el ecosistema de la plataforma se dividen en
+            <strong>dos perfiles internos</strong> según su rol.
+          </p>
+        </div>
+        <div class="piezas">
+          <div class="pieza">
+            <div>
+              <div class="donde">Perfil 01 · Versión web</div>
+              <h3>La administración, alta dirección y equipos de RRHH</h3>
+            </div>
+            <p>
+              Utilizan principalmente la versión web para configurar la plataforma, administrar la
+              estructura orgánica, gestionar la base de colaboradores y supervisar los módulos
+              estratégicos y operativos: evaluaciones de desempeño, PDI, procesos de onboarding,
+              planillas, salarios y administración general.
+            </p>
+          </div>
+          <div class="pieza">
+            <div>
+              <div class="donde">Perfil 02 · App móvil y «Mi espacio personal»</div>
+              <h3>Los colaboradores y líderes de equipo</h3>
+            </div>
+            <div>
+              <p>
+                Jefaturas y personal general. Usan la aplicación móvil y el módulo «Mi espacio
+                personal» de la versión web como su espacio centralizado de autogestión diaria:
+                consultar boletas de pago, beneficios y perfil, seguir su onboarding, responder
+                encuestas, interactuar con el agente de IA, ver archivos, revisar el organigrama y
+                usar el chat interno.
+              </p>
+              <div class="vista">
+                <h4>Y si además lideran</h4>
+                <p>
+                  Cuentan con permisos adicionales para dar seguimiento al desarrollo, las
+                  evaluaciones y los PDI de sus equipos en tiempo real.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="s-vocabulario">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">1.4</span>
+          <div>
+            <h2>El vocabulario</h2>
+            <p class="sec-lead">Los nombres que usa el producto, y los que no. Esta lista manda sobre las pantallas, los tickets y el código.</p>
+          </div>
+        </header>
+        <div class="tabla-caja">
+          <table class="tabla ancha">
+            <thead>
+              <tr>
+                <th scope="col">Se dice</th>
+                <th scope="col">Qué es</th>
+                <th scope="col">No se dice</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Empresa</th>
+                <td>El cliente. Todo cuelga de ella y nada cruza de una a otra.</td>
+                <td class="prohibido">organización, cuenta, tenant</td>
+              </tr>
+              <tr>
+                <th scope="row">Unidad de negocio</th>
+                <td>La división que manda sobre sus propias unidades organizacionales. Su cabeza reporta a la gerencia general.</td>
+                <td class="prohibido">división, vertical</td>
+              </tr>
+              <tr>
+                <th scope="row">Regional</th>
+                <td>Agrupa sucursales. Agrupa, no manda.</td>
+                <td class="prohibido">zona, región, distrito</td>
+              </tr>
+              <tr>
+                <th scope="row">Sucursal</th>
+                <td>El sitio con identidad fiscal propia. Es la palabra que usa el producto para hablar de dónde está la gente.</td>
+                <td class="prohibido">sede, local, filial, oficina</td>
+              </tr>
+              <tr>
+                <th scope="row">Oficina</th>
+                <td>El centro de trabajo dentro de una sucursal.</td>
+                <td class="prohibido">piso, edificio</td>
+              </tr>
+              <tr>
+                <th scope="row">Unidad organizacional</th>
+                <td>Cómo se divide el trabajo por dentro, a cualquier profundidad. Una unidad puede colgar de otra.</td>
+                <td class="prohibido">área, subárea, departamento, gerencia</td>
+              </tr>
+              <tr>
+                <th scope="row">Cargo</th>
+                <td>La definición del trabajo: su nombre, su descripción, su perfil. Es un molde.</td>
+                <td class="prohibido">rol, posición</td>
+              </tr>
+              <tr>
+                <th scope="row">Puesto</th>
+                <td>La silla concreta que instancia un cargo, con su código y su sucursal. Se ocupa o está vacante.</td>
+                <td class="prohibido">plaza, vacante</td>
+              </tr>
+              <tr>
+                <th scope="row">Colaborador</th>
+                <td>Cualquier persona de la empresa. Todos lo son, incluidos los administradores.</td>
+                <td class="prohibido">empleado, usuario, recurso</td>
+              </tr>
+              <tr>
+                <th scope="row">Rol</th>
+                <td>Lo que una cuenta puede hacer. No es el cargo.</td>
+                <td class="prohibido">perfil, permiso</td>
+              </tr>
+              <tr>
+                <th scope="row">Alcance</th>
+                <td>Sobre quién puede actuar una cuenta. Se declara y no se deduce.</td>
+                <td class="prohibido">ámbito, filtro</td>
+              </tr>
+              <tr>
+                <th scope="row">Ámbito</th>
+                <td>Desde qué sucursal se está mirando ahora. Es del momento, no del permiso.</td>
+                <td class="prohibido">alcance, contexto</td>
+              </tr>
+              <tr>
+                <th scope="row">Ruta</th>
+                <td>El recorrido de onboarding que se le aplica a alguien. Se compone de etapas, actividades y tareas.</td>
+                <td class="prohibido">plantilla, flujo, journey</td>
+              </tr>
+              <tr>
+                <th scope="row">Asignación</th>
+                <td>Una ruta aplicada a una persona concreta, con su avance.</td>
+                <td class="prohibido">proceso, caso</td>
+              </tr>
+              <tr>
+                <th scope="row">PDI</th>
+                <td>Plan de desarrollo individual.</td>
+                <td class="prohibido">plan de carrera</td>
+              </tr>
+              <tr>
+                <th scope="row">Boleta de pago</th>
+                <td>El comprobante mensual que el colaborador consulta en su espacio personal.</td>
+                <td class="prohibido">recibo, nómina, liquidación</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ol class="reglas">
+          <li class="regla" id="r-1-4-1">
+            <span class="regla-n">1.4.1</span>
+            <div>
+              <h3>El sistema habla un solo idioma</h3>
+              <p>Si aquí dice «sucursal», la pantalla dice sucursal, el ticket dice sucursal y la tabla de la base se llama sucursal. Un mismo concepto con tres nombres obliga a traducir en cada conversación y, tarde o temprano, hace que dos personas crean que hablan de lo mismo cuando no.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-1-4-2">
+            <span class="regla-n">1.4.2</span>
+            <div>
+              <h3>Las palabras prohibidas también son parte del acuerdo</h3>
+              <p>La columna de «no decir» no es una lista de sinónimos feos: son términos que ya se usaron y que confunden. «Sede» y «sucursal» conviven mal porque una de las dos acaba significando otra cosa; «área» desapareció porque la estructura ya no tiene dos niveles fijos sino unidades que cuelgan de unidades.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-1-4-3">
+            <span class="regla-n">1.4.3</span>
+            <div>
+              <h3>Un término nuevo se agrega aquí antes que a una pantalla</h3>
+              <p>Si al construir algo hace falta una palabra que no está en esta lista, se agrega primero al vocabulario. Es un minuto de trabajo, y es lo que evita descubrir seis meses después que la misma cosa se llama de dos formas según quién la programó.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <div class="parte">
+        <div class="parte-n">Parte 2</div>
+        <h2>Arquitectura y modelo comercial</h2>
+        <p>Cómo se empaca la plataforma para la venta y de qué se compone cada módulo.</p>
+      </div>
+      <section class="sec" id="s-oferta">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">2.1</span>
+          <div>
+            <h2>¿Cómo se compone la oferta comercial de Souly?</h2>
+            <p class="sec-lead">Qué se entrega al cerrar la venta y qué se suma después.</p>
+          </div>
+        </header>
+        <div class="prosa">
+          <p>
+            En lugar de hablar solo de planes cerrados, la plataforma se empaca para la venta en
+            dos grupos: los módulos con los que se entrega y los que el cliente puede sumar.
+          </p>
+        </div>
+        <div class="piezas">
+          <div class="pieza">
+            <div>
+              <div class="donde">Incluidos por defecto</div>
+              <h3>Módulos base</h3>
+            </div>
+            <div>
+              <p>
+                Son las herramientas esenciales con las que se entrega la plataforma al cliente al
+                cerrar la venta, centradas en la autogestión y la estructura básica.
+              </p>
+              <div style="margin-top: 13px">
+                <div class="mod"><b>Mi espacio personal</b><span>Para la autogestión del colaborador desde la app y la web.</span></div>
+                <div class="mod"><b>Organización</b><span>Para visualizar y mantener la estructura de la empresa: sus regiones, sus sucursales, sus unidades organizacionales, sus cargos y el organigrama en sus diferentes versiones.</span></div>
+                <div class="mod"><b>Gestión de personas</b><span>Para el manejo básico del directorio de colaboradores.</span></div>
+                <div class="mod"><b>Onboarding</b><span>Para guiar los ingresos de nuevo personal.</span></div>
+                <div class="mod"><b>Inicio</b><span>El panel de entrada de quien administra, con el calendario de la empresa.</span></div>
+                <div class="mod"><b>Configuración</b><span>Roles y permisos, y los ajustes de todo lo contratado.</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="pieza">
+            <div>
+              <div class="donde">Se venden por separado</div>
+              <h3>Módulos adicionales</h3>
+            </div>
+            <div>
+              <p>
+                Herramientas estratégicas y especializadas que el cliente puede sumar a su
+                suscripción según sus necesidades y su presupuesto.
+              </p>
+              <div style="margin-top: 13px">
+                <div class="mod"><b>Comunicación</b><span>Canales de difusión, avisos corporativos y demás.</span></div>
+                <div class="mod"><b>Evaluaciones de desempeño y PDI</b><span>Seguimiento al desarrollo del talento.</span></div>
+                <div class="mod"><b>Planillas y salarios</b><span>Gestión financiera y de nóminas.</span></div>
+                <div class="mod"><b>Documentos de la empresa</b><span>Manuales, políticas y reglamentos, con su versión vigente y el acuse de quién los leyó.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="s-modulos">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">2.2</span>
+          <div>
+            <h2>Los módulos y de qué se componen</h2>
+            <p class="sec-lead">Qué hay dentro de cada uno, en qué superficie vive y en qué paquete se vende.</p>
+          </div>
+        </header>
+        <div class="tabla-caja">
+          <table class="tabla ancha">
+            <thead>
+              <tr>
+                <th scope="col">Módulo</th>
+                <th scope="col">De qué se compone</th>
+                <th scope="col">Dónde se usa</th>
+                <th scope="col">Paquete</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Mi espacio personal</th>
+                <td>
+                  <ul class="subs">
+                    <li>Mi día</li>
+                    <li>Mi onboarding</li>
+                    <li>Mis chats</li>
+                    <li>Mi perfil</li>
+                    <li>Organigrama <em>— para consultarlo</em></li>
+                    <li>Personas <em>— el directorio de la empresa</em></li>
+                    <li>Mis evaluaciones</li>
+                    <li>Encuestas</li>
+                    <li>Mis PDI</li>
+                    <li>Mis remuneraciones <em>— boletas de pago</em></li>
+                    <li>Mis beneficios</li>
+                    <li>Archivos <em>— lo publicado por la empresa y lo suyo</em></li>
+                    <li>Calendario</li>
+                    <li>Mis acompañados <em>— si acompaña a alguien</em></li>
+                  </ul>
+                </td>
+                <td class="donde-col">Web y app</td>
+                <td class="paq"><b>Base</b></td>
+              </tr>
+              <tr>
+                <th scope="row">Organización</th>
+                <td>
+                  <ul class="subs">
+                    <li>Datos de la empresa</li>
+                    <li>Distribución física
+                      <ul class="subsub">
+                        <li>Regiones</li>
+                        <li>Sucursales</li>
+                        <li>Oficinas</li>
+                      </ul>
+                    </li>
+                    <li>Estructura organizacional
+                      <ul class="subsub">
+                        <li>Unidades de negocio</li>
+                        <li>Áreas</li>
+                        <li>Subunidades organizacionales</li>
+                      </ul>
+                    </li>
+                    <li>Cargos</li>
+                    <li>Puestos</li>
+                    <li>Organigrama</li>
+                    <li>Configuración <em>— qué niveles usa la empresa</em></li>
+                  </ul>
+                </td>
+                <td class="donde-col">Web</td>
+                <td class="paq"><b>Base</b></td>
+              </tr>
+              <tr>
+                <th scope="row">Gestión de personas</th>
+                <td>
+                  <ul class="subs">
+                    <li>Directorio de colaboradores</li>
+                    <li>Ficha de cada persona <em>— sus datos, su puesto, su sucursal y su historia</em></li>
+                  </ul>
+                </td>
+                <td class="donde-col">Web</td>
+                <td class="paq"><b>Base</b></td>
+              </tr>
+              <tr>
+                <th scope="row">Onboarding</th>
+                <td>
+                  <ul class="subs">
+                    <li>Panel del proceso</li>
+                    <li>Seguimiento de cada ingreso</li>
+                    <li>Rutas</li>
+                    <li>Recursos corporativos</li>
+                    <li>Configuración</li>
+                    <li>Mi onboarding y el de mis acompañados <em>— del lado del colaborador</em></li>
+                  </ul>
+                </td>
+                <td class="donde-col">Web y app</td>
+                <td class="paq"><b>Base</b></td>
+              </tr>
+              <tr>
+                <th scope="row">Comunicación</th>
+                <td>
+                  <ul class="subs">
+                    <li>Chat interno</li>
+                    <li>Anuncios corporativos</li>
+                    <li>Reconocimientos</li>
+                    <li>Eventos</li>
+                  </ul>
+                </td>
+                <td class="donde-col">Web y app</td>
+                <td class="paq"><b>Adicional</b></td>
+              </tr>
+              <tr>
+                <th scope="row">Evaluación y PDI</th>
+                <td>
+                  <ul class="subs">
+                    <li>Campañas de evaluación de desempeño</li>
+                    <li>Planes de desarrollo individual</li>
+                    <li>Seguimiento del líder a su equipo</li>
+                  </ul>
+                </td>
+                <td class="donde-col">Web y app</td>
+                <td class="paq"><b>Adicional</b></td>
+              </tr>
+              <tr>
+                <th scope="row">Planillas y salarios</th>
+                <td>
+                  <ul class="subs">
+                    <li>Nómina</li>
+                    <li>Boletas de pago <em>— se emiten aquí y se consultan desde el espacio personal</em></li>
+                  </ul>
+                </td>
+                <td class="donde-col">Web · la boleta, en la app</td>
+                <td class="paq"><b>Adicional</b></td>
+              </tr>
+              <tr>
+                <th scope="row">Inicio</th>
+                <td>
+                  <ul class="subs">
+                    <li>Panel del día a día de quien administra</li>
+                    <li>Calendario de la empresa <em>— cumpleaños, aniversarios, campañas y vencimientos</em></li>
+                    <li>Se arma con las tarjetas de los módulos contratados</li>
+                  </ul>
+                </td>
+                <td class="donde-col">Web</td>
+                <td class="paq"><b>Base</b></td>
+              </tr>
+              <tr>
+                <th scope="row">Documentos</th>
+                <td>
+                  <ul class="subs">
+                    <li>Archivos de cada módulo
+                      <ul class="subsub">
+                        <li>De Gestión de personas</li>
+                        <li>De Onboarding</li>
+                        <li>De Comunicación</li>
+                        <li>De Evaluación</li>
+                      </ul>
+                    </li>
+                    <li>Documentos de la empresa <em>— manuales, políticas y reglamento interno</em></li>
+                    <li>Versión vigente e historial <em>— qué reemplazó a qué</em></li>
+                    <li>Acuse de lectura <em>— quién lo leyó y cuándo</em></li>
+                  </ul>
+                </td>
+                <td class="donde-col">Web · lo publicado se lee desde el espacio personal</td>
+                <td class="paq"><b>Adicional</b></td>
+              </tr>
+              <tr>
+                <th scope="row">Configuración</th>
+                <td>
+                  <ul class="subs">
+                    <li>Roles y permisos</li>
+                    <li>Los niveles que usa la estructura de la empresa</li>
+                    <li>Los ajustes de cada módulo contratado <em>— no una pantalla por módulo</em></li>
+                  </ul>
+                </td>
+                <td class="donde-col">Web</td>
+                <td class="paq"><b>Base</b></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      
+      </section>
+
+      <div class="parte">
+        <div class="parte-n">Parte 3</div>
+        <h2>Reglas transversales</h2>
+        <p>Lo que vale en todo el sistema, entre en el módulo que entre. Cada regla dice qué hace y por qué, y se cita por su número.</p>
+      </div>
+      <section class="sec" id="s-producto">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">3.1</span>
+          <div>
+            <h2>Reglas del producto</h2>
+            <p class="sec-lead">Siete decisiones que gobiernan todo lo demás, y que ninguna pantalla puede contradecir.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla" id="r-3-1-1">
+            <span class="regla-n">3.1.1</span>
+            <div>
+              <h3>Cada empresa es un inquilino aislado</h3>
+              <p>Un mismo sistema atiende a muchas empresas y ninguna ve un dato de otra. Todo lo que se lee o se escribe cuelga de la empresa de quien está conectado, y por eso «todas las sucursales» siempre quiere decir todas las de ESTA empresa. Para quien programa: no hay consulta sin ese recorte, ni siquiera en las pantallas de administración.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-1-2">
+            <span class="regla-n">3.1.2</span>
+            <div>
+              <h3>El núcleo es la organización y su gente; el resto de los módulos cuelga de ahí</h3>
+              <p>Hay un centro de datos maestros —empresa, sucursales, áreas, cargos, personas— y módulos que lo consumen: Onboarding elige la ruta por unidad y cargo, Comunicación segmenta por área y sucursal, y Evaluación saca de aquí quién evalúa a quién. La regla para quien programa es dura y es una sola: ningún módulo guarda su propia copia de la estructura ni de las personas. Si la necesita, la lee del núcleo.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-1-3">
+            <span class="regla-n">3.1.3</span>
+            <div>
+              <h3>La web y la app leen los mismos datos</h3>
+              <p>No son dos productos ni una es la versión recortada de la otra: cada una hace lo que su sitio hace bien. Y lo que la app le enseña a un líder —su equipo, sus PDI, sus evaluaciones— no se configura ni se activa con un permiso suelto: sale del organigrama, así que un cambio de estructura lo actualiza solo, y quien deja de tener gente a cargo deja de verlo el mismo día.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-1-4">
+            <span class="regla-n">3.1.4</span>
+            <div>
+              <h3>Es un SaaS multipaís, no un sistema hecho para Bolivia</h3>
+              <p>El país se declara una sola vez, en Datos de la empresa, y de él sale el catálogo de ciudades que ofrece el resto del sistema. Donde el catálogo cambia de un país a otro —departamento, provincia, municipio, localidad— el campo se escribe a mano: una lista cerrada que no contiene tu municipio es peor que ningún catálogo.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-1-5">
+            <span class="regla-n">3.1.5</span>
+            <div>
+              <h3>Souly nunca se pone en el lugar del cliente</h3>
+              <p>La empresa que se lee en la cabecera, en el organigrama y en cada ficha es la del cliente. El nombre del producto no aparece jamás como si fuera la empresa que usa el sistema: quien entra viene a ver su casa, no la nuestra. La marca vive en el logo, en la factura y en poco más.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-1-6">
+            <span class="regla-n">3.1.6</span>
+            <div>
+              <h3>La estructura se arma en la web y se mira en la app</h3>
+              <p>El organigrama de la web es una herramienta de trabajo: ahí se crean las regiones y las sucursales, se dibujan las unidades, se abren los puestos y se mueve a la gente de sitio. El de la app es la foto: sirve para saber quién es quién y de quién depende, y no edita nada. Es la misma estructura y el mismo dato —no una copia recortada—, pero el verbo cambia con la superficie: ninguna pantalla del teléfono ofrece crear, mover ni dar de baja un nodo, ni siquiera a quien tendría permiso para hacerlo en la web.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-1-7">
+            <span class="regla-n">3.1.7</span>
+            <div>
+              <h3>Inicio y Configuración no se venden: reflejan lo contratado</h3>
+              <p>Ninguna de las dos tiene contenido propio. El panel de Inicio se arma con las tarjetas de los módulos que la empresa contrató, y Configuración se llena con los ajustes de esos mismos módulos: contratar Evaluación no abre una pantalla de ajustes nueva, le suma una sección a la que ya existe. Y al revés, lo que no se contrató no existe para esa empresa: ni tarjeta apagada, ni entrada en gris, ni pantalla que se abre para avisar de que hay que pagarla.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="sec" id="s-alta">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">3.2</span>
+          <div>
+            <h2>Cómo nace una empresa en Souly</h2>
+            <p class="sec-lead">Del cierre de la venta al primer colaborador cargado: quién existe primero y en qué orden se arma todo.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla" id="r-3-2-1">
+            <span class="regla-n">3.2.1</span>
+            <div>
+              <h3>La cuenta es de una persona, nunca de la empresa</h3>
+              <p>Al cerrar la venta se crea el inquilino —la empresa como contenedor— y no un usuario compartido. «El usuario y la contraseña de la empresa» es una cuenta que rota entre manos, que nadie puede auditar y que no se puede quitar el día que alguien se va. En un sistema que guarda sueldos y evaluaciones eso no existe: toda cuenta tiene nombre, apellido y correo.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-2-2">
+            <span class="regla-n">3.2.2</span>
+            <div>
+              <h3>La empresa nace con un administrador general, y con uno solo</h3>
+              <p>En el alta se declara a esa persona. Recibe una invitación de un solo uso, define su contraseña y desde ahí crea a los demás. Ni cero —el sistema quedaría sin dueño y habría que llamarnos para todo— ni dos «por si acaso», que es como se pierde la cuenta de quién dio qué permiso.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-2-3">
+            <span class="regla-n">3.2.3</span>
+            <div>
+              <h3>Ese primer administrador suele ser la jefatura de RRHH, y da igual cuál sea su cargo</h3>
+              <p>El rol es de la cuenta y no del puesto. Lo que importa es que exista alguien capaz de invitar al resto; si en esa empresa la administración de personas es otra persona, el administrador general la invita el primer día y le da lo suyo.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-2-4">
+            <span class="regla-n">3.2.4</span>
+            <div>
+              <h3>Hay un orden de puesta en marcha, y no es una sugerencia</h3>
+              <p>Datos de la empresa → niveles de la estructura → la estructura → cargos y puestos → personas. Cada paso necesita al anterior: el país decide los catálogos de ciudades, la estructura decide de dónde cuelga un puesto, y el puesto es contra lo que se contrata a alguien. Saltarse el orden no acelera nada: obliga a volver.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-2-5">
+            <span class="regla-n">3.2.5</span>
+            <div>
+              <h3>No se cargan personas antes que la estructura</h3>
+              <p>Una persona sin puesto es una ficha huérfana que después hay que reasignar a mano, de a una, y mientras tanto no entra en ninguna ruta de onboarding ni en ninguna campaña. Si no hay dónde ponerla, primero se crea el sitio.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-2-6">
+            <span class="regla-n">3.2.6</span>
+            <div>
+              <h3>La puesta en marcha se guía; no se adivina</h3>
+              <p>La primera vez que entra el administrador ve qué falta y en qué orden, no un panel vacío con doce entradas. Cuando termina, esa guía desaparece: es el primer día, no una pantalla del producto.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-2-7">
+            <span class="regla-n">3.2.7</span>
+            <div>
+              <h3>Lo que la empresa contrató está encendido desde el primer día</h3>
+              <p>Los módulos se activan en el alta y no pantalla por pantalla ni pidiéndolo a soporte. Y lo que no contrató no aparece: ni entrada en gris, ni aviso de que hay que pagarlo.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="sec" id="s-accesos">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">3.3</span>
+          <div>
+            <h2>Quién ve qué</h2>
+            <p class="sec-lead">Todo el mundo entra por la misma puerta; lo administrativo es una capa que se suma.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla" id="r-3-3-1">
+            <span class="regla-n">3.3.1</span>
+            <div>
+              <h3>Primero se es colaborador y después, a veces, administrador</h3>
+              <p>Nadie es «solo administrador». El jefe de Recursos Humanos entra a todo lo administrativo y además tiene su propio onboarding, sus conversaciones y su perfil, igual que cualquiera de su empresa. Por eso Mi espacio personal no se le esconde a nadie: no es el módulo del colaborador raso, es el de todos, y el administrador lo ve exactamente igual que el resto.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-3-2">
+            <span class="regla-n">3.3.2</span>
+            <div>
+              <h3>Quien no tiene rol administrativo ve un solo módulo</h3>
+              <p>Al colaborador el riel le muestra una entrada: Mi espacio personal. No es una versión recortada de la aplicación con cosas apagadas por ahí: es la aplicación que le toca, entera, sin huecos ni candados que le recuerden lo que no puede hacer.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-3-3">
+            <span class="regla-n">3.3.3</span>
+            <div>
+              <h3>El rol es de la cuenta y hoy son cuatro</h3>
+              <p>Administrador HR, que es RRHH y lo puede todo; Líder de unidad, que responde por su gente; Auxiliar, que es alguien en quien un líder delega parte de su trabajo; y Colaborador, que es todo el mundo. Se agregan roles cuando aparece un trabajo que ninguno de los cuatro puede hacer, no cuando aparece un cargo nuevo.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-3-4">
+            <span class="regla-n">3.3.4</span>
+            <div>
+              <h3>El cargo no es el rol</h3>
+              <p>«Gerente de Recursos Humanos» es el trabajo que la persona hace; «Administrador HR» es lo que su cuenta puede hacer. Son dos datos distintos y se guardan por separado: mover a alguien de cuadro en el organigrama no le cambia los permisos por sí solo, y darle permisos no lo asciende.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-3-5">
+            <span class="regla-n">3.3.5</span>
+            <div>
+              <h3>El buddy no es un permiso: es una relación</h3>
+              <p>Una asignación de onboarding apunta a su buddy, y esa persona sigue siendo Colaborador: acompaña a quien le tocó, a varios a la vez si hace falta, y eso no le abre ninguna otra puerta ni le cambia una sola pantalla. Si mañana el acompañamiento se corta, no hay permiso que quitar.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-3-6">
+            <span class="regla-n">3.3.6</span>
+            <div>
+              <h3>El rol dice qué puedes hacer; el alcance dice sobre quién</h3>
+              <p>Son dos preguntas y se hacen las dos, siempre. Un líder de Marketing con la sucursal La Paz tiene el mismo rol que un líder de Ventas, y aun así no ve a la misma gente. El alcance sale del área y de las sucursales de la persona: sin sucursales declaradas se entiende que las ve todas.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-3-7">
+            <span class="regla-n">3.3.7</span>
+            <div>
+              <h3>Esconder no es proteger</h3>
+              <p>El riel oculta lo que no te toca y, para quien escriba la dirección a mano, hay un guardia que lo devuelve a su pantalla. Las dos cosas son cortesía, no seguridad: en producción el permiso se comprueba en el servidor, en cada petición, porque el navegador es del usuario y ahí no hay nada que defender.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-3-8">
+            <span class="regla-n">3.3.8</span>
+            <div>
+              <h3>La estructura la lee todo lo administrativo; la edita solo Recursos Humanos</h3>
+              <p>La estructura es el dato del que dependen los demás módulos: una unidad organizacional borrada deja rutas de onboarding sin destino y campañas de evaluación sin a quién apuntar. Por eso escribir ahí es de Recursos Humanos y de nadie más. El líder de unidad mira el organigrama entero y su unidad en detalle, y con eso hace su trabajo.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-3-9">
+            <span class="regla-n">3.3.9</span>
+            <div>
+              <h3>En Gestión de personas el líder trabaja con su equipo, y lo sensible es solo de RRHH</h3>
+              <p>Ver y editar la ficha operativa de su gente —contacto, área, cargo, onboarding— es su trabajo diario y no tiene por qué pedirlo. Sueldo, contrato, documento de identidad y evaluaciones no: eso es de Recursos Humanos aunque se trate de alguien de su equipo, porque el jefe directo es justamente quien no debería negociar con ese dato a la vista.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="tabla-caja">
+          <table class="tabla">
+            <thead>
+              <tr><th scope="col">Módulo</th><th scope="col">Admin HR</th><th scope="col">Líder de unidad</th><th scope="col">Auxiliar</th><th scope="col">Colaborador</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Mi espacio personal</th>
+                <td class="si">Sí</td><td class="si">Sí</td><td class="si">Sí</td><td class="si">Sí</td>
+              </tr>
+              <tr>
+                <th scope="row">Inicio</th>
+                <td class="si">Sí</td><td class="si">Sí</td><td class="si">Sí</td><td class="no">—</td>
+              </tr>
+              <tr>
+                <th scope="row">Organización</th>
+                <td class="si">Todo</td><td class="parcial">Lectura</td><td class="no">—</td><td class="no">—</td>
+              </tr>
+              <tr>
+                <th scope="row">Gestión de personas</th>
+                <td class="si">Todo</td><td class="parcial">Su equipo</td><td class="no">—</td><td class="no">—</td>
+              </tr>
+              <tr>
+                <th scope="row">Onboarding</th>
+                <td class="si">Todo</td><td class="parcial">Su área</td><td class="parcial">Lo delegado</td><td class="no">—</td>
+              </tr>
+              <tr>
+                <th scope="row">Comunicación</th>
+                <td class="si">Todo</td><td class="si">Sí</td><td class="no">—</td><td class="no">—</td>
+              </tr>
+              <tr>
+                <th scope="row">Evaluación</th>
+                <td class="si">Todo</td><td class="si">Sí</td><td class="no">—</td><td class="no">—</td>
+              </tr>
+              <tr>
+                <th scope="row">Archivos</th>
+                <td class="si">Sí</td><td class="no">—</td><td class="no">—</td><td class="no">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="nota">Todo = crear, editar y dar de baja. Su área o su equipo = lo mismo, pero acotado a la gente de la que responde. Lo delegado = lo que un líder le pasó explícitamente. Un guion no es un candado: es que ese módulo no forma parte de su trabajo.</p>
+      </section>
+
+      <section class="sec" id="s-estados">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">3.4</span>
+          <div>
+            <h2>Estados: cerrar no es borrar</h2>
+            <p class="sec-lead">Qué pasa con lo que deja de operar.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla" id="r-3-4-1">
+            <span class="regla-n">3.4.1</span>
+            <div>
+              <h3>Una sucursal cerrada conserva su historia y su gente</h3>
+              <p>Deja de ofrecerse para nodos nuevos y para el selector de ámbito, pero no desaparece: lo que pasó ahí siguió pasando. Se reabre por el mismo camino.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-4-2">
+            <span class="regla-n">3.4.2</span>
+            <div>
+              <h3>El estado se cambia por un solo camino</h3>
+              <p>Desde el menú de acciones de la tabla, con un modal que enseña en qué estado está y a cuál va a pasar. En la ficha se LEE como distintivo junto al título. Un botón que alterna hace el cambio en el mismo clic con el que se abrió el menú, y con tres estados deja de servir.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-4-3">
+            <span class="regla-n">3.4.3</span>
+            <div>
+              <h3>Borrar es otra cosa, y pide escribir la palabra</h3>
+              <p>Eliminar exige escribir «eliminar», y está bloqueado mientras el nodo tenga hijos: primero se vacía la rama. Borrar un padre no puede dejar huérfanos.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="sec" id="s-fichas">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">3.5</span>
+          <div>
+            <h2>Reglas de las fichas</h2>
+            <p class="sec-lead">Cómo se comportan los formularios de alta y edición.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla" id="r-3-5-1">
+            <span class="regla-n">3.5.1</span>
+            <div>
+              <h3>Los obligatorios salen de los propios campos, y bloquean</h3>
+              <p>La comprobación recorre los campos del formulario; el que esté marcado como obligatorio impide guardar. Cuando falta uno, el aviso dice POR QUÉ hace falta, no «campo obligatorio». Un asterisco que no impide nada enseña que los avisos de esa pantalla no van en serio.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-5-2">
+            <span class="regla-n">3.5.2</span>
+            <div>
+              <h3>Los errores aparecen después del primer intento de guardar, no antes</h3>
+              <p>Un formulario recién abierto no está mal rellenado: está vacío. Pintarlo de rojo antes de escribir nada es acusar a alguien de un error que todavía no cometió.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-5-3">
+            <span class="regla-n">3.5.3</span>
+            <div>
+              <h3>Guardar está apagado mientras no haya cambios</h3>
+              <p>Se compara el borrador entero contra lo guardado. Si son idénticos no hay nada que guardar, y el botón lo dice al pasar el ratón.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-5-4">
+            <span class="regla-n">3.5.4</span>
+            <div>
+              <h3>Cancelar deshace el viaje por donde se entró</h3>
+              <p>Llegando desde «Editar» de la tabla, cancelar vuelve a la tabla. Llegando desde «Ver detalle» y pulsando Editar, vuelve a la lectura. Al crear algo se vuelve a la lista: uno no crea una regional para quedarse mirándola.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-5-5">
+            <span class="regla-n">3.5.5</span>
+            <div>
+              <h3>Cada fila del formulario suma 12 columnas exactas</h3>
+              <p>Los campos se miden por lo que van a mostrar, no por lo que se teclea: un desplegable con textos largos necesita más ancho que un código. Ninguna fila queda a medias.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="sec" id="s-tablas">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">3.6</span>
+          <div>
+            <h2>Reglas de las tablas</h2>
+            <p class="sec-lead">Qué se dibuja y qué no.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla" id="r-3-6-1">
+            <span class="regla-n">3.6.1</span>
+            <div>
+              <h3>Se dibuja la columna que PUEDE tener dato, no la que ya lo tiene</h3>
+              <p>Vacío por ahora → la columna se queda, porque es la lista de lo que falta llenar. Vacío para siempre → la columna se va: «Depende de» en Regionales, «Sucursal» en Unidades de negocio. Ahí el guion no es un pendiente, es ruido.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-6-2">
+            <span class="regla-n">3.6.2</span>
+            <div>
+              <h3>El distintivo del tipo solo cuando la tabla mezcla tipos</h3>
+              <p>En Regionales todas las filas son regionales: repetirlo en cada fila no distingue nada. En Unidades organizacionales, donde conviven áreas y unidades organizacionales, sí gana su sitio.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-6-3">
+            <span class="regla-n">3.6.3</span>
+            <div>
+              <h3>A la derecha solo se alinea lo que se compara dígito a dígito</h3>
+              <p>Importes, cantidades, porcentajes. Un código como REG-01 es un identificador, no una magnitud: se lee de izquierda a derecha como el nombre de al lado.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-6-4">
+            <span class="regla-n">3.6.4</span>
+            <div>
+              <h3>La página vuelve a la primera cuando cambia lo que se está mirando</h3>
+              <p>Al filtrar, buscar u ordenar. Sin eso, buscar algo con dos resultados desde la página cuatro deja la tabla vacía y parece que no encontró nada.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="sec" id="s-ambito">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">3.7</span>
+          <div>
+            <h2>El ámbito: desde dónde estás mirando</h2>
+            <p class="sec-lead">El recorte que se aplica a todo el sistema.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla" id="r-3-7-1">
+            <span class="regla-n">3.7.1</span>
+            <div>
+              <h3>El selector de sucursal recorta lo que se ve y lo que se registra</h3>
+              <p>Mientras haya una sucursal puesta, la pantalla avisa con una cinta arriba. Es un estado excepcional y por eso se dibuja con el verde de la marca; «todas» es lo normal y no se pinta.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-7-2">
+            <span class="regla-n">3.7.2</span>
+            <div>
+              <h3>La sucursal se identifica por su nombre, no por su ciudad</h3>
+              <p>Una ciudad puede tener varias sucursales —Santa Cruz tiene dos en la demo—, así que la ciudad no distingue. El nombre encabeza y la ciudad acompaña.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-7-3">
+            <span class="regla-n">3.7.3</span>
+            <div>
+              <h3>Filtrar un organigrama es quedarse con las ramas que llegan a esa sucursal</h3>
+              <p>Un jefe intermedio se queda aunque él no esté en la sucursal, si alguien debajo suyo sí lo está. Sacarlo partiría el árbol en pedazos sueltos.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+      <section class="sec" id="s-convencion">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">3.8</span>
+          <div>
+            <h2>Cómo se escribe una regla</h2>
+            <p class="sec-lead">El formato que acordamos con QA: qué lleva ficha completa, qué no, y por qué.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla" id="r-3-8-1">
+            <span class="regla-n">3.8.1</span>
+            <div>
+              <h3>Toda regla verificable tiene un ID estable</h3>
+              <p>El formato es BR-[MÓDULO]-[NÚMERO] —BR-ONB-002— y no cambia nunca. El número de sección dice dónde está la regla hoy; el ID dice cuál es. Mover una regla de parte, renombrar una sección o insertar otra en el medio no le toca el ID, que es lo que permite citarla en un ticket sin que el enlace envejezca.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-8-2">
+            <span class="regla-n">3.8.2</span>
+            <div>
+              <h3>No todas las reglas llevan escenarios, y eso es a propósito</h3>
+              <p>Los llevan las que se pueden probar: una condición, una acción y un resultado observable. Los principios de diseño —«la ficha se abre para mirar», «Souly nunca se pone en el lugar del cliente»— no. Escribir un «Dado que» sobre un principio produce ceremonia, y entierra entre sesenta fichas iguales a las diez que de verdad hay que testear.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-8-3">
+            <span class="regla-n">3.8.3</span>
+            <div>
+              <h3>El estado dice cuánta confianza merece la regla</h3>
+              <p>Borrador mientras se discute, En revisión cuando está completa y espera visto bueno, Aprobado cuando el equipo la aceptó. Programar contra una regla en borrador es legítimo —hay que avanzar— pero sabiendo que puede moverse; discutir una aprobada exige volver a moverla de estado, no cambiarla en silencio.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-8-4">
+            <span class="regla-n">3.8.4</span>
+            <div>
+              <h3>Los códigos que ya existen en el código no se renumeran</h3>
+              <p>Varias reglas de Onboarding se citan en el código fuente como RN-M55, RN-M60, RN-M62, RN-M64, RN-M65 y RN-M66. Conservan su código y se anota junto al ID nuevo. Renumerarlas obligaría a tocar comentarios en media docena de archivos para no ganar nada.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-3-8-5">
+            <span class="regla-n">3.8.5</span>
+            <div>
+              <h3>La trazabilidad se declara aunque esté vacía</h3>
+              <p>Cada regla verificable dice de qué ticket viene y qué diseño la representa. Cuando todavía no hay ninguno se escribe «pendiente», que es información; dejarlo en blanco solo deja la duda de si falta el dato o falta el enlace.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <div class="parte">
+        <div class="parte-n">Parte 4</div>
+        <h2>Reglas por módulo</h2>
+        <p>Lo que vale solo dentro de un módulo. Si una regla aplica a dos, no vive aquí: vive en las transversales de la parte 3.</p>
+      </div>
+
+      <section class="sec" id="s-m-organizacion">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">4.1</span>
+          <div>
+            <h2>Organización</h2>
+            <p class="sec-lead">La estructura de la empresa: un solo árbol, dos lecturas y lo que no hace falta preguntar.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla br" id="BR-ORG-001">
+            <span class="regla-n">4.1.1</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-001</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>Toda la estructura es un solo árbol de nodos</h3>
+              <p>Empresa, región, sucursal, centro de trabajo, unidad de negocio, unidad organizacional, cargo y puesto no son ocho tablas: son ocho TIPOS del mismo nodo. Cada uno declara qué <b>tipo</b> es y de qué <b>padre</b> cuelga, y nada más. Es lo que permite que la estructura de una empresa no se parezca a la de la de al lado sin que haya que programar una pantalla nueva.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una sucursal dentro de una región</div>
+                  <ul>
+                    <li><b>Dado que</b>existe la región «Oriente»</li>
+                    <li><b>Cuando</b>se crea la sucursal «Casa Matriz» eligiendo «Oriente» en «Depende de»</li>
+                    <li><b>Entonces</b>la sucursal queda guardada con su tipo y el id de su padre</li>
+                    <li><b>Y</b>aparece anidada bajo Oriente en la tabla y en cualquier pantalla que lea el árbol</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Un nodo sin padre declarado</div>
+                  <ul>
+                    <li><b>Dado que</b>se crea una región y no se le elige nada en «Depende de»</li>
+                    <li><b>Cuando</b>se guarda</li>
+                    <li><b>Entonces</b>el padre queda vacío, que significa «cuelga de la empresa»</li>
+                    <li><b>Y</b>no es un error: es la respuesta de todo lo de primer nivel</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-002">
+            <span class="regla-n">4.1.2</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-002</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>La regla del orden: el padre siempre va por encima del hijo</h3>
+              <p>Los peldaños están ordenados de lo más grande a lo más chico, y un nodo solo puede colgar de otro cuyo peldaño esté <b>más arriba</b>. Es la única validación estructural del módulo, y de ella salen todas las demás: no hay que escribir «una región no puede ir dentro de un cargo», ya está prohibido.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Saltarse un peldaño es legal</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa usa Región, Sucursal y Centro de trabajo</li>
+                    <li><b>Cuando</b>se crea la sucursal «El Prado» colgando directamente de la empresa, sin región</li>
+                    <li><b>Entonces</b>el sistema lo permite</li>
+                    <li><b>Y</b>la sucursal se dibuja en primer nivel: la regla exige que el padre esté por encima, no que sea el inmediato superior</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Colgar hacia arriba</div>
+                  <ul>
+                    <li><b>Dado que</b>se está creando una unidad organizacional</li>
+                    <li><b>Cuando</b>se abre el desplegable «Depende de»</li>
+                    <li><b>Entonces</b>solo se ofrecen nodos de peldaños superiores</li>
+                    <li><b>Y</b>un cargo o un puesto no figuran en la lista: lo imposible no se ofrece, no se rechaza después</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-003">
+            <span class="regla-n">4.1.3</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-003</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>El menú de «Agregar» se deduce, no se escribe</h3>
+              <p>Qué se puede crear en cada sitio sale de la regla del orden cruzada con el eje de la pantalla. Nadie mantiene una lista de opciones por pantalla, así que un peldaño encendido aparece donde corresponde el mismo día, y uno apagado desaparece de todas partes sin tocar una línea.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>La pantalla ofrece lo suyo</div>
+                  <ul>
+                    <li><b>Dado que</b>se está en Estructura física, en la pestaña «Sucursales»</li>
+                    <li><b>Cuando</b>se pulsa el botón de crear</li>
+                    <li><b>Entonces</b>crea directamente una sucursal y el botón dice «Nueva sucursal»</li>
+                    <li><b>Y</b>no se ofrece crear una unidad organizacional, que es del otro eje</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Un peldaño apagado</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa apagó «Centro de trabajo» en Configuración</li>
+                    <li><b>Cuando</b>se recorre el módulo</li>
+                    <li><b>Entonces</b>no aparece su pestaña, ni su entrada de menú, ni la opción en ningún «Depende de»</li>
+                    <li><b>Y</b>las sucursales pasan a contener unidades organizacionales directamente</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-004">
+            <span class="regla-n">4.1.4</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-004</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>Cada empresa enciende los peldaños que usa</h3>
+              <p>La escalera es un dato de la empresa, no una lista fija del producto. Empresa, unidad organizacional y cargo son <b>fijos</b> —sin ellos no hay organigrama que dibujar—; los demás se encienden y se apagan. Lo apagado no aparece en ningún formulario, filtro ni menú.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Apagar lo que no se usa</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa opera en una sola ciudad y no usa regiones</li>
+                    <li><b>Cuando</b>apaga «Región» en Configuración</li>
+                    <li><b>Entonces</b>el peldaño desaparece de toda la aplicación</li>
+                    <li><b>Y</b>encenderlo de nuevo más adelante no migra nada: solo vuelve a aparecer el escalón donde colgar cosas</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Apagar un peldaño con nodos dentro</div>
+                  <ul>
+                    <li><b>Dado que</b>existen 3 regiones en el árbol</li>
+                    <li><b>Cuando</b>se intenta apagar «Región»</li>
+                    <li><b>Entonces</b>el interruptor está trabado</li>
+                    <li><b>Y</b>el contador dice cuántos nodos habría que mover antes: quedarían colgando de un escalón que dejó de existir</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-005">
+            <span class="regla-n">4.1.5</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-005</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>Dos ejes, un solo árbol</h3>
+              <p>La <b>estructura física</b> —región, sucursal, centro de trabajo— contesta dónde está la empresa. La <b>estructura organizacional</b> —unidad de negocio, unidad organizacional, cargo— contesta cómo reparte el trabajo. No son dos árboles: son dos recortes del mismo, y cada pantalla lista solo los tipos de su eje.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Cada eje lista lo suyo</div>
+                  <ul>
+                    <li><b>Dado que</b>el árbol tiene regiones, sucursales, unidades y cargos</li>
+                    <li><b>Cuando</b>se entra a Estructura física</li>
+                    <li><b>Entonces</b>se listan solo los nodos del eje físico, anidados entre ellos</li>
+                    <li><b>Y</b>una unidad organizacional que cuelga de una sucursal no rompe la lista: se salta al mostrarla, porque es del otro eje</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Cruzar ejes desde el menú</div>
+                  <ul>
+                    <li><b>Dado que</b>se está en Estructura física</li>
+                    <li><b>Cuando</b>se pulsa «Agregar»</li>
+                    <li><b>Entonces</b>no se ofrece crear una unidad organizacional</li>
+                    <li><b>Y</b>el cruce sigue siendo posible desde la ficha de un nodo, donde ya se eligió de qué se está hablando</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-006">
+            <span class="regla-n">4.1.6</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-006</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>La sucursal de una unidad no se declara: se deduce</h3>
+              <p>Un nodo hereda su sitio del primer ancestro del eje físico que encuentre subiendo por sus padres. Por eso la columna «Sucursal» tiene dato en unidades y cargos que nunca lo declararon, y por eso mover una rama de sitio corrige la sucursal de todo lo que cuelga de ella sin tocar un solo registro.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Herencia por la rama</div>
+                  <ul>
+                    <li><b>Dado que</b>la unidad «Ventas» declara que opera en «Casa Matriz»</li>
+                    <li><b>Cuando</b>se crea la subunidad «Preventa» dentro de Ventas</li>
+                    <li><b>Entonces</b>la ficha de Preventa no pregunta dónde opera</li>
+                    <li><b>Y</b>la tabla muestra «Casa Matriz» en su columna Sucursal, leída de su rama</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Contradecir a la rama</div>
+                  <ul>
+                    <li><b>Dado que</b>una unidad cuelga de otra que ya declaró su sitio</li>
+                    <li><b>Cuando</b>se abre su ficha</li>
+                    <li><b>Entonces</b>el campo «Dónde opera» no aparece</li>
+                    <li><b>Y</b>preguntarlo sería ofrecer la oportunidad de contradecir a su propia rama</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-007">
+            <span class="regla-n">4.1.7</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-007</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>El cargo es el rol; el puesto es la silla</h3>
+              <p>El <b>cargo</b> define qué se hace —nombre, unidad, nivel de mando, tipo, descripción— y existe una sola vez. El <b>puesto</b> es una silla concreta de ese cargo: tiene su código, su sitio de trabajo y su ocupante. Cinco «Ejecutivo Comercial» son un cargo con cinco puestos, no cinco cargos.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Renombrar el rol</div>
+                  <ul>
+                    <li><b>Dado que</b>el cargo «Ejecutivo Comercial» tiene cinco puestos abiertos</li>
+                    <li><b>Cuando</b>se lo renombra a «Asesor Comercial»</li>
+                    <li><b>Entonces</b>los cinco puestos pasan a llamarse así</li>
+                    <li><b>Y</b>no hay forma de que queden dos roles que en realidad son uno</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Un cargo sin puestos</div>
+                  <ul>
+                    <li><b>Dado que</b>se define el cargo «Analista de Datos» sin abrir ninguna silla</li>
+                    <li><b>Cuando</b>se guarda</li>
+                    <li><b>Entonces</b>el cargo existe en el catálogo, con su unidad y su nivel de mando</li>
+                    <li><b>Y</b>no hay nadie que lo ocupe: es una definición, y esa es una situación válida</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-008">
+            <span class="regla-n">4.1.8</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-008</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>Un cargo solo cuelga de una unidad organizacional</h3>
+              <p>La regla del orden le permitiría colgar de una sucursal o de una región —están más arriba— y eso lo sacaría del organigrama. Un cargo pertenece a una unidad: ahí está su jefe, su presupuesto y su evaluación. Dónde se trabaja lo dice el puesto, que es otra cosa.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Cargo dentro de su unidad</div>
+                  <ul>
+                    <li><b>Dado que</b>existe la unidad «Recursos Humanos»</li>
+                    <li><b>Cuando</b>se crea el cargo «Analista de Nóminas» eligiéndola</li>
+                    <li><b>Entonces</b>el cargo queda dentro de esa rama del organigrama</li>
+                    <li><b>Y</b>la unidad es obligatoria: sin ella no hay dónde dibujarlo</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Cargo sin unidad</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa todavía no tiene ninguna unidad organizacional</li>
+                    <li><b>Cuando</b>se intenta crear un cargo</li>
+                    <li><b>Entonces</b>la opción está bloqueada</li>
+                    <li><b>Y</b>el motivo se dice en el sitio: «Primero hace falta una unidad donde ponerlo»</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-009">
+            <span class="regla-n">4.1.9</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-009</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>El cupo del cargo dice cuántas sillas tiene</h3>
+              <p>«Máximo de personas» es un <b>techo</b>, no una orden de creación: declara hasta cuántas personas pueden ocupar ese cargo a la vez. La lista de cargos despliega esas sillas debajo de cada uno; las que nadie abrió figuran como vacantes.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Abrir una silla</div>
+                  <ul>
+                    <li><b>Dado que</b>el cargo «Ejecutivo Comercial» declara un cupo de 5 y tiene 1 puesto abierto</li>
+                    <li><b>Cuando</b>se despliega el cargo en la tabla</li>
+                    <li><b>Entonces</b>se ven 5 filas: la abierta con su código y su gente, y 4 vacantes</li>
+                    <li><b>Y</b>pulsar «Abrir» en una vacante crea el puesto y lleva a su ficha para completarlo</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>El cupo no abre nada por sí solo</div>
+                  <ul>
+                    <li><b>Dado que</b>se crea un cargo con cupo 4</li>
+                    <li><b>Cuando</b>se guarda</li>
+                    <li><b>Entonces</b>no se crea ningún puesto</li>
+                    <li><b>Y</b>el cargo queda definido con cuatro vacantes esperando a que alguien las abra</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-010">
+            <span class="regla-n">4.1.10</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-010</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>El puesto es donde los dos ejes se tocan</h3>
+              <p>Es el único nodo del árbol que apunta a los dos: cuelga de un <b>cargo</b> —eje organizacional— y declara un <b>sitio de trabajo</b> del eje físico. Ese sitio puede ser una sucursal o un centro de trabajo; de él se deduce la sucursal sin declararla aparte.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Trabajar en un centro</div>
+                  <ul>
+                    <li><b>Dado que</b>el «Depósito Central» está dentro de «Casa Matriz»</li>
+                    <li><b>Cuando</b>un puesto declara que se trabaja en el Depósito Central</li>
+                    <li><b>Entonces</b>su columna Sucursal dice «Casa Matriz», deducida subiendo por la rama</li>
+                    <li><b>Y</b>al filtrar el organigrama por Casa Matriz, ese puesto entra</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Puesto sin sitio declarado</div>
+                  <ul>
+                    <li><b>Dado que</b>un puesto no declara dónde se trabaja</li>
+                    <li><b>Cuando</b>se filtra el organigrama por cualquier sucursal</li>
+                    <li><b>Entonces</b>el puesto aparece igual</li>
+                    <li><b>Y</b>sin sitio significa «toda la empresa», no «dato faltante»</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-011">
+            <span class="regla-n">4.1.11</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-011</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>El puesto hereda del cargo lo que no es suyo</h3>
+              <p>La unidad organizacional y el nivel de mando salen del cargo y se <b>enseñan</b>, no se preguntan. Volver a pedirlos permitiría que una silla de «Ejecutivo Comercial» declare estar en Contabilidad, y después nadie sabe cuál de las dos vale.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Lo heredado se lee</div>
+                  <ul>
+                    <li><b>Dado que</b>se abre la ficha de un puesto</li>
+                    <li><b>Cuando</b>se mira la tarjeta «El puesto»</li>
+                    <li><b>Entonces</b>la unidad y el nivel de mando aparecen sin caja, con la nota «Sale del cargo»</li>
+                    <li><b>Y</b>corregirlos se hace en la ficha del cargo, que es donde el dato vive</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Lo que sí es del puesto</div>
+                  <ul>
+                    <li><b>Dado que</b>un cargo tiene tres puestos en tres ciudades</li>
+                    <li><b>Cuando</b>se edita uno de ellos</li>
+                    <li><b>Entonces</b>su código, su sitio, su ocupante y de quién depende son solo suyos</li>
+                    <li><b>Y</b>cambiarlos no toca a los otros dos</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-012">
+            <span class="regla-n">4.1.12</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-012</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>«De quién depende» se declara y vive en el puesto</h3>
+              <p>La línea de mando del organigrama sale de este dato. Se guarda en el <b>puesto</b> y no en el cargo, porque dos sillas del mismo cargo en dos sedes pueden responderle a jefes distintos. Deducirlo —«cada cargo responde a la cabeza de su unidad»— alcanza para el caso corriente y miente en cuanto una unidad tiene dos jefaturas.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>La cima del organigrama</div>
+                  <ul>
+                    <li><b>Dado que</b>un puesto no depende de ningún otro</li>
+                    <li><b>Cuando</b>se abre su ficha</li>
+                    <li><b>Entonces</b>el campo dice «De nadie: es la cima»</li>
+                    <li><b>Y</b>esa es una respuesta con nombre, no un hueco sin llenar</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Depender de un subordinado</div>
+                  <ul>
+                    <li><b>Dado que</b>un puesto tiene otros colgando de él</li>
+                    <li><b>Cuando</b>se abre el desplegable «De quién depende»</li>
+                    <li><b>Entonces</b>los suyos no aparecen en la lista</li>
+                    <li><b>Y</b>un círculo en la línea de mando no se puede dibujar</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-013">
+            <span class="regla-n">4.1.13</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-013</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>Un puesto pertenece a una unidad y puede trabajar en otras</h3>
+              <p>El <b>apoyo funcional</b> es eso: la unidad a la que pertenece es la que lo evalúa y donde se lo cuenta; las que apoya son donde además trabaja. En cada una se dibuja como un cuadro más, en azul, y sigue siendo el mismo puesto: no se cuenta dos veces.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Declarar un apoyo</div>
+                  <ul>
+                    <li><b>Dado que</b>el Community Manager pertenece a Marketing Digital</li>
+                    <li><b>Cuando</b>se declara que apoya a «Contenidos y Creatividad» respondiendo a su analista</li>
+                    <li><b>Entonces</b>aparece dibujado también dentro de Contenidos, en azul y con línea punteada</li>
+                    <li><b>Y</b>los contadores de Contenidos no lo suman como cargo propio</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Apoyarse a sí mismo o repetir</div>
+                  <ul>
+                    <li><b>Dado que</b>se abre el editor de apoyos de un puesto</li>
+                    <li><b>Cuando</b>se despliega la lista de unidades</li>
+                    <li><b>Entonces</b>no aparece su propia unidad ni ninguna que ya esté en la lista</li>
+                    <li><b>Y</b>dos filas con la misma unidad darían dos jefes funcionales sin forma de saber cuál vale</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-014">
+            <span class="regla-n">4.1.14</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-014</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>Staff y outsourcing no tienen nivel de mando</h3>
+              <p>Hay tres clases de puesto y se <b>declaran</b>, no se deducen: colaborador —en planilla, dentro de la línea de mando—, staff —asiste a un cargo sin estar en su línea— y outsourcing —lo cubre un prestador—. Los dos últimos se dibujan al costado, así que preguntarles a qué altura mandan no tiene respuesta posible.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un puesto de staff</div>
+                  <ul>
+                    <li><b>Dado que</b>se marca un cargo como «Staff»</li>
+                    <li><b>Cuando</b>se mira el formulario</li>
+                    <li><b>Entonces</b>el campo «Nivel de mando» desaparece</li>
+                    <li><b>Y</b>el cuadro se dibuja al costado de su jefe, sin nada colgando debajo</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Jefe no es una clase</div>
+                  <ul>
+                    <li><b>Dado que</b>un puesto tiene otros colgando de él</li>
+                    <li><b>Cuando</b>se mira su clase</li>
+                    <li><b>Entonces</b>sigue diciendo «Colaborador»</li>
+                    <li><b>Y</b>«jefe» no se declara: se lee del árbol, y por eso nunca queda viejo cuando alguien mueve a otro de lugar</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-015">
+            <span class="regla-n">4.1.15</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-015</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>El nivel de mando es un catálogo de la empresa</h3>
+              <p>Vienen tres —superior, medio y bajo— y ahí termina la opinión del producto: cada empresa los renombra, los reordena y agrega los que le falten. El <b>número no se guarda</b>: es la posición en la lista. Un cargo guarda la llave del peldaño, nunca su nombre ni su número.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Intercalar un peldaño</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa tiene tres niveles de mando</li>
+                    <li><b>Cuando</b>inserta «Jefatura» entre el primero y el segundo</li>
+                    <li><b>Entonces</b>todos los de abajo se renumeran solos</li>
+                    <li><b>Y</b>ningún cargo cambia: siguen apuntando a la misma llave</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Borrar un peldaño en uso</div>
+                  <ul>
+                    <li><b>Dado que</b>diez cargos tienen puesto «Mando medio»</li>
+                    <li><b>Cuando</b>se intenta borrarlo</li>
+                    <li><b>Entonces</b>el editor avisa a cuántos cargos deja sin nivel antes de hacerlo</li>
+                    <li><b>Y</b>la decisión se toma sabiendo el costo, no descubriéndolo después</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-016">
+            <span class="regla-n">4.1.16</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-016</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>Desactivar no es borrar</h3>
+              <p>Una sucursal que cerró tiene historia, gente y planillas detrás. Lo mismo una unidad que se disolvió o un cargo que dejó de usarse. Se <b>desactivan</b>, con su fecha, y dejan de ofrecerse para cosas nuevas conservando todo lo que pasó por ahí.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Cerrar una sucursal</div>
+                  <ul>
+                    <li><b>Dado que</b>la sucursal «Villa Imperial» deja de operar</li>
+                    <li><b>Cuando</b>se cambia su estado a «Cerrada»</li>
+                    <li><b>Entonces</b>no se ofrece al crear puestos nuevos</li>
+                    <li><b>Y</b>sigue visible en la tabla y en los históricos, marcada como cerrada</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Eliminar algo con cosas dentro</div>
+                  <ul>
+                    <li><b>Dado que</b>una unidad organizacional tiene cargos adentro</li>
+                    <li><b>Cuando</b>se intenta eliminarla</li>
+                    <li><b>Entonces</b>el sistema lo impide y dice cuántos hay que mover primero</li>
+                    <li><b>Y</b>eliminar deja de ser una sorpresa y pasa a ser una decisión informada</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-017">
+            <span class="regla-n">4.1.17</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-017</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>El organigrama y las tablas son el mismo dato</h3>
+              <p>No hay una copia para dibujar y otra para editar. Lo que se carga por una puerta está en la otra al instante, sin botón de sincronizar y sin posibilidad de que una diga una cosa y la otra otra.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Crear desde el dibujo</div>
+                  <ul>
+                    <li><b>Dado que</b>se crea una unidad organizacional desde el organigrama</li>
+                    <li><b>Cuando</b>se abre la tabla de Unidades organizacionales</li>
+                    <li><b>Entonces</b>la unidad ya está ahí, sin traerla ni sincronizar nada</li>
+                    <li><b>Y</b>lo mismo al revés: lo creado en la tabla se dibuja al instante</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Dos verdades</div>
+                  <ul>
+                    <li><b>Dado que</b>se renombra una unidad en cualquiera de las dos pantallas</li>
+                    <li><b>Cuando</b>se mira la otra</li>
+                    <li><b>Entonces</b>el nombre nuevo ya está</li>
+                    <li><b>Y</b>no existe un estado en el que una pantalla tenga razón y la otra no</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-018">
+            <span class="regla-n">4.1.18</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-018</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>Los recortes del organigrama son de la vista, no del sistema</h3>
+              <p>Filtrar por unidad, por sede, por clase de puesto o por estado cambia <b>lo que se está mirando</b> y nada más: no cambia lo que se crea ni lo que existe. Cada recorte queda escrito en la frase de arriba y se quita tocándolo.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Ver una sede</div>
+                  <ul>
+                    <li><b>Dado que</b>se elige «Sucursal Sopocachi» en el filtro del organigrama</li>
+                    <li><b>Cuando</b>se mira el dibujo</li>
+                    <li><b>Entonces</b>se ven los puestos de esa sede con su línea de mando completa hasta arriba</li>
+                    <li><b>Y</b>un jefe que no trabaja ahí se queda dibujado si alguno de los suyos sí: sin eso, los de abajo colgarían de nada</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Un recorte que no se ve</div>
+                  <ul>
+                    <li><b>Dado que</b>hay un filtro puesto</li>
+                    <li><b>Cuando</b>se mira la pantalla</li>
+                    <li><b>Entonces</b>el filtro está escrito en la frase: «Viendo … de … en …»</li>
+                    <li><b>Y</b>ningún recorte se aplica sin que quien mira sepa que lo puso</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-019">
+            <span class="regla-n">4.1.19</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-019</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>Renombrar un peldaño no migra datos</h3>
+              <p>Los nodos guardan la <b>llave</b> de su tipo, no su nombre. Cambiar la palabra cambia la pestaña, el menú, los formularios y los avisos de toda la aplicación, y deja los datos intactos. Es lo que permite que un colegio le diga «Sede» a sus sucursales y un banco «Agencia» sin que sean productos distintos.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>La palabra es de la empresa</div>
+                  <ul>
+                    <li><b>Dado que</b>una minera llama «Faena» a lo que el producto llama «Centro de trabajo»</li>
+                    <li><b>Cuando</b>renombra el peldaño</li>
+                    <li><b>Entonces</b>toda la aplicación pasa a decir «Faena»</li>
+                    <li><b>Y</b>los centros que ya existían siguen siendo los mismos registros</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Renombrar no es un nivel nuevo</div>
+                  <ul>
+                    <li><b>Dado que</b>se renombra «Unidad organizacional» a «Departamento»</li>
+                    <li><b>Cuando</b>se mira la estructura</li>
+                    <li><b>Entonces</b>sigue habiendo un solo peldaño, con otro nombre</li>
+                    <li><b>Y</b>quien pide su palabra no está pidiendo un escalón más</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ORG-020">
+            <span class="regla-n">4.1.20</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-020</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3>La estructura es el dato del que dependen los demás módulos</h3>
+              <p>Onboarding saca de aquí a quién le toca cada ruta; Evaluación, a quién apunta cada campaña; Comunicación, a quién le llega cada anuncio. Por eso escribir en la estructura es de Recursos Humanos y de nadie más: una unidad borrada deja rutas sin destino y campañas sin público.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un cambio se propaga</div>
+                  <ul>
+                    <li><b>Dado que</b>una ruta de onboarding apunta al cargo «Ejecutivo Comercial» en La Paz</li>
+                    <li><b>Cuando</b>se abre un puesto de ese cargo en esa sede</li>
+                    <li><b>Entonces</b>la persona que lo ocupe recibe esa ruta sin que nadie la elija</li>
+                    <li><b>Y</b>el vínculo es el cargo y la sede, no la persona</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Quién puede escribir</div>
+                  <ul>
+                    <li><b>Dado que</b>un líder de unidad entra al módulo</li>
+                    <li><b>Cuando</b>mira la estructura</li>
+                    <li><b>Entonces</b>ve el organigrama entero y su unidad en detalle</li>
+                    <li><b>Y</b>no puede crear ni mover nodos: eso es de Recursos Humanos</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="sec" id="s-m-personas">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">4.2</span>
+          <div>
+            <h2>Gestión de personas</h2>
+            <p class="sec-lead">El directorio, la ficha y la diferencia entre la persona y su puesto.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla" id="r-4-2-1">
+            <span class="regla-n">4.2.1</span>
+            <div>
+              <h3>La persona y el puesto son dos cosas, y se pueden separar</h3>
+              <p>El puesto es la silla —existe, tiene código, cuelga de una unidad organizacional y de una sucursal— y la persona es quien la ocupa. Dar de baja a alguien no borra su puesto: lo deja vacante, que es lo que permite reemplazarlo sin volver a dibujarlo. Y al revés, cerrar un puesto no da de baja a nadie: primero hay que mover a quien estaba ahí.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-4-2-2">
+            <span class="regla-n">4.2.2</span>
+            <div>
+              <h3>Una vacante no es un dato que falta: es un estado, y se dice con palabras</h3>
+              <p>En un formulario un campo vacío es un hueco por llenar; en una ficha es una línea que no aporta y le quita peso a la de al lado. Lo que no se cargó no se dibuja. Pero que un puesto no lo ocupe nadie sí importa, así que no se enseña como un vacío sino como lo que es: «vacante».</p>
+            </div>
+          </li>
+          <li class="regla" id="r-4-2-3">
+            <span class="regla-n">4.2.3</span>
+            <div>
+              <h3>Hay gente en el directorio que no está en el organigrama, y está bien</h3>
+              <p>Personal temporal, consultores, alguien recién ingresado a quien todavía no se le abrió su puesto. Existen en el directorio y no ocupan ningún cuadro. El organigrama dibuja la estructura, no la lista de gente: forzar a que todos estén dibujados obligaría a inventar puestos que nadie definió.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-4-2-4">
+            <span class="regla-n">4.2.4</span>
+            <div>
+              <h3>El directorio obedece al ámbito</h3>
+              <p>Es la pantalla donde más se nota: parado en una sucursal, la lista es la de esa sucursal y lo que registres nace ahí. No es un filtro que uno pone y olvida —lo avisa la cinta de arriba—, porque leer «142 personas» creyendo que es toda la empresa cuando son las de una sucursal lleva a decidir con la mitad del dato.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-4-2-5">
+            <span class="regla-n">4.2.5</span>
+            <div>
+              <h3>La ficha se abre para mirar; editar es otra cosa</h3>
+              <p>Un cuadro del organigrama o una ficha se abren muchas más veces para consultar que para cambiar. Por eso lo primero que se ve es lo que uno quiere saber —de quién depende, cuánta gente cuelga, cuánto está sin cubrir— y no un formulario con los campos apagados, que enseña lo que se puede cambiar en vez de lo que se quiere leer.</p>
+            </div>
+          </li>
+          <li class="regla" id="r-4-2-6">
+            <span class="regla-n">4.2.6</span>
+            <div>
+              <h3>Los datos sensibles de una ficha se conceden aparte</h3>
+              <p>Sueldo, contrato, documento de identidad y evaluaciones no vienen incluidos por poder abrir la ficha de alguien. Administrar a una persona y saber cuánto gana son dos permisos distintos, y el segundo se da de a uno.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="sec" id="s-m-onboarding">
+        <header class="sec-cab">
+          <span class="sec-n" aria-hidden="true">4.3</span>
+          <div>
+            <h2>Onboarding</h2>
+            <p class="sec-lead">Cómo se decide qué ruta le toca a quién, y qué pasa cuando una ruta cambia.</p>
+          </div>
+        </header>
+        <ol class="reglas">
+          <li class="regla br" id="BR-ONB-001">
+            <span class="regla-n">4.3.1</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ONB-001</span>
+                <span class="br-estado">Borrador</span>
+                
+              </div>
+              <h3>La ruta se elige por unidad y cargo, no persona por persona</h3>
+              <p>Una ruta declara a quién le toca —área, cargo y sucursal— y el sistema la aplica sola cuando entra alguien que encaja. Asignar a mano una por una convierte cada ingreso en una decisión y garantiza que alguien se quede sin ninguna el día que haya prisa.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Ingreso que encaja con una ruta activa</div>
+                  <ul>
+                    <li><b>Dado que</b>existe una ruta activa para el cargo «Ejecutivo Comercial» en la sucursal La Paz</li>
+                    <li><b>Cuando</b>se da de alta a una persona en ese cargo y esa sucursal</li>
+                    <li><b>Entonces</b>el sistema le asigna esa ruta sin que nadie la elija</li>
+                    <li><b>Y</b>la asignación queda en estado «pendiente de inicio» con su fecha de arranque</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Ingreso sin ruta para su cargo</div>
+                  <ul>
+                    <li><b>Dado que</b>no hay ninguna ruta activa para el cargo de la persona</li>
+                    <li><b>Cuando</b>se la da de alta</li>
+                    <li><b>Entonces</b>recibe solo la ruta general, si la empresa la tiene</li>
+                    <li><b>Y</b>la persona aparece en el panel de Onboarding marcada como «sin ruta específica»</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: pendiente</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ONB-002">
+            <span class="regla-n">4.3.2</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ONB-002</span>
+                <span class="br-estado">Borrador</span>
+                <span class="br-eq">RN-M60</span>
+              </div>
+              <h3>Un cargo y una sucursal tienen una sola ruta activa a la vez</h3>
+              <p>Dos rutas vigentes para el mismo puesto significan que nadie sabe cuál se aplica al próximo ingreso. Por eso activar una donde ya hay otra no es una activación con letra chica: es un reemplazo, y se cuenta como tal.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Activar donde el puesto está libre</div>
+                  <ul>
+                    <li><b>Dado que</b>ninguna ruta activa apunta a ese cargo y esa sucursal</li>
+                    <li><b>Cuando</b>se activa la ruta</li>
+                    <li><b>Entonces</b>pasa a «Activo» sin preguntar nada</li>
+                    <li><b>Y</b>desde ese momento se aplica a los ingresos nuevos de ese puesto</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Activar donde ya hay otra ruta</div>
+                  <ul>
+                    <li><b>Dado que</b>ya existe una ruta activa para ese cargo y esa sucursal</li>
+                    <li><b>Cuando</b>se intenta activar una segunda</li>
+                    <li><b>Entonces</b>el sistema pide confirmar el reemplazo, diciendo qué ruta se apaga y a cuánta gente en curso afecta</li>
+                    <li><b>Y</b>al confirmar, la anterior queda inactiva y la nueva pasa a «Activo»</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: pendiente</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ONB-003">
+            <span class="regla-n">4.3.3</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ONB-003</span>
+                <span class="br-estado">Borrador</span>
+                
+              </div>
+              <h3>La ruta general va para todos y se antepone</h3>
+              <p>Es lo que toda la empresa comparte —la bienvenida, las políticas, lo administrativo— y no se apunta a nadie en particular: se guarda con el alcance más amplio y encabeza a la ruta específica de cada quien.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Persona con ruta general y ruta de su cargo</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa tiene una ruta general activa y una ruta para el cargo de la persona</li>
+                    <li><b>Cuando</b>arranca su onboarding</li>
+                    <li><b>Entonces</b>ve primero las etapas de la general y después las de su cargo</li>
+                    <li><b>Y</b>las tareas no se repiten aunque estén en las dos</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Intentar apuntar la ruta general a un cargo</div>
+                  <ul>
+                    <li><b>Dado que</b>se está creando o editando la ruta general</li>
+                    <li><b>Cuando</b>se intenta acotarla a una unidad organizacional, un cargo o una sucursal</li>
+                    <li><b>Entonces</b>el sistema no ofrece esos campos</li>
+                    <li><b>Y</b>la ruta se guarda con el alcance más amplio</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: pendiente</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ONB-004">
+            <span class="regla-n">4.3.4</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ONB-004</span>
+                <span class="br-estado">Borrador</span>
+                <span class="br-eq">RN-M62 · RN-M55</span>
+              </div>
+              <h3>El estado de una ruta se mueve por un solo sitio</h3>
+              <p>Un único «cambiar estado», y las transiciones posibles las decide el sistema según dónde esté. Antes había tres verbos sueltos que entraban y salían del menú, así que el menú cambiaba de forma entre una ruta y otra.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Cambiar el estado desde el selector</div>
+                  <ul>
+                    <li><b>Dado que</b>una ruta está en «Borrador»</li>
+                    <li><b>Cuando</b>se abre «Cambiar estado»</li>
+                    <li><b>Entonces</b>el selector ofrece solo los estados a los que puede pasar desde ahí</li>
+                    <li><b>Y</b>el menú de acciones tiene la misma forma para todas las rutas, esté donde esté cada una</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Transición no permitida</div>
+                  <ul>
+                    <li><b>Dado que</b>una ruta está en un estado desde el que no se puede llegar al elegido</li>
+                    <li><b>Cuando</b>se intenta</li>
+                    <li><b>Entonces</b>esa opción no aparece en el selector</li>
+                    <li><b>Y</b>no hay ningún otro camino en la interfaz que la permita</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: pendiente</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ONB-005">
+            <span class="regla-n">4.3.5</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ONB-005</span>
+                <span class="br-estado">Borrador</span>
+                <span class="br-eq">RN-M66</span>
+              </div>
+              <h3>Para activar una ruta basta una tarea</h3>
+              <p>La jerarquía etapa → actividad → tarea ya implica las otras dos, y una actividad vacía es un título sin contenido. No se piden mínimos artificiales: se pide que haya algo que la persona pueda hacer.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Ruta con una sola tarea</div>
+                  <ul>
+                    <li><b>Dado que</b>una ruta en borrador tiene una etapa, una actividad y una tarea</li>
+                    <li><b>Cuando</b>se intenta activarla</li>
+                    <li><b>Entonces</b>el sistema lo permite</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Ruta sin ninguna tarea</div>
+                  <ul>
+                    <li><b>Dado que</b>una ruta en borrador tiene etapas y actividades pero ninguna tarea</li>
+                    <li><b>Cuando</b>se intenta activarla</li>
+                    <li><b>Entonces</b>el sistema lo impide y dice qué falta</li>
+                    <li><b>Y</b>la ruta se queda en «Borrador», guardada, sin perder lo escrito</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: pendiente</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ONB-006">
+            <span class="regla-n">4.3.6</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ONB-006</span>
+                <span class="br-estado">Borrador</span>
+                <span class="br-eq">RN-M64</span>
+              </div>
+              <h3>Guardar no significa lo mismo en un borrador que en una ruta activa</h3>
+              <p>Un borrador no está en uso: se guarda en el lugar y se sigue editando. Una ruta activa alimenta lo que recorren las asignaciones nuevas, así que guardarla crea versión y pregunta a quiénes se les aplica.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Guardar un borrador</div>
+                  <ul>
+                    <li><b>Dado que</b>la ruta está en «Borrador» y nadie la está recorriendo</li>
+                    <li><b>Cuando</b>se guarda</li>
+                    <li><b>Entonces</b>los cambios quedan en el lugar y se sigue editando</li>
+                    <li><b>Y</b>no se pregunta nada</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Guardar una ruta activa con gente en curso</div>
+                  <ul>
+                    <li><b>Dado que</b>la ruta está activa y hay personas recorriéndola</li>
+                    <li><b>Cuando</b>se guarda un cambio</li>
+                    <li><b>Entonces</b>el sistema crea una versión nueva y pregunta a quiénes se les aplica</li>
+                    <li><b>Y</b>dice cuántas personas en curso quedarían afectadas antes de confirmar</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: pendiente</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ONB-007">
+            <span class="regla-n">4.3.7</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ONB-007</span>
+                <span class="br-estado">Borrador</span>
+                <span class="br-eq">RN-M65</span>
+              </div>
+              <h3>A quien ya va por la mitad no se le mueve el piso</h3>
+              <p>Cambiar una ruta no reescribe la de quien la está recorriendo: cada asignación guarda la versión con la que arrancó. Quien esté en curso termina lo que empezó y el cambio entra para los que vengan.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Cambio que solo afecta a los nuevos</div>
+                  <ul>
+                    <li><b>Dado que</b>una persona va por la mitad de su onboarding</li>
+                    <li><b>Cuando</b>se edita la ruta y se elige aplicar solo a los ingresos nuevos</li>
+                    <li><b>Entonces</b>esa persona sigue viendo la versión con la que arrancó</li>
+                    <li><b>Y</b>los ingresos posteriores reciben la versión nueva</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Cambio que se aplica a los que están en curso</div>
+                  <ul>
+                    <li><b>Dado que</b>hay personas recorriendo la ruta</li>
+                    <li><b>Cuando</b>se edita y se elige aplicar también a las que están en curso</li>
+                    <li><b>Entonces</b>el sistema dice a cuántas afecta y qué tareas ya completadas se conservan</li>
+                    <li><b>Y</b>nada de lo que la persona ya completó se pierde ni se vuelve a pedir</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: pendiente</div>
+            </div>
+          </li>
+          <li class="regla br" id="BR-ONB-008">
+            <span class="regla-n">4.3.8</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ONB-008</span>
+                <span class="br-estado">Borrador</span>
+                
+              </div>
+              <h3>El buddy acompaña; no supervisa</h3>
+              <p>Una asignación apunta a su buddy, y esa persona sigue siendo colaboradora: ve lo de quien acompaña y nada más.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Buddy mirando a su acompañado</div>
+                  <ul>
+                    <li><b>Dado que</b>a una persona se le asignó un buddy</li>
+                    <li><b>Cuando</b>el buddy entra a «Mis acompañados»</li>
+                    <li><b>Entonces</b>ve el avance de esa persona y puede acompañarla</li>
+                    <li><b>Y</b>no ve a nadie más de la empresa ni entra al módulo de Onboarding</li>
+                  </ul>
+                </div>
+                <div class="esc no">
+                  <div class="esc-t"><i>❌</i>Fin del acompañamiento</div>
+                  <ul>
+                    <li><b>Dado que</b>el onboarding acompañado terminó o se le quitó el buddy</li>
+                    <li><b>Cuando</b>el buddy vuelve a entrar</li>
+                    <li><b>Entonces</b>esa persona ya no está en su lista</li>
+                    <li><b>Y</b>no queda ningún permiso que haya que retirarle a mano</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: pendiente</div>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <footer class="pie">
+        <span>Souly · Documentación oficial</span>
+        <span>17 secciones · 70 reglas</span>
+      </footer>
+    </div>
+  </main>
+</div>
+<script>
+/* EL ÍNDICE PLEGABLE Y EL SEGUIMIENTO DE LA LECTURA SON LA MISMA COSA, y por eso viven juntos:
+   marcar una sección cuyo grupo está plegado sería marcar algo que no se ve, así que al entrar
+   en una parte se abre sola. Plegar y desplegar sigue mandando mientras uno no se mueva. */
+const items = [...document.querySelectorAll('.toc-i')]
+const grupos = [...document.querySelectorAll('.toc-grupo')]
+
+grupos.forEach(g => g.addEventListener('click', () => {
+  g.setAttribute('aria-expanded', g.getAttribute('aria-expanded') === 'true' ? 'false' : 'true')
+}))
+
+let ultima = null
+const marcar = id => {
+  if (id === ultima) return
+  ultima = id
+  items.forEach(a => a.setAttribute('aria-current', String(a.dataset.id === id)))
+  const activo = items.find(a => a.dataset.id === id)
+  if (!activo) return
+  const grupo = grupos.find(g => g.dataset.grupo === activo.dataset.grupo)
+  if (grupo && grupo.getAttribute('aria-expanded') === 'false') {
+    grupo.setAttribute('aria-expanded', 'true')
+  }
+}
+
+const vistas = new Map()
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => vistas.set(e.target.id, e.intersectionRatio > 0 ? e.boundingClientRect.top : Infinity))
+  const arriba = [...vistas.entries()].filter(([, t]) => t < 160).sort((a, b) => b[1] - a[1])[0]
+  if (arriba) marcar(arriba[0])
+}, { threshold: [0, 1], rootMargin: '-140px 0px -70% 0px' })
+document.querySelectorAll('.sec').forEach(s => obs.observe(s))
+marcar(items[0]?.dataset.id)
+</script>
+</body>
+</html>
