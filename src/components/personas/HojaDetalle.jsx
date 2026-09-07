@@ -83,7 +83,7 @@ export function HojaCargo({ cargo, org }) {
       </Fila>
 
       <Fila
-        rotulo="Área"
+        rotulo="Unidad"
         valor={unidad?.nombre}
         detalle={madre && `dentro de ${madre.nombre}`}
       />
@@ -122,7 +122,7 @@ export function HojaCargo({ cargo, org }) {
       {/* La lista vacía de sedes quiere decir "toda la empresa", igual que en el dato: no es
           una sede que falta. */}
       <Fila
-        rotulo="Sede"
+        rotulo="Sucursal"
         valor={sede ? sede.ciudad : 'Toda la empresa'}
         detalle={sede ? sede.nombre : 'no pertenece a una sucursal en particular'}
       />
@@ -134,7 +134,7 @@ export function HojaCargo({ cargo, org }) {
               <strong>{getUnidad(f.unidadId, org)?.nombre}</strong>
               <em>{f.reportaA
                 ? `responde a ${org.cargos.find(c => c.id === f.reportaA)?.nombre}`
-                : 'cuelga del área'}</em>
+                : 'cuelga de la unidad'}</em>
             </span>
           ))}
         </Fila>
@@ -169,6 +169,22 @@ export function HojaUnidad({ unidad, org, empresa, onAbrirCargo }) {
 
   return (
     <div className="pl-modal-body og-ficha">
+      {/* QUÉ CLASE DE UNIDAD ES, ARRIBA DE TODO. El formulario lo pide como obligatorio y esta
+          hoja no lo enseñaba: un campo que hay que contestar para poder guardar y que después no
+          se ve en ninguna parte enseña que era un trámite. Y es lo primero que contesta la hoja
+          —si esto es una dirección o un equipo de tres— antes que de quién depende. */}
+      {unidad.tipoUnidad && <Fila rotulo="Tipo" valor={unidad.tipoUnidad} />}
+
+      {/* El estado solo cuando dice algo. «Activa» es el caso de casi todas y ocupa un renglón
+          para no informar nada; inactiva sí hay que verlo sin buscarlo. */}
+      {unidad.estado && unidad.estado !== 'activa' && (
+        <Fila
+          rotulo="Estado"
+          valor="Inactiva"
+          detalle="No se ofrece para cosas nuevas; conserva su historia y su gente."
+        />
+      )}
+
       <Fila
         rotulo="Dentro de"
         valor={madre?.nombre || empresa.nombre}
@@ -179,7 +195,7 @@ export function HojaUnidad({ unidad, org, empresa, onAbrirCargo }) {
           lado en que se está parado. Sin cabeza todavía, el dato vive en la unidad. */}
       <Fila
         rotulo="Bajo el mando de"
-        valor={mando?.nombre || getUnidad(unidad.mandoId, org)?.nombre || 'Nadie: cuelga del área'}
+        valor={mando?.nombre || getUnidad(unidad.mandoId, org)?.nombre || 'Nadie: cuelga de la unidad'}
       />
 
       {cabeza && (
@@ -201,7 +217,7 @@ export function HojaUnidad({ unidad, org, empresa, onAbrirCargo }) {
       {subs.length > 0 && (
         <Fila
           rotulo="Sub-unidades"
-          valor={`${subs.length} ${subs.length === 1 ? 'área' : 'áreas'}`}
+          valor={`${subs.length} ${subs.length === 1 ? 'unidad' : 'unidades'}`}
           detalle={subs.map(u => u.nombre).join(' · ')}
         />
       )}
@@ -221,7 +237,7 @@ export function HojaUnidad({ unidad, org, empresa, onAbrirCargo }) {
               <span className="og-ficha-linea">
                 <strong>{c.nombre}</strong>
                 <em>
-                  de {getUnidad(c.unidadId, org)?.nombre || 'sin área'}
+                  de {getUnidad(c.unidadId, org)?.nombre || 'sin unidad'}
                   {reportaA && ` · responde a ${org.cargos.find(x => x.id === reportaA)?.nombre}`}
                 </em>
               </span>

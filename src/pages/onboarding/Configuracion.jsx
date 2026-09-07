@@ -251,9 +251,11 @@ export default function Configuracion() {
       {/* ENCABEZADO — lleva el guardado, así que se queda arriba mientras se scrollea:
           los ajustes que se tocan viven a mitad de la lista y el botón tiene que seguir a mano. */}
       <div
-        className="pl-header bg-[#F8FAFC] dark:bg-[#07131D]"
+        className="pl-header"
         style={{
           position: 'sticky', top: -20, zIndex: 20, gap: 16,
+          // El mismo fondo que el área que scrollea detrás, tomado del token y no copiado a mano.
+          background: 'var(--bg-app)',
           /* El fondo se sale a los costados hasta el borde del área que scrollea (main tiene
              16px de padding): si termina donde termina el texto, las tarjetas asoman por esos
              dos costados al pasar por detrás y la franja se ve rota. */

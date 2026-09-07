@@ -46,7 +46,7 @@ export default function CambiarEstadoRutaModal({ ruta, plantillas, enCurso = 0, 
               width: 34, height: 34, borderRadius: 10, flexShrink: 0,
               background: 'rgba(12,45,64,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <ToggleLeft size={17} style={{ color: 'var(--navy)' }} />
+              <ToggleLeft size={17} style={{ color: 'var(--navy-txt)' }} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <h2 style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-heading)', lineHeight: 1.35, margin: 0 }}>
@@ -95,7 +95,7 @@ export default function CambiarEstadoRutaModal({ ruta, plantillas, enCurso = 0, 
                     <span style={{ flex: 1, minWidth: 0, fontSize: 11.5, color: 'var(--text-muted)', lineHeight: 1.5 }}>
                       {o.regla}
                     </span>
-                    {sel && <Check size={15} style={{ color: 'var(--navy)', flexShrink: 0, marginTop: 2 }} />}
+                    {sel && <Check size={15} style={{ color: 'var(--navy-txt)', flexShrink: 0, marginTop: 2 }} />}
                   </button>
                 )
               })}

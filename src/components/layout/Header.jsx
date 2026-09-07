@@ -6,15 +6,31 @@ import { useOnboardingData } from '../../context/OnboardingDataContext'
 
 const pageHeaders = {
   '/inicio': { title: 'Inicio' },
+  '/inicio/calendario': { title: 'Calendario' },
   '/mi-espacio/mi-dia': { title: 'Mi día' },
-  '/mi-espacio/calendario': { title: 'Mi calendario' },
   '/mi-espacio/mi-onboarding': { title: 'Mi Onboarding' },
   '/mi-espacio/acompanados': { title: 'Mis acompañados' },
+  '/mi-espacio/chats': { title: 'Chats' },
+  '/mi-espacio/zona-hr': { title: 'Zona HR' },
+  '/mi-espacio/perfil': { title: 'Mi perfil' },
   '/onboarding/plantillas': { title: 'Rutas de Onboarding' },
   '/onboarding/asignaciones': { title: 'Seguimiento' },
   '/onboarding/conocimiento': { title: 'Recursos corporativos' },
   '/onboarding/configuracion': { title: 'Configuración avanzada' },
   '/personas/colaboradores': { title: 'Colaboradores' },
+  '/comunicacion/chats': { title: 'Mis chats' },
+  '/comunicacion/anuncios': { title: 'Gestión de anuncios' },
+  '/comunicacion/reconocimientos': { title: 'Reconocimientos' },
+  '/comunicacion/eventos': { title: 'Gestión de eventos' },
+  '/comunicacion/programados': { title: 'Mensajes programados' },
+  '/organizacion/datos': { title: 'Datos de la empresa' },
+  '/organizacion/sucursales': { title: 'Sucursales' },
+  '/organizacion/areas': { title: 'Áreas' },
+  '/organizacion/cargos': { title: 'Cargos' },
+  '/organizacion/puestos': { title: 'Puestos' },
+  /* El organigrama nunca estuvo en este mapa: en `/personas/organigrama` la barra decía
+     "Dashboard" desde siempre, porque sin entrada cae en el título por defecto del rol. */
+  '/organizacion/organigrama': { title: 'Organigrama' },
 }
 
 // El selector de rol aparece dos veces en este archivo (barra fija y barra flotante).
@@ -37,9 +53,12 @@ export default function Header({ floating }) {
   const ref = useRef(null)
 
   const isPersonas = location.pathname.startsWith('/personas')
+  const isOrganizacion = location.pathname.startsWith('/organizacion')
+  const isOnboarding = location.pathname.startsWith('/onboarding')
   const isInicio = location.pathname.startsWith('/inicio')
   const isMiEspacio = location.pathname.startsWith('/mi-espacio')
-  const isCalendario = location.pathname === '/mi-espacio/calendario'
+  const isComunicacion = location.pathname.startsWith('/comunicacion')
+  const isCalendario = location.pathname === '/inicio/calendario'
   // La ficha de una asignación sigue siendo Seguimiento: la barra no cambia de nombre al
   // entrar a una persona, el "volver" de la pantalla es el que ubica.
   const pageInfo = pageHeaders[location.pathname]
@@ -49,7 +68,9 @@ export default function Header({ floating }) {
   const headerSubtitle = isCalendario ? 'Eventos y actividades programadas'
     : isMiEspacio ? 'Mi espacio personal'
     : isInicio ? 'Vista general de la plataforma'
+    : isOrganizacion ? 'Organización'
     : isPersonas ? 'Módulo de Personas'
+    : isComunicacion ? 'Módulo de Comunicación'
     : 'Módulo de Onboarding'
 
   const totalDocs = recursos.reduce((s, c) => s + c.docs.length, 0)
@@ -161,11 +182,11 @@ export default function Header({ floating }) {
   }
 
   return (
-    <header className="h-14 bg-white dark:bg-[#07131D] border-b border-[#EEF1F4] dark:border-white/[0.06] flex items-center justify-between shrink-0" style={{ paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
+    <header className="h-14 bg-[var(--bg-nav)] border-b border-[#EEF1F4] dark:border-white/[0.06] flex items-center justify-between shrink-0" style={{ paddingLeft: '1.5rem', paddingRight: '1.5rem' }}>
 
       <div className="flex items-center gap-3">
         <button
-          className="md:hidden text-[#7C93A6] hover:text-[#0C2D40] hover:bg-slate-50 dark:text-[#7C8EA3] dark:hover:text-white dark:hover:bg-[#163041] p-1.5 rounded-lg transition-colors"
+          className="md:hidden text-[#7C93A6] hover:text-[#0C2D40] hover:bg-slate-50 dark:text-[#7C8EA3] dark:hover:text-white dark:hover:bg-[#24586F] p-1.5 rounded-lg transition-colors"
           aria-label="Abrir menú"
         >
           <Menu className="w-5 h-5" aria-hidden="true" />
@@ -179,14 +200,18 @@ export default function Header({ floating }) {
       <div className="flex items-center gap-4">
 
         <button
-          className="p-2 text-[#7C93A6] hover:text-[#0C2D40] hover:bg-slate-50 dark:text-[#7C8EA3] dark:hover:text-white dark:hover:bg-[#163041] rounded-lg transition-all duration-200"
+          className="p-2 text-[#7C93A6] hover:text-[#0C2D40] hover:bg-slate-50 dark:text-[#7C8EA3] dark:hover:text-white dark:hover:bg-[#24586F] rounded-lg transition-all duration-200"
           title="Notificaciones"
         >
           <Bell className="w-4 h-4" aria-hidden="true" />
         </button>
 
-        {/* SETUP PROGRESS */}
-        {isAdmin && !setupAllDone && (
+        {/* SETUP PROGRESS — solo dentro de Onboarding.
+            Sus tres pasos son recursos, rutas y primera asignación: los tres viven en ese
+            módulo y los tres llevan allá. Colgado en la barra de toda la app, aparecía
+            reclamando configuración de Onboarding mientras alguien editaba las sucursales o miraba
+            el organigrama, que no tienen nada que ver. */}
+        {isAdmin && isOnboarding && !setupAllDone && (
           <div className="relative" ref={setupRef}>
             <button
               onClick={() => setShowSetup(!showSetup)}
@@ -225,7 +250,7 @@ export default function Header({ floating }) {
               <div style={{
                 position: 'absolute', top: 'calc(100% + 10px)', right: 0,
                 width: 306, background: 'var(--surface-card)', borderRadius: 18,
-                boxShadow: 'var(--shadow-card)',
+                boxShadow: 'var(--sh-flotante)',
                 overflow: 'hidden', zIndex: 50, animation: 'fadeInDown .15s ease-out',
               }}>
 
@@ -348,7 +373,7 @@ export default function Header({ floating }) {
 
         <div className="relative" ref={ref}>
           <button
-            className="flex items-center gap-2 p-1.5 text-[#0C2D40] hover:bg-slate-50 dark:text-white dark:hover:bg-[#163041] rounded-lg transition-colors"
+            className="flex items-center gap-2 p-1.5 text-[#0C2D40] hover:bg-slate-50 dark:text-white dark:hover:bg-[#24586F] rounded-lg transition-colors"
             onClick={() => setShowSwitcher(!showSwitcher)}
           >
             <div

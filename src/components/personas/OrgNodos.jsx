@@ -222,7 +222,7 @@ function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, halla
         className={`og-unidad${acomodo?.enMano === clave ? ' og-unidad-arrastrando' : ''}${onAbrirUnidad ? ' og-unidad-abrible' : ''}`}
         data-no-pan={acomodo ? '' : undefined}
         title={onAbrirUnidad
-          ? (acomodo ? 'Doble clic para editar el área · arrastra para acomodarla' : 'Doble clic para editar el área')
+          ? (acomodo ? 'Doble clic para editar la unidad · arrastra para acomodarla' : 'Doble clic para editar la unidad')
           : undefined}
         onPointerDown={acomodo ? e => acomodo.tomar(clave, true, e) : undefined}
         onDoubleClick={() => onAbrirUnidad?.(nodo.unidad)}
@@ -230,7 +230,7 @@ function Nodo({ nodo, onAbrir, onAbrirUnidad, plegable, acomodo, desglose, halla
         <span className="og-unidad-nom">{nodo.unidad.nombre}</span>
         {crear && (
           <MasEnNodo
-            titulo="Agregar en esta área"
+            titulo="Agregar en esta unidad"
             rotulo={`Agregar algo en ${nodo.unidad.nombre}`}
             opciones={() => crear.deUnidad(nodo.unidad)}
           />

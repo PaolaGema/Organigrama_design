@@ -355,14 +355,16 @@ export default function MiOnboarding({ forcePhone = false }) {
                     <p className="jb-welcome-desc" style={{ maxWidth: 420 }}>
                       Este módulo es para nuevos colaboradores que están en proceso de incorporación. Como ya eres parte del equipo, no tienes tareas pendientes aquí.
                     </p>
+                    {/* Del tema y no escrito a mano: en oscuro, un verde clarito de tema claro
+                        se convierte en una pastilla blanca flotando sobre la pizarra. */}
                     <div style={{
                       display: 'flex', alignItems: 'center', gap: 10,
                       padding: '14px 18px', borderRadius: 12,
-                      background: '#f0fdf4', border: '1px solid #bbf7d0',
+                      background: 'var(--green-bg)', border: '1px solid var(--green)',
                       marginTop: 8,
                     }}>
-                      <CheckCircle2 size={18} style={{ color: '#16a34a' }} />
-                      <span style={{ fontSize: 13, color: '#166534', fontWeight: 600 }}>Sin tareas pendientes</span>
+                      <CheckCircle2 size={18} style={{ color: 'var(--green)' }} />
+                      <span style={{ fontSize: 13, color: 'var(--text-heading)', fontWeight: 600 }}>Sin tareas pendientes</span>
                     </div>
                   </div>
                   <img src={viaAntiguo} alt="Mascota" className="jb-welcome-mascot" />

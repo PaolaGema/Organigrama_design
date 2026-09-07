@@ -129,7 +129,7 @@ export default function PreviaPuesto({
         <Layers size={13} />
         <span className="og-pv-cargo-txt">
           <strong>{form.nombre.trim() || 'Sin nombre todavía'}</strong>
-          <em>{form.puestos.length} puestos · {area || 'Sin área'}</em>
+          <em>{form.puestos.length} puestos · {area || 'Sin unidad'}</em>
         </span>
       </button>
 
@@ -219,7 +219,7 @@ export default function PreviaPuesto({
           <Building2 size={13} />
           <span>
             {ancestros.length > 0 && <span className="og-pv-area-ruta">{ancestros.join(' › ')} › </span>}
-            {area || 'Sin área'}
+            {area || 'Sin unidad'}
           </span>
         </span>
       </div>

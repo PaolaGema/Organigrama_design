@@ -85,4 +85,19 @@ export const CALENDAR_LEGEND = [
 ]
 
 // `size` para las fichas que muestran la foto más grande: pedir 40 px y estirarlos se ve borroso.
-export const avatarUrl = (name, size = 40) => `https://i.pravatar.cc/${size}?u=${encodeURIComponent(name)}`
+/* LAS FOTOS DE LA DEMO salen de pravatar, que devuelve una cara al azar a partir del nombre.
+   Casi siempre sale bien, pero a veces toca una que no sirve para enseñar el producto —cortada,
+   a contraluz, o sencillamente fea— y no hay forma de pedirle otra sin cambiarle el nombre a la
+   persona. Para esos casos se fija la foto por su número.
+
+   Vive aquí y no en la ficha de nadie porque es un dato de PRESENTACIÓN de la demo, no del
+   modelo: en producción la foto la sube cada quien. Cambiar una cara es cambiar un número. */
+const FOTO_FIJA = {
+  'Juan Pérez Gómez': 68,
+}
+
+export const avatarUrl = (name, size = 40) => (
+  FOTO_FIJA[name]
+    ? `https://i.pravatar.cc/${size}?img=${FOTO_FIJA[name]}`
+    : `https://i.pravatar.cc/${size}?u=${encodeURIComponent(name)}`
+)

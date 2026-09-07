@@ -75,16 +75,16 @@ function alCostado(padre, lateral, aLaIzquierda) {
 /* Los tres modos del dibujo. La etiqueta va en minúscula porque también se lee dentro de una
    frase en la barra de arriba —«dibujando áreas y cargos»— y una mayúscula ahí canta. */
 const MODOS = [
-  { key: 'completo', label: 'áreas y cargos', Icon: Network },
+  { key: 'completo', label: 'unidades y cargos', Icon: Network },
   { key: 'cargos', label: 'solo los cargos', Icon: Users },
-  { key: 'unidades', label: 'solo las áreas', Icon: Building2 },
+  { key: 'unidades', label: 'solo las unidades', Icon: Building2 },
 ]
 
 /* Las tres posiciones del interruptor de apoyos. El rótulo va en una palabra porque se lee como
    continuación del rótulo de al lado: «Funcionales: sin / con / solo». */
 const APOYOS = [
-  { key: 'sin', label: 'sin', ayuda: 'Solo los puestos que pertenecen a cada área' },
-  { key: 'con', label: 'con', ayuda: 'Los propios más los que vienen prestados de otras áreas' },
+  { key: 'sin', label: 'sin', ayuda: 'Solo los puestos que pertenecen a cada unidad' },
+  { key: 'con', label: 'con', ayuda: 'Los propios más los que vienen prestados de otras unidades' },
   { key: 'solo', label: 'solo', ayuda: 'Únicamente los préstamos: el mapa de quién presta gente a quién' },
 ]
 
@@ -355,7 +355,7 @@ export default function OrgGrafico({
                 <button key={f.cargo.id} onClick={() => irA(f.cargo.id)}>
                   <span className="og-buscar-nom">{f.cargo.nombre}</span>
                   <span className="og-buscar-sub">
-                    {f.unidad?.nombre || 'Sin área'}
+                    {f.unidad?.nombre || 'Sin unidad'}
                     {f.ocupantes.length > 0 && ` · ${f.ocupantes.map(p => p.name).join(', ')}`}
                   </span>
                 </button>

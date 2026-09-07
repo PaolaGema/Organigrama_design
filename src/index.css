@@ -11,6 +11,7 @@
 /* ── DESIGN TOKENS ─────────────────────────────── */
 :root {
   --navy: #0C2D40;
+  --navy-alt: #1a4a63;
   --navy-dark: #051B26;
   --blue: #3b82f6;
   --green: #00E091;
@@ -24,25 +25,82 @@
   --yellow-bg: rgba(245,158,11,.08);
   --purple-bg: rgba(139,92,246,.08);
   --red-bg: rgba(239,68,68,.08);
-  --text-muted: #94a3b8;
+  /* Era #94a3b8, que sobre blanco da 2.6:1 de contraste: por debajo del 4.5:1 que pide WCAG AA
+     para texto normal, y se notaba —los subtítulos de las cabeceras se leían a medias—. #64748b
+     es el mismo gris azulado dos pasos más oscuro y llega a 4.8:1, así que el tono del diseño no
+     cambia, solo deja de desaparecer. El de modo oscuro no se toca: allá ya iba en 8.5:1. */
+  --text-muted: #64748b;
   --text-heading: #0C2D40;
   --icon-muted: #7C93A6;
   --border: #e8ecf0;
   --border-soft: #DDE3EA;
   --border-dark: #cbd5e1;
-  --bg-app: #F1F5F9;
+  /* EL FONDO DE LA PLATAFORMA, EN UN SOLO SITIO. Había dos y nadie lo había notado: el `body`
+     iba en #F1F5F9 y el área de contenido en #F8FAFC escrito a mano en el Layout, así que la
+     aplicación tenía dos grises de fondo según qué parte se viera. Ahora es este token y solo
+     este: lo usan el body, el área de contenido y el lienzo del organigrama.
+
+     #F2F5FB en vez del gris de antes: tira un punto al azul, que es de donde viene el azul de la
+     marca, y contra él la tarjeta blanca se despega sin necesidad de sombra. */
+  --bg-app: #F2F5FB;
+  /* NO ES EL MISMO ROL que `--bg-app` aunque se parezcan: esto es una superficie hundida DENTRO
+     de una tarjeta blanca —una píldora de versión, un recuadro de aviso—, no el fondo de la
+     página. Compartían el hex por casualidad; separarlos es lo que evita que cambiar el fondo de
+     la aplicación mueva medio módulo de Onboarding. */
   --bg-secondary: #F1F5F9;
-  --bg-sidebar: #ffffff;
+  /* El anillo del punto de aviso se recorta contra el fondo del riel, así que sigue su color:
+     desde que el riel lleva tinte, un anillo blanco dibujaba un halo que no estaba ahí. */
+  --bg-sidebar: #EAFBF3;
+  /* LA BARRA DE ARRIBA Y LA COLUMNA DE MÓDULOS, que son la otra mitad del armazón. Tenían el
+     color escrito a mano dentro de su componente —blanco en claro, #173D54 en oscuro— y por eso
+     una paleta nueva los dejaba atrás sin que nadie se enterara. Ahora es un token, y uno PROPIO:
+     compartían valor con la tarjeta por casualidad, no por regla, y esa casualidad es la que hizo
+     que moverla se los llevara a los dos por delante. */
+  --bg-nav: #ffffff;
   --surface-card: #ffffff;
   --surface-hover: #F1F5F9;
   --table-head-bg: #DFE6EE;
   --table-head-txt: #475569;
   --input-bg: #F9FAFB;
+  /* EL CAMPO VACÍO ES UN HUECO; EL CONTESTADO, UNA FICHA.
+     El campo se dibujaba con un borde de 1.29:1 contra la tarjeta —el mínimo para un control de
+     formulario es 3:1— y un relleno a un 4,5 % del blanco: técnicamente casi no estaba dibujado.
+     Y como la caja era idéntica llena o vacía, saber qué faltaba obligaba a leer campo por campo.
+
+     Ahora el hueco baja un 19 % respecto del blanco (cuatro veces más separación que antes) y el
+     contestado sube a blanco con un borde de 3,2:1. La diferencia está en la FORMA —hundido
+     contra elevado— y no en un color, así que también funciona para quien no distingue el verde;
+     y deja el verde libre para lo que de verdad significa: guardado. */
+  --campo-vacio: #E3EAEF;
+  --campo-vacio-borde: #C2CFD9;
+  --campo-vacio-texto: #8B9AA8;
+  --campo-lleno: #FFFFFF;
+  --campo-lleno-borde: #7E92A4;
   --r-lg: 20px;
   --r-md: 10px;
   --sh-sm: 0 1px 3px rgba(12,45,64,.06);
   --sh-md: 0 4px 16px rgba(12,45,64,.08);
-  --shadow-card: 0 8px 24px rgba(12,45,64,.08);
+  /* RELIEVE EN CUATRO NIVELES, Y CADA UNO SIGNIFICA ALGO.
+     La sombra dice «esto está por encima de la página y se puede cerrar». Una tarjeta no se
+     cierra: agrupa. Por eso el nivel 1 es solo borde. Antes toda tarjeta llevaba borde Y una
+     sombra de 24 px de desenfoque, las dos a la vez: por eso parecían despegadas del papel, y
+     como TODAS lo parecían, ninguna destacaba.
+
+     Nivel 0 · el contenido, sin nada.
+     Nivel 1 · la tarjeta: un borde de 1 px y ninguna sombra.
+     Nivel 2 · lo que flota y se cierra solo: desplegables y menús.
+     Nivel 3 · lo que detiene la pantalla hasta que se resuelve: los modales. */
+  /* Sombra NULA pero componible: `none` no se puede encadenar —`none, 0 0 0 3px …` es
+     inválido y el navegador tira la regla entera— y hay sitios que suman un anillo de foco
+     a la sombra de la tarjeta. Esta no pinta nada y sí se deja encadenar. */
+  --sh-tarjeta: 0 0 0 0 rgba(0,0,0,0);
+  /* DOS CAPAS, no una. Una sombra sola no despega nada de un fondo blanco: hace falta una de
+     CONTACTO —corta y cerca, la que dice dónde apoya— y otra AMBIENTAL —ancha y difusa, la que
+     dice cuánto se levanta—. Con una sola, el menú quedaba flotando sin apoyarse y por eso no
+     se leía como una capa por encima. */
+  --sh-flotante: 0 2px 6px -2px rgba(12,45,64,.16), 0 14px 30px -6px rgba(12,45,64,.28);
+  --sh-modal: 0 24px 60px -20px rgba(12,45,64,.42);
+  --shadow-card: var(--sh-tarjeta);
   /* NAVY PARA LETRAS. `--navy` es el azul de la marca y pinta dos cosas distintas: fondos
      —un botón activo, una píldora— y TEXTO. En oscuro no invierte, y no puede: los fondos
      navy tienen que seguir siendo oscuros. El texto no, así que va por su propia variable.
@@ -53,7 +111,12 @@
 
 /* ── DARK THEME OVERRIDES ───────────────────────── */
 .dark {
-  --navy: #0C2D40;
+  /* EL NAVY DE MARCA SUBE UN PASO EN OSCURO. Pinta noventa y cinco fondos —botones,
+     avatares, cabeceras, distintivos— y desde que el fondo de la app ES ese mismo navy, todos
+     ellos desaparecían contra él. Acá vale un escalón por encima: el mismo azul, la misma
+     familia, pero elevado, que es lo que un botón tiene que estar. */
+  --navy: #1D4B60;
+  --navy-alt: #2B6379;
   --green: #00E091;
   --green-light: #9FFFD8;
   --green-tint: rgba(0,224,145,.08);
@@ -72,15 +135,75 @@
   --border: rgba(255,255,255,.08);
   --border-soft: rgba(255,255,255,.06);
   --border-dark: rgba(255,255,255,.14);
-  --bg-app: #07131D;
-  --bg-secondary: #0C1B29;
-  --bg-sidebar: #081722;
-  --surface-card: #102332;
-  --surface-hover: #163041;
-  --table-head-bg: #22405A;
-  --table-head-txt: #C6D2DE;
-  --input-bg: #102332;
-  --shadow-card: 0 8px 30px rgba(0,0,0,.25);
+  /* EL OSCURO SALE DEL AZUL DE MARCA, no de un negro azulado.
+     Antes eran tres familias peleando: el fondo casi negro (#07131D), el menú en azul (#0C1B29)
+     y el riel en verde muy oscuro (#08201A) —un verde a esa luminosidad no se lee como el verde
+     de la marca, se lee como suciedad—. Y encima la cabecera de la tabla (#22405A) era lo más
+     claro de la pantalla: llamaba más la atención que los datos.
+
+     Ahora es una sola familia, la misma que ya usa la app móvil: el fondo es #0C2D40 —el navy de
+     marca, el que ya estaba en el foco de los buscadores y en el avatar— y todo lo que se apoya
+     encima sube un paso dentro de ese mismo azul. La jerarquía se lee por altura, no por color.
+
+     Y el fondo de antes pasa al menú: al ser lo MÁS oscuro de la pantalla, la columna de la
+     izquierda se hunde y el contenido flota, que es justo al revés de como estaba. */
+  /* SUBE EL SUELO, Y SOLO EL SUELO. El fondo pasa de #0C2D40 a #153750 —el mismo azul, 205°
+     contra los 203° de la familia— y ningún otro peldaño se mueve con él. Llegué a moverlos
+     todos cinco puntos «para conservar los saltos» y el resultado fue repintar la aplicación
+     entera para cambiar una cosa: la tarjeta, la cabecera, el submenú y las tablas cambiaron de
+     color sin que nadie lo hubiera pedido.
+
+     LO QUE ESO CUESTA, DICHO CLARO: la tarjeta (#173D54, luminosidad 21.0) queda a UN PUNTO Y
+     MEDIO del fondo (19.8). Ya no es el relleno lo que separa una tabla de la página, es su
+     borde. Es una forma legítima de hacerlo —media interfaz oscura se separa por línea y no por
+     fondo— pero es un cambio de criterio, no un accidente: si algún día una tarjeta «no se ve»,
+     la respuesta es el borde, no subirle el fondo. */
+  --bg-app: #153750;
+  /* Hundido DENTRO de una tarjeta: más oscuro que ella, no más claro. */
+  --bg-secondary: #0A2434;
+  /* EL ARMAZÓN NO SIGUE A LA ESCALERA. El riel, la columna de módulos y la barra de arriba se
+     quedan en los colores que tenían antes de que el fondo subiera a #153750, a propósito: son
+     el marco de la aplicación, no una superficie de trabajo más, y su color es el que ya se
+     reconoce de lejos. Lo que se mueve al cambiar la paleta es el CONTENIDO —fondo, tarjetas,
+     campos, tablas—; el marco se queda quieto.
+
+     Eso deja el riel MÁS OSCURO que el cuerpo, que es lo contrario de lo que decía acá antes
+     —«el riel flota sobre el contenido»—. Es una decisión, no un descuido: con el fondo a 19.8
+     de luminosidad y el riel a 16.9, la columna de la izquierda se hunde y el contenido flota.
+
+     Este token es el del RIEL: lo usan el aro del punto de avisos y el borde del avatar, que
+     tienen que ser del color de lo que hay detrás. */
+  --bg-sidebar: #123344;
+  /* La barra de arriba y la columna de módulos. Era el color de la tarjeta de antes, y ahora es
+     suyo: que la tarjeta suba no tiene por qué llevárselos. */
+  --bg-nav: #173D54;
+  --surface-card: #173D54;
+  --surface-hover: #1D4B60;
+  /* Un paso por encima de la tarjeta y no cuatro: encabeza, no grita. */
+  --table-head-bg: #1E4A5E;
+  --table-head-txt: #C6D9DE;
+  --input-bg: #0A2434;
+  /* En oscuro la jerarquía se invierte: lo elevado es lo MÁS CLARO. El hueco se hunde por debajo
+     de la tarjeta y el campo contestado sube por encima, con el borde más marcado. */
+  /* EL HUECO ES DEL COLOR DEL RIEL. Estaba en #0A2434, casi nueve puntos de luminosidad por
+     debajo de la tarjeta: un agujero negro en medio de un formulario azul, que llamaba la
+     atención justo sobre lo que todavía no se ha contestado. Con el color del menú (#123344)
+     sigue hundido —cuatro puntos por debajo de la tarjeta, que es lo que tiene que decir un
+     campo vacío— pero dentro de la misma familia y sin gritar.
+
+     La escalera del campo no cambia de orden: hueco 16.9 · tarjeta 21.0 · contestado 24.5. */
+  --campo-vacio: #123344;
+  --campo-vacio-borde: rgba(255,255,255,.07);
+  --campo-vacio-texto: #7E96A3;
+  --campo-lleno: #1D4B60;
+  --campo-lleno-borde: rgba(255,255,255,.28);
+  /* Sombra NULA pero componible: `none` no se puede encadenar —`none, 0 0 0 3px …` es
+     inválido y el navegador tira la regla entera— y hay sitios que suman un anillo de foco
+     a la sombra de la tarjeta. Esta no pinta nada y sí se deja encadenar. */
+  --sh-tarjeta: 0 0 0 0 rgba(0,0,0,0);
+  --sh-flotante: 0 2px 6px -2px rgba(0,0,0,.55), 0 14px 30px -6px rgba(0,0,0,.7);
+  --sh-modal: 0 24px 60px -20px rgba(0,0,0,.75);
+  --shadow-card: var(--sh-tarjeta);
   --sh-sm: 0 1px 3px rgba(0,0,0,.2);
   --sh-md: 0 4px 16px rgba(0,0,0,.25);
   --navy-txt: var(--text-heading);
@@ -117,7 +240,7 @@ body {
    ══════════════════════════════════════════════════ */
 
 .welcome-banner {
-  background: #0C2D40;
+  background: var(--navy);
   border-radius: 20px;
   padding: 22px 36px;
   min-height: 130px;
@@ -198,7 +321,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #0C2D40;
+  background: var(--navy);
   color: #fff;
   font-size: 12px;
   font-weight: 600;
@@ -261,7 +384,7 @@ body {
 }
 
 .kpi-title {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .8px;
@@ -270,7 +393,7 @@ body {
 }
 
 .kpi-val {
-  font-size: 26px;
+  font-size: 32px;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.5px;
@@ -278,7 +401,7 @@ body {
 }
 
 .kpi-lbl {
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--text-muted);
   margin-top: 5px;
   font-weight: 500;
@@ -402,7 +525,7 @@ button.chip-link {
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  background: #0C2D40;
+  background: var(--navy);
   border: 1.5px solid var(--border-soft);
 }
 
@@ -480,7 +603,7 @@ button.chip-link {
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  background: #0C2D40;
+  background: var(--navy);
   border: 1.5px solid var(--border-soft);
 }
 
@@ -661,7 +784,7 @@ button.chip-link {
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  background: #0C2D40;
+  background: var(--navy);
   border: 1.5px solid var(--border-soft);
 }
 
@@ -858,7 +981,7 @@ button.chip-link {
 /* ── HITO CARD ─────────────────────────────────── */
 
 .hito-card {
-  background: #0C2D40;
+  background: var(--navy);
   border-radius: 16px;
   padding: 24px 22px;
   display: flex;
@@ -892,7 +1015,7 @@ button.chip-link {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  background: #0C2D40;
+  background: var(--navy);
   color: #fff;
   font-size: 11px;
   font-weight: 600;
@@ -919,14 +1042,14 @@ button.chip-link {
 }
 
 .pl-title {
-  font-size: 17px;
+  font-size: 26px;
   font-weight: 700;
   color: var(--text-heading);
   letter-spacing: -0.2px;
 }
 
 .pl-subtitle {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   margin-top: 2px;
   font-weight: 500;
@@ -936,9 +1059,9 @@ button.chip-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #0C2D40;
+  background: var(--navy);
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   font-family: 'Poppins', sans-serif;
   padding: 8px 16px;
@@ -984,7 +1107,7 @@ button.chip-link {
   padding: 0 14px 0 36px;
   border: 1px solid var(--border-dark);
   border-radius: 9px;
-  font-size: 12px;
+  font-size: 14px;
   font-family: 'Poppins', sans-serif;
   color: var(--text-heading);
   background: var(--surface-card);
@@ -994,7 +1117,7 @@ button.chip-link {
 }
 
 .pl-search::placeholder { color: var(--text-muted); }
-.pl-search:focus { border-color: #0C2D40; box-shadow: 0 0 0 3px rgba(12,45,64,.08); background: var(--surface-card); }
+.pl-search:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(12,45,64,.08); background: var(--surface-card); }
 
 /* ── GRID ──────────────────────────────────────── */
 
@@ -1037,7 +1160,7 @@ button.chip-link {
 }
 
 .pl-status {
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 20px;
@@ -1075,7 +1198,7 @@ button.chip-link {
   width: 460px;
   max-width: 92vw;
   max-height: 90vh;
-  box-shadow: 0 20px 60px rgba(12,45,64,.18);
+  box-shadow: var(--sh-modal);
   animation: plSlideUp .25s;
   overflow: hidden;
   display: flex;
@@ -1099,7 +1222,7 @@ button.chip-link {
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  background: linear-gradient(135deg, #0C2D40 0%, #1a4a63 100%);
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-alt) 100%);
   gap: 14px;
   border-radius: 16px 16px 0 0;
   flex-shrink: 0;
@@ -1180,26 +1303,56 @@ button.chip-link {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--text-muted);
+  /* El azul de la marca, no gris: el rótulo dice QUÉ se está escribiendo y es lo primero que
+     se lee de cada campo. En gris apagado quedaba por debajo del texto que uno mismo teclea,
+     que es justo al revés de como se rellena un formulario. Las ayudas de debajo siguen en
+     gris, y así la jerarquía se lee de un vistazo: rótulo, dato, aclaración. */
+  color: var(--text-heading);
 }
 
 .pl-input {
   width: 100%;
   padding: 11px 15px;
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--campo-lleno-borde);
   border-radius: 12px;
-  font-size: 13px;
+  font-size: 14px;
+  /* Medio punto más de peso en la respuesta que en el marcador: el dato escrito pesa más que
+     la sugerencia, y se nota antes de leerlo. */
+  font-weight: 500;
   font-family: inherit;
   color: var(--text-heading);
-  background: var(--input-bg);
-  transition: border-color .15s, box-shadow .15s;
+  background: var(--campo-lleno);
+  box-shadow: 0 1px 2px rgba(12,45,64,.07);
+  transition: border-color .15s, box-shadow .15s, background .15s;
   outline: none;
 }
 
+/* EL ESTADO SALE DEL DATO, no de una clase que alguien tenga que acordarse de poner:
+   `:placeholder-shown` acierta solo mientras el campo siga vacío.
+
+   VA EN ESTE SENTIDO A PROPÓSITO —lleno por defecto, hueco cuando coincide—. Un `<select>` y un
+   input sin marcador de posición no coinciden nunca, y con la regla al revés se quedarían con
+   cara de hueco para siempre; así, en cambio, caen en "lleno", que para un select es exactamente
+   lo correcto porque siempre tiene un valor elegido. */
+/* `.sin-elegir` es la puerta de atrás para los DESPLEGABLES. Un `<select>` no tiene marcador de
+   posición, así que `:placeholder-shown` no lo alcanza nunca y se quedaría con cara de lleno
+   aunque no se haya elegido nada. Solo la ponen los desplegables que hacen de CAMPO; los que
+   filtran una tabla no, porque un filtro siempre tiene un valor —"Todas las áreas" es una
+   respuesta, no un hueco—. */
+.pl-input:placeholder-shown,
+.pl-input.sin-elegir {
+  background: var(--campo-vacio);
+  border-color: var(--campo-vacio-borde);
+  box-shadow: inset 0 1px 2px rgba(12,45,64,.07);
+  font-weight: 400;
+}
+/* El renglón de "elige una opción" se lee como marcador de posición, no como respuesta. */
+.pl-input.sin-elegir { color: var(--campo-vacio-texto); }
+
 .pl-input:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(12,45,64,.08); background: var(--surface-card); }
-.pl-input::placeholder { color: #b8c4cf; }
+.pl-input::placeholder { color: var(--campo-vacio-texto); }
 
 select.pl-input {
   appearance: none;
@@ -1218,14 +1371,23 @@ select.pl-input:focus {
 
 .pl-dropdown-wrap { position: relative; }
 
+/* El disparador imita a `.pl-input` HASTA EL ÚLTIMO PÍXEL —mismo alto, mismo borde, mismo relleno
+   lleno/vacío— porque en la pantalla van uno al lado del otro y cualquier diferencia se lee como
+   un descuido. Es la razón de existir de este desplegable: un `<select>` lo dibuja el sistema
+   operativo y no hay forma de que combine. */
 .pl-dropdown-trigger {
   width: 100%;
+  /* SIMÉTRICO A IZQUIERDA Y DERECHA. Llevaba 36 px de relleno a la derecha, heredados del
+     `<select>` nativo —donde la flecha es una imagen de fondo puesta a 12 px del borde y ese
+     relleno es lo que evita que el texto la pise—. Acá la flecha es un HIJO FLEX, así que ese
+     relleno no le hace sitio: la empuja hacia adentro. Quedaba a 37 px del borde mientras el
+     texto arrancaba a 15 del otro lado, y el campo se veía torcido. */
   padding: 11px 15px;
-  padding-right: 36px;
-  border: 1.5px solid var(--border-dark);
+  padding-right: 14px;
+  border: 1px solid var(--campo-lleno-borde);
   border-radius: 12px;
-  background: var(--surface-card);
-  box-shadow: 0 1px 3px rgba(12,45,64,.06);
+  background: var(--campo-lleno);
+  box-shadow: 0 1px 2px rgba(12,45,64,.07);
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
@@ -1235,14 +1397,35 @@ select.pl-input:focus {
   align-items: center;
   justify-content: space-between;
   text-align: left;
-  transition: all .15s;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+/* Sin elegir, el mismo hueco hundido que un campo de texto vacío. */
+.pl-dropdown-trigger.placeholder {
+  background: var(--campo-vacio);
+  border-color: var(--campo-vacio-borde);
+  box-shadow: inset 0 1px 2px rgba(12,45,64,.07);
 }
 .pl-dropdown-trigger:hover { border-color: #94a3b8; }
 .pl-dropdown-trigger.open {
   border-color: var(--focus);
   box-shadow: 0 0 0 3px rgba(12,45,64,.08);
 }
-.pl-dropdown-trigger.placeholder span { color: #b8c4cf; font-weight: 400; }
+.pl-dropdown-trigger.placeholder span { color: var(--campo-vacio-texto); font-weight: 400; }
+
+/* EL VALOR ELEGIDO NO PARTE LA CAJA EN DOS RENGLONES. Un rubro como "Consultoría y servicios
+   profesionales" no cabe en una columna estrecha y, sin esto, el texto se envuelve: el
+   disparador crece de alto, la fila se desalinea y el campo de al lado —que sí cabía— parece
+   más chico por comparación. Una sola línea siempre, con puntos suspensivos, y el texto
+   completo en el `title` del botón para quien necesite leerlo entero.
+
+   `min-width: 0` porque el span es un hijo flex: sin él se niega a encogerse por debajo de su
+   palabra más larga y el recorte nunca llega a ocurrir. */
+.pl-dropdown-trigger > span {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .pl-dropdown-chevron {
   color: var(--text-muted);
   transition: transform .2s;
@@ -1256,10 +1439,10 @@ select.pl-input:focus {
   left: 0;
   right: 0;
   background: var(--surface-card);
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--border-dark);
   border-radius: 12px;
   padding: 5px;
-  box-shadow: 0 12px 36px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.04);
+  box-shadow: var(--sh-flotante);
   z-index: 50;
   max-height: 220px;
   overflow-y: auto;
@@ -1273,6 +1456,21 @@ select.pl-input:focus {
   top: auto;
   bottom: calc(100% + 6px);
   animation: plDropInUp .15s ease-out;
+}
+
+/* EN COORDENADAS DE VENTANA, PERO SOLO PARA QUIEN SE MIDE. Colgada de su campo en absoluto,
+   cualquier antepasado con `overflow` distinto de `visible` la recorta: dentro de un modal —el
+   cuerpo scrollea, el marco esconde lo que se sale— las opciones de los últimos campos salían
+   cortadas o no salían.
+
+   `fixed` la saca del recuadro, pero a cambio la deja sin sitio: `top`, `left` y el ancho tienen
+   que llegar medidos desde el disparador. Por eso es una clase APARTE y no el comportamiento de
+   todos: esta clase la comparten once pantallas, y las que no miden nada se quedan con el
+   posicionamiento de siempre en vez de aparecer en cualquier parte. `right: auto` porque la de
+   arriba la estira de borde a borde y acá el ancho lo pone la medida. */
+.pl-dropdown-menu.pl-dd-fija {
+  position: fixed;
+  right: auto;
 }
 @keyframes plDropInUp {
   from { opacity: 0; transform: translateY(6px); }
@@ -1300,6 +1498,7 @@ select.pl-input:focus {
   text-align: left;
   transition: all .1s;
 }
+.pl-dd-pista { margin-left: 7px; font-size: 10.5px; font-weight: 500; color: var(--text-muted); }
 .pl-dropdown-item:hover { background: var(--surface-hover); color: var(--text-heading); }
 .pl-dropdown-item.selected {
   background: var(--green-tint);
@@ -1352,7 +1551,7 @@ select.pl-input:focus {
 .pl-btn-save {
   padding: 9px 22px;
   border: none;
-  background: #0C2D40;
+  background: var(--navy);
   color: #fff;
   font-size: 13px;
   font-weight: 600;
@@ -1416,7 +1615,7 @@ select.pl-input:focus {
   align-items: flex-start;
   gap: 14px;
   padding: 20px 22px;
-  background: linear-gradient(135deg, #0C2D40 0%, #1a4a63 100%);
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-alt) 100%);
   flex-shrink: 0;
 }
 
@@ -1494,7 +1693,7 @@ select.pl-input:focus {
 .as-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .as-table thead {
@@ -1505,7 +1704,7 @@ select.pl-input:focus {
 .as-table th {
   padding: 8px 12px;
   text-align: left;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -1538,7 +1737,7 @@ select.pl-input:focus {
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  background: #0C2D40;
+  background: var(--navy);
   border: 1.5px solid var(--border-soft);
 }
 
@@ -1658,7 +1857,15 @@ select.pl-input:focus {
 .jb {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px);
+  /* ALTO PRESTADO DEL PADRE, no adivinado de la ventana.
+     Iba `calc(100vh - 60px)`: sesenta píxeles a ojo para la cabecera. Cuando la cabecera no mide
+     eso —o cuando la pantalla no lleva la cinta de ámbito— sobra o falta esa diferencia, y abajo
+     quedaba una franja del fondo de la app que parecía un pie de página. En claro no cantaba
+     porque el fondo y la pizarra eran casi el mismo gris; con el oscuro nuevo saltó a la vista.
+
+     `100%` es el alto de CONTENIDO del padre, así que hay que devolverle el relleno vertical que
+     los márgenes negativos de la línea de abajo ya están cancelando: los mismos 1.25rem × 2. */
+  height: calc(100% + 2.5rem);
   margin: -1.25rem -1rem -1.25rem -1rem;
   padding: 0;
 }
@@ -1847,7 +2054,7 @@ select.pl-input:focus {
   gap: 5px;
   padding: 7px 16px;
   border: none;
-  background: #0C2D40;
+  background: var(--navy);
   color: #fff;
   font-size: 12px;
   font-weight: 600;
@@ -1945,7 +2152,7 @@ select.pl-input:focus {
 }
 
 .jb-sb-count {
-  background: #0C2D40;
+  background: var(--navy);
   color: #fff;
   font-size: 9px;
   font-weight: 700;
@@ -2030,7 +2237,7 @@ select.pl-input:focus {
 .jb-sb-item.active .jb-sb-menu-btn:hover { background: rgba(255,255,255,.15); color: #fff; }
 
 .jb-sb-item.active {
-  background: #0C2D40;
+  background: var(--navy);
   color: #fff;
 }
 
@@ -2829,7 +3036,7 @@ select.pl-input:focus {
 
 /* GLOBITO EMPEZAR */
 .jb-start-bubble {
-  background: #0C2D40;
+  background: var(--navy);
   color: #fff;
   font-size: 12px;
   font-weight: 800;
@@ -3282,7 +3489,7 @@ select.pl-input:focus {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px);
+  height: calc(100% + 2.5rem);
   margin: -1.25rem -1rem;
 }
 
@@ -3912,6 +4119,65 @@ select.pl-input:focus {
   font-size: 12.5px; font-weight: 700; color: var(--text-heading);
 }
 .og-rot-bloque em { font-style: normal; font-size: 11px; font-weight: 500; color: var(--text-muted); }
+/* EL MISMO RÓTULO, UN ESCALÓN MÁS ADENTRO. Separa lo funcional del resto de los campos del
+   puesto, que ya están dentro de un bloque rotulado: con la línea del mismo peso que la de
+   arriba, las dos competían y ninguna se leía como la principal. Y con más aire arriba que
+   abajo, porque lo que corta es la línea y el título tiene que quedar pegado a lo suyo. */
+.og-rot-funcional { margin-top: 3px; padding-top: 11px; border-top-color: var(--border-soft); }
+/* Y EL PRIMERO NO LLEVA LÍNEA: no separa de nada, es el borde de arriba del formulario. */
+.og-rot-primero { padding-top: 0; border-top: 0; }
+
+/* ── LAS SILLAS DE UN CARGO, DESPLEGADAS DEBAJO DE ÉL ──────────────
+   Son filas de la MISMA tabla, no un panel adentro de una celda: así sus columnas caen bajo las
+   del cargo y se leen comparando hacia arriba. Lo único que las distingue es el fondo —un peldaño
+   más adentro, como la sangría— y la letra, que baja medio punto porque son el detalle de la fila
+   de arriba y no una fila de igual rango. */
+.est-desplegar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; flex-shrink: 0; margin-left: -4px;
+  border: 0; border-radius: 5px; background: none; color: var(--text-muted); cursor: pointer;
+}
+.est-desplegar:hover { background: var(--surface-hover); color: var(--text-heading); }
+.est-desplegar svg { transition: transform .16s ease; }
+.est-desplegar svg.girado { transform: rotate(90deg); }
+
+.est-silla > td { background: var(--surface-hover); font-size: 12px; }
+.est-silla:hover > td { background: var(--bg-app); }
+/* La vacante no se apaga entera —hay que poder leerla— pero su nombre va en gris: lo que dice es
+   que ahí no hay nadie todavía, no un dato que alguien escribió. */
+.est-silla-vacante .est-tabla-nombre { color: var(--text-muted); font-weight: 500; }
+.est-silla-n {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 17px; height: 17px; padding: 0 4px; flex-shrink: 0;
+  border-radius: 5px; background: var(--border-soft); color: var(--text-muted);
+  font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.est-silla-func {
+  padding: 1px 6px; border-radius: 5px;
+  background: var(--blue-bg); color: var(--blue); font-size: 10px; font-weight: 700;
+}
+/* EL RÓTULO DE CADA EJE DENTRO DE LA LISTA DE ESCALONES. Es el mismo texto que el submenú de
+   la izquierda —«Estructura física», «Estructura organizacional»— y por eso va con la misma cara
+   que los rótulos de sección del riel: chico, en versalitas y en gris. Un título que se parece al
+   del menú se lee como el mismo agrupamiento; uno que se parece a un encabezado de tarjeta se
+   leería como otra tarjeta más. */
+.cfg-grupo-eje {
+  margin: 14px 0 -2px; padding: 0 2px;
+  font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-muted);
+}
+.cfg-niveles > .cfg-grupo-eje:first-child { margin-top: 0; }
+
+.est-silla-func { border: 0; cursor: pointer; font-family: inherit; }
+.est-silla-func:hover { filter: brightness(.94); }
+/* Sin apoyos declarados el botón sigue ahí pero apagado: «solo su unidad» también es una respuesta
+   que alguien puede querer cambiar, y esconderlo obligaba a saber que el control existe. */
+.est-silla-func.vacio { background: var(--surface-hover); color: var(--text-muted); font-weight: 600; }
+.est-silla-sin { font-size: 11px; color: var(--text-muted); }
+/* La plaza sin cubrir no va en gris de dato faltante: es una respuesta, y además la que alguien
+   viene a contar. En ámbar y en versalitas, como el distintivo de vacante del organigrama. */
+.est-silla-vac { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--yellow); }
+
 
 /* ── APOYA FUNCIONALMENTE A ───────────────────────────────────────
    Una fila por área: dónde apoya y quién le dirige el trabajo ahí. Los dos desplegables en el
@@ -4791,7 +5057,11 @@ select.pl-input:focus {
 .og-fila-campos { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 13px; align-items: start; }
 /* Nombre y cuántos ocupantes. El número es de un dígito o dos: en mitades iguales dejaba media
    línea vacía al lado de un nombre de sesenta caracteres. */
-.og-fila-campos.og-fila-cuantos { grid-template-columns: minmax(0, 1fr) 104px; }
+/* «CUÁNTOS PUESTOS» NO ENTRA EN 104 px y partía el rótulo en dos renglones —«Cuántos» arriba y
+   «puestos» abajo— al lado de un campo de nombre que ocupa el resto de la fila. El número sigue
+   siendo angosto, que es lo que lo hace leerse como un contador y no como un campo más; lo que
+   se ensancha es lo justo para que su nombre quepa de una. */
+.og-fila-campos.og-fila-cuantos { grid-template-columns: minmax(0, 1fr) 140px; }
 .og-campo-cuantos .pl-input { text-align: center; font-weight: 700; }
 
 /* En la ficha del puesto la reja se invierte: el código mide veinte caracteres y el nombre de
@@ -4890,7 +5160,7 @@ select.pl-input:focus {
 /* La previa: la columna derecha del modal, con el mismo fondo del panel de la vista de ruta.
    El árbol se dibuja hacia abajo —bajada punteada y codo por hijo— porque en una columna de
    350 px una fila de hermanos no entra; es el mismo dibujo, en el ancho que hay. */
-.og-pv { flex: 0 0 404px; min-width: 0; overflow-y: auto; padding: 26px 26px 30px; border-right: 1px solid var(--border); background: linear-gradient(180deg, rgba(12,45,64,.02) 0%, rgba(12,45,64,.055) 100%), var(--bg-app); }
+.og-pv { flex: 0 0 356px; min-width: 0; overflow-y: auto; padding: 26px 26px 30px; border-right: 1px solid var(--border); background: linear-gradient(180deg, rgba(12,45,64,.02) 0%, rgba(12,45,64,.055) 100%), var(--bg-app); }
 .og-pv-hd { margin-bottom: 16px; font-size: 10px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; color: var(--text-muted); }
 .og-pv-tree { display: flex; flex-direction: column; }
 .og-pv-rama { padding-left: 22px; }
@@ -4995,7 +5265,7 @@ select.pl-input:focus {
 
 /* tarjeta de unidad: cabecera navy + zócalo blanco con los contadores */
 .og-un { position: relative; border-radius: 14px; overflow: hidden; background: var(--surface-card); border: 1px solid var(--border); cursor: pointer; transition: box-shadow .15s, transform .15s; }
-.og-un:hover { box-shadow: var(--shadow-card); transform: translateY(-2px); }
+.og-un:hover { box-shadow: var(--sh-flotante); transform: translateY(-2px); }
 /* La cabecera de la tarjeta de un área toma el COLOR DE LA EMPRESA, igual que la píldora del
    gráfico. Tenía el degradado escrito a mano —#1d4a63 a #0C2D40— y era el mismo tono por
    casualidad: al cambiar el color de la empresa, el organigrama cambiaba y las tarjetas no. */
@@ -5218,7 +5488,7 @@ select.pl-input:focus {
    producto; esto queda porque `HistorialOnboardingModal` lo usa. Cuando ese modal también se
    pase, todo este bloque se va. */
 .og-modal-back { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(12,45,64,.45); }
-.og-modal { display: flex; flex-direction: column; width: 100%; max-width: 440px; max-height: 90vh; background: var(--surface-card); border-radius: 16px; box-shadow: 0 20px 50px rgba(12,45,64,.25); }
+.og-modal { display: flex; flex-direction: column; width: 100%; max-width: 440px; max-height: 90vh; background: var(--surface-card); border-radius: 16px; box-shadow: var(--sh-modal); }
 .og-modal-hd { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--border); }
 .og-modal-hd h3 { margin: 0; font-size: 14px; font-weight: 700; color: var(--navy-txt); }
 .og-modal-hd button { display: flex; border: none; background: none; color: var(--icon-muted); cursor: pointer; }
@@ -5734,3 +6004,1436 @@ select.pl-input:focus {
    es lo que hace que quien buscaba "pausar" no la apriete de paso. */
 .det-accion-riesgo { color: var(--red); border-color: rgba(239,68,68,.25); }
 .det-accion-riesgo:hover { background: var(--red-bg); border-color: var(--red); }
+
+/* ---------- Formulario de datos de la empresa ----------
+   Rejilla de DOCE y no columnas iguales: los campos no miden lo mismo. El nombre y la razón
+   social piden aire; el NIT son cifras y se conforma con poco.
+
+   ERAN SEIS COLUMNAS Y EL RUBRO SE QUEDABA CON UNA —unos 175 px—, que es menos de lo que mide
+   "Consultoría y servicios profesionales", y hasta "Agricultura y ganadería" se quedaba corto.
+   Un desplegable no es un campo de texto que recorte solo lo que no cabe: el valor elegido se
+   partía en dos renglones y la caja quedaba más alta que el NIT de al lado, con la fila entera
+   desalineada. Doce columnas reparten 3+3+2+4, la identificación sigue entrando en una sola
+   fila y el rubro tiene el ancho que pide el texto más largo de su lista. `c-tercio` es
+   también el ancho de los tres campos de Contacto, que llenan su fila justos.
+
+   Los saltos van a media fila y luego a una sola columna: el ancho útil cambia mucho según se
+   pliegue o no el menú del módulo, y a doce columnas el NIT se estrangula antes de tiempo. */
+/* LA CABECERA DE UNA TARJETA ES UN RÓTULO DE SECCIÓN, no un titular.
+   Iba a 13 px en negrita oscura, y los datos que contiene van a 14.5 en negrita oscura: el
+   nombre de la sección pesaba lo mismo que su contenido, así que la ficha entera se leía como
+   una lista de palabras en negrita indistinguibles —«Información general», «La Paz», «Ubicación»,
+   «Bolivia»— y había que reconstruir a ojo qué era rótulo y qué era dato.
+
+   En versalitas espaciadas y más chico, el título deja de competir: se lee como el nombre de un
+   apartado, que es lo que es. Y el filete de abajo cierra la cabecera, así que la tarjeta pasa a
+   tener dos zonas —cómo se llama esto, y qué hay dentro— en vez de ser un bloque continuo.
+
+   QUEDAN TRES PESOS Y NO DOS PARECIDOS: SECCIÓN en versalitas grises oscuras, rótulo del campo
+   en gris claro y tamaño normal, y el dato grande y oscuro. Lo único que grita es lo único que
+   uno vino a leer. Sin un color nuevo: colorear los campos habría añadido un idioma más que
+   aprender —¿qué significa el azul?— cuando lo que faltaba era jerarquía, no señales. */
+.emp-cab {
+  margin-bottom: 16px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.emp-cab-tit {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-heading);
+}
+.emp-cab-desc {
+  margin: 7px 0 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.emp-form {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* MÁS AIRE ENTRE RENGLONES AL LEER. Editando, lo que separa una fila de la siguiente son las
+   cajas de los campos, que ya tienen borde y alto propio. Leyendo no hay cajas: son pares de
+   líneas sueltas, y a 16 px el rótulo de abajo queda tan cerca del dato de arriba como de su
+   propio dato. El espacio es lo único que dice qué va con qué. */
+.emp-form.emp-leyendo { row-gap: 24px; }
+.emp-form .c-med { grid-column: span 3; }
+.emp-form .c-corto { grid-column: span 2; }
+.emp-form .c-tercio { grid-column: span 4; }
+.emp-form .c-ancho { grid-column: span 8; }
+/* La mitad justa, para los pares que se leen juntos —dirección y dirección para liquidaciones—
+   y la fila entera, para lo que necesita todo el ancho. */
+.emp-form .c-medio { grid-column: span 6; }
+.emp-form .c-todo { grid-column: span 12; }
+
+@media (max-width: 1240px) {
+  .emp-form .c-med,
+  .emp-form .c-corto,
+  .emp-form .c-tercio { grid-column: span 6; }
+  .emp-form .c-medio { grid-column: span 12; }
+  /* La dirección es el campo más largo: cuando la fila se parte, se queda con toda. */
+  .emp-form .c-ancho-md { grid-column: span 12; }
+}
+
+@media (max-width: 820px) {
+  .emp-form .c-med,
+  .emp-form .c-corto,
+  .emp-form .c-tercio,
+  .emp-form .c-medio,
+  .emp-form .c-ancho-md,
+  .emp-form .c-ancho { grid-column: span 12; }
+}
+
+/* ---------- El mismo formulario, leído ----------
+   La pantalla se abre para consultar y solo se pasa a edición a propósito, así que el estado
+   normal no dibuja cajas: rótulo y dato, en la MISMA rejilla que el formulario, para que entrar
+   y salir de edición no mueva nada de sitio.
+
+   El `min-height` es lo que sostiene esa promesa cuando el dato está vacío: sin él, un renglón
+   sin texto mediría cero y la fila entera se subiría. */
+/* EN LECTURA SE INVIERTE LA JERARQUÍA. Con el formulario abierto manda el rótulo —dice qué se
+   está escribiendo, y lo escrito todavía no existe—; leyendo manda el DATO, y el rótulo pasa a
+   ser su pie. Con los dos al mismo tamaño y color la ficha se leía como una lista de pares
+   indistinguibles y había que buscar el dato entre sus nombres. */
+.emp-form .emp-rotulo {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.emp-valor {
+  display: block;
+  margin: 4px 0 0;
+  min-height: 21px;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--text-heading);
+  /* Una URL larga no tiene espacios donde partirse y se saldría de su columna empujando la
+     rejilla; `anywhere` la deja cortar por donde haga falta. */
+  overflow-wrap: anywhere;
+}
+
+/* El guion del campo vacío en gris y sin peso: está para que se vea que ahí no hay nada, no
+   para competir con los datos que sí están. */
+.emp-valor-vacio { color: var(--text-muted); font-weight: 400; }
+
+/* LO QUE FALTA, EN UN RENGLÓN Y AL PIE. Es el resumen de los campos que en lectura no se dibujan
+   por estar vacíos: sigue diciendo qué cabe en esta tarjeta, pero debajo de lo que sí hay y en el
+   tamaño de un pie de página, no compitiendo con los datos. El filete punteado lo separa sin
+   pesar: es el mismo gris del borde de la tarjeta, discontinuo porque no cierra una sección sino
+   que cuelga de ella. */
+.emp-faltan {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 9px;
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-soft);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.emp-faltan > span {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .8;
+}
+
+/* UN DATO QUE NO SE ESCRIBE, en medio de un formulario que sí. Mide lo que mide un campo —11 px
+   de aire arriba y abajo, como `.pl-input`— para que la fila no quede coja al lado del que sí se
+   teclea, y ahí se acaba el parecido: sin borde, sin sombra y en gris. Lo que se puede escribir
+   tiene que distinguirse de lo que solo se lee antes de intentarlo.
+
+   No es un campo desactivado: un campo desactivado dice «hoy no puedes», y esto dice «esto no se
+   contesta acá». Por eso no lleva la caja de un campo apagado sino la de una nota. */
+.emp-campo-fijo {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 11px 15px;
+  border-radius: 12px;
+  background: var(--surface-hover);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* SUBRAYADO DE SIEMPRE Y NO SOLO AL PASAR POR ENCIMA: en una lista de datos donde casi todo es
+   texto plano, lo que se puede pulsar tiene que distinguirse antes de que el ratón lo toque
+   —y quien navega con el teclado no pasa el ratón por ningún sitio—. */
+a.emp-valor-enlace {
+  display: inline-block;
+  color: var(--navy-txt);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-dark);
+  transition: color .12s, border-color .12s;
+}
+a.emp-valor-enlace:hover { color: var(--green); border-bottom-color: var(--green); }
+
+/* ---------- Elegir a una persona ----------
+   El disparador y la lista son los del desplegable de siempre —mismo borde, mismo hueco hundido
+   cuando no hay nadie elegido—; lo que cambia es qué va DENTRO de cada renglón: una cara, un
+   nombre y un cargo en vez de una palabra.
+
+   EL ALTO DEL DISPARADOR NO PUEDE CRECER. Va en una fila con campos de texto y una foto de 22 px
+   cabe de sobra en el alto que ya tenía; el nombre y el cargo se recortan con puntos suspensivos
+   antes que empujar la caja a dos renglones y desalinear la fila. */
+.sp-cara {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.sp-cara-txt {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* El cargo pesa menos que el nombre: acompaña, no compite. */
+.sp-cargo { color: var(--text-muted); font-weight: 400; }
+
+/* La lista sí es más alta que la de un desplegable normal: cada opción son dos renglones y una
+   foto, y con el alto de siempre se veían dos personas y media. */
+.sp-menu {
+  max-height: 340px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+/* El buscador se queda quieto arriba mientras la lista corre por debajo: si scrolleara con
+   ella, el campo donde uno está tecleando se iría de la vista al segundo resultado. */
+.sp-buscar {
+  position: relative;
+  flex-shrink: 0;
+  padding: 8px 8px 6px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.sp-buscar .pl-search-ico { left: 20px; }
+
+.sp-lista {
+  overflow-y: auto;
+  padding: 5px;
+}
+.sp-lista::-webkit-scrollbar { width: 6px; }
+.sp-lista::-webkit-scrollbar-track { background: transparent; }
+.sp-lista::-webkit-scrollbar-thumb { background: var(--surface-hover); border-radius: 3px; }
+
+/* Centrado y no estirado, que es lo que hace el desplegable normal: la foto tiene que quedar
+   a media altura de los dos renglones de texto, no pegada al de arriba. */
+.sp-item { align-items: center; }
+.sp-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.sp-txt {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  text-align: left;
+}
+.sp-nombre {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-heading);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sp-cargo-fila {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* El hueco de «sin responsable»: el mismo redondel que las caras, para que esa fila no se
+   desalinee respecto de las de abajo. */
+.sp-hueco {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--surface-hover);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Quien está usando la aplicación, marcado. Se lee antes que el nombre propio, que es
+   justamente lo que uno no lee cuando busca su propia fila. */
+.sp-tu {
+  flex-shrink: 0;
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: var(--green-tint);
+  color: var(--navy-txt);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* Directorio vacío. No es un error ni una búsqueda sin resultados: es una tarea pendiente, y
+   por eso dice qué falta hacer en vez de limitarse a decir que no hay nada. */
+.sp-vacio {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 5px 3px 3px;
+  padding: 12px 13px;
+  border-radius: 10px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-soft);
+}
+.sp-vacio-tit { font-size: 12px; font-weight: 700; color: var(--text-heading); }
+.sp-vacio-nota { font-size: 11px; color: var(--text-muted); margin-top: 3px; line-height: 1.5; }
+
+.sp-nada {
+  margin: 10px 6px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* La persona en modo lectura: la misma cara y el mismo cargo que en la lista, para que elegir y
+   leer no parezcan dos pantallas distintas. */
+.emp-persona {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 4px;
+  min-width: 0;
+}
+
+/* ---------- Elegir una fecha ----------
+   El disparador es el mismo de los desplegables —mismo borde, mismo hueco hundido cuando está
+   vacío— porque comparte fila con ellos. Lo que cambia es que lleva un icono de calendario
+   delante, que es lo que dice de un vistazo qué clase de campo es sin tener que leer el rótulo. */
+.cal-trigger { gap: 8px; }
+.cal-cara {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.cal-ico { color: var(--text-muted); flex-shrink: 0; }
+
+/* La cruz de quitar aparece solo con fecha puesta. Es un hijo del botón y no un botón dentro de
+   otro —eso es HTML inválido y el navegador lo desarma—, así que hace de botón con su rol. */
+.cal-quitar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background .12s, color .12s;
+}
+.cal-quitar:hover { background: var(--red-bg); color: var(--red); }
+
+/* EL CALENDARIO TIENE ANCHO PROPIO y no el del campo: siete columnas de días no entran en una
+   columna estrecha, y estirarse hasta el ancho del campo es justo lo que no puede hacer. */
+.cal-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 274px;
+  padding: 10px;
+  border-radius: 14px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-dark);
+  box-shadow: var(--sh-flotante);
+  z-index: 60;
+  animation: plDropIn .15s ease-out;
+}
+/* Pegado al borde derecho del campo cuando abriéndose hacia la derecha se saldría de la
+   ventana: es el caso del último campo de una fila. */
+.cal-pop.der { left: auto; right: 0; }
+.cal-pop.up { top: auto; bottom: calc(100% + 6px); }
+
+.cal-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.cal-flecha {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .12s, color .12s;
+}
+.cal-flecha:hover { background: var(--surface-hover); color: var(--text-heading); }
+
+/* El rótulo es un botón porque lleva a otro nivel, y se nota al pasar por encima: sin eso nadie
+   descubre que el año se puede pulsar, y el atajo que evita noventa clics no existe. */
+.cal-titulo {
+  flex: 1;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-heading);
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: background .12s;
+}
+.cal-titulo:hover { background: var(--surface-hover); }
+
+.cal-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 2px;
+}
+.cal-semana span {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  color: var(--text-muted);
+  padding: 4px 0;
+}
+
+.cal-rejilla {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.cal-dia {
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-heading);
+  cursor: pointer;
+  transition: background .1s, color .1s;
+}
+.cal-dia:hover { background: var(--surface-hover); }
+/* Los del mes vecino se ven pero no compiten: están para poder pulsar el 30 del mes pasado sin
+   cambiar de mes, no para leerse como parte de este. */
+.cal-dia.fuera { color: var(--text-muted); opacity: .55; }
+/* Hoy va marcado por debajo y no relleno: el relleno es de la fecha ELEGIDA, y si los dos se
+   pintaran igual no habría forma de saber cuál es cuál el día que coinciden. */
+.cal-dia.hoy { box-shadow: inset 0 0 0 1.5px var(--border-dark); font-weight: 700; }
+.cal-dia.puesta,
+.cal-dia.puesta:hover {
+  background: var(--green);
+  color: #06281c;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.cal-rejilla-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+.cal-celda {
+  height: 38px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-heading);
+  cursor: pointer;
+  transition: background .1s;
+}
+.cal-celda:hover { background: var(--surface-hover); }
+.cal-celda.puesta, .cal-celda.puesta:hover { background: var(--green); color: #06281c; }
+
+.cal-pie {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-soft);
+}
+.cal-pie-btn {
+  flex: 1;
+  height: 28px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-heading);
+  cursor: pointer;
+  transition: background .12s, border-color .12s;
+}
+.cal-pie-btn:hover { background: var(--surface-hover); border-color: var(--border-dark); }
+.cal-pie-quitar { color: var(--red); }
+.cal-pie-quitar:hover { background: var(--red-bg); border-color: var(--red); }
+
+/* ---------- Campo obligatorio ----------
+   SE MARCA LO OBLIGATORIO Y NO LO OPCIONAL. En estos formularios casi todo es opcional: marcar
+   la regla eran ocho etiquetas "opcional" repartidas por la rejilla, y la única con una condición
+   de verdad no llevaba ninguna. Marcada la excepción, queda UNA señal en toda la pantalla y cae
+   justo donde importa.
+
+   EL ROJO NO VIAJA SOLO: el input lleva `required`, así que un lector de pantalla lo anuncia sin
+   ver el asterisco, y al pie del formulario va la leyenda que lo traduce a palabras para quien no
+   distinga el color. El asterisco se oculta a la lectura asistida —`aria-hidden`— porque si no se
+   lee "Nombre comercial asterisco". */
+.pl-req {
+  color: var(--red);
+  font-weight: 700;
+  margin-left: 3px;
+}
+
+.pl-leyenda {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.pl-leyenda b { color: var(--red); font-weight: 700; }
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   ESTRUCTURA — prueba de concepto del árbol único
+   Todo lo de este bloque cuelga de `.est-` y no toca ninguna clase existente: si la
+   prueba no convence, se borra entero y no queda rastro en el resto de la hoja.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* La banda de aviso. Va en la pantalla y no solo en el menú: quien entra por un enlace
+   directo tiene que saber que lo que toque acá no afecta a nada. */
+.est-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-soft);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 1180px;
+}
+.est-aviso strong { color: var(--text-heading); font-weight: 600; }
+
+/* ---------- Las opciones de un eje, en el menú del módulo ----------
+   LA SANGRÍA Y LA GUÍA SON LA JERARQUÍA, y alcanzan. Nueve píxeles de sangría y una línea de uno
+   dicen que estos cuelgan del de arriba; no hacía falta encima achicar la letra.
+
+   Y eso era el problema. El submenú se dibujó como una nota al pie del padre y acumuló TRES
+   rebajas: un punto y medio menos de cuerpo que el resto del menú, el gris apagado en vez de la
+   tinta, y media opacidad encima de ese gris. Cada una por separado es defendible; las tres
+   juntas dejan el texto por debajo de lo legible, y en el tema oscuro directamente no está.
+
+   Mientras el eje está abierto, estos renglones son los ÚNICOS destinos que hay: no son una
+   aclaración del padre, son adónde vas. Van con la misma letra y la misma tinta que cualquier
+   otra entrada del menú. */
+/* EL DESPLIEGUE. `grid-template-rows` de 0fr a 1fr anima el alto sin medirlo a mano y sin
+   fijarlo: da igual que el eje tenga dos niveles o cinco. El hijo directo lleva el
+   `overflow: hidden` que recorta mientras crece. */
+.mn-caja {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .28s cubic-bezier(.32,.72,.28,1);
+}
+.mn-caja.abierto { grid-template-rows: 1fr; }
+.mn-caja-dentro { overflow: hidden; min-height: 0; }
+
+/* PUNTOS Y NO UNA GUÍA. La línea vertical eran dos píxeles de gris claro en una barra que ya
+   tiene bordes por todos lados: se perdía contra el fondo y no llegaba a decir que los de abajo
+   cuelgan del de arriba. Un punto por opción marca cada parada, se ve, y —lo que la línea no
+   podía hacer— el de la activa se enciende. */
+.mn-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-left: 17px;
+  padding: 2px 0 4px;
+}
+
+.mn-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: .45rem .6rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-heading);
+  text-align: left;
+  cursor: pointer;
+  /* CADA UNO ENTRA DESDE EL LADO DEL PADRE, no de la nada: es lo que cuenta que salieron de él.
+     Sin desplazamiento, tres renglones aparecen de golpe y el ojo no sabe si nacieron ahí o si
+     la barra entera cambió. */
+  opacity: 0;
+  transform: translateX(-8px);
+  transition:
+    opacity .26s cubic-bezier(.32,.72,.28,1),
+    transform .26s cubic-bezier(.32,.72,.28,1),
+    background .12s,
+    color .12s;
+}
+.mn-caja.abierto .mn-sub-item { opacity: 1; transform: none; }
+
+/* UNO DETRÁS DE OTRO: el orden del movimiento dice el orden de la lista. El retraso se corta en
+   el cuarto —a partir de ahí todos entran juntos— porque con los cinco niveles encendidos el
+   último llegaría medio segundo tarde y la barra se sentiría lenta. */
+.mn-caja.abierto .mn-sub-item:nth-child(1) { transition-delay: .06s, .06s, 0s, 0s; }
+.mn-caja.abierto .mn-sub-item:nth-child(2) { transition-delay: .11s, .11s, 0s, 0s; }
+.mn-caja.abierto .mn-sub-item:nth-child(3) { transition-delay: .16s, .16s, 0s, 0s; }
+.mn-caja.abierto .mn-sub-item:nth-child(n+4) { transition-delay: .20s, .20s, 0s, 0s; }
+
+/* Al CERRAR no hay escalonado: el grupo se va entero y de una. Escalonar la salida hace que la
+   barra parezca pegajosa justo cuando uno ya se está yendo a otro sitio. */
+.mn-caja:not(.abierto) .mn-sub-item { transition-delay: 0s; }
+
+/* LA FLECHA. Cerrada apunta a la derecha —«hay algo hacia allá»— y abierta hacia abajo. El giro
+   es parte del mismo efecto, no un adorno aparte. */
+.mn-chev {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
+  opacity: .5;
+  transition: transform .28s cubic-bezier(.32,.72,.28,1);
+}
+.mn-chev.abierto { transform: rotate(90deg); opacity: .8; }
+
+/* Quien pidió menos movimiento no ve ninguno: el grupo aparece y desaparece, sin recorrido. */
+@media (prefers-reduced-motion: reduce) {
+  .mn-caja, .mn-sub-item, .mn-chev { transition-duration: .001s !important; transition-delay: 0s !important; }
+  .mn-sub-item { transform: none !important; }
+}
+.mn-sub-item:hover { background: var(--surface-hover); }
+
+/* El punto de cada parada. Seis píxeles: por debajo se lee como una mota de polvo y por encima
+   compite con el ícono del padre. */
+.mn-punto {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--border-dark);
+  transition: background .12s, box-shadow .12s;
+}
+/* El de la activa se enciende, con un halo que lo separa del verde de la pastilla: sin él, un
+   punto oscuro sobre verde se lee como un agujero. */
+/* El punto queda como única señal a saturación plena. Sobre el tinte suave se ve de reojo, y
+   es lo que separa «la opción abierta» de «las otras dos del grupo». */
+.mn-sub-item.on .mn-punto {
+  background: var(--green);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 24%, transparent);
+}
+
+/* VERDE LLENO Y NO UN TINTE. El activo llevaba un verde pálido que, al lado de la pastilla
+   rellena del padre, se leía como si no estuviera seleccionado. */
+/* EL HIJO ACTIVO VA EN TINTE, NO EN VERDE LLENO.
+   Con los dos rellenos al mismo verde, padre e hijo se leían como dos cosas del mismo rango —y
+   no lo son: una contiene a la otra—. Además el ojo no sabía cuál mirar, y la que más pesaba
+   —la pastilla grande de arriba— es justo la que NO es tu posición.
+
+   El trabajo de decir «estás aquí» lo hace el PUNTO, a saturación plena y en un área chica; el
+   fondo solo agrupa. Un 16 % es lo mínimo que se ve sobre blanco y lo máximo que no compite en
+   oscuro: los tintes que ya existían —al 8 %— se perdían del todo al lado del relleno del
+   padre. */
+.mn-sub-item.on {
+  background: color-mix(in srgb, var(--green) 16%, transparent);
+  color: var(--text-heading);
+  font-weight: 600;
+}
+
+/* ---------- La tabla de nodos ----------
+   Es la tabla de Sucursales, con la jerarquía metida en la primera columna. El árbol de tarjetas
+   que había antes repetía el camino completo —"Santa Cruz › Casa Matriz › Torre Empresarial"—
+   encima de cada fila, cuatro veces seguidas para las cuatro áreas de la misma oficina. En una
+   tabla ese camino es una columna: se lee alineado y una sola vez por fila. */
+.est-tabla td { vertical-align: middle; }
+.est-tabla tbody tr { transition: background .12s; }
+.est-tabla tbody tr:hover { background: var(--surface-hover); }
+.est-fila-cerrada { opacity: .55; }
+
+.est-tabla-ico { color: var(--text-muted); display: flex; flex-shrink: 0; }
+.est-tabla-nombre {
+  font-weight: 600;
+  color: var(--text-heading);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.est-col-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* La celda de acciones es el ancla del menú de agregar, que sale flotando desde ahí. */
+.est-tabla td:last-child { position: relative; }
+
+.est-tipo {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  background: var(--surface-hover);
+  color: var(--text-muted);
+}
+/* Verde lo que es un LUGAR, azul lo que es una parte de la organización, navy el negocio. Es la
+   única pista de que un árbol que ahora es uno solo contesta dos preguntas distintas. */
+.est-tipo.t-negocio  { background: var(--navy); color: #fff; }
+.est-tipo.t-region,
+.est-tipo.t-sucursal,
+.est-tipo.t-centro   { background: var(--green-bg); color: var(--green-txt, #067a55); }
+.est-tipo.t-area,
+.est-tipo.t-subarea  { background: rgba(37,99,235,.12); color: #2563eb; }
+
+.est-mas {
+  width: 24px; height: 24px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .12s;
+}
+.est-mas:hover { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+
+.est-editar {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .12s;
+}
+.est-editar:hover { background: var(--surface-card); border-color: var(--border-dark); color: var(--text-heading); }
+
+/* ---------- El menú de acciones de una fila ----------
+   Lo que modifica vive detrás de los tres puntos y no suelto en la fila: recorriendo una tabla
+   se pulsa sin querer, y "eliminar" no perdona un clic distraído. */
+.est-acciones { position: relative; }
+.est-acciones-menu {
+  /* FIJO Y NO ABSOLUTO: dentro de la celda lo recortaba el `overflow` del contenedor de la
+     tabla —el que la deja desplazarse a lo ancho— y en las últimas filas no llegaba a verse.
+     Las coordenadas las calcula quien lo abre, midiendo el botón. */
+  position: fixed;
+  z-index: 60;
+  min-width: 150px;
+  padding: 5px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-dark);
+  border-radius: 10px;
+  box-shadow: var(--sh-flotante);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.est-accion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 9px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-heading);
+  cursor: pointer;
+  text-align: left;
+  transition: background .1s;
+}
+.est-accion:hover { background: var(--surface-hover); }
+/* La que no se deshace, en rojo desde antes de pulsarla: el color es lo que hace que quien
+   buscaba "editar" no la apriete de paso. */
+.est-accion-riesgo { color: var(--red); }
+.est-accion-riesgo:hover { background: var(--red-bg); }
+
+.est-alerta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--yellow-bg, #fffbeb);
+  border: 1px solid var(--yellow, #fde68a);
+  font-size: 12px;
+  font-weight: 600;
+  color: #92400e;
+}
+.est-alerta svg { color: #92400e; }
+
+.est-btn-borrar {
+  padding: 9px 20px;
+  border-radius: 10px;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+.est-btn-borrar:hover:not(:disabled) { background: #dc2626; }
+/* Apagado mientras la palabra no esté escrita: el botón dice a las claras que todavía no. */
+.est-btn-borrar:disabled { opacity: .4; cursor: not-allowed; }
+
+.cb-texto { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; margin: 0 0 16px; }
+
+/* QUIÉN ES Y QUÉ LE VA A PASAR, ARRIBA DEL TODO. El modal abría con una frase gris de 12 px
+   —«La Paz está activa»— del mismo tamaño y del mismo color que la nota del final: lo primero
+   que hay que saber pesaba lo mismo que la letra chica.
+
+   Ahora el nombre manda —15 px y en negrita, como el título de una ficha— con el distintivo del
+   nivel delante, que es el mismo que lleva esa fila en la tabla. */
+.cb-quien {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 14px;
+}
+.cb-nombre {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-heading);
+  letter-spacing: -.01em;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* EL PASO DE UN ESTADO AL OTRO, en una banda hundida: es un dato que se LEE, no un control que se
+   toca, y el hueco lo separa del desplegable de abajo, que sí se toca. Con un solo estado —cuando
+   todavía no has cambiado nada— la banda queda con una pastilla sola, y eso también dice algo:
+   que de momento no va a pasar nada. */
+.cb-paso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  margin-bottom: 18px;
+  border-radius: 11px;
+  background: var(--bg-secondary);
+}
+.cb-flecha { color: var(--icon-muted); flex-shrink: 0; }
+.cb-texto strong { color: var(--text-heading); font-weight: 600; }
+.cb-label {
+  display: block;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-bottom: 7px;
+}
+/* La palabra que hay que escribir, en monoespaciada: se lee como algo que se teclea literal y
+   no como una parte más de la frase. */
+.cb-label b {
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-weight: 700;
+  color: var(--red);
+  background: var(--red-bg);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+
+/* ---------- El menú de agregar ----------
+   No se escribe: lo que llega ya pasó por la regla del orden y por los niveles encendidos.
+   Lo que no se puede crear ahí, no aparece — la validación ES la interfaz. */
+.est-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% - 4px);
+  z-index: 40;
+  width: 300px;
+  max-width: 80vw;
+  padding: 5px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-dark);
+  border-radius: 11px;
+  box-shadow: var(--sh-flotante);
+}
+.est-menu-cab {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0;
+  padding: 6px 9px 7px;
+}
+.est-menu-op {
+  display: block;
+  width: 100%;
+  padding: 7px 9px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background .1s;
+}
+.est-menu-op:hover { background: var(--surface-hover); }
+.est-menu-nombre { display: block; font-size: 12.5px; font-weight: 600; color: var(--text-heading); }
+/* En la ficha el menú cuelga del botón de la cabecera, que está a la derecha del todo. */
+.est-menu-ficha { right: 0; left: auto; top: calc(100% + 6px); }
+
+/* Los dos ejes, separados dentro del menú de la ficha: es el único sitio donde se cruzan y
+   mezclarlos hacía que "Oficina" y "Área" parecieran la misma clase de cosa. */
+.est-menu-grupo + .est-menu-grupo { margin-top: 4px; border-top: 1px solid var(--border-soft); padding-top: 4px; }
+.est-menu-eje {
+  margin: 0;
+  padding: 5px 9px 3px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.est-menu-desc { display: block; font-size: 10.5px; color: var(--text-muted); line-height: 1.45; margin-top: 1px; }
+
+/* ---------- Vacío ---------- */
+/* EL VACÍO ES UNA FILA DE LA TABLA, no una tarjeta que ocupa su lugar. Por eso ya no lleva
+   fondo, borde ni ancho propios: eso lo pone el `.as-table-wrap` que lo rodea, y una tarjeta
+   dentro de otra dibuja dos bordes a dos píxeles uno del otro.
+
+   La fila no se ilumina al pasarle el ratón —la de una regional lleva a su ficha y esta no lleva
+   a ningún sitio—, así que se le apaga el realce que traen todas las filas de la tabla. */
+.est-vacio { padding: 44px 24px; text-align: center; }
+.est-tabla tbody tr.est-fila-vacia:hover { background: transparent; }
+.est-tabla tbody tr.est-fila-vacia td { cursor: default; }
+.est-vacio-tit { font-size: 13px; font-weight: 600; color: var(--text-heading); margin: 0; }
+.est-vacio-nota { font-size: 11.5px; color: var(--text-muted); margin: 5px 0 0; }
+
+/* ---------- Migas de la ficha ----------
+   El camino completo desde la empresa. Es lo que reemplaza a declarar la sucursal a mano:
+   se lee de un vistazo dónde está parado este nodo. */
+.est-migas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.est-miga { display: inline-flex; align-items: center; gap: 2px; }
+.est-migas button {
+  border: none;
+  background: none;
+  padding: 0 2px;
+  font-family: inherit;
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.est-migas button:hover { color: var(--green); text-decoration: underline; }
+
+.est-error {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: var(--red-bg);
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---------- Lo que sale solo del árbol ----------
+   La mitad de la gracia del modelo es que la sucursal de un nodo no se declara: está en el
+   camino. Si no se enseña, no se nota — y era lo que había que comprobar. */
+/* EL CODO DEL ÁRBOL EN LA TABLA DE LA ESTRUCTURA.
+   Dos bordes y una esquina redondeada: la línea sube hacia la fila de arriba y gira hacia el
+   nombre. El `margin-top` negativo es lo que la hace nacer del renglón anterior en vez de flotar
+   en el suyo —sin eso son dos rayitas sueltas y no un vínculo—.
+
+   En el gris del borde suave y no en el del texto: es una guía, y una guía que compite con el
+   nombre al que apunta deja de ayudar. */
+.est-rama {
+  flex-shrink: 0;
+  width: 12px;
+  height: 15px;
+  margin-top: -13px;
+  margin-right: -1px;
+  border-left: 1.5px solid var(--border-dark);
+  border-bottom: 1.5px solid var(--border-dark);
+  border-bottom-left-radius: 7px;
+  opacity: .65;
+}
+
+.est-deducido {
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-soft);
+}
+.est-deducido-tit {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+}
+.est-deducido-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+.est-deducido-rot {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.est-deducido-val {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-heading);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CONFIGURACIÓN DE LA ORGANIZACIÓN — los ocho niveles
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.cfg-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 20px 22px;
+  box-shadow: var(--shadow-card);
+}
+.cfg-tit { font-size: 13px; font-weight: 700; color: var(--text-heading); margin: 0; }
+.cfg-desc { font-size: 11.5px; color: var(--text-muted); margin: 3px 0 16px; line-height: 1.5; }
+
+/* LA CADENA RESULTANTE. Ocho interruptores sueltos no dicen qué se está armando; esto sí, y se
+   rehace en el momento: encender Región la mete entre el negocio y la sucursal, a la vista. */
+.cfg-cadena { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; }
+.cfg-eslabon-caja { display: inline-flex; align-items: center; gap: 2px; }
+.cfg-flecha { color: var(--text-muted); flex-shrink: 0; }
+.cfg-eslabon {
+  padding: 6px 13px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--surface-hover);
+  color: var(--text-heading);
+}
+/* Verde lo que es un LUGAR, azul lo que es una parte de la organización, navy la raíz y ámbar
+   la hoja. Es la misma clave de color que el árbol, para no aprenderla dos veces. */
+.cfg-eslabon.e-empresa  { background: var(--navy); color: #fff; }
+.cfg-eslabon.e-negocio  { background: var(--navy); color: #fff; }
+.cfg-eslabon.e-region,
+.cfg-eslabon.e-sucursal,
+.cfg-eslabon.e-centro   { background: var(--green-bg); color: var(--green-txt, #067a55); }
+.cfg-eslabon.e-area,
+.cfg-eslabon.e-subarea  { background: rgba(37,99,235,.12); color: #2563eb; }
+.cfg-eslabon.e-cargo    { background: rgba(154,91,8,.12); color: #9a5b08; }
+/* Un nivel propio no tiene una clase escrita para su llave —la inventó el usuario hace un
+   momento— así que se pinta por su EJE, que es la misma división que da los colores de arriba:
+   verde lo que es un lugar, azul lo que es una parte de la organización. */
+.cfg-eslabon.e-fisica          { background: var(--green-bg); color: var(--green-txt, #067a55); }
+.cfg-eslabon.e-organizacional  { background: rgba(37,99,235,.12); color: #2563eb; }
+
+.cfg-niveles { display: grid; gap: 6px; }
+.cfg-nivel {
+  display: grid;
+  grid-template-columns: 20px 34px 1fr auto auto;
+  align-items: start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 11px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-card);
+  transition: border-color .12s, opacity .12s;
+}
+.cfg-nivel.off { opacity: .55; }
+.cfg-nivel.on { border-color: var(--border-dark); }
+.cfg-orden {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  padding-top: 1px;
+}
+.cfg-nivel-nombre { font-size: 13px; font-weight: 600; color: var(--text-heading); }
+.cfg-nivel-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-top: 1px; }
+/* De qué cuelga y qué puede contener, con lo que está encendido ahora mismo: la respuesta a
+   "¿y si enciendo este?" sin tener que ir al árbol a probarlo. */
+.cfg-nivel-sitio { font-size: 10.5px; color: var(--text-muted); margin-top: 5px; }
+.cfg-nivel-sitio b { color: var(--text-heading); font-weight: 600; }
+
+.cfg-sw {
+  width: 32px;
+  height: 18px;
+  border-radius: 99px;
+  border: none;
+  background: var(--border-dark);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 1px;
+  transition: background .15s;
+}
+.cfg-sw::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .15s;
+}
+.cfg-nivel.on .cfg-sw { background: var(--green); }
+.cfg-nivel.on .cfg-sw::after { left: 16px; }
+/* Trabado no es apagado: se ve encendido y no se deja tocar, y el contador de al lado dice
+   cuántos nodos habría que mover primero. */
+.cfg-sw:disabled { cursor: default; opacity: .5; }
+
+.cfg-estado {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  padding-top: 3px;
+}
+.cfg-nivel.trabado .cfg-estado { color: var(--green); }
+/* Nodos de un tipo apagado. No es un error del usuario —se puede llegar cargando el ejemplo con
+   el nivel apagado— pero sí algo que hay que resolver, y por eso se ve. */
+.cfg-estado.alerta { color: var(--yellow); }
+.cfg-sitio-alerta { color: var(--yellow); }
+.cfg-sitio-alerta b { color: var(--yellow); }
+
+/* ---------- Renombrar, mover y agregar un peldaño ----------
+   LAS ACCIONES NO SE ESCONDEN DETRÁS DEL RATÓN. Es una lista de nueve renglones que se mira una
+   vez cada seis meses: escondidas, quien viene a renombrar «Sucursal» no llega a enterarse de
+   que se puede. Pesan poco —icono suelto, sin marco, del color del texto apagado— y solo se
+   marcan al pasar por encima. */
+.cfg-nivel-acciones { display: flex; align-items: center; gap: 2px; }
+.cfg-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.cfg-ico:hover:not(:disabled) {
+  background: var(--surface-hover);
+  border-color: var(--border-soft);
+  color: var(--text-heading);
+}
+.cfg-ico:disabled { opacity: .25; cursor: default; }
+.cfg-ico-borrar:hover:not(:disabled) { color: var(--red, #dc2626); }
+
+/* El formulario de renombrar vive DENTRO del renglón, en la columna del nombre: sacarlo a un
+   modal taparía la lista, que es justo lo que hay que mirar para elegir la palabra —«Región» y
+   «Sucursal» ya están arriba y abajo—. */
+.cfg-editar-campos { display: flex; flex-wrap: wrap; gap: 10px; }
+.cfg-campo { display: flex; flex-direction: column; gap: 4px; min-width: 160px; flex: 1; }
+.cfg-campo > span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.cfg-campo > span i { font-weight: 500; text-transform: none; letter-spacing: 0; }
+.cfg-campo input,
+.cfg-campo select {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-dark);
+  background: var(--surface-card);
+  color: var(--text-heading);
+  font-size: 12.5px;
+  font-family: inherit;
+}
+.cfg-campo input:focus,
+.cfg-campo select:focus { outline: none; border-color: var(--navy); }
+.cfg-campo input::placeholder { color: var(--text-muted); opacity: .7; }
+.cfg-campo-ancho { flex-basis: 100%; }
+
+.cfg-editar-pie { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+/* Los botones no se encogen: apretados, el icono se iba a un renglón y la palabra al
+   siguiente, y un botón partido en dos parece dos botones. */
+.cfg-editar-pie > button { flex-shrink: 0; white-space: nowrap; }
+.cfg-editar-nota b { color: var(--text-heading); font-weight: 600; }
+/* La consecuencia dicha al lado del botón que la provoca, y no en una nota al pie de la pantalla:
+   ahí se lee cuando ya se pulsó. */
+.cfg-editar-nota { font-size: 10.5px; color: var(--text-muted); line-height: 1.5; flex: 1; min-width: 180px; }
+
+/* El alta de un nivel propio: mismo marco que un renglón, pero abierto y a lo ancho. Se parece a
+   la lista porque va a ser parte de la lista. */
+.cfg-alta {
+  margin-top: 10px;
+  padding: 16px;
+  border-radius: 11px;
+  border: 1px dashed var(--border-dark);
+  background: var(--surface-hover);
+}
+.cfg-alta-tit { font-size: 12.5px; font-weight: 700; color: var(--text-heading); margin: 0 0 12px; }
+.cfg-alta-campos { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.cfg-agregar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 9px 14px;
+  border-radius: 9px;
+  border: 1px dashed var(--border-dark);
+  background: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color .12s, border-color .12s, background .12s;
+}
+.cfg-agregar:hover { color: var(--text-heading); border-color: var(--navy); background: var(--surface-card); }
+
+/* EL AVISO DE UN MOVIMIENTO QUE NO ENTRA. No es un error de quien pulsó —mover un escalón es
+   legítimo— sino un dato que le falta: qué nodo hay que sacar primero. Por eso amarillo y no
+   rojo, y por eso se cierra a mano: hay que ir a mover ese nodo y volver. */
+.cfg-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: rgba(217,119,6,.09);
+  border: 1px solid rgba(217,119,6,.28);
+  color: var(--text-heading);
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+.cfg-aviso > svg { color: var(--yellow, #d97706); }
+.cfg-aviso .cfg-ico { margin-left: auto; flex-shrink: 0; }
+
+@media (max-width: 760px) {
+  /* Sin la columna del número ni la del estado: en un teléfono el renglón ya se lee entero de
+     arriba abajo y esos dos son los que menos hacen falta para decidir. */
+  .cfg-nivel { grid-template-columns: 34px 1fr auto; }
+  .cfg-orden, .cfg-nivel .cfg-estado { display: none; }
+  .cfg-campo { min-width: 100%; }
+}
+
+.cfg-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-soft);
+}
+.cfg-nota p { font-size: 11.5px; color: var(--text-muted); line-height: 1.6; margin: 0 0 8px; }
+.cfg-nota strong { color: var(--text-heading); font-weight: 600; }
+
+
+
+
+/* ---------- Catálogos de Configuración ----------
+   Tipos de cargo y niveles de mando: listas cortas y cerradas, no árboles. Se leen de corrido,
+   así que van sin marco por renglón; lo único que los separa es una línea. */
+.cfg-catalogo { display: grid; gap: 0; }
+.cfg-item {
+  display: grid;
+  grid-template-columns: 11rem 1fr auto;
+  gap: 14px;
+  align-items: baseline;
+  padding: 11px 2px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.cfg-catalogo .cfg-item:last-child { border-bottom: none; }
+.cfg-item-nombre { font-size: 12.5px; font-weight: 600; color: var(--text-heading); }
+.cfg-item-desc { font-size: 11.5px; color: var(--text-muted); line-height: 1.5; }
+.cfg-item-marca {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* Lo deducido se ve distinto de lo declarado: si se pintaran igual, la lista diría que "Jefe"
+   es un campo que alguien puede elegir, y no lo es. */
+.cfg-item-deducido { opacity: .85; }
+.cfg-pill {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: var(--surface-hover);
+  border: 1px dashed var(--border-dark);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.cfg-mando-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  margin-right: 4px;
+}
+.cfg-pie { font-size: 10.5px; color: var(--text-muted); line-height: 1.5; margin: 12px 0 0; }
+
+@media (max-width: 760px) {
+  .cfg-item { grid-template-columns: 1fr; gap: 3px; }
+}
+
+
+/* ---------- Paginación ----------
+   Con las variables del tema y no con los colores en crudo que llevan las copias de Seguimiento,
+   Plantillas y Colaboradores: escritos a mano, esos botones se quedan blancos sobre el fondo
+   oscuro. */
+.pag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-soft);
+}
+.pag-cuenta { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.pag-botones { display: flex; align-items: center; gap: 4px; }
+
+.pag-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-card);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  transition: all .12s;
+}
+.pag-btn:hover:not(:disabled):not(.on) { border-color: var(--border-dark); color: var(--text-heading); }
+.pag-btn:disabled { opacity: .4; cursor: default; }
+.pag-btn.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+.pag-salto { width: 18px; text-align: center; color: var(--text-muted); font-size: 12px; }
+
+
+/* ---------- Campo de varias líneas ----------
+   Hereda todo de `.pl-input` —mismo borde, mismo relleno, mismo hueco hundido cuando está
+   vacío— y solo cambia lo que un textarea necesita: alto propio y estirable hacia abajo. */
+.pl-area {
+  min-height: 76px;
+  line-height: 1.5;
+  resize: vertical;
+  font-family: inherit;
+}
+
+/* Leído, conserva los saltos de línea que quien escribió puso a propósito. */
+.emp-valor-parrafo { white-space: pre-wrap; }
+
+
+/* ---------- Buscador dentro de un desplegable ----------
+   Se queda quieto arriba mientras la lista corre por debajo: si scrolleara con ella, el campo
+   donde uno está tecleando desaparecería al segundo resultado. */
+.pl-dd-buscar {
+  position: relative;
+  padding: 4px 4px 6px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 4px;
+}
+.pl-dd-buscar .pl-search-ico { left: 16px; }
+.pl-dd-nada {
+  margin: 8px 6px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+
+/* La consecuencia de la opción elegida, debajo del desplegable del modal de estado. Cambia con
+   la elección: explicar los dos estados a la vez obliga a leer el que no se eligió. */
+.cb-nota {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 10px 0 0;
+}

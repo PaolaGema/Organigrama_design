@@ -42,7 +42,7 @@ export default function PreviaLugar({ cargo, org }) {
 
       <div className="og-pv-area og-pv-area-uni">
         <span className="og-pv-area-rot">Unidad organizacional</span>
-        <span className="og-pv-area-nom"><Building2 size={13} /> {area || 'Sin área'}</span>
+        <span className="og-pv-area-nom"><Building2 size={13} /> {area || 'Sin unidad'}</span>
       </div>
 
       {jefe && <div className="og-pv-rot">Depende de</div>}

@@ -8,6 +8,7 @@ import { useUser } from '../../context/UserContext'
 import { useUnsavedChanges } from '../../context/UnsavedChangesContext'
 import { Home, MessageCircle, Bell, User, Users, LayoutGrid, Route, Calendar, MapPin, Sun, Gift, Info, HeartHandshake } from 'lucide-react'
 import { colaboradoresData } from '../../pages/personas/colaboradoresData'
+import EncabezadoPropuesta from './EncabezadoPropuesta'
 import ZonaHRPhone from './ZonaHRPhone'
 import OrganigramaPhone from './OrganigramaPhone'
 import SeguimientoPhone from './SeguimientoPhone'
@@ -95,8 +96,19 @@ export default function Layout() {
   useEffect(() => { setOrigenHR(false); setMobileTab(tabInicial) }, [currentUser.id, tabInicial])
 
   useEffect(() => {
-    const isPersonas = location.pathname.startsWith('/personas') && location.pathname !== '/personas/organigrama'
+    /* `/personas/organigrama` ya no se excluye: esa ruta hoy solo redirige a
+       `/organizacion/organigrama`, así que la excepción no protegía nada. */
+    const isPersonas = location.pathname.startsWith('/personas')
+    /* Organización entra al rebote como el resto de lo administrativo. Se le escapó al crear el
+       módulo: el riel ya no se lo muestra a un colaborador, pero el riel solo esconde —quien
+       escriba la URL a mano entra igual, y este guardia es justamente el que lo impide. */
+    const isOrganizacion = location.pathname.startsWith('/organizacion')
     const isArchivos = location.pathname.startsWith('/archivos')
+    const isComunicacion = location.pathname.startsWith('/comunicacion')
+    /* Configuración entra al rebote con el resto de lo administrativo, y con más razón: es
+       donde se decide quién puede hacer qué. El riel no se la enseña a nadie más que a RRHH,
+       pero el riel solo esconde —quien escriba la dirección a mano entra igual—. */
+    const isConfiguracion = location.pathname.startsWith('/configuracion')
     // La ficha de una asignación cuelga de Seguimiento (/onboarding/asignaciones/:id): entra
     // por prefijo, si no un colaborador podría quedarse ahí escribiendo la URL a mano.
     const isAdminRoute = ['/onboarding', '/onboarding/asignaciones', '/onboarding/plantillas', '/onboarding/conocimiento', '/onboarding/configuracion'].includes(location.pathname)
@@ -110,7 +122,7 @@ export default function Layout() {
     // riel, así que llegar aquí es haber escrito la URL a mano o venir de un enlace viejo.
     if (sinAccesoAdmin && location.pathname.startsWith('/inicio')) {
       navigate('/mi-espacio/mi-dia', { replace: true })
-    } else if (sinAccesoAdmin && (isAdminRoute || isPersonas || isArchivos)) {
+    } else if (sinAccesoAdmin && (isAdminRoute || isPersonas || isOrganizacion || isArchivos || isComunicacion || isConfiguracion)) {
       navigate('/mi-espacio/mi-onboarding', { replace: true })
     }
   }, [currentUser.id, location.pathname])
@@ -342,7 +354,7 @@ export default function Layout() {
 
                   {/* Post body */}
                   <p style={{ fontSize: 7, color: '#475569', margin: '0 0 8px', lineHeight: 1.5 }}>
-                    ¡Hoy celebramos a Carlos Mendoza por cumplir su primer día con nosotros! Gracias por el compromiso y todo lo que aportas al equipo. <span style={{ color: '#3b82f6' }}>#BienvenidaSoulyHR</span>
+                    ¡Hoy celebramos a Carlos Mendoza por cumplir su primer día con nosotros! Gracias por el compromiso y todo lo que aportas al equipo. <span style={{ color: '#3b82f6' }}>#BienvenidaFarmaVida</span>
                   </p>
 
                   {/* Post card celebración */}
@@ -498,11 +510,19 @@ export default function Layout() {
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
+      {/* SIN CABECERA. Los 56 px de la barra superior decían tres cosas: el título de la
+          pantalla —que ya está dos filas más abajo, y por duplicado hacían que hubiera dos
+          <h1> en cada página—, un aviso y quién eres. Las dos últimas se mudaron al riel,
+          bajo el logo; la primera sobraba. El `Header` sigue vivo para la vista móvil, que lo
+          monta como selector flotante. */}
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Header />
+        {/* ARRIBA DEL MENÚ Y NO SOLO DEL CONTENIDO: la barra cruza de lado a lado a partir del
+            riel, que es como se dibujaba antes. Metida dentro de la columna del contenido
+            arrancaría a 300 px del borde y parecería la cabecera de la página, no de la app. */}
+        <EncabezadoPropuesta />
         <div className="flex flex-1 overflow-hidden">
           <ModuleNav />
-          <main className="flex-1 overflow-y-auto bg-[#F8FAFC] dark:bg-[#07131D]" style={{ padding: '1.25rem 1rem' }}>
+          <main className="flex-1 overflow-y-auto" style={{ padding: '1.25rem 1rem', background: 'var(--bg-app)' }}>
             <Outlet />
           </main>
         </div>

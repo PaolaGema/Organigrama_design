@@ -709,7 +709,7 @@ export default function Home() {
             <div className="sc-hd">
               <Cake size={15} style={{ color: '#ec4899' }} />
               <h3>Celebraciones <span className="sc-hd-count">{fmt(celebraciones.length)}</span></h3>
-              <VerTodos total={celebraciones.length} onClick={() => navigate('/mi-espacio/calendario')} />
+              <VerTodos total={celebraciones.length} onClick={() => navigate('/inicio/calendario')} />
             </div>
             <div style={{ display: 'flex', gap: 6, padding: '10px 22px 0' }}>
               {CELEBRACION_TABS.map(tab => {

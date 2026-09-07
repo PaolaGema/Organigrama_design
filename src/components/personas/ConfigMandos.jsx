@@ -3,6 +3,7 @@ import { Layers, Plus, Trash2, GripVertical, AlertTriangle } from 'lucide-react'
 import CabeceraModal from './CabeceraModal'
 import ConfirmarAccionModal from '../layout/ConfirmarAccionModal'
 import { nivelesDe, nuevoId } from '../../data/organigramaData'
+import { useOnboardingData } from '../../context/OnboardingDataContext'
 
 /* LOS NIVELES DE MANDO DE LA EMPRESA.
    Nosotros sembramos tres —Mando superior, medio y bajo— y ahí termina nuestra opinión: cada
@@ -81,6 +82,10 @@ function EscalaPrevia({ lista }) {
 }
 
 export default function ConfigMandos({ org, onGuardar, onCerrar }) {
+  /* Los cargos del árbol nuevo salen del contexto y no de una prop: las dos pantallas que abren
+     este modal —Configuración y el organigrama— tendrían que acordarse de pasarlos, y la que se
+     olvidara volvería a borrar en silencio. */
+  const { nodos } = useOnboardingData()
   const [lista, setLista] = useState(() => nivelesDe(org).map(n => ({ ...n })))
   /* Qué peldaño se está por borrar, y a cuántos cargos deja sin nivel. Se pregunta SOLO cuando
      arrastra algo: borrar uno que nadie usa no merece un modal encima de otro modal. */
@@ -91,7 +96,14 @@ export default function ConfigMandos({ org, onGuardar, onCerrar }) {
   const arrastre = useRef(null)
   const listaRef = useRef(null)
 
-  const cuantosUsan = id => org.cargos.filter(c => c.grado === id).length
+  /* CUENTA LOS DOS MODELOS, y por eso pide `nodos` además del organigrama.
+     Los cargos del dibujo guardan su peldaño en `grado`; los cargos del árbol nuevo lo guardan en
+     `nivelMando`. Contando solo los primeros, borrar un peldaño que ningún cargo viejo usa se
+     hacía en silencio y dejaba a los nuevos apuntando a un id que ya no existe —el campo abriría
+     vacío y nadie sabría por qué—. Mientras convivan los dos, el aviso tiene que mirar a los dos. */
+  const cuantosUsan = id =>
+    org.cargos.filter(c => c.grado === id).length
+    + (nodos || []).filter(n => n.tipo === 'cargo' && n.nivelMando === id).length
   const problemas = lista.map((_, i) => problemaDe(lista, i))
   const hayProblema = problemas.some(Boolean)
 

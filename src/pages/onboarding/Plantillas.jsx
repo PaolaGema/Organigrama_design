@@ -609,7 +609,7 @@ export default function Plantillas() {
           <div className="kpi-lbl">Vigentes para su cargo</div>
         </div>
         <div className="kpi-card" style={{ '--kpi-accent': 'var(--navy)' }}>
-          <div className="kpi-title" style={{ color: 'var(--navy)' }}>Inactivo</div>
+          <div className="kpi-title" style={{ color: 'var(--navy-txt)' }}>Inactivo</div>
           <div className="kpi-val">{totalInactivas}</div>
           <div className="kpi-lbl">Dejaron de asignarse</div>
         </div>

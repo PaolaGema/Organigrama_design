@@ -12,21 +12,63 @@
 
 import { colaboradoresData } from '../pages/personas/colaboradoresData'
 
-export const empresa = { nombre: 'SoulyHR', razonSocial: 'SoulyHR S.R.L.' }
+export const empresa = {
+  nombre: 'FarmaVida',
+  razonSocial: 'FarmaVida S.R.L.',
+  nit: '1023456789',
+  rubro: 'Salud',
+  pais: 'Bolivia',
+  web: 'farmavida.com.bo',
+  correo: 'contacto@farmavida.com.bo',
+  telefono: '+591 3 344 5566',
+  celular: '+591 700 11223',
+  direccionLegal: 'Av. San Martín 200, Equipetrol, Santa Cruz',
+}
 
 /* Ocho y no tres: con tres nunca aparecen el buscador ni "ver solo las marcadas" —los dos se
    activan pasadas seis sedes— así que la demo escondía justo lo que se diseñó para una empresa
    grande. Ocho es el número más chico que los enciende y sigue entrando en pantalla. */
+/* QUÉ GUARDA UNA SUCURSAL Y QUÉ NO. Guarda lo OPERATIVO —dónde está, a qué número se llama, quién
+   responde, en qué horario abre— y su número de sucursal ante el SIN, que es lo único fiscal que
+   sí es propio de cada sede.
+
+   NO guarda razón social ni NIT: el NIT es UNO y las sedes se registran como números de sucursal
+   dentro de él. Copiarle esos campos a cada sede sería invitar a que un día dos digan razones
+   sociales distintas y no haya forma de saber cuál vale. Eso vive en Datos de la empresa.
+
+   `estado` existe porque una sucursal no se borra: la que cerró tiene historia, gente y planillas
+   detrás. Se cierra, con su fecha, y deja de ofrecerse para puestos nuevos. */
+/* LAS SUCURSALES SE LLAMAN COMO SE LLAMAN DE VERDAD: por el barrio o el hito donde están.
+   Se llamaban «Sucursal», «Sucursal», «Oficina Regional», «Punto de Venta» —el TIPO puesto de
+   nombre—, y eso hacía dos daños. En la tabla, cinco filas decían lo mismo en la columna que
+   sirve para distinguirlas, y solo se diferenciaban mirando la ciudad de al lado. Y en una demo
+   que se le enseña a alguien, un catálogo que se repite se lee como un catálogo sin cargar.
+
+   Cada nombre es el barrio de su propia dirección, que es como bautiza sus locales cualquier
+   cadena: el tipo delante y el barrio detrás. Así se lee de un vistazo QUÉ es y DÓNDE queda, y
+   sigue distinguiéndose de las demás, que era lo que fallaba cuando todas se llamaban igual. */
 export const sucursales = [
-  { id: 'central', nombre: 'Sede Central', ciudad: 'Santa Cruz' },
-  { id: 'lpz', nombre: 'Sucursal', ciudad: 'La Paz' },
-  { id: 'cbb', nombre: 'Sucursal', ciudad: 'Cochabamba' },
-  { id: 'sre', nombre: 'Sucursal', ciudad: 'Sucre' },
-  { id: 'tja', nombre: 'Sucursal', ciudad: 'Tarija' },
-  { id: 'oru', nombre: 'Oficina Regional', ciudad: 'Oruro' },
-  { id: 'pot', nombre: 'Oficina Regional', ciudad: 'Potosí' },
-  { id: 'eal', nombre: 'Punto de Venta', ciudad: 'El Alto' },
+  { id: 'central', nombre: 'Casa Matriz Equipetrol', ciudad: 'Santa Cruz', codigo: '0001', direccion: 'Av. San Martín 200, Equipetrol', telefono: '+591 3 344 5566', correo: 'equipetrol@farmavida.com.bo', horario: 'Lun a Vie, 08:30–18:00', estado: 'activa', apertura: '2018-02-15' },
+  /* DOS EN SANTA CRUZ A PROPÓSITO. Con una sucursal por ciudad, la ciudad parecía ser la llave
+     —y no lo es—: una cadena abre varias en la misma plaza. Tener dos obliga a que todo lo que
+     mira sucursales las distinga por nombre y no por ciudad, que es justo lo que hay que poder
+     enseñar. */
+  { id: 'mtr', nombre: 'Sucursal Montero', ciudad: 'Santa Cruz', codigo: '0009', direccion: 'Av. Circunvalación 340, Montero', telefono: '+591 3 922 4455', correo: 'montero@farmavida.com.bo', horario: 'Lun a Sáb, 08:00–18:00', estado: 'activa', apertura: '2024-11-04' },
+  { id: 'lpz', nombre: 'Sucursal Sopocachi', ciudad: 'La Paz', codigo: '0002', direccion: 'Av. Arce 2180, Sopocachi', telefono: '+591 2 244 7788', correo: 'sopocachi@farmavida.com.bo', horario: 'Lun a Vie, 08:30–18:00', estado: 'activa', apertura: '2019-09-09' },
+  { id: 'cbb', nombre: 'Sucursal El Prado', ciudad: 'Cochabamba', codigo: '0003', direccion: 'Av. Ballivián 415, El Prado', telefono: '+591 4 425 1122', correo: 'elprado@farmavida.com.bo', horario: 'Lun a Vie, 08:30–18:00', estado: 'activa', apertura: '2020-03-02' },
+  { id: 'sre', nombre: 'Sucursal La Recoleta', ciudad: 'Sucre', codigo: '0004', direccion: 'Calle Bolívar 120, La Recoleta', telefono: '+591 4 645 3344', correo: 'recoleta@farmavida.com.bo', horario: 'Lun a Vie, 08:30–17:30', estado: 'activa', apertura: '2021-06-01' },
+  { id: 'tja', nombre: 'Sucursal Las Américas', ciudad: 'Tarija', codigo: '0005', direccion: 'Av. Las Américas 88', telefono: '+591 4 663 9900', correo: 'lasamericas@farmavida.com.bo', horario: 'Lun a Vie, 08:30–17:30', estado: 'activa', apertura: '2022-01-17' },
+  { id: 'oru', nombre: 'Sucursal Plaza 10 de Febrero', ciudad: 'Oruro', codigo: '0006', direccion: 'Calle Bolívar 340, Plaza 10 de Febrero', telefono: '+591 2 527 6611', correo: 'oruro@farmavida.com.bo', horario: 'Lun a Vie, 09:00–17:00', estado: 'activa', apertura: '2023-04-10' },
+  { id: 'pot', nombre: 'Sucursal Villa Imperial', ciudad: 'Potosí', codigo: '0007', direccion: 'Av. Serrudo 55', telefono: '+591 2 622 4433', correo: 'potosi@farmavida.com.bo', horario: 'Lun a Vie, 09:00–17:00', estado: 'activa', apertura: '2024-08-05' },
+  { id: 'eal', nombre: 'Sucursal 16 de Julio', ciudad: 'El Alto', codigo: '0008', direccion: 'Av. 6 de Marzo 1200, zona 16 de Julio', telefono: '+591 2 282 1177', correo: '16dejulio@farmavida.com.bo', horario: 'Lun a Sáb, 09:00–19:00', estado: 'activa', apertura: '2025-05-20' },
 ]
+
+/* Los dos estados y nada más. Una sede cerrada se sigue viendo —sus puestos y su gente existieron
+   ahí— pero no se ofrece para nada nuevo. */
+export const ESTADOS_SUCURSAL = {
+  activa: { label: 'Activa', color: 'var(--green)', bg: 'var(--green-bg)' },
+  cerrada: { label: 'Cerrada', color: 'var(--text-muted)', bg: 'var(--surface-hover)' },
+}
 
 /* `corto` es la etiqueta de la píldora "Pertenece a" en la tabla, donde el nombre largo
    no entra. */
@@ -243,7 +285,16 @@ export const orgVacio = { unidades: [], cargos: [], relaciones: [], niveles: NIV
 
 /* El catálogo de un `org` cualquiera. Va con respaldo porque lo guardado antes de que el campo
    existiera no lo trae, y sin esto esa demo abriría sin un solo nivel para elegir. */
-export const nivelesDe = (org = orgSeed) => org?.niveles ?? NIVELES_MANDO
+/* UNA LISTA VACÍA TAMBIÉN ES «NO HAY CATÁLOGO».
+   El respaldo miraba solo si el campo no existía (`??`), así que un `niveles: []` guardado —por
+   haber borrado los tres desde Configuración, o por un reseteo a medias— pasaba tal cual: la
+   pantalla abría sin un solo peldaño que elegir, y el campo «Nivel de mando» del cargo quedaba
+   con una lista vacía y sin forma de arreglarlo desde ahí.
+
+   No es una limitación: CERO NIVELES NO ES UN ESTADO VÁLIDO de este producto. Sin peldaños el
+   organigrama no puede ordenar nada de arriba abajo y un cargo no se puede terminar de definir,
+   así que quedarse sin ninguno es siempre un accidente y volver a los tres es la salida. */
+export const nivelesDe = (org = orgSeed) => (org?.niveles?.length ? org.niveles : NIVELES_MANDO)
 
 /* El nivel de un cargo, ya resuelto para dibujar: el número es la posición en la lista, así que
    nadie lo escribe y reordenar el catálogo lo renumera todo solo. Devuelve null cuando el cargo
@@ -382,6 +433,30 @@ export function cargoDe(persona, org = orgSeed) {
 export function areaDe(persona, org = orgSeed) {
   const cuadro = cuadroDe(persona, org)
   return cuadro ? (getUnidad(cuadro.unidadId, org)?.nombre || null) : null
+}
+
+/* LA SUCURSAL DE UNA PERSONA ES LA DE SU PUESTO, y no un campo suyo. Mismo criterio que el
+   área y por la misma razón: la silla es la que está en un lugar físico, la persona está donde
+   está su silla. Guardarlo en los dos lados garantiza que un día la ficha diga La Paz y su
+   puesto diga Santa Cruz, y entonces no hay manera de saber cuál de los dos miente.
+
+   Devuelve la lista de sedes del cuadro —hoy de a lo sumo una—, o `null` para quien no está en
+   la estructura. Son tres respuestas distintas y hay que poder distinguirlas: `null` es "no
+   tiene puesto, no sabemos dónde está"; lista vacía es "su puesto es transversal, está en
+   todas"; y una lista con algo es su sede. */
+export function sedesDe(persona, org = orgSeed) {
+  const cuadro = cuadroDe(persona, org)
+  return cuadro ? sucursalesDe(cuadro, org) : null
+}
+
+/* ¿Esta persona entra en el recorte por sede? El mismo criterio que `estaEnSucursal` usa para
+   el puesto —el transversal entra en todas—, más el caso de quien no ocupa ningún cuadro: sin
+   puesto no hay sede, así que solo aparece cuando no hay recorte. Esconderlo sería mentir; y
+   colarlo en todas las sedes, también. */
+export function personaEnSucursal(persona, sucursalId, org = orgSeed) {
+  if (!sucursalId || sucursalId === TODAS_SUCURSALES) return true
+  const cuadro = cuadroDe(persona, org)
+  return cuadro ? estaEnSucursal(cuadro, sucursalId) : false
 }
 
 /* `vacante` quiere decir "no hay nadie", que es lo que pinta el cuadro de amarillo. Con un
@@ -1146,8 +1221,16 @@ export const estaEnSucursal = (cargo, sucursalId) => {
    la sede aunque él no lo esté: sacar a un jefe intermedio dejaría a su gente sin de quién
    colgar y partiría el árbol en pedazos sueltos. Filtrar un organigrama es quedarse con las
    ramas que llegan a esa sede, no con una lista de cargos. */
-export function filtrarPorSucursal(org, sucursalId) {
+/* `lugares` es el conjunto de sitios que cuentan como esa sede —ella y sus centros—. Sin él se
+   compara contra el id suelto, que es lo que valía cuando un puesto solo podía declarar sucursal. */
+export function filtrarPorSucursal(org, sucursalId, lugares = null) {
   if (!sucursalId || sucursalId === TODAS_SUCURSALES) return org
+  const acepta = lugares || new Set([sucursalId])
+  /* Sin sitio declarado, el puesto vale para toda la empresa: entra en cualquier sede. */
+  const estaAca = cargo => {
+    const ids = cargo.sucursalIds || []
+    return ids.length === 0 || ids.some(x => acepta.has(x))
+  }
 
   const hijosDe = new Map()
   org.cargos.forEach(c => {
@@ -1160,8 +1243,9 @@ export function filtrarPorSucursal(org, sucursalId) {
   const alcanza = cargo => {
     if (resuelto.has(cargo.id)) return resuelto.get(cargo.id)
     resuelto.set(cargo.id, false) // corta ciclos si el dato quedó mal encadenado
-    const r = estaEnSucursal(cargo, sucursalId)
-      || (hijosDe.get(cargo.id) || []).some(alcanza)
+    /* LA COSTURA: un jefe que no trabaja en esta sede se queda si alguno de los suyos sí. Sin esto
+       el recorte parte la línea de mando y los de abajo quedan colgando de nada. */
+    const r = estaAca(cargo) || (hijosDe.get(cargo.id) || []).some(alcanza)
     resuelto.set(cargo.id, r)
     return r
   }

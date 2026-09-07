@@ -13,6 +13,7 @@ import AyudaCampo from '../../components/personas/AyudaCampo'
 import ConfigMandos from '../../components/personas/ConfigMandos'
 import ConfigColores from '../../components/personas/ConfigColores'
 import SelectorLista from '../../components/personas/SelectorLista'
+import ApoyoFuncional from '../../components/organizacion/ApoyoFuncional'
 import { ListaCrear } from '../../components/personas/MenuCrear'
 import ConfirmarAccionModal from '../../components/layout/ConfirmarAccionModal'
 import { HojaCargo, HojaUnidad } from '../../components/personas/HojaDetalle'
@@ -20,13 +21,15 @@ import PreviaLugar from '../../components/personas/PreviaLugar'
 import FraseFiltro from '../../components/personas/FraseFiltro'
 import Avatar from '../../components/personas/Avatar'
 import { exportarPNG, exportarSVG, imprimir } from '../../components/personas/exportarOrganigrama'
+import { TIPOS_UNIDAD, estadosDe } from '../../data/estructuraData'
 import { colaboradoresData } from './colaboradoresData'
 import { useOnboardingData } from '../../context/OnboardingDataContext'
+import { lugaresDeSucursal } from '../../data/estructuraData'
 import { useLocalStorage } from '../../hooks/useLocalStorage'
 import {
-  empresa, sucursales, getUnidad, nuevoId, tipoDe, TIPOS_CARGO, esTipoDeclarado, nivelesDe,
+  getUnidad, nuevoId, tipoDe, TIPOS_CARGO, esTipoDeclarado, nivelesDe,
   buildOrgTree, filasTabla, buscarCargos, normalizar, unidadesRaiz, subunidadesDe,
-  tarjetaUnidad, cargosDeUnidad, filtrarPorSucursal, TODAS_SUCURSALES, estaEnSucursal,
+  tarjetaUnidad, cargosDeUnidad, estaEnSucursal, filtrarPorSucursal, TODAS_SUCURSALES,
   eliminarCargo, ramaDe, podarConCostura, codigosDeSerie, eliminarUnidad, bloqueoUnidad, unidadesPadrePosibles, cabezaDe,
   filtrarPorUnidad, cargosEnRama, TODAS_UNIDADES,
   ocupantesDe, funcionalesDe, areasQueApoya, apoyosDeUnidad, getPersona,
@@ -137,15 +140,7 @@ function PuestoFicha({
   puesto, org, sucursales, puestosPorSede, conCodigos, unidadPropia, cargoId, onCambio,
 }) {
   const sedeId = puesto.sucursalIds?.[0] || null
-  const sede = sucursales.find(s => s.id === sedeId)
   const apoyos = puesto.funcionales || []
-  /* El botón de agregar solo aparece si queda alguna por elegir: uno que abre una fila sin
-     opciones es una fila que después hay que borrar a mano. */
-  const hayLibres = org.unidades.some(u => u.id !== unidadPropia && !apoyos.some(f => f.unidadId === u.id))
-
-  const setApoyo = (i, cambios) => onCambio({
-    funcionales: apoyos.map((x, j) => (j === i ? { ...x, ...cambios } : x)),
-  })
 
   const campos = (
     <>
@@ -170,17 +165,23 @@ function PuestoFicha({
         )}
         <div className="pl-label">
           <span className="og-label-fila">
-            Sede
+            Sucursal
             <AyudaCampo>
               El organigrama es uno solo: lo que cambia por sede es qué puestos existen en cada
               una. Si el mismo trabajo se hace en dos ciudades, son <strong>dos puestos</strong>,
               cada uno con su código y su gente.
             </AyudaCampo>
           </span>
-          {/* Desplegable y no la reja de sedes a la vista que había en la pestaña: acá adentro
-              conviven cinco fichas, y cinco listas de ocho sucursales son cuarenta renglones
-              para contestar cinco veces lo mismo. El buscador y la cuenta de puestos por sede
-              —que es la única pista que ayuda a decidir— se conservan dentro de la lista. */}
+          {/* SIEMPRE UN DESPLEGABLE. Acá había dos caras: parado en una sede la sucursal no se
+              elegía, se mostraba —«lo que creas nace donde estás»—, que era la mitad que convertía
+              al ámbito en algo más que un filtro. Quitado el ámbito global, esa cara no tiene de
+              dónde salir: no hay ninguna sede en la que estar parado, así que la sucursal de cada
+              puesto se elige, siempre, acá.
+
+              Desplegable y no la reja de sedes a la vista que había en la pestaña: acá adentro
+              conviven cinco fichas, y cinco listas de ocho sucursales son cuarenta renglones para
+              contestar cinco veces lo mismo. El buscador y la cuenta de puestos por sede —que es
+              la única pista que ayuda a decidir— se conservan dentro de la lista. */}
           <SelectorLista
             valor={sedeId}
             onCambio={v => onCambio({ sucursalIds: v ? [v] : [] })}
@@ -193,69 +194,43 @@ function PuestoFicha({
         </div>
       </div>
 
+      {/* EL RÓTULO QUE LE FALTABA. «Apoya funcionalmente a» arrancaba pegado a la sucursal, sin
+          nada que dijera que empieza otro asunto: los dos campos de arriba dicen dónde está el
+          puesto y este dice dónde MÁS trabaja, que es una pregunta de otra naturaleza.
+
+          Es el mismo rótulo que ya separa la definición del cargo de lo que es del puesto —línea
+          fina, título y una frase corta al lado— y no un estilo nuevo: si dos cosas cortan un
+          formulario en dos, tienen que cortarlo igual.
+
+          Y ADEMÁS RECUPERA UN NOMBRE QUE LA PANTALLA SEGUÍA USANDO. Esto vivía en una pestaña
+          llamada «Funcional» que se quitó al pasar los campos al puesto, pero dos ayudas seguían
+          mandando «a la pestaña Funcional» —a un sitio que ya no existía—. Con la sección
+          rotulada, esas frases vuelven a apuntar a algo que se ve. */}
+      <div className="og-rot-bloque og-rot-funcional">
+        Funcional
+        <em>Dónde más trabaja, sin pertenecer ahí</em>
+      </div>
+
       <div className="pl-label og-apoya">
         <span className="og-label-fila">
           Apoya funcionalmente a
           <AyudaCampo>
-            El puesto <strong>pertenece</strong> a un área y puede <strong>trabajar</strong> en
+            El puesto <strong>pertenece</strong> a una unidad y puede <strong>trabajar</strong> en
             otras. En cada área que apoya se dibuja como un cuadro más, en azul, y sigue siendo
             el mismo puesto: no se cuenta dos veces.
           </AyudaCampo>
         </span>
 
-        {apoyos.length === 0 ? (
-          <p className="og-apoya-nada">
-            {hayLibres
-              ? 'A nadie: solo trabaja en su área.'
-              : 'No hay otras áreas todavía. En cuanto crees una, va a poder elegirse acá.'}
-          </p>
-        ) : apoyos.map((f, i) => {
-          /* El jefe funcional se elige entre los cargos DEL ÁREA que se apoya: es quien le
-             dirige el trabajo ahí. Ofrecer el organigrama entero convertiría el campo en una
-             segunda línea de mando sin relación con el área. */
-          const deEsaArea = org.cargos.filter(c => c.unidadId === f.unidadId && c.id !== cargoId)
-          return (
-            <div key={i} className="og-apoya-fila">
-              <SelectorLista
-                valor={f.unidadId}
-                onCambio={v => setApoyo(i, { unidadId: v, reportaA: null })}
-                placeholder="Elige el área"
-                /* Fuera la suya y las que ya están en la lista: repetir un área no agrega nada
-                   y deja dos filas diciendo lo mismo. */
-                opciones={org.unidades
-                  .filter(u => u.id !== unidadPropia)
-                  .filter(u => u.id === f.unidadId || !apoyos.some(x => x.unidadId === u.id))
-                  .map(u => ({ id: u.id, nombre: u.nombre, detalle: getUnidad(u.padreId, org)?.nombre }))}
-              />
-              <span className="og-apoya-y">respondiendo a</span>
-              <SelectorLista
-                valor={f.reportaA}
-                onCambio={v => setApoyo(i, { reportaA: v })}
-                vacia="Nadie: cuelga del área"
-                placeholder={f.unidadId ? 'Nadie: cuelga del área' : 'Elige primero el área'}
-                opciones={deEsaArea.map(c => ({ id: c.id, nombre: c.nombre }))}
-              />
-              <button
-                type="button"
-                className="og-apoya-x"
-                title="Quitar esta área"
-                onClick={() => onCambio({ funcionales: apoyos.filter((_, j) => j !== i) })}
-              >
-                <Trash2 size={13} />
-              </button>
-            </div>
-          )
-        })}
-
-        {hayLibres && (
-          <button
-            type="button"
-            className="og-apoya-mas"
-            onClick={() => onCambio({ funcionales: [...apoyos, { unidadId: '', reportaA: null }] })}
-          >
-            <Plus size={13} /> {apoyos.length ? 'Otra área' : 'Agregar un área'}
-          </button>
-        )}
+        {/* EL EDITOR SE FUE A SU PROPIO ARCHIVO. Ahora también se usa desde la lista de cargos, y
+            dos copias del mismo formulario es garantizar que dentro de un mes una valide algo que
+            la otra no. Lo que quedó acá es el rótulo, la ayuda y el sitio. */}
+        <ApoyoFuncional
+          apoyos={apoyos}
+          org={org}
+          unidadPropia={unidadPropia}
+          cargoId={cargoId}
+          onCambio={funcionales => onCambio({ funcionales })}
+        />
       </div>
     </>
   )
@@ -264,6 +239,10 @@ function PuestoFicha({
 }
 
 function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminarRama, onCerrar, org, abrirEnEdicion, conCodigos = true }) {
+  /* Las sedes salen del contexto y ya no de la constante del modelo. Desde que se editan en
+     Organización → Sucursales, leerlas del módulo dejaría este desplegable ofreciendo una lista que
+     el usuario ya cambió —o una sede que borró—. */
+  const { sucursales } = useOnboardingData()
   const nuevo = !cargo
   /* SE ABRE PARA MIRAR, NO PARA CAMBIAR. Un cuadro del organigrama se abre muchas más veces
      para consultarlo que para editarlo, y entrando directo al formulario cualquier descuido
@@ -355,6 +334,11 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
     /* Cuánto pesa el puesto. Se guarda el id del peldaño y no su número: reordenar el catálogo
        renumera todo solo, sin tocar un solo cargo. Vacío = sin declarar. */
     grado: cargo?.grado ?? base?.grado ?? null,
+    /* EL ESTADO, QUE SOLO ESTABA DEL OTRO LADO. Desactivar no es borrar —el puesto conserva su
+       historia y su gente y deja de ofrecerse para cosas nuevas— y hasta ahora eso solo se podía
+       hacer desde la tabla. Es del CARGO y no de cada silla: el modal edita la definición del
+       grupo, y desactivar «Ejecutiva Comercial» las desactiva a las cinco. */
+    estado: cargo?.estado || 'activa',
     /* Si se está mirando una sede concreta, el puesto nuevo nace en esa sede y no en todas: es
        la respuesta a "¿para qué sucursal estoy creando?".
 
@@ -384,7 +368,10 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
   const puestosPorSede = useMemo(() => Object.fromEntries(sucursales.map(sc => [
     sc.id,
     org.cargos.filter(c => c.id !== cargo?.id && estaEnSucursal(c, sc.id)).length,
-  ])), [org.cargos, cargo?.id])
+  /* `sucursales` entra en las dependencias porque ya no es una constante del módulo: viene del
+     contexto y cambia en cuanto alguien crea o borra una sede en Organización. Sin ella, el
+     desplegable seguiría contando sobre la lista de sedes anterior. */
+  ])), [org.cargos, cargo?.id, sucursales])
 
   const coordinaciones = cargo ? coordinacionesDe(cargo.id, org) : []
   const ocupantes = form.ocupantes
@@ -392,7 +379,13 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
     .filter(Boolean)
   const t = tipoVisual(form.tipo)
   const externo = form.tipo === 'outsourcing'
+  /* EL NIVEL DE MANDO, OBLIGATORIO COMO EN LA FICHA —y solo cuando la pantalla lo enseña—.
+     Staff y tercerizados no lo tienen: el dibujo los pone al costado de la línea de mando, así que
+     preguntarles a qué altura mandan no tiene respuesta. Exigirlo siempre habría bloqueado
+     justamente los dos casos en que el campo ni se ve. */
+  const pideNivel = form.tipo === 'colaborador'
   const valido = !!form.nombre.trim() && !!form.unidadId && form.reportaA !== undefined
+    && (!pideNivel || !!form.grado)
   /* Los cargos de los que este puesto podría colgar. Vacío quiere decir que es el primero del
      organigrama, y entonces "de quién depende" deja de ser una pregunta. */
   const jefesPosibles = org.cargos.filter(c => c.id !== cargo?.id)
@@ -585,6 +578,18 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
           <div className="pl-modal-body og-cargo-campos">
             {(unico || sel === 'cargo') && (
             <section className="og-bloque">
+              {/* EL ÚNICO BLOQUE SIN RÓTULO ERA JUSTO EL PRIMERO. Abajo dicen «El puesto · Lo suyo,
+                  no del cargo» y «Funcional · Dónde más trabaja», y arriba había cinco campos
+                  sueltos: el formulario contaba su estructura a partir de la mitad, así que hasta
+                  llegar ahí no se sabía que lo de arriba era compartido y lo de abajo no.
+
+                  Con el tercero puesto, el modal se lee de un vistazo como lo que es: la
+                  DEFINICIÓN, la SILLA y lo FUNCIONAL. Es la misma división que la propuesta hace en
+                  el árbol, dicha con las mismas palabras en la pantalla vieja. */}
+              <div className="og-rot-bloque og-rot-primero">
+                El cargo
+                <em>{unico ? 'La definición, no la silla' : `Vale para sus ${form.puestos.length} puestos`}</em>
+              </div>
               {/* QUIÉN COMPARTE ESTO. Sin decirlo, quien abre el EC-003 no tiene forma de saber
                   que hay cuatro más iguales, y renombrarlo dejaría uno con otro nombre y cuatro
                   con el viejo. El panel de la izquierda muestra a los cinco; esto nombra lo que
@@ -631,11 +636,16 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                     cada uno se edita por su cuenta, con su propia ficha y su propio cuadro. */}
                 {nuevo && (
                   <label className="pl-label og-campo-cuantos">
+                    {/* «CUÁNTOS PUESTOS» Y NO «OCUPANTES». Este número CREA sillas; el «Máximo de
+                        personas» de la ficha pone un TECHO a cuántas puede llegar a haber. Dos
+                        cosas distintas que se leían igual, y con las dos pantallas escribiendo el
+                        mismo cargo esa confusión se paga. Y de paso deja de sugerir que acá se
+                        elige gente: la persona se asigna en cada puesto, más abajo. */}
                     <span className="og-label-fila">
-                      Ocupantes
+                      Cuántos puestos
                       <AyudaCampo>
-                        Cuántas personas van a ocupar este mismo cargo. Con más de una se crean
-                        varios puestos, cada uno con su código y su sede — no un puesto compartido.
+                        Cuántas sillas de este mismo cargo se abren ahora. Cada una nace con su
+                        código y su sede — no es un puesto compartido entre varios.
                       </AyudaCampo>
                     </span>
                     <input
@@ -664,8 +674,8 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                         también de áreas, no decía cuál de las dos es esta. */}
                     Unidad organizacional a la que pertenece <em className="og-req">*</em>
                     <AyudaCampo>
-                      Su área de verdad: la que lo evalúa y donde se lo cuenta. Si además ayuda a
-                      otras, eso se declara en la pestaña <strong>Funcional</strong>.
+                      Su unidad de verdad: la que lo evalúa y donde se lo cuenta. Si además ayuda a
+                      otras, eso se declara más abajo, en <strong>Funcional</strong>.
                     </AyudaCampo>
                   </span>
                   <SelectorLista
@@ -735,6 +745,15 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                 </label>
               </div>
 
+              {/* NIVEL Y ESTADO, DE A DOS. Cada uno ocupaba una fila entera para un desplegable de
+                  dos palabras: «Mando medio» estirado sobre seiscientos píxeles, dos veces
+                  seguidas y justo debajo de las tres tarjetas del tipo, que sí son anchas. El ojo
+                  bajaba por tres franjas del mismo ancho y ninguna pesaba más que otra.
+
+                  De a dos vuelven a medir lo que dicen. Y cuando el tipo es staff o tercerizado
+                  —que no llevan nivel— el estado se queda en la mitad izquierda en vez de estirarse
+                  solo: la reja no se mueve al cambiar de tipo, que es lo que haría saltar el
+                  formulario debajo del dedo. */}
               {/* Tres tarjetas y no un desplegable: son tres cosas distintas —una en planilla,
                   una al costado de la línea, una que presta un tercero— y en un `select` se leen
                   como tres palabras hasta que alguien las abre una por una. Jefe no está entre
@@ -778,14 +797,19 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                     le paga por banda, se le paga por contrato. Preguntarle su nivel de mando es
                     meterlo en una escala que no es la suya.
 
-                  Es opcional incluso para el colaborador, y a propósito: los puestos guardados
-                  antes de que el campo existiera no tienen ninguno, y forzar a completarlos
-                  convertiría abrir cualquier ficha vieja en una tarea. Sin declarar, el cuadro no
-                  se mueve de su sitio y la tabla lo dice en gris. */}
+                  PASÓ A SER OBLIGATORIO para el colaborador, y no porque se haya vuelto más
+                  importante: la ficha del árbol ya lo exigía, así que un cargo creado acá sin nivel
+                  no se podía guardar allá. Con las dos pantallas escribiendo el mismo cargo, un
+                  obligatorio que solo una de las dos pide no es una asimetría de estilo.
+
+                  Lo guardado antes de que el campo existiera no tiene ninguno y no se toca: la
+                  exigencia es para guardar, no para abrir. Sin declarar, el cuadro no se mueve de
+                  su sitio y la tabla lo dice en gris. */}
+              <div className="og-fila-campos og-fila-mitades">
               {form.tipo === 'colaborador' && (
                 <label className="pl-label">
                   <span className="og-label-fila">
-                    Nivel de mando
+                    Nivel de mando <em className="og-req">*</em>
                     <AyudaCampo>
                       Dice <strong>cuánto pesa</strong> el puesto en la empresa, y es independiente
                       de quién reporta a quién: dos cargos sin jefe pueden tener niveles distintos,
@@ -796,8 +820,7 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                   <SelectorLista
                     valor={form.grado}
                     onCambio={v => set('grado', v)}
-                    vacia="Sin nivel"
-                    placeholder="Sin nivel"
+                    placeholder="Elige uno"
                     opciones={nivelesDe(org).map((n, i) => ({
                       id: n.id,
                       nombre: n.nombre,
@@ -808,6 +831,24 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                   />
                 </label>
               )}
+
+              <div className="pl-label">
+                <span className="og-label-fila">
+                  Estado
+                  <AyudaCampo>
+                    Desactivar no es borrar: el puesto deja de ofrecerse para cosas nuevas y
+                    conserva su historia y a quien lo ocupó. Vale para todos los puestos de este
+                    cargo.
+                  </AyudaCampo>
+                </span>
+                <SelectorLista
+                  valor={form.estado || 'activa'}
+                  onCambio={v => set('estado', v || 'activa')}
+                  placeholder="Activo"
+                  opciones={Object.entries(estadosDe('cargo')).map(([id, e]) => ({ id, nombre: e.label }))}
+                />
+              </div>
+              </div>
 
               {/* Las coordinaciones no se editan aquí —se trazan sobre el lienzo— pero sí se
                   muestran: son la otra mitad de con quién trabaja el puesto. */}
@@ -852,7 +893,7 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
               {!unico && (
                 <p className="og-de-que-cargo">
                   <Layers size={11} />
-                  {form.nombre.trim() || 'Sin nombre'} · {getUnidad(form.unidadId, org)?.nombre || 'Sin área'}
+                  {form.nombre.trim() || 'Sin nombre'} · {getUnidad(form.unidadId, org)?.nombre || 'Sin unidad'}
                 </p>
               )}
               <PuestoFicha
@@ -980,7 +1021,9 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
 
    El área con cargos no guarda su mando aparte: el dato es el "Reporta a" de su cabeza, y este
    aviso es el que dice en voz alta que tocar el campo del área va a mover ese cargo. */
-function avisoDeMudanza(unidad, form, org) {
+/* `empresa` entra por parámetro y no por import: es una función suelta, no un componente, así
+   que no puede leer el contexto por su cuenta. */
+function avisoDeMudanza(unidad, form, org, empresa) {
   if (!unidad) return null
   const cabeza = cabezaDe(unidad.id, org)
   if (!cabeza) return null
@@ -988,13 +1031,14 @@ function avisoDeMudanza(unidad, form, org) {
   if (mando === (cabeza.reportaA ?? null)) return null
   const jefe = mando ? org.cargos.find(c => c.id === mando) : null
   if (jefe) return `Al guardar, ${cabeza.nombre} pasa a reportar a ${jefe.nombre}.`
-  const donde = form.padreId ? getUnidad(form.padreId, org)?.nombre ?? 'su área' : empresa.nombre
+  const donde = form.padreId ? getUnidad(form.padreId, org)?.nombre ?? 'su unidad' : empresa.nombre
   return `Al guardar, ${cabeza.nombre} deja de tener jefe y ${unidad.nombre} cuelga de ${donde}.`
 }
 
 /* ---------- Modal: alta y detalle de una unidad organizacional ---------- */
 
 function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbrirCargo, abrirEnEdicion }) {
+  const { empresa } = useOnboardingData()
   const nueva = !unidad
   /* La misma regla que el cargo: se abre para mirar. Cambiar "Dentro de" o "Bajo el mando de"
      sin querer no corrige un nombre, mueve el área entera del dibujo y le cambia el jefe a su
@@ -1005,6 +1049,16 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
     codigo: unidad?.codigo || '',
     nombre: unidad?.nombre || '',
     corto: unidad?.corto || '',
+    /* LOS DOS QUE FALTABAN, Y NO ES UN CAPRICHO DE SIMETRÍA. La ficha de la tabla pide «Tipo de
+       unidad» como OBLIGATORIO, así que una unidad creada desde acá nacía inválida: abrirla del
+       otro lado exigía completar un campo antes de dejar guardar algo que ya estaba guardado.
+       Desde que las dos pantallas escriben el mismo dato, un obligatorio que solo una de las dos
+       pregunta no es una inconsistencia de estilo, es una pantalla contradiciendo a la otra.
+
+       Descripción, responsable y dónde opera se quedan solo en la ficha: son opcionales y no hacen
+       falta para dibujar. El modal crea rápido; la ficha completa. */
+    tipoUnidad: unidad?.tipoUnidad || '',
+    estado: unidad?.estado || 'activa',
     padreId: unidad ? unidad.padreId
       : base && 'padreId' in base ? base.padreId
       : (org.unidades[0]?.id ?? null),
@@ -1015,7 +1069,7 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
   }))
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
-  const valido = form.nombre.trim().length > 0
+  const valido = form.nombre.trim().length > 0 && !!form.tipoUnidad
   const inicial = useRef(null)
   if (inicial.current === null) inicial.current = JSON.stringify(form)
   const intentarCerrar = () => { if (soloVer || JSON.stringify(form) === inicial.current) onCerrar() }
@@ -1027,7 +1081,7 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
   const bloqueo = unidad ? bloqueoUnidad(unidad.id, org) : null
   const apoyos = unidad ? apoyosDeUnidad(unidad.id, org) : []
   const padres = unidadesPadrePosibles(unidad?.id, org)
-  const mudanza = avisoDeMudanza(unidad, form, org)
+  const mudanza = avisoDeMudanza(unidad, form, org, empresa)
   /* Los cargos entre los que se elige el mando: los del área que la contiene. El jefe de un
      área es alguien de la de arriba; ofrecer el organigrama entero convertiría el campo en una
      línea de mando paralela.
@@ -1073,7 +1127,7 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
             <span className="og-label-fila">
               Código
               <AyudaCampo>
-                El identificador del área en los reportes de RRHH. Es opcional: si la empresa no
+                El identificador de la unidad en los reportes de RRHH. Es opcional: si la empresa no
                 los usa, se deja vacío.
               </AyudaCampo>
             </span>
@@ -1114,12 +1168,44 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
 
           <div className="pl-label">
             <span className="og-label-fila">
+              Tipo de unidad <em className="og-req">*</em>
+              <AyudaCampo>
+                Qué clase de unidad es. «Ventas» no dice si es una gerencia o un equipo de tres
+                personas, y esa es la primera pregunta de cualquiera que mire el organigrama.
+              </AyudaCampo>
+            </span>
+            <SelectorLista
+              valor={form.tipoUnidad || null}
+              onCambio={v => set('tipoUnidad', v || '')}
+              placeholder="Elige uno"
+              opciones={TIPOS_UNIDAD.map(t => ({ id: t, nombre: t }))}
+            />
+          </div>
+
+          <div className="pl-label">
+            <span className="og-label-fila">
+              Estado
+              <AyudaCampo>
+                Desactivar no es borrar: la unidad deja de ofrecerse para cosas nuevas y conserva
+                su historia y su gente.
+              </AyudaCampo>
+            </span>
+            <SelectorLista
+              valor={form.estado || 'activa'}
+              onCambio={v => set('estado', v || 'activa')}
+              placeholder="Activa"
+              opciones={Object.entries(estadosDe('unidad')).map(([id, e]) => ({ id, nombre: e.label }))}
+            />
+          </div>
+
+          <div className="pl-label">
+            <span className="og-label-fila">
               Dentro de
               {/* Decía "es contención, no mando", que es la idea correcta contada en el idioma
                   del modelo de datos: hay que saber qué significa contención para entenderla.
                   Un ejemplo de área adentro de otra la explica sola. */}
               <AyudaCampo>
-                El área que la contiene. Por ejemplo, <strong>Selección</strong> va dentro de{' '}
+                La unidad que la contiene. Por ejemplo, <strong>Selección</strong> va dentro de{' '}
                 <strong>Recursos Humanos</strong>.<br /><br />
                 Dice dónde está, no de quién depende: eso se elige en el campo de abajo.
               </AyudaCampo>
@@ -1141,16 +1227,16 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
             <span className="og-label-fila">
               Bajo el mando de
               <AyudaCampo>
-                El cargo del que depende esta área. Por ejemplo, <strong>Ventas</strong> bajo el
+                El cargo del que depende esta unidad. Por ejemplo, <strong>Ventas</strong> bajo el
                 mando del <strong>CEO</strong>: así se dibuja debajo de él y no a su lado.
                 <br /><br />
-                Se elige entre los cargos del área que la contiene.
+                Se elige entre los cargos de la unidad que la contiene.
               </AyudaCampo>
             </span>
             <SelectorLista
               valor={form.mandoId}
               onCambio={v => set('mandoId', v)}
-              vacia="Nadie: cuelga del área"
+              vacia="Nadie: cuelga de la unidad"
               opciones={cargosDelPadre.map(c => ({
                 id: c.id,
                 nombre: c.nombre,
@@ -1160,7 +1246,7 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
 
             {!form.padreId && (
               <p className="og-field-nota">
-                Al colgar de {empresa.nombre} el área no depende de ningún cargo.
+                Al colgar de {empresa.nombre} la unidad no depende de ningún cargo.
               </p>
             )}
             {form.padreId && cargosDelPadre.length === 0 && (
@@ -1186,8 +1272,8 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
               <span className="og-label-fila">
                 Apoyo funcional
                 <AyudaCampo>
-                  Puestos de otras áreas que trabajan en esta. No pertenecen aquí ni se cuentan
-                  entre sus cargos: se declara en el formulario de cada puesto, en la pestaña{' '}
+                  Puestos de otras unidades que trabajan en esta. No pertenecen aquí ni se cuentan
+                  entre sus cargos: se declara en el formulario de cada puesto, en{' '}
                   <strong>Funcional</strong>.
                 </AyudaCampo>
                 <span className="og-contador">{apoyos.length}</span>
@@ -1204,7 +1290,7 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
                     <span className="og-apoyo-txt">
                       <strong>{c.nombre}</strong>
                       <em>
-                        de {getUnidad(c.unidadId, org)?.nombre || 'sin área'}
+                        de {getUnidad(c.unidadId, org)?.nombre || 'sin unidad'}
                         {reportaA && <> · responde a {org.cargos.find(x => x.id === reportaA)?.nombre}</>}
                       </em>
                     </span>
@@ -1247,6 +1333,8 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
               codigo: form.codigo.trim() || null,
               nombre: form.nombre.trim(),
               corto: form.corto.trim() || form.nombre.trim(),
+              tipoUnidad: form.tipoUnidad || null,
+              estado: form.estado || 'activa',
               padreId: form.padreId,
               mandoId: form.mandoId ?? null,
             })}
@@ -1518,7 +1606,7 @@ function VistaCards({ org, busca, setBusca, onAbrir, onEditarUnidad, onEliminarV
               <>
                 <Seccion
                   titulo="Apoyo funcional"
-                  conteo={`${apoyosAqui.length} ${apoyosAqui.length === 1 ? 'puesto de otra área' : 'puestos de otras áreas'}`}
+                  conteo={`${apoyosAqui.length} ${apoyosAqui.length === 1 ? 'puesto de otra unidad' : 'puestos de otras unidades'}`}
                 />
                 <div className="og-grid">
                   {apoyosAqui.map(f => <CargoCard key={`f-${f.cargo.id}`} fila={f} onAbrir={onAbrir} funcional />)}
@@ -1812,12 +1900,12 @@ function BotonCrear({ onCargo, onUnidad, sinAreas }) {
             {
               id: 'cargo', Icon: User, titulo: 'Cargo / puesto',
               detalle: 'Una posición del organigrama',
-              bloqueo: sinAreas ? 'Primero hace falta un área donde ponerlo' : null,
+              bloqueo: sinAreas ? 'Primero hace falta una unidad donde ponerlo' : null,
               accion: onCargo,
             },
             {
               id: 'unidad', Icon: Building2, titulo: 'Unidad organizacional',
-              detalle: 'Un área que agrupa cargos y otras áreas',
+              detalle: 'Una unidad que agrupa cargos y otras unidades',
               accion: onUnidad,
             },
           ]}
@@ -1866,10 +1954,19 @@ export default function Organigrama() {
      borra "Resetear demo" y la siembra "Cargar datos de ejemplo", igual que las rutas o los
      documentos. Es la estructura completa ({ unidades, cargos, relaciones }) porque es lo
      que esperan todas las funciones de `organigramaData`. */
-  const { organigrama: org, setOrganigrama: setOrg } = useOnboardingData()
+  /* `nodos` vuelve: el filtro de sede necesita el árbol para saber qué centros hay dentro de cada
+     sucursal, y las sedes que ofrece salen de ahí y no de la lista vieja. */
+  const { organigrama: org, setOrganigrama: setOrg, empresa, nodos } = useOnboardingData()
   const [vista, setVista] = useState('grafico')
   const [pestana, setPestana] = useState('completo')
-  const [sedeId, setSedeId] = useState(TODAS_SUCURSALES)
+  /* LA SEDE YA NO ES ESTADO DE ESTA PANTALLA: es el ámbito, y vive en el riel. Era el más
+     visible de los cuatro filtros sueltos que había, y el más engañoso: se reiniciaba al salir,
+     así que uno recortaba el organigrama a Santa Cruz, entraba a Puestos y volvía a ver la
+     empresa entera sin que nada avisara del cambio.
+
+     El hueco de la frase sigue estando y sigue funcionando igual —quien mira el dibujo espera
+     poder cambiar de sede desde ahí—, solo que ahora mueve el ámbito de toda la aplicación, y la
+     franja verde de arriba lo dice. */
   /* LOS FILTROS, EN UN PANEL. Antes eran dos desplegables en la barra oscura y dos controles
      flotando sobre el dibujo. Se juntaron porque contestan la misma pregunta —qué parte de la
      empresa estoy mirando— y porque en la barra ya no cabía uno más: el de tipo de puesto
@@ -1933,6 +2030,14 @@ export default function Organigrama() {
   }
   /* El elemento de la barra donde el gráfico va a portalar su buscador. Es estado y no un ref
      para que el gráfico se vuelva a dibujar cuando la ranura aparece. */
+  /* EN QUÉ SEDE SE ESTÁ MIRANDO. Es un FILTRO DE ESTA VISTA y no un ámbito: vive en la pantalla,
+     arranca en «todas», se ve escrito en la frase de arriba y se quita tocándolo.
+
+     Hubo un ámbito global de sucursal y se quitó por lo contrario de esto: venía elegido de
+     fábrica, cambiaba lo que veías Y lo que creabas en seis pantallas, y recortaba el organigrama
+     sin decir que lo estaba haciendo. La diferencia no es el filtro, es quién lo puso y si se ve. */
+  const [sedeId, setSedeId] = useState(TODAS_SUCURSALES)
+
   const [ranuraBuscador, setRanuraBuscador] = useState(null)
   const [editando, setEditando] = useState(null)      // { cargo } | { cargo: null } para alta
   const [editandoUnidad, setEditandoUnidad] = useState(null) // { unidad } | { unidad: null }
@@ -1941,8 +2046,17 @@ export default function Organigrama() {
   /* Primero el área y después la sede: los dos recortan y se aplican uno sobre el otro, así que
      "Marketing en La Paz" es una vista posible y no dos filtros que se pisan. */
   const orgVisible = useMemo(
-    () => filtrarPorSucursal(filtrarPorUnidad(org, unidadId), sedeId),
-    [org, unidadId, sedeId],
+    /* SIN ÁMBITO YA NO SE RECORTA POR SEDE. Quedaba `filtrarPorSucursal(..., sedeId)` envolviendo
+       esto, con `sedeId` clavado en «todas»: una llamada que ya no podía hacer nada y que había
+       que leer entera para descubrirlo. */
+    () => filtrarPorSucursal(
+      filtrarPorUnidad(org, unidadId),
+      sedeId,
+      /* Los sitios que valen por esa sede: ella y sus centros de trabajo. Un puesto que declara
+         «Depósito Central» trabaja en Casa Matriz, aunque su id sea otro. */
+      sedeId === TODAS_SUCURSALES ? null : lugaresDeSucursal(nodos, sedeId),
+    ),
+    [org, unidadId, sedeId, nodos],
   )
   /* Clase, nivel y estado no recortan la ESTRUCTURA: sacan cargos. El gráfico los poda con
      costura y las listas simplemente se quedan con los que pasan. */
@@ -1966,12 +2080,25 @@ export default function Organigrama() {
   const tree = useMemo(
     () => buildOrgTree(pestana, orgPodado, {
       funcionales: verFuncionales,
-      /* Sin filtro de sede se rescatan las áreas sin cargos, que es como se ve un organigrama
-         a medio armar. Con una sede elegida no: ahí un área sin puestos no existe. */
-      vacias: sedeId === TODAS_SUCURSALES && !recorteBlando,
+      /* Se rescatan las unidades sin cargos, que es como se ve un organigrama a medio armar. La
+         excepción de la sede se fue con el ámbito; queda la de los filtros de cargo, donde
+         enseñar unidades vacías contradiría el recorte que se acaba de pedir. */
+      /* Con una sede elegida tampoco: ahí una unidad sin puestos no existe. A diferencia del
+         ámbito global de antes, esto ya no sorprende a nadie —la sede está escrita en la frase de
+         arriba y la puso quien mira—. */
+      vacias: !recorteBlando && sedeId === TODAS_SUCURSALES,
     }),
-    [pestana, orgPodado, verFuncionales, sedeId, recorteBlando],
+    [pestana, orgPodado, verFuncionales, recorteBlando, sedeId],
   )
+  /* HUBO UN AVISO ACÁ —«N unidades quedaron fuera de la pantalla porque todavía no tienen
+     puestos»— y se fue por donde nació mal: trataba como anomalía algo que es normal. Una unidad
+     NO NECESITA PUESTOS para existir; recién creada no tiene ninguno y eso no es un estado a
+     medias que haya que explicar con un cartel amarillo.
+
+     Lo que quedaba debajo era cierto —el dibujo es más ancho que la pantalla y lo que cae al borde
+     no se ve— pero eso le pasa a cualquier nodo del organigrama, no a las unidades vacías: es del
+     lienzo y ya tiene su respuesta, el botón de ver todo. Un aviso que solo aparece para las
+     unidades sin puestos las señalaba a ellas por un problema que no es suyo. */
   /* Cuántos cuadros de apoyo hay para mostrar. Si no hay ninguno el interruptor no aparece: un
      control que no cambia nada enseña a ignorar la fila donde vive. */
   const cuantosFuncionales = useMemo(() => {
@@ -1984,8 +2111,25 @@ export default function Organigrama() {
     )).length, 0)
   }, [org, orgVisible, pestana])
 
-  const sede = sucursales.find(s => s.id === sedeId)
 
+
+  /* LAS SEDES SALEN DEL ÁRBOL Y NO DE LA LISTA VIEJA: se crean y se borran en Estructura física, y
+     ofrecer una que ya no existe es ofrecer un filtro que deja el dibujo en blanco.
+
+     LA CUENTA VA CON CADA UNA porque es la única pista que ayuda a elegir: «Sopocachi · 4» avisa
+     antes de pulsar de que ese recorte deja cuatro cuadros. Se cuenta sobre el organigrama COMPLETO
+     y no sobre lo ya filtrado, para que el número no cambie según por dónde se venga. */
+  const sedes = useMemo(() => nodos
+    .filter(n => n.tipo === 'sucursal' && n.estado !== 'cerrada')
+    .map(s => {
+      const dentro = lugaresDeSucursal(nodos, s.id)
+      return {
+        id: s.id,
+        nombre: s.nombre,
+        detalle: s.ciudad || undefined,
+        n: org.cargos.filter(c => (c.sucursalIds || []).some(x => dentro.has(x))).length,
+      }
+    }), [nodos, org.cargos])
 
   const unidadVista = org.unidades.find(u => u.id === unidadId) || null
 
@@ -1993,7 +2137,7 @@ export default function Organigrama() {
      agregar uno nuevo no obliga a pasarle cuatro pares de props más. */
   const filtros = { sedeId, unidadId, tipos, grados, estado: estadoFiltro }
   const cambiarFiltro = parche => {
-    if ('sedeId' in parche) setSedeId(parche.sedeId)
+    if ('sedeId' in parche) setSedeId(parche.sedeId ?? TODAS_SUCURSALES)
     if ('unidadId' in parche) setUnidadId(parche.unidadId)
     if ('tipos' in parche) setTipos(parche.tipos)
     if ('grados' in parche) setGrados(parche.grados)
@@ -2030,8 +2174,8 @@ export default function Organigrama() {
           }),
         },
         {
-          id: 'unidad', Icon: Building2, titulo: 'Subárea dentro',
-          detalle: `Un área que cuelga de ${u.nombre}`,
+          id: 'unidad', Icon: Building2, titulo: 'Unidad dentro',
+          detalle: `Una unidad que cuelga de ${u.nombre}`,
           accion: () => setEditandoUnidad({ unidad: null, base: { padreId: u.id, mandoId: jefe } }),
         },
       ]
@@ -2039,17 +2183,17 @@ export default function Organigrama() {
     deCargo: c => [
       {
         id: 'cargo', Icon: User, titulo: 'Cargo que le reporta',
-        detalle: `Cuelga de ${c.nombre}, en ${getUnidad(c.unidadId, org)?.nombre ?? 'su área'}`,
+        detalle: `Cuelga de ${c.nombre}, en ${getUnidad(c.unidadId, org)?.nombre ?? 'su unidad'}`,
         accion: () => setEditando({ cargo: null, base: { reportaA: c.id, unidadId: c.unidadId } }),
       },
       {
-        id: 'unidad', Icon: Building2, titulo: 'Área bajo su mando',
-        detalle: `Un área nueva que responde a ${c.nombre}`,
+        id: 'unidad', Icon: Building2, titulo: 'Unidad bajo su mando',
+        detalle: `Una unidad nueva que responde a ${c.nombre}`,
         /* La misma regla que ya aplica el desplegable de mando: staff y outsourcing quedan
            fuera. Un área bajo un cuadro lateral desaparecía del dibujo entero, así que el
            motivo se dice en vez de dejar crear algo que no se va a ver. */
         bloqueo: esTipoDeclarado(tipoDe(c))
-          ? 'Un puesto de apoyo o tercerizado no encabeza un área'
+          ? 'Un puesto de apoyo o tercerizado no encabeza una unidad'
           : null,
         accion: () => setEditandoUnidad({ unidad: null, base: { padreId: c.unidadId, mandoId: c.id } }),
       },
@@ -2439,8 +2583,14 @@ export default function Organigrama() {
         onCambio={cambiarFiltro}
         /* La ranura donde el gráfico dibuja su buscador: el buscador y los filtros son la misma
            familia —las dos formas de acotar lo que estás mirando— y tienen que leerse juntos. */
+        sedes={sedes}
         ranuraBuscador={setRanuraBuscador}
       />
+
+      {/* EL AVISO NOMBRA LA CAUSA Y OFRECE LA SALIDA, en ese orden. Decir solo «hay 3 unidades que
+          no se ven» deja el trabajo a medias: lo que hace falta saber es POR QUÉ y qué apretar.
+          Con una sede elegida, el botón la quita —es la causa más común y la que uno no sabe que
+          puso—; con filtros de cargo, no hay botón porque están a la vista en la frase de arriba. */}
       {/* CONTENIDO */}
       {vacio ? (
         /* El aviso y los botones flotantes conviven: el organigrama vacío sigue siendo el
@@ -2563,7 +2713,6 @@ export default function Organigrama() {
           cargo={editando.cargo}
           base={editando.base}
           abrirEnEdicion={editando.editar}
-          sedeActiva={sede || null}
           org={org}
           onGuardar={guardar}
           onEliminar={cargo => setBorrando({ tipo: 'cargo', obj: cargo })}

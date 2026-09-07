@@ -12,12 +12,12 @@ const MODULOS = [
   { icon: ClipboardCheck, label: 'Evaluaciones' },
   { icon: ClipboardList, label: 'Encuestas' },
   { icon: TrendingUp, label: 'PDI' },
-  { icon: DollarSign, label: 'Planillas y salarios' },
+  { icon: DollarSign, label: 'Mis remuneraciones' },
   { icon: Bot, label: 'Agente de IA' },
   { icon: Folder, label: 'Archivos' },
   { icon: Calendar, label: 'Calendario' },
   { icon: Gift, label: 'Mis beneficios' },
-  { icon: Globe, label: 'Página Oficial' },
+  { icon: Globe, label: 'Página oficial' },
 ]
 
 function IconoRedondo({ children }) {
@@ -84,11 +84,14 @@ export default function ZonaHRPhone({ currentUser, onNavegar }) {
               cursor: m.destino ? 'pointer' : 'default',
             }}
           >
+            {/* Aro verde y no disco azul: doce discos llenos en una pantalla de teléfono pesan
+                como doce botones de emergencia. El aro deja respirar la tarjeta y es lo mismo
+                que se dibuja en la versión de escritorio, que se mira al lado de esta. */}
             <div style={{
-              width: 30, height: 30, borderRadius: '50%', background: '#0C2D40',
+              width: 30, height: 30, borderRadius: '50%', border: '1.2px solid #00E091',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
-              <m.icon size={14} style={{ color: '#fff' }} strokeWidth={1.9} />
+              <m.icon size={14} style={{ color: '#00B876' }} strokeWidth={1.8} />
             </div>
             <span style={{
               fontSize: 6.5, fontWeight: 700, color: '#0C2D40',

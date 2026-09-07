@@ -3,12 +3,16 @@ import { createPortal } from 'react-dom'
 import { ChevronDown } from 'lucide-react'
 import SelectorLista from './SelectorLista'
 import {
-  sucursales, getUnidad, TODAS_SUCURSALES, TODAS_UNIDADES, TIPOS_CARGO, nivelesDe, esVacante,
+  getUnidad, TODAS_UNIDADES, TODAS_SUCURSALES, TIPOS_CARGO, nivelesDe, esVacante,
 } from '../../data/organigramaData'
+/* Las sedes salen del contexto y ya no del módulo de datos: el catálogo se edita en
+   Organización › Sucursales, así que la lista sembrada se quedaba vieja en cuanto alguien
+   agregaba una. Y son solo las del ALCANCE de quien mira: a un jefe de sucursal ofrecerle las
+   ocho es ofrecerle siete que no puede ver. */
 
 /* LOS FILTROS ESCRITOS COMO UNA FRASE.
 
-   «Viendo todos los cargos de toda la empresa en todas las sedes.»
+   «Viendo todos los cargos de toda la empresa en todas las sucursales.»
 
    Antes eran un panel de 292 px con diez casillas apiladas, y después un modal con previa. Los
    dos tenían el mismo defecto de fondo: para saber qué estaba recortando había que ABRIR algo.
@@ -116,7 +120,7 @@ function texto({ tipos, grados, estado }, org) {
    la hace sonar a frase; con comas suena a etiqueta. */
 const lista = xs => (xs.length <= 1 ? xs[0] || '' : `${xs.slice(0, -1).join(', ')} y ${xs[xs.length - 1]}`)
 
-export default function FraseFiltro({ org, filtros, onCambio, ranuraBuscador }) {
+export default function FraseFiltro({ org, filtros, onCambio, sedes = [], ranuraBuscador }) {
   const { tipos, grados, estado, unidadId, sedeId } = filtros
   const hayPuesto = tipos.length > 0 || grados.length > 0 || estado !== 'todos'
 
@@ -146,15 +150,12 @@ export default function FraseFiltro({ org, filtros, onCambio, ranuraBuscador }) 
       if (c.grado) grado[c.grado] = (grado[c.grado] || 0) + 1; else sinNivel++
       if (esVacante(c)) vacantes++
     }
-    /* Por área y por sede, para los dos desplegables de la frase. El área cuenta solo lo
-       suyo y no lo de sus hijas: el número tiene que decir lo mismo que la fila donde está. */
+    /* Por área, para el desplegable de la frase. Cuenta solo lo suyo y no lo de sus hijas: el
+       número tiene que decir lo mismo que la fila donde está. La cuenta por sede se fue con el
+       desplegable de sucursales. */
     const unidad = {}
-    const sede = {}
-    for (const c of org.cargos) {
-      unidad[c.unidadId] = (unidad[c.unidadId] || 0) + 1
-      for (const s of c.sucursalIds || []) sede[s] = (sede[s] || 0) + 1
-    }
-    return { tipo, grado, sinNivel, vacantes, cubiertos: org.cargos.length - vacantes, unidad, sede }
+    for (const c of org.cargos) unidad[c.unidadId] = (unidad[c.unidadId] || 0) + 1
+    return { tipo, grado, sinNivel, vacantes, cubiertos: org.cargos.length - vacantes, unidad }
   }, [org])
 
   return (
@@ -265,17 +266,25 @@ export default function FraseFiltro({ org, filtros, onCambio, ranuraBuscador }) 
           }))}
         />
 
-        <span>en</span>
-        <SelectorLista
-          comoHueco
-          valor={sedeId === TODAS_SUCURSALES ? null : sedeId}
-          onCambio={v => onCambio({ sedeId: v ?? TODAS_SUCURSALES })}
-          vacia="todas las sedes"
-          vaciaN={org.cargos.length}
-          opciones={sucursales.map(s => ({
-            id: s.id, nombre: s.ciudad, detalle: s.nombre, n: cuentas.sede[s.id] || 0,
-          }))}
-        />
+        {/* «EN [SUCURSAL]» VOLVIÓ, PERO NO ES LO MISMO QUE ANTES. Aquella era la otra cara de un
+            selector del encabezado que cambiaba la aplicación entera; esta es un recorte de ESTA
+            vista, hermano de los dos de al lado, que arranca en «todas» y se quita tocándolo.
+
+            Solo aparece si hay más de una sede: con una sola no es un filtro, es la misma empresa
+            escrita de otra forma. */}
+        {sedes.length > 1 && (
+          <>
+            <span>en</span>
+            <SelectorLista
+              comoHueco
+              valor={sedeId === TODAS_SUCURSALES ? null : sedeId}
+              onCambio={v => onCambio({ sedeId: v ?? TODAS_SUCURSALES })}
+              vacia="todas las sucursales"
+              vaciaN={org.cargos.length}
+              opciones={sedes}
+            />
+          </>
+        )}
         {/* AL OTRO EXTREMO, el buscador. Vivía flotando sobre el
             organigrama y tapaba una esquina para siempre; acá queda al lado de los filtros, que
             es su misma familia —las dos formas de acotar lo que estás mirando—.

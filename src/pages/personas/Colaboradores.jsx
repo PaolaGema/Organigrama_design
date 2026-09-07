@@ -261,7 +261,19 @@ export default function Colaboradores() {
     setBuddyModal(null)
   }
 
-  const filtered = colaboradores.filter(c => {
+  /* EL DIRECTORIO OBEDECE AL ÁMBITO, y esta es la pantalla donde más se nota que la sede de una
+     persona sale de su PUESTO y no de un campo suyo: la ficha del colaborador no guarda sucursal
+     por ningún lado —a propósito—, así que `personaEnSucursal` va a buscar el cuadro que ocupa.
+
+     Quien todavía no está en el organigrama no tiene sede, y por eso solo aparece con el ámbito
+     en «todas». No es un descuido: esconderlo de su sede sería mentir, y colarlo en las ocho,
+     también. Aparece donde se lo puede ver entero. */
+  /* SIN ÁMBITO, EL DIRECTORIO ES EL DIRECTORIO. Esta lista se recortaba a la sucursal desde la
+     que estabas mirando; quitado el filtro global, muestra a todo el mundo y quien quiera acotar
+     lo hace con el buscador y los filtros de esta misma pantalla, que están a la vista. */
+  const enAmbito = colaboradores
+
+  const filtered = enAmbito.filter(c => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
       (cargoDe(c, organigrama) || '').toLowerCase().includes(search.toLowerCase()) ||
       c.email.toLowerCase().includes(search.toLowerCase())
@@ -273,15 +285,19 @@ export default function Colaboradores() {
   const totalPages = Math.ceil(filtered.length / perPage)
   const paginated = filtered.slice((page - 1) * perPage, page * perPage)
 
-  const totalActivos = colaboradores.filter(c => c.status === 'activo').length
-  const totalInactivos = colaboradores.filter(c => c.status !== 'activo').length
+  // Los totales cuentan la misma gente que la tabla: contar la empresa entera debajo de una
+  // lista de una sede es el número que hace tomar decisiones equivocadas.
+  const totalActivos = enAmbito.filter(c => c.status === 'activo').length
+  const totalInactivos = enAmbito.filter(c => c.status !== 'activo').length
 
   return (
     <div className="content-scroll">
       <div className="pl-header">
         <div>
           <h1 className="pl-title">Colaboradores</h1>
-          <p className="pl-subtitle">Directorio de colaboradores de la organización</p>
+          <p className="pl-subtitle">
+            Directorio de colaboradores de la organización
+          </p>
         </div>
       </div>
 

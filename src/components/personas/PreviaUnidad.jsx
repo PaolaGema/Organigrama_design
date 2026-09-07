@@ -80,7 +80,7 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
     <>
       <div className="og-pv-card">
         <span className="og-pv-nom"><User size={11} /> {mando.nombre}</span>
-        <span className="og-pv-sub">Manda esta área</span>
+        <span className="og-pv-sub">Manda esta unidad</span>
       </div>
       <div className="og-pv-rama"><div className="og-pv-hijo">{foco}</div></div>
     </>
