@@ -180,6 +180,27 @@ a { color: inherit; }
 }
 .toc-grupo[aria-expanded="true"] .toc-chev { transform: rotate(45deg); }
 .toc-grupo[aria-expanded="false"] + .toc-cuerpo { display: none; }
+
+/* EL TERCER NIVEL DEL ÍNDICE, Y POR QUÉ SOLO SE VE UNO A LA VEZ.
+   El documento tiene 21 secciones y adentro más de 130 bloques numerados. Listarlos todos deja
+   un índice de metro y medio por el que hay que desplazarse para encontrar el desplazador; no
+   listarlos deja al lector sin saber qué hay dentro de la sección que está leyendo.
+   Se abre el de la sección en la que uno está y se cierran los demás: el índice nunca pasa de
+   veintipico de renglones y siempre enseña el detalle del sitio donde estás parada. */
+.toc-sub { display: none; padding: 1px 0 7px; }
+.toc-i[aria-current="true"] + .toc-sub { display: grid; }
+.toc-s {
+  display: grid; grid-template-columns: 46px 1fr; gap: 8px; align-items: baseline;
+  padding: 5px 12px 5px 30px; border-radius: 8px; text-decoration: none;
+  color: rgba(255,255,255,.42); font-size: 12px; line-height: 1.4;
+  transition: background .16s ease, color .16s ease;
+}
+.toc-s:hover { color: var(--rail-tinta); background: rgba(255,255,255,.05); }
+.toc-s b {
+  font-family: 'JetBrains Mono', monospace; font-size: 9.5px; font-weight: 500;
+  letter-spacing: .04em; font-variant-numeric: tabular-nums; color: inherit;
+}
+.toc-s[aria-current="true"] { color: var(--verde-vivo); background: rgba(0,224,145,.09); }
 .toc-cuerpo { padding-bottom: 4px; }
 
 .sec { padding: 54px 0 0; scroll-margin-top: 18px; }
@@ -231,7 +252,7 @@ a { color: inherit; }
 }
 .regla:hover .regla-n { color: var(--verde); }
 .regla > div { display: contents; }
-.regla h3 { font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -.01em; }
+.regla h3 { font-size: 17.5px; font-weight: 600; line-height: 1.34; letter-spacing: -.015em; }
 .regla p { font-size: 15px; color: var(--tinta-2); }
 
 /* La presentación del producto: texto corrido y tres piezas. Comparte la caja y la retícula de
@@ -242,7 +263,6 @@ a { color: inherit; }
   font-size: 21px; line-height: 1.62; color: var(--tinta-2); letter-spacing: -.008em;
 }
 .prosa p strong { color: var(--tinta); font-weight: 600; }
-@media (max-width: 1180px) { .prosa p { font-size: 18px; } }
 .prosa p strong { color: var(--tinta); font-weight: 600; }
 .piezas { display: grid; margin-top: 24px; }
 .pieza {
@@ -250,13 +270,12 @@ a { color: inherit; }
   align-items: start; padding: 24px 0 26px;
 }
 .pieza + .pieza { border-top: 1px solid var(--linea); }
-.pieza h3 { font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -.01em; }
+.pieza h3 { font-size: 17.5px; font-weight: 600; line-height: 1.34; letter-spacing: -.015em; }
 .pieza .donde {
   font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .14em;
   text-transform: uppercase; color: var(--verde); margin-bottom: 6px;
 }
 .pieza p { font-size: 14.5px; color: var(--tinta-2); max-width: 64ch; }
-@media (max-width: 1180px) { .pieza { grid-template-columns: 1fr; gap: 8px; } }
 
 /* Las dos vistas de la web, dentro de su tarjeta: separadas por un filete y no por otra caja,
    porque son partes de una misma cosa y no dos cosas al lado. */
@@ -272,7 +291,6 @@ a { color: inherit; }
 }
 .mod b { color: var(--tinta); font-weight: 600; }
 .mod span { color: var(--tinta-2); }
-@media (max-width: 1180px) { .mod { grid-template-columns: 1fr; gap: 2px; } }
 
 /* UNA REGLA BR TIENE CINCO PARTES Y SIEMPRE LAS MISMAS, así que se colocan a mano en vez de
    dejarlas caer en orden: el código y el título comparten la columna de los títulos, el párrafo
@@ -387,40 +405,6 @@ a { color: inherit; }
 
 a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); outline-offset: 3px; }
 
-/* Por debajo de 1020 px el rail deja de caber junto al texto: pasa a ser una cabecera con el
-   índice desplazable en horizontal, que es como se navega un documento en un teléfono. */
-@media (max-width: 1020px) {
-  .marco { display: block; }
-  .rail { position: static; width: auto; height: auto; flex: none; }
-  .rail-cab { padding: 22px 22px 16px; }
-  .rail-tit { font-size: 21px; margin-top: 10px; }
-  .toc { display: flex; gap: 6px; overflow-x: auto; padding: 12px; }
-  .toc-i { flex: 0 0 auto; grid-template-columns: auto; gap: 0; white-space: nowrap; font-size: 12px; }
-  .toc-i span:last-child { display: none; }
-  .toc-i .toc-n { display: block; font-size: 12px; }
-  .rail-pie { display: none; }
-  .portada { padding: 44px 0 36px; }
-  .sec-cab { grid-template-columns: 1fr; }
-  .sec-n { font-size: 34px; display: block; margin-bottom: 10px; }
-  /* En un teléfono la columna de rótulos se lleva un cuarto del ancho para sostener cinco
-     caracteres, así que el rótulo se pone encima y el texto recupera la pantalla entera. */
-  .regla, .req, .pieza, .apartado { grid-template-columns: 1fr; gap: 0; }
-  .regla-n, .req-id, .apartado-n { padding: 0 0 7px; }
-  .apartado > h3, .apartado > p, .apartado > .puntos, .apartado-n { grid-column: 1; }
-}
-@media (max-width: 1180px) {
-  .regla { grid-template-columns: 104px minmax(0, 1fr); }
-  .regla.br > div, .escenarios { grid-template-columns: 1fr; }
-  .regla p { margin-top: 8px; }
-  .regla.br > div > p { grid-column: 1; grid-row: auto; }
-  .regla.br .br-cab, .regla.br h3 { grid-column: 1; grid-row: auto; }
-}
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
-@media print {
-  .rail { display: none; }
-  body { background: #fff; }
-  .regla, .tabla-caja { break-inside: avoid; box-shadow: none; }
-}
 
 /* EL ÁMBAR QUE FALTABA. `--alerta` y `--alerta-tenue` se usaban en el distintivo de estado de
    una regla y en la cabecera de un escenario negativo, y no estaban definidas en ninguna parte:
@@ -455,27 +439,31 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
    excepción para el primero: «:first-of-type» mira el tipo de etiqueta y no la clase, y bastaba
    con que alguien metiera cualquier otro div antes para que el primero se llevara una línea de
    la que no hay nada arriba. */
+/* TRES COLUMNAS, COMO UNA REGLA. Con dos, el título se comía un renglón entero para decir una
+   palabra —«Estado»— y el texto de abajo arrancaba cortado a 74 caracteres: quedaban 130 px
+   muertos a la izquierda y 260 a la derecha de cada apartado. Con el título en su propia
+   columna, el cuerpo ocupa lo que queda y no sobra nada de los dos lados. */
 .apartado {
   margin-top: 30px; display: grid;
-  grid-template-columns: 104px minmax(0, 1fr); gap: 0 30px; align-items: start;
+  grid-template-columns: 104px minmax(180px, 254px) minmax(0, 1fr);
+  gap: 0 30px; align-items: start;
 }
 .apartado + .apartado { margin-top: 26px; padding-top: 28px; border-top: 1px solid var(--linea); }
 /* El número va en la columna de los rótulos y todo lo demás en la de los cuerpos: es la misma
    retícula de una regla, así que el título de 4.1.5 arranca en la misma vertical que el de
    BR-ORG-005 aunque uno esté quince pantallas más abajo. */
 .apartado-n {
-  grid-column: 1; grid-row: 1; padding-top: 7px;
-  font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
-  letter-spacing: .1em; color: var(--tinta-3); font-variant-numeric: tabular-nums;
+  grid-column: 1; grid-row: 1; padding-top: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  letter-spacing: .06em; color: var(--tinta-3); font-variant-numeric: tabular-nums;
 }
-.apartado > h3, .apartado > p, .apartado > .puntos { grid-column: 2; }
-.apartado h3 {
-  font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 21px;
-  line-height: 1.2; letter-spacing: -.022em;
+.apartado > h3 {
+  grid-column: 2; font-family: 'Fraunces', Georgia, serif; font-weight: 700;
+  font-size: 22px; line-height: 1.18; letter-spacing: -.024em;
 }
-.apartado > p { margin-top: 11px; font-size: 15px; color: var(--tinta-2); max-width: 74ch; }
+.apartado > p, .apartado > .puntos { grid-column: 3; }
+.apartado > p { font-size: 15px; color: var(--tinta-2); }
 .apartado > p strong { color: var(--tinta); font-weight: 600; }
-.apartado .puntos { margin-top: 13px; max-width: 74ch; }
 
 /* La lista de un apartado. Va con clase propia y no como «.apartado li» para no pisar los
    renglones de los escenarios de la 4.2, que ya tienen su tamaño y su tipografía. */
@@ -493,8 +481,8 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
    Fraunces; esto es el escalón de abajo —«Requisitos funcionales», «Fuera de alcance»— y por eso
    comparte la tipografía y baja el tamaño en vez de cambiar de familia. */
 .grupo-tit {
-  font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 20px;
-  letter-spacing: -.02em; margin: 38px 0 0;
+  font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 23px;
+  line-height: 1.16; letter-spacing: -.024em; margin: 44px 0 0;
 }
 .grupo-lead { font-size: 14px; color: var(--tinta-2); margin-top: 7px; max-width: 68ch; }
 
@@ -515,7 +503,6 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
 .req p { font-size: 15px; color: var(--tinta-2); max-width: 76ch; }
 .req p b { color: var(--tinta); font-weight: 600; }
 .req p em { font-style: normal; color: var(--tinta-3); }
-@media (max-width: 1180px) { .req { grid-template-columns: 1fr; gap: 4px; } }
 
 /* UN FLUJO ES UNA TARJETA CON PASOS NUMERADOS Y UNA COLA DE DESVÍOS. Los pasos se numeran por
    CSS y no a mano: insertar un paso en el medio no obliga a renumerar seis renglones, que es
@@ -532,7 +519,7 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
   font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--verde);
   letter-spacing: .04em;
 }
-.flujo h3 { font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -.01em; }
+.flujo h3 { font-size: 18px; font-weight: 600; line-height: 1.32; letter-spacing: -.015em; }
 .flujo-meta {
   display: flex; gap: 26px; flex-wrap: wrap; margin: 13px 0 4px;
   padding-bottom: 13px; border-bottom: 1px solid var(--linea);
@@ -684,6 +671,71 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
 .wf-llaves { list-style: none; margin: 13px 0 0; padding: 0; display: grid; gap: 7px; }
 .wf-llaves li { display: flex; gap: 2px; font-size: 13px; line-height: 1.6; color: var(--tinta-2); }
 .wf-llaves b { color: var(--tinta); font-weight: 600; }
+
+/* ═══ LO ADAPTATIVO, AL FINAL ══════════════════════════════════════════════════════════
+   Y no repartido por el archivo, que es donde estaba. Una media query solo puede pisar lo que
+   ya está declarado: escrita antes que su regla base no hace absolutamente nada. Como todo lo
+   que se fue agregando —los apartados, los requisitos, los flujos, los wireframes— se escribió
+   al final del archivo, quedó por debajo de estos bloques y las pantallas angostas dejaron de
+   adaptarse sin que se rompiera nada visible en el escritorio. Acá abajo eso no puede volver a
+   pasar: lo que se agregue arriba queda siempre por encima de su propia adaptación. */
+@media (max-width: 1180px) { .prosa p { font-size: 18px; } }
+
+@media (max-width: 1180px) { .pieza { grid-template-columns: 1fr; gap: 8px; } }
+
+@media (max-width: 1180px) { .mod { grid-template-columns: 1fr; gap: 2px; } }
+
+/* Por debajo de 1020 px el rail deja de caber junto al texto: pasa a ser una cabecera con el
+   índice desplazable en horizontal, que es como se navega un documento en un teléfono. */
+@media (max-width: 1020px) {
+  .marco { display: block; }
+  .rail { position: static; width: auto; height: auto; flex: none; }
+  .rail-cab { padding: 22px 22px 16px; }
+  .rail-tit { font-size: 21px; margin-top: 10px; }
+  .toc { display: flex; gap: 6px; overflow-x: auto; padding: 12px; }
+  .toc-i { flex: 0 0 auto; grid-template-columns: auto; gap: 0; white-space: nowrap; font-size: 12px; }
+  .toc-i span:last-child { display: none; }
+  /* El índice de un teléfono es una tira horizontal de números, y una sublista dentro de una
+     tira no tiene dónde caer: se esconde y se navega bajando, que es como se lee ahí. */
+  .toc-sub, .toc-i[aria-current="true"] + .toc-sub { display: none; }
+  .toc-i .toc-n { display: block; font-size: 12px; }
+  .rail-pie { display: none; }
+  .portada { padding: 44px 0 36px; }
+  .sec-cab { grid-template-columns: 1fr; }
+  .sec-n { font-size: 34px; display: block; margin-bottom: 10px; }
+  /* En un teléfono la columna de rótulos se lleva un cuarto del ancho para sostener cinco
+     caracteres, así que el rótulo se pone encima y el texto recupera la pantalla entera. */
+  .regla, .req, .pieza, .apartado { grid-template-columns: 1fr; gap: 0; }
+  .regla-n, .req-id, .apartado-n { padding: 0 0 7px; }
+  .apartado > h3, .apartado > p, .apartado > .puntos, .apartado-n { grid-column: 1; }
+  /* Con la regla en una sola columna, un «grid-column: 2 / -1» inventa una segunda columna del
+     ancho de su contenido y la saca de la pantalla. Vuelve a la primera, que es la única. */
+  .regla.br > div { grid-column: 1; }
+}
+
+@media (max-width: 1180px) {
+  /* TRES COLUMNAS DEJAN DE SERVIR ANTES DE QUE SE ROMPAN. A 1100 px la tercera queda en 320 y el
+     cuerpo se lee en renglones de seis palabras: el título deja de colgar al margen y se pone
+     encima, que es lo que hace cualquier documento cuando se le acaba el ancho. */
+  .regla, .apartado, .pieza { grid-template-columns: 104px minmax(0, 1fr); }
+  .regla.br > div, .escenarios { grid-template-columns: 1fr; }
+  .regla p { margin-top: 8px; }
+  .regla.br > div > p { grid-column: 1; grid-row: auto; }
+  .regla.br .br-cab, .regla.br h3 { grid-column: 1; grid-row: auto; }
+  .apartado > h3, .apartado > p, .apartado > .puntos { grid-column: 2; }
+  .apartado > p, .apartado > .puntos { margin-top: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+
+@media print {
+  .rail { display: none; }
+  body { background: #fff; }
+  .regla, .tabla-caja { break-inside: avoid; box-shadow: none; }
+}
+
+@media (max-width: 1180px) { .req { grid-template-columns: 1fr; gap: 4px; } }
+
 @media (max-width: 1020px) {
   .wf-app { grid-template-columns: 1fr; }
   .wf-rail { border-right: 0; border-bottom: 1px solid var(--linea); }
@@ -692,6 +744,7 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
   .wf-tr > *:nth-child(3), .wf-tr > *:nth-child(4) { display: none; }
   .wf-campos, .wf-campos.dos { grid-template-columns: 1fr; }
 }
+
 </style>
 </head>
 <body>
@@ -3496,6 +3549,51 @@ grupos.forEach(g => g.addEventListener('click', () => {
 const toc = document.querySelector('.toc')
 const secciones = [...document.querySelectorAll('.sec')]
 
+/* ── EL TERCER NIVEL DEL ÍNDICE ─────────────────────────────────────────────────────────
+   SE DEDUCE DEL DOCUMENTO, NO SE ESCRIBE. Hay más de ciento treinta bloques numerados; un
+   índice escrito aparte se desincroniza con el primero que se agregue, y mantener las dos
+   listas a mano es el trabajo que garantiza que una de las dos quede vieja.
+
+   Cada sección aporta lo que tiene: sus apartados, sus reglas, sus flujos y sus subtítulos, en
+   el orden en que aparecen. Al que no tiene ancla se le pone una, porque un renglón del índice
+   que no lleva a ninguna parte es peor que no estar. */
+const BLOQUES = '.apartado, .regla, .pieza, .flujo, .grupo-tit'
+
+const rotuloDe = el => {
+  const n = el.querySelector('.apartado-n, .regla-n, .flujo-id')
+  const h = el.tagName === 'H3' ? el : el.querySelector('h3')
+  return { num: n ? n.textContent.trim() : '', tit: (h || el).textContent.trim() }
+}
+
+const subs = new Map()
+secciones.forEach(sec => {
+  const item = items.find(a => a.dataset.id === sec.id)
+  if (!item) return
+  const caja = document.createElement('div')
+  caja.className = 'toc-sub'
+  const filas = []
+
+  sec.querySelectorAll(BLOQUES).forEach((el, i) => {
+    const { num, tit } = rotuloDe(el)
+    if (!tit) return
+    if (!el.id) el.id = sec.id + '-b' + i
+    const a = document.createElement('a')
+    a.className = 'toc-s'
+    a.href = '#' + el.id
+    const b = document.createElement('b')
+    b.textContent = num
+    const t = document.createElement('span')
+    t.textContent = tit
+    a.append(b, t)
+    caja.append(a)
+    filas.push({ a, el })
+  })
+
+  if (!filas.length) return
+  item.after(caja)
+  subs.set(sec.id, filas)
+})
+
 let ultima = null
 const marcar = id => {
   if (id === ultima) return
@@ -3510,29 +3608,67 @@ const marcar = id => {
   seguir(activo)
 }
 
-/* EL ÍNDICE TAMBIÉN SE DESPLAZA. Son veintiuna entradas en seis grupos y no entran todas en la
-   altura de la pantalla, así que estando en 4.4 la fila marcada podía quedar por debajo del
-   borde del rail: el índice SÍ se estaba actualizando y no había manera de verlo. Solo se mueve
-   cuando la fila se salió —arrastrar el índice a mano y que se reacomode solo es peor que no
-   moverlo—, y se queda quieto si el sistema pide menos movimiento. */
+/* El bloque que se está leyendo dentro de la sección. Solo se recorre la lista de la sección
+   activa, que es la única que se ve: las demás están plegadas y marcar algo ahí no se nota. */
+let ultimaSub = null
+let secDelSub = null
+const marcarSub = idSec => {
+  /* AL CAMBIAR DE SECCIÓN HAY QUE APAGAR LA ANTERIOR. Solo se recorren las filas de la sección
+     activa, así que las de la que se acaba de dejar conservaban su marca: quedaban dos renglones
+     marcados a la vez, uno de ellos en una lista plegada que nadie ve. */
+  if (secDelSub !== idSec) {
+    const previas = subs.get(secDelSub)
+    if (previas) previas.forEach(f => f.a.removeAttribute('aria-current'))
+    secDelSub = idSec
+    ultimaSub = null
+  }
+  const filas = subs.get(idSec)
+  if (!filas) { ultimaSub = null; return }
+  let activo = null
+  for (const f of filas) {
+    if (f.el.getBoundingClientRect().top <= LINEA + 24) activo = f.a
+    else break
+  }
+  if (activo === ultimaSub) return
+  ultimaSub = activo
+  filas.forEach(f => f.a.setAttribute('aria-current', String(f.a === activo)))
+}
+
+/* EL ÍNDICE TAMBIÉN SE DESPLAZA. Son veintiuna entradas en seis grupos y, con el detalle de la
+   sección abierta, más todavía: la fila marcada podía quedar por debajo del borde del rail y el
+   índice parecía no actualizarse. Solo se mueve cuando la fila se salió —arrastrar el índice a
+   mano y que se reacomode solo es peor que no moverlo— y se queda quieto si el sistema pide
+   menos movimiento. */
 const quieto = matchMedia('(prefers-reduced-motion: reduce)')
 const seguir = a => {
   if (!toc || toc.scrollHeight <= toc.clientHeight) return
   const caja = toc.getBoundingClientRect()
   const fila = a.getBoundingClientRect()
-  if (fila.top >= caja.top + 8 && fila.bottom <= caja.bottom - 8) return
-  a.scrollIntoView({ block: 'nearest', behavior: quieto.matches ? 'auto' : 'smooth' })
+  /* SE MIDE HASTA EL FINAL DE SU DETALLE, no hasta el final del renglón. Con la entrada visible
+     pero su sublista debajo del borde, el índice quedaba enseñando el título de la sección y
+     escondiendo justo lo que se acababa de abrir. */
+  const sub = a.nextElementSibling && a.nextElementSibling.classList.contains('toc-sub')
+    ? a.nextElementSibling : null
+  const fin = sub ? sub.getBoundingClientRect().bottom : fila.bottom
+  if (fila.top >= caja.top + 8 && fin <= caja.bottom - 8) return
+  /* Se mueve el índice y no la página: «scrollIntoView» sobre un elemento de un contenedor con
+     desplazamiento propio también arrastra el documento de atrás, y mover la lectura de sitio
+     porque cambió una marca del menú es lo contrario de lo que uno espera. */
+  toc.scrollTo({
+    top: toc.scrollTop + (fila.top - caja.top) - 16,
+    behavior: quieto.matches ? 'auto' : 'smooth',
+  })
 }
 
-/* QUÉ SECCIÓN SE ESTÁ LEYENDO, MEDIDO EN EL MOMENTO Y NO CUANDO SE CRUZÓ UN BORDE.
+/* QUÉ SE ESTÁ LEYENDO, MEDIDO EN EL MOMENTO Y NO CUANDO SE CRUZÓ UN BORDE.
    Esto era un IntersectionObserver que guardaba el `top` de cada sección en el instante en que
    se disparaba, y después ordenaba ESAS medidas. El problema es que solo se dispara al cruzar un
    umbral: dentro de una sección larga —el PRD, los flujos y los wireframes miden miles de
    píxeles— se puede bajar media pantalla tras otra sin que se dispare nada, y el índice seguía
    decidiendo con posiciones tomadas mucho antes. Se retrasaba justo donde más se lee.
 
-   Leer los rectángulos en el momento cuesta veintiún `getBoundingClientRect` por cuadro, que en
-   una lista de este tamaño no se nota, y no puede quedar desfasado por definición.
+   Leer los rectángulos en el momento cuesta unas decenas de `getBoundingClientRect` por cuadro,
+   que a esta escala no se nota, y no puede quedar desfasado por definición.
 
    `requestAnimationFrame` es lo que evita hacerlo en cada evento de desplazamiento —que llegan
    de a decenas por cuadro— y el oyente es pasivo para no frenar el desplazamiento del navegador. */
@@ -3549,7 +3685,9 @@ const revisar = () => {
   }
   /* Arriba del todo —la portada— todavía no cruzó ninguna, y un índice sin nada marcado se lee
      como un índice roto. Manda la primera. */
-  marcar(actual || secciones[0]?.id)
+  actual = actual || secciones[0]?.id
+  marcar(actual)
+  marcarSub(actual)
 }
 
 let pedido = false
