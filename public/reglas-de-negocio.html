@@ -151,6 +151,9 @@ a { color: inherit; }
   line-height: 1.12; letter-spacing: -.025em; margin-top: 10px;
 }
 .parte p { margin-top: 8px; font-size: 14px; color: var(--rail-mudo); max-width: 62ch; }
+/* Los números de sección dentro del texto de una parte hacen de índice: se saltean con la vista
+   para ir a la sección que uno busca, así que se separan del gris del párrafo. */
+.parte p b { color: var(--rail-tinta); font-weight: 600; }
 .parte + .sec { padding-top: 46px; }
 .sec + .sec { border-top: 1px solid var(--linea); margin-top: 58px; }
 .parte + .sec, .parte + .sec + .sec { border-top: 0; }
@@ -1651,7 +1654,8 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
       <div class="parte">
         <div class="parte-n">Parte 4</div>
         <h2>Módulo de Organización</h2>
-        <p>Un módulo entero de corrido: qué es, para qué existe, qué reglas lo gobiernan, qué le pide el producto, cómo se recorre y qué se ve en cada pantalla. Lo que vale para dos módulos no vive acá: vive en las transversales de la parte 3.</p>
+        <p>Todo el módulo de Organización, en cinco secciones. <b>4.1</b> explica qué es y para qué existe. <b>4.2</b> son las reglas que tiene que cumplir. <b>4.3</b> es lo que el producto tiene que hacer. <b>4.4</b> son los recorridos, paso a paso. <b>4.5</b> son sus pantallas dibujadas.</p>
+        <p>Las reglas que valen para todos los módulos y no solo para este están en la parte 3.</p>
       </div>
 
       <section class="sec" id="s-org-ficha">
@@ -3071,7 +3075,7 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
       <div class="parte">
         <div class="parte-n">Parte 5</div>
         <h2>Módulo de Gestión de personas</h2>
-        <p>El directorio, la ficha y la diferencia entre la persona y su puesto. Por ahora solo están escritas sus reglas: la ficha del módulo, el PRD, los flujos y los wireframes siguen el formato de la parte 4 y todavía no se redactaron.</p>
+        <p>El directorio, la ficha y la diferencia entre la persona y su puesto. Por ahora solo están escritas sus reglas. Las otras cuatro secciones —descripción general, PRD, flujos y wireframes— van a tener la misma forma que las de la parte 4, y todavía no se escribieron.</p>
       </div>
       <section class="sec" id="s-m-personas">
         <header class="sec-cab">
@@ -3130,7 +3134,7 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
       <div class="parte">
         <div class="parte-n">Parte 6</div>
         <h2>Módulo de Onboarding</h2>
-        <p>Cómo se decide qué ruta le toca a quién, y qué pasa cuando una ruta cambia. Por ahora solo están escritas sus reglas: la ficha del módulo, el PRD, los flujos y los wireframes siguen el formato de la parte 4 y todavía no se redactaron.</p>
+        <p>Cómo se decide qué ruta le toca a quién, y qué pasa cuando una ruta cambia. Por ahora solo están escritas sus reglas. Las otras cuatro secciones —descripción general, PRD, flujos y wireframes— van a tener la misma forma que las de la parte 4, y todavía no se escribieron.</p>
       </div>
       <section class="sec" id="s-m-onboarding">
         <header class="sec-cab">
