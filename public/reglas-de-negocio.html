@@ -125,7 +125,10 @@ a { color: inherit; }
 
 /* LA PORTADA se lee entera sin desplazar: dice de qué es esto y cómo se usa, y ya empieza la
    primera sección. Una portada a pantalla completa se ve bien en una captura y estorba a diario. */
-.portada { padding: 84px 0 38px; }
+/* La banda muerta entre la entradilla y la primera parte medía 116 px: una franja vacía justo
+   donde el lector aterriza. Se recorta el pie de la portada y el aire lo sigue poniendo el
+   margen de la parte, que es el que separa de verdad. */
+.portada { padding: 84px 0 14px; }
 .rotulo {
   font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .22em;
   text-transform: uppercase; color: var(--verde);
@@ -136,7 +139,7 @@ a { color: inherit; }
   margin-top: 18px;
 }
 .entradilla {
-  font-size: 18px; line-height: 1.6; color: var(--tinta-2); margin-top: 22px; max-width: 33em;
+  font-size: 19px; line-height: 1.62; color: var(--tinta-2); margin-top: 24px; max-width: 46em;
 }
 .parte {
   margin: 78px 0 0; padding: 26px 30px 28px; border-radius: 18px;
@@ -181,7 +184,12 @@ a { color: inherit; }
 
 .sec { padding: 54px 0 0; scroll-margin-top: 18px; }
 .sec + .sec { border-top: 1px solid var(--linea); margin-top: 58px; }
-.sec-cab { display: grid; grid-template-columns: 118px 1fr; align-items: start; }
+/* LA RETÍCULA DE TODO EL DOCUMENTO, y la razón de que exista.
+   Había tres conviviendo —la cabecera medía su número en 118, una regla en 52 y un requisito
+   en 98— así que ninguna columna de la página se alineaba con la de arriba. Ahora hay una:
+   104 para el rótulo —el número, el código, el identificador— y 30 de calle. Todo lo que
+   numera empieza en 0 y todo lo que se lee empieza en 134, de la portada al último wireframe. */
+.sec-cab { display: grid; grid-template-columns: 104px 1fr; gap: 30px; align-items: start; }
 /* El número de sección, grande y en verde: marca dónde empieza cada bloque sin
    competir con el título, y da al documento su textura de reglamento. */
 .sec-n {
@@ -197,25 +205,34 @@ a { color: inherit; }
 
 /* LAS REGLAS SE CITAN POR SU NÚMERO —«la 2.6» en un pull request— así que el número es dato y
    no adorno, y cada regla tiene además su propio ancla para poder enlazarla suelta. */
-.reglas { list-style: none; margin: 34px 0 0; padding: 0; display: grid; gap: 9px; }
+/* SE VAN LAS TARJETAS DE LA PROSA. Una regla iba en un recuadro blanco de ancho completo con
+   el texto cortado a 68 caracteres adentro: el recuadro llegaba al borde y el texto no, así que
+   cada tarjeta arrastraba un hueco muerto de 300 px a la derecha. Ochenta recuadros seguidos
+   haciendo lo mismo es lo que hacía que el documento se leyera como un fichero.
+
+   Sin caja, un texto más corto que la página no parece un hueco: parece una columna. Lo que
+   separa dos reglas es una línea, que es lo que separa dos párrafos en cualquier documento
+   impreso desde hace quinientos años.
+
+   EL BLANCO QUEDA PARA LO QUE SE LEVANTA DE LA PÁGINA: un escenario, una tabla, un flujo, un
+   wireframe. Ahí la caja dice «esto es una pieza aparte», que es justo lo que dejaba de decir
+   cuando la llevaban también los párrafos. */
+.reglas { list-style: none; margin: 26px 0 0; padding: 0; }
 .regla {
-  display: grid; grid-template-columns: 52px 1fr; align-items: start;
-  background: var(--sup); border: 1px solid var(--linea); border-radius: 14px;
-  padding: 19px 24px 21px; box-shadow: var(--sombra);
-  transition: border-color .18s ease;
+  display: grid;
+  grid-template-columns: 104px minmax(180px, 254px) minmax(0, 1fr);
+  gap: 0 30px; align-items: start; padding: 26px 0 28px;
 }
-.regla:hover { border-color: var(--linea-2); }
+.regla + .regla { border-top: 1px solid var(--linea); }
 .regla-n {
   font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--tinta-3);
-  font-variant-numeric: tabular-nums; padding-top: 4px;
+  font-variant-numeric: tabular-nums; padding-top: 3px;
   transition: color .18s ease;
 }
 .regla:hover .regla-n { color: var(--verde); }
-.regla > div {
-  display: grid; grid-template-columns: minmax(210px, .8fr) 1.45fr; gap: 30px; align-items: start;
-}
+.regla > div { display: contents; }
 .regla h3 { font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -.01em; }
-.regla p { font-size: 14.5px; color: var(--tinta-2); max-width: 68ch; }
+.regla p { font-size: 15px; color: var(--tinta-2); }
 
 /* La presentación del producto: texto corrido y tres piezas. Comparte la caja y la retícula de
    las reglas para que el documento se lea como uno solo, pero sin número: no se cita «la 1.2»
@@ -227,12 +244,12 @@ a { color: inherit; }
 .prosa p strong { color: var(--tinta); font-weight: 600; }
 @media (max-width: 1180px) { .prosa p { font-size: 18px; } }
 .prosa p strong { color: var(--tinta); font-weight: 600; }
-.piezas { display: grid; gap: 9px; margin-top: 22px; }
+.piezas { display: grid; margin-top: 24px; }
 .pieza {
-  display: grid; grid-template-columns: minmax(230px, .85fr) 1.5fr; gap: 30px; align-items: start;
-  background: var(--sup); border: 1px solid var(--linea); border-radius: 14px;
-  padding: 19px 24px 21px; box-shadow: var(--sombra);
+  display: grid; grid-template-columns: minmax(180px, 254px) minmax(0, 1fr); gap: 0 30px;
+  align-items: start; padding: 24px 0 26px;
 }
+.pieza + .pieza { border-top: 1px solid var(--linea); }
 .pieza h3 { font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: -.01em; }
 .pieza .donde {
   font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .14em;
@@ -257,9 +274,18 @@ a { color: inherit; }
 .mod span { color: var(--tinta-2); }
 @media (max-width: 1180px) { .mod { grid-template-columns: 1fr; gap: 2px; } }
 
-.regla.br > div { display: block; }
-.regla.br h3 { margin-bottom: 6px; }
-.regla.br > div > p { max-width: 74ch; }
+/* UNA REGLA BR TIENE CINCO PARTES Y SIEMPRE LAS MISMAS, así que se colocan a mano en vez de
+   dejarlas caer en orden: el código y el título comparten la columna de los títulos, el párrafo
+   va en la de los cuerpos, y los escenarios y la trazabilidad cruzan las dos. Antes el bloque
+   entero era un solo tarugo apilado y no compartía ninguna vertical con la regla de al lado. */
+.regla.br > div {
+  display: grid; grid-column: 2 / -1;
+  grid-template-columns: minmax(180px, 254px) minmax(0, 1fr); gap: 0 30px; align-items: start;
+}
+.regla.br .br-cab { grid-column: 1; grid-row: 1; margin-bottom: 5px; }
+.regla.br h3 { grid-column: 1; grid-row: 2; }
+.regla.br > div > p { grid-column: 2; grid-row: 1 / span 2; max-width: 72ch; }
+.regla.br .escenarios, .regla.br .traza { grid-column: 1 / -1; }
 
 .br-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 7px; }
 .br-id {
@@ -275,10 +301,13 @@ a { color: inherit; }
   font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--tinta-3);
   border: 1px solid var(--linea-2); border-radius: 999px; padding: 2px 8px;
 }
-.escenarios { display: grid; gap: 8px; margin-top: 14px; }
+/* EL ✅ Y EL ❌ SON UN PAR Y SE LEEN COMPARÁNDOLOS. Apilados ocupaban dos veces el alto para
+   decir lo mismo, y obligaban a subir y bajar para contrastar dos renglones que se
+   corresponden. Al lado se leen de una, y de paso llenan un ancho que estaba vacío. */
+.escenarios { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
 .esc {
-  border: 1px solid var(--linea); border-radius: 11px; padding: 12px 15px 13px;
-  background: var(--papel);
+  border: 1px solid var(--linea); border-radius: 11px; padding: 13px 16px 14px;
+  background: var(--sup);
 }
 .esc-t {
   display: flex; gap: 8px; align-items: baseline;
@@ -373,12 +402,18 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
   .portada { padding: 44px 0 36px; }
   .sec-cab { grid-template-columns: 1fr; }
   .sec-n { font-size: 34px; display: block; margin-bottom: 10px; }
-  .regla { grid-template-columns: 1fr; padding: 17px 19px 19px; }
-  .regla-n { padding: 0 0 7px; }
+  /* En un teléfono la columna de rótulos se lleva un cuarto del ancho para sostener cinco
+     caracteres, así que el rótulo se pone encima y el texto recupera la pantalla entera. */
+  .regla, .req, .pieza, .apartado { grid-template-columns: 1fr; gap: 0; }
+  .regla-n, .req-id, .apartado-n { padding: 0 0 7px; }
+  .apartado > h3, .apartado > p, .apartado > .puntos, .apartado-n { grid-column: 1; }
 }
 @media (max-width: 1180px) {
-  .regla > div { grid-template-columns: 1fr; gap: 0; }
+  .regla { grid-template-columns: 104px minmax(0, 1fr); }
+  .regla.br > div, .escenarios { grid-template-columns: 1fr; }
   .regla p { margin-top: 8px; }
+  .regla.br > div > p { grid-column: 1; grid-row: auto; }
+  .regla.br .br-cab, .regla.br h3 { grid-column: 1; grid-row: auto; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
 @media print {
@@ -420,12 +455,20 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
    excepción para el primero: «:first-of-type» mira el tipo de etiqueta y no la clase, y bastaba
    con que alguien metiera cualquier otro div antes para que el primero se llevara una línea de
    la que no hay nada arriba. */
-.apartado { margin-top: 32px; }
-.apartado + .apartado { margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--linea); }
-.apartado-n {
-  display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px;
-  letter-spacing: .16em; color: var(--verde); margin-bottom: 7px;
+.apartado {
+  margin-top: 30px; display: grid;
+  grid-template-columns: 104px minmax(0, 1fr); gap: 0 30px; align-items: start;
 }
+.apartado + .apartado { margin-top: 26px; padding-top: 28px; border-top: 1px solid var(--linea); }
+/* El número va en la columna de los rótulos y todo lo demás en la de los cuerpos: es la misma
+   retícula de una regla, así que el título de 4.1.5 arranca en la misma vertical que el de
+   BR-ORG-005 aunque uno esté quince pantallas más abajo. */
+.apartado-n {
+  grid-column: 1; grid-row: 1; padding-top: 7px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+  letter-spacing: .1em; color: var(--tinta-3); font-variant-numeric: tabular-nums;
+}
+.apartado > h3, .apartado > p, .apartado > .puntos { grid-column: 2; }
 .apartado h3 {
   font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 21px;
   line-height: 1.2; letter-spacing: -.022em;
@@ -459,17 +502,17 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
    dominio y el requisito dice qué tiene que hacer el producto. Se parecen en que los dos se
    citan por su código, así que comparten la fila con el id a la izquierda; se distinguen en que
    el requisito es una sola frase y no lleva escenarios, y por eso su tarjeta es más baja. */
-.reqs { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 7px; }
+.reqs { list-style: none; margin: 20px 0 0; padding: 0; }
 .req {
-  display: grid; grid-template-columns: 98px 1fr; gap: 18px; align-items: baseline;
-  background: var(--sup); border: 1px solid var(--linea); border-radius: 12px;
-  padding: 13px 20px 14px; box-shadow: var(--sombra);
+  display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 0 30px; align-items: baseline;
+  padding: 14px 0 15px;
 }
+.req + .req { border-top: 1px solid var(--linea); }
 .req-id {
   font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--verde);
   letter-spacing: .04em;
 }
-.req p { font-size: 14px; color: var(--tinta-2); max-width: 74ch; }
+.req p { font-size: 15px; color: var(--tinta-2); max-width: 76ch; }
 .req p b { color: var(--tinta); font-weight: 600; }
 .req p em { font-style: normal; color: var(--tinta-3); }
 @media (max-width: 1180px) { .req { grid-template-columns: 1fr; gap: 4px; } }
