@@ -408,21 +408,40 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
    borde de una línea, radio de 14— y la misma regla de que el monoespaciado es para lo que se
    cita y no para lo que se lee. Lo nuevo son disposiciones, no un segundo lenguaje visual. */
 
-/* LOS PUNTOS DE LA DESCRIPCIÓN GENERAL. Eran una tabla de dos columnas —clave y valor— y una
-   tabla iguala: las nueve respuestas pesaban lo mismo, ninguna se podía citar y la que más
-   importa se leía igual que la que menos. Son la misma pieza que una regla —número a la
-   izquierda, título y respuesta al lado— así que usan la misma, y de paso cada punto se queda
-   con su número: «lo de 4.1.6» ahora se puede decir en una reunión.
+/* LOS APARTADOS DE LA DESCRIPCIÓN GENERAL. Fueron una tabla y después nueve tarjetas, y las
+   dos veces por el mismo motivo equivocado: darle a cada respuesta un recuadro propio. Nueve
+   cajas seguidas hacen que la sección se lea como un fichero y no como un texto, y encima
+   compiten con las tarjetas de la 4.2, que sí son fichas —una regla se cita suelta—.
 
-   Lo único que hubo que agregar es la lista, porque una regla no llevaba ninguna. Va con clase
-   propia y no como «.regla li» para no pisar los renglones de los escenarios, que ya tienen su
-   tamaño y su tipografía. */
-.puntos { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; max-width: 68ch; }
+   Un apartado es lo que siempre fue: un subtítulo con su número y su respuesta debajo, a todo
+   lo ancho. La línea de arriba separa sin encerrar, que es la diferencia entre ordenar y
+   embalar. Sigue teniendo su ancla, así que citar «el 4.1.5» no depende de la caja. */
+/* La línea separa DOS apartados, así que la pone el segundo de cada par y no todos con una
+   excepción para el primero: «:first-of-type» mira el tipo de etiqueta y no la clase, y bastaba
+   con que alguien metiera cualquier otro div antes para que el primero se llevara una línea de
+   la que no hay nada arriba. */
+.apartado { margin-top: 32px; }
+.apartado + .apartado { margin-top: 28px; padding-top: 28px; border-top: 1px solid var(--linea); }
+.apartado-n {
+  display: block; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: .16em; color: var(--verde); margin-bottom: 7px;
+}
+.apartado h3 {
+  font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 21px;
+  line-height: 1.2; letter-spacing: -.022em;
+}
+.apartado > p { margin-top: 11px; font-size: 15px; color: var(--tinta-2); max-width: 74ch; }
+.apartado > p strong { color: var(--tinta); font-weight: 600; }
+.apartado .puntos { margin-top: 13px; max-width: 74ch; }
+
+/* La lista de un apartado. Va con clase propia y no como «.apartado li» para no pisar los
+   renglones de los escenarios de la 4.2, que ya tienen su tamaño y su tipografía. */
+.puntos { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
 .puntos li {
-  position: relative; padding-left: 16px; font-size: 14.5px; line-height: 1.6; color: var(--tinta-2);
+  position: relative; padding-left: 17px; font-size: 15px; line-height: 1.68; color: var(--tinta-2);
 }
 .puntos li::before {
-  content: ''; position: absolute; left: 2px; top: .64em; width: 4px; height: 4px;
+  content: ''; position: absolute; left: 2px; top: .66em; width: 4px; height: 4px;
   border-radius: 50%; background: var(--verde); opacity: .6;
 }
 .puntos strong { color: var(--tinta); font-weight: 600; }
@@ -1656,100 +1675,78 @@ a:focus-visible, .toc-i:focus-visible { outline: 2px solid var(--verde-vivo); ou
           <span class="sec-n" aria-hidden="true">4.1</span>
           <div>
             <h2>Descripción general del módulo</h2>
-            <p class="sec-lead">Qué hace este módulo, para quién, dónde termina y qué otras cosas dependen de él. Es la sección para leer primero: lo que viene después es el detalle.</p>
+            <p class="sec-lead">El módulo de Organización en SoulyHR es el núcleo estructural encargado de centralizar y gestionar tanto la arquitectura física como la jerarquía funcional de la empresa. Permite configurar la base sobre la cual operan los demás procesos de recursos humanos, estructurando la compañía mediante dos grandes vertientes: la estructura física (regionales, sucursales y centros de trabajo) y la estructura organizacional (unidades de negocio, unidades organizacionales, cargos y niveles de mando), además de integrar la gestión de puestos, personas y el organigrama general.</p>
           </div>
         </header>
 
-        <ol class="reglas">
-        <li class="regla" id="p-4-1-1">
-          <span class="regla-n">4.1.1</span>
-          <div>
-            <h3>Qué es</h3>
-            <p>El módulo de Organización en SoulyHR es el núcleo estructural encargado de centralizar y gestionar tanto la arquitectura física como la jerarquía funcional de la empresa. Permite configurar la base sobre la cual operan los demás procesos de recursos humanos, estructurando la compañía mediante dos grandes vertientes: la estructura física (regionales, sucursales y centros de trabajo) y la estructura organizacional (unidades de negocio, unidades organizacionales, cargos y niveles de mando), además de integrar la gestión de puestos, personas y el organigrama general.</p>
-          </div>
-        </li>
-        <li class="regla" id="p-4-1-2">
-          <span class="regla-n">4.1.2</span>
-          <div>
-            <h3>Objetivo</h3>
-            <p>Proveer una arquitectura organizacional flexible, multiempresa y autogestionable que permita a las empresas clientes configurar y escalar rápidamente su propia estructura física y jerárquica en la nube, estandarizando la gestión de su talento desde el primer día de despliegue en el SaaS.</p>
-          </div>
-        </li>
-        <li class="regla" id="p-4-1-3">
-          <span class="regla-n">4.1.3</span>
-          <div>
-            <h3>El problema que resuelve</h3>
-            <ul class="puntos">
-              <li><strong>Eliminación de la dependencia de procesos manuales y estáticos:</strong> resuelve la complejidad de gestionar organigramas en hojas de cálculo o documentos desactualizados que no escalan con el crecimiento de la empresa cliente.</li>
-              <li><strong>Despliegue y configuración inmediata (Time-to-Value):</strong> evita la fricción en la implementación inicial al permitir que cada empresa compisy configure de forma autónoma su estructura física y jerárquica en minutos dentro del entorno SaaS.</li>
-              <li><strong>Dispersión de datos y desalineación operativa:</strong> resuelve la falta de visibilidad centralizada sobre dónde operan los colaboradores (sucursales, plantas, almacenes) y cómo se estructuran las líneas de mando, unificando toda la información en un solo lugar accesible en la nube.</li>
-              <li><strong>Riesgo de inconsistencias cruzadas:</strong> evita que los departamentos de recursos humanos asignen personal a cargos o ubicaciones inexistentes, asegurando que toda la plataforma se alimente de una fuente única de verdad organizacional.</li>
-            </ul>
-          </div>
-        </li>
-        <li class="regla" id="p-4-1-4">
-          <span class="regla-n">4.1.4</span>
-          <div>
-            <h3>Quién lo usa</h3>
-            <ul class="puntos">
-              <li><strong>Recursos Humanos</strong> es el único que edita. Arma la estructura, abre cargos y puestos, y decide qué peldaños usa la empresa.</li>
-              <li><strong>El resto de lo administrativo</strong> —alta dirección, líderes con rol— lee la estructura desde todas partes: es lo que hace que un filtro por sucursal signifique lo mismo en cada módulo.</li>
-              <li><strong>El colaborador</strong> no entra al módulo. Ve el resultado —el organigrama, de quién depende, quién es su equipo— desde su app.</li>
-            </ul>
-          </div>
-        </li>
-        <li class="regla" id="p-4-1-5">
-          <span class="regla-n">4.1.5</span>
-          <div>
-            <h3>Qué entra</h3>
-            <ul class="puntos">
-              <li>El árbol completo de la organización y su edición: crear, mover, renombrar, cambiar de estado y eliminar nodos.</li>
-              <li>La configuración de los peldaños que cada empresa enciende, renombra, reordena o agrega.</li>
-              <li>Los datos de la empresa, que son la raíz del árbol.</li>
-              <li>El catálogo de cargos, sus puestos y la línea de mando entre ellos.</li>
-              <li>El organigrama —dibujarlo, recortarlo, exportarlo— y la carga masiva desde una planilla.</li>
-            </ul>
-          </div>
-        </li>
-        <li class="regla" id="p-4-1-6">
-          <span class="regla-n">4.1.6</span>
-          <div>
-            <h3>Qué no entra</h3>
-            <ul class="puntos">
-              <li><strong>Las personas.</strong> Quién ocupa un puesto se declara acá, pero la ficha del colaborador, su contrato y sus datos sensibles son de Gestión de personas.</li>
-              <li><strong>Los permisos.</strong> El cargo no es el rol: quién puede hacer qué se define en Configuración, y la estructura solo aporta el alcance —sobre quién—.</li>
-              <li><strong>La nómina y la asistencia.</strong> El centro de trabajo dice dónde se ficha; qué se hace con esa marca es de otro módulo.</li>
-              <li><strong>El histórico de la estructura.</strong> Hoy se guarda cómo está la organización, no cómo estaba en marzo. Es una decisión abierta, no un olvido.</li>
-            </ul>
-          </div>
-        </li>
-        <li class="regla" id="p-4-1-7">
-          <span class="regla-n">4.1.7</span>
-          <div>
-            <h3>De qué depende</h3>
-            <p>De muy poco, y es a propósito: es el primer módulo que se llena en la puesta en marcha. Necesita los <strong>datos de la empresa</strong> —que son su raíz— y el catálogo de países para las direcciones. Nada más.</p>
-          </div>
-        </li>
-        <li class="regla" id="p-4-1-8">
-          <span class="regla-n">4.1.8</span>
-          <div>
-            <h3>Quién depende de él</h3>
-            <ul class="puntos">
-              <li><strong>Módulo de Gestión de Personas:</strong> depende directamente de la estructura creada para asignar a cada colaborador su cargo, nivel de mando, unidad organizacional y ubicación física exacta.</li>
-              <li><strong>Módulo de Onboarding:</strong> utiliza los cargos, unidades y estructuras definidas para alinear los flujos de incorporación, asignación de tareas y rutas de bienvenida según el puesto del nuevo empleado.</li>
-              <li><strong>Módulo de Evaluación:</strong> requiere los niveles de mando, cargos y la jerarquía organizacional para configurar las cadenas de evaluación (por ejemplo, evaluaciones de desempeño de jefe a subordinado o pares dentro de la misma unidad).</li>
-              <li><strong>Módulo de Comunicación:</strong> se apoya en la estructura (regionales, sucursales, unidades o niveles de mando) para segmentar y enviar comunicados internos de forma focalizada a grupos específicos de la organización.</li>
-            </ul>
-          </div>
-        </li>
-        <li class="regla" id="p-4-1-9">
-          <span class="regla-n">4.1.9</span>
-          <div>
-            <h3>Estado</h3>
-            <p>Prototipado y navegable. El árbol vive en su propia llave de <code class="mono">localStorage</code> y no escribe todavía en los datos de producción: es la propuesta hecha pantalla, para mirarla. Las reglas de esta parte están en <strong>Borrador</strong> hasta que se validen con desarrollo.</p>
-          </div>
-        </li>
-        </ol>
+        <div class="apartado" id="p-4-1-1">
+          <span class="apartado-n">4.1.1</span>
+          <h3>Objetivo</h3>
+          <p>Proveer una arquitectura organizacional flexible, multiempresa y autogestionable que permita a las empresas clientes configurar y escalar rápidamente su propia estructura física y jerárquica en la nube, estandarizando la gestión de su talento desde el primer día de despliegue en el SaaS.</p>
+        </div>
+        <div class="apartado" id="p-4-1-2">
+          <span class="apartado-n">4.1.2</span>
+          <h3>El problema que resuelve</h3>
+          <ul class="puntos">
+            <li><strong>Eliminación de la dependencia de procesos manuales y estáticos:</strong> resuelve la complejidad de gestionar organigramas en hojas de cálculo o documentos desactualizados que no escalan con el crecimiento de la empresa cliente.</li>
+            <li><strong>Despliegue y configuración inmediata (Time-to-Value):</strong> evita la fricción en la implementación inicial al permitir que cada empresa compisy configure de forma autónoma su estructura física y jerárquica en minutos dentro del entorno SaaS.</li>
+            <li><strong>Dispersión de datos y desalineación operativa:</strong> resuelve la falta de visibilidad centralizada sobre dónde operan los colaboradores (sucursales, plantas, almacenes) y cómo se estructuran las líneas de mando, unificando toda la información en un solo lugar accesible en la nube.</li>
+            <li><strong>Riesgo de inconsistencias cruzadas:</strong> evita que los departamentos de recursos humanos asignen personal a cargos o ubicaciones inexistentes, asegurando que toda la plataforma se alimente de una fuente única de verdad organizacional.</li>
+          </ul>
+        </div>
+        <div class="apartado" id="p-4-1-3">
+          <span class="apartado-n">4.1.3</span>
+          <h3>Quién lo usa</h3>
+          <ul class="puntos">
+            <li><strong>Recursos Humanos</strong> es el único que edita. Arma la estructura, abre cargos y puestos, y decide qué peldaños usa la empresa.</li>
+            <li><strong>El resto de lo administrativo</strong> —alta dirección, líderes con rol— lee la estructura desde todas partes: es lo que hace que un filtro por sucursal signifique lo mismo en cada módulo.</li>
+            <li><strong>El colaborador</strong> no entra al módulo. Ve el resultado —el organigrama, de quién depende, quién es su equipo— desde su app.</li>
+          </ul>
+        </div>
+        <div class="apartado" id="p-4-1-4">
+          <span class="apartado-n">4.1.4</span>
+          <h3>Qué entra</h3>
+          <ul class="puntos">
+            <li>El árbol completo de la organización y su edición: crear, mover, renombrar, cambiar de estado y eliminar nodos.</li>
+            <li>La configuración de los peldaños que cada empresa enciende, renombra, reordena o agrega.</li>
+            <li>Los datos de la empresa, que son la raíz del árbol.</li>
+            <li>El catálogo de cargos, sus puestos y la línea de mando entre ellos.</li>
+            <li>El organigrama —dibujarlo, recortarlo, exportarlo— y la carga masiva desde una planilla.</li>
+          </ul>
+        </div>
+        <div class="apartado" id="p-4-1-5">
+          <span class="apartado-n">4.1.5</span>
+          <h3>Qué no entra</h3>
+          <ul class="puntos">
+            <li><strong>Las personas.</strong> Quién ocupa un puesto se declara acá, pero la ficha del colaborador, su contrato y sus datos sensibles son de Gestión de personas.</li>
+            <li><strong>Los permisos.</strong> El cargo no es el rol: quién puede hacer qué se define en Configuración, y la estructura solo aporta el alcance —sobre quién—.</li>
+            <li><strong>La nómina y la asistencia.</strong> El centro de trabajo dice dónde se ficha; qué se hace con esa marca es de otro módulo.</li>
+            <li><strong>El histórico de la estructura.</strong> Hoy se guarda cómo está la organización, no cómo estaba en marzo. Es una decisión abierta, no un olvido.</li>
+          </ul>
+        </div>
+        <div class="apartado" id="p-4-1-6">
+          <span class="apartado-n">4.1.6</span>
+          <h3>De qué depende</h3>
+          <p>De muy poco, y es a propósito: es el primer módulo que se llena en la puesta en marcha. Necesita los <strong>datos de la empresa</strong> —que son su raíz— y el catálogo de países para las direcciones. Nada más.</p>
+        </div>
+        <div class="apartado" id="p-4-1-7">
+          <span class="apartado-n">4.1.7</span>
+          <h3>Quién depende de él</h3>
+          <ul class="puntos">
+            <li><strong>Módulo de Gestión de Personas:</strong> depende directamente de la estructura creada para asignar a cada colaborador su cargo, nivel de mando, unidad organizacional y ubicación física exacta.</li>
+            <li><strong>Módulo de Onboarding:</strong> utiliza los cargos, unidades y estructuras definidas para alinear los flujos de incorporación, asignación de tareas y rutas de bienvenida según el puesto del nuevo empleado.</li>
+            <li><strong>Módulo de Evaluación:</strong> requiere los niveles de mando, cargos y la jerarquía organizacional para configurar las cadenas de evaluación (por ejemplo, evaluaciones de desempeño de jefe a subordinado o pares dentro de la misma unidad).</li>
+            <li><strong>Módulo de Comunicación:</strong> se apoya en la estructura (regionales, sucursales, unidades o niveles de mando) para segmentar y enviar comunicados internos de forma focalizada a grupos específicos de la organización.</li>
+          </ul>
+        </div>
+        <div class="apartado" id="p-4-1-8">
+          <span class="apartado-n">4.1.8</span>
+          <h3>Estado</h3>
+          <ul class="puntos">
+            <li><strong>En desarrollo</strong> — desde el 8 de septiembre de 2026.</li>
+            <li><strong>Prototipo</strong> — del 1 al 7 de agosto de 2026.</li>
+          </ul>
+        </div>
 
         <h3 class="grupo-tit">El vocabulario del módulo</h3>
         <p class="grupo-lead">Ocho peldaños que no son ocho tablas: son ocho tipos del mismo nodo. Esta es la escalera con la que nace una empresa; cada una la recorta, la renombra y le agrega los suyos.</p>
