@@ -3,7 +3,7 @@ import {
   ArrowDownToLine, ArrowUpFromLine, Network, LayoutGrid, Table2, ChevronDown, ChevronUp, ChevronLeft, ChevronRight,
   X, Building2, UploadCloud, FileSpreadsheet, Check, User, Search, Pencil, Star, Users,
   Minus, Plus, ArrowUp, Briefcase, MapPin, Trash2, FolderPlus, Printer, Image, FileCode2,
-  Settings, Layers, Palette, GitBranch, Hash,
+  Settings, Layers, Palette, GitBranch,
 } from 'lucide-react'
 import OrgGrafico from '../../components/personas/OrgGrafico'
 import CabeceraModal from '../../components/personas/CabeceraModal'
@@ -137,32 +137,30 @@ const jefeDeUnidadVacia = (unidadId, org) => {
    Acá quedan los suyos, y solo los del puesto que esté elegido: el renglón que los lista se
    fue al panel de la izquierda, que ahora es el menú. */
 function PuestoFicha({
-  puesto, org, sucursales, puestosPorSede, conCodigos, unidadPropia, cargoId, onCambio,
+  puesto, org, sucursales, puestosPorSede, unidadPropia, cargoId, onCambio,
 }) {
   const sedeId = puesto.sucursalIds?.[0] || null
   const apoyos = puesto.funcionales || []
 
   const campos = (
     <>
-      <div className={`og-fila-puesto${conCodigos ? '' : ' sinCodigo'}`}>
-        {conCodigos && (
-          <label className="pl-label">
-            <span className="og-label-fila">
-              Código
-              <AyudaCampo>
-                El identificador de este puesto en planilla o en los reportes de RRHH. Es
-                opcional: si la empresa no los usa, se deja vacío.
-              </AyudaCampo>
-            </span>
-            <input
-              className="pl-input"
-              value={puesto.codigo || ''}
-              maxLength={20}
-              onChange={e => onCambio({ codigo: e.target.value })}
-              placeholder="Ej. CAR-001"
-            />
-          </label>
-        )}
+      <div className="og-fila-puesto">
+        <label className="pl-label">
+          <span className="og-label-fila">
+            Código
+            <AyudaCampo>
+              El identificador de este puesto en planilla o en los reportes de RRHH. Es
+              opcional: si la empresa no los usa, se deja vacío.
+            </AyudaCampo>
+          </span>
+          <input
+            className="pl-input"
+            value={puesto.codigo || ''}
+            maxLength={20}
+            onChange={e => onCambio({ codigo: e.target.value })}
+            placeholder="Ej. CAR-001"
+          />
+        </label>
         <div className="pl-label">
           <span className="og-label-fila">
             Sucursal
@@ -238,7 +236,7 @@ function PuestoFicha({
   return <div className="og-pto-sola">{campos}</div>
 }
 
-function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminarRama, onCerrar, org, abrirEnEdicion, conCodigos = true }) {
+function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminarRama, onCerrar, org, abrirEnEdicion }) {
   /* Las sedes salen del contexto y ya no de la constante del modelo. Desde que se editan en
      Organización → Sucursales, leerlas del módulo dejaría este desplegable ofreciendo una lista que
      el usuario ya cambió —o una sede que borró—. */
@@ -557,7 +555,6 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
               cargoId={cargo?.id}
               ocupantes={ocupantes}
               nuevo={nuevo}
-              conCodigos={conCodigos}
               /* EL PANEL ES EL MENÚ: qué está elegido y qué pasa al tocar un cuadro o su tacho. */
               sel={unico ? null : sel}
               onSel={setSel}
@@ -569,7 +566,7 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
               distintas —qué es este puesto y qué quiero cambiarle— y por eso no comparten
               composición. El dibujo de la izquierda es el mismo en los dos: es lo único que
               contesta las dos. */}
-          {soloVer ? <HojaCargo cargo={cargo} org={org} conCodigos={conCodigos} /> : (
+          {soloVer ? <HojaCargo cargo={cargo} org={org} /> : (
           <div className="og-hojas-col">
             {/* NI PESTAÑAS NI PASOS: manda la selección del panel. Cargo, Funcional y Localización
                 se repartieron cuando un cargo ERA un puesto; los dos pasos vinieron después y
@@ -901,7 +898,6 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                 org={org}
                 sucursales={sucursales}
                 puestosPorSede={puestosPorSede}
-                conCodigos={conCodigos}
                 unidadPropia={form.unidadId}
                 cargoId={cargo?.id}
                 /* Con uno solo el dato vive en el formulario; con varios, en su renglón de la
@@ -1657,7 +1653,7 @@ function TipoPill({ tipo }) {
   return <span className={`og-tipo og-tipo-${t.clase}`} title={t.desc}><t.Icon size={10} /> {t.label}</span>
 }
 
-function VistaTabla({ org, busca, setBusca, onAbrir, onEliminarVarios, conCodigos = true }) {
+function VistaTabla({ org, busca, setBusca, onAbrir, onEliminarVarios }) {
   const [colapsados, setColapsados] = useState({})
   const grupos = useMemo(() => filasTabla(org), [org])
 
@@ -1742,7 +1738,7 @@ function VistaTabla({ org, busca, setBusca, onAbrir, onEliminarVarios, conCodigo
               <th>Unidad organizacional / Cargo</th>
               {/* El código va después del nombre y no antes: se busca por nombre, se confirma por
                   código. Vacío se muestra con una raya, que dice "no tiene" sin ocupar lugar. */}
-              {conCodigos && <th className="og-th-codigo">Código</th>}
+              <th className="og-th-codigo">Código</th>
               <th>Pertenece a</th>
               <th>Tipo</th>
               {/* Al lado del tipo porque contestan lo mismo sobre el puesto: de qué clase es y
@@ -1803,7 +1799,7 @@ function VistaTabla({ org, busca, setBusca, onAbrir, onEliminarVarios, conCodigo
                           <span className="og-cargo-nom">{f.cargo.nombre}</span>
                         </div>
                       </td>
-                      {conCodigos && <td className="og-td-codigo">{f.cargo.codigo || '—'}</td>}
+                      <td className="og-td-codigo">{f.cargo.codigo || '—'}</td>
                       <td>
                         <span className="og-pertenece">{f.unidad?.corto || '—'}</span>
                         {/* Las áreas que APOYA, al lado de la que le pertenece. Van en esta
@@ -2000,11 +1996,6 @@ export default function Organigrama() {
   /* Tres posiciones: 'sin', 'con' o 'solo' los cuadros prestados. Clave nueva porque lo
      guardado antes era un booleano y llegaría como `true`. */
   const [verFuncionales, setVerFuncionales] = useLocalStorage('organigramaApoyos', 'con')
-  /* SI LOS PUESTOS LLEVAN CÓDIGO. Hay empresas que numeran cada puesto en planilla y empresas
-     que no numeran ninguno; a las segundas el campo les pide un dato que no tienen y la columna
-     les muestra una raya en cada fila. Apagado no BORRA los códigos guardados —solo deja de
-     pedirlos y de mostrarlos—: volver a encenderlo devuelve lo que había. */
-  const [conCodigos, setConCodigos] = useLocalStorage('organigramaCodigos', true)
   const [exportAbierto, setExportAbierto] = useState(false)
   /* Mientras se dibuja la imagen el árbol tiene que quedarse quieto y entero, así que el botón
      avisa que está trabajando en vez de parecer que no hizo nada: en un organigrama de treinta
@@ -2522,30 +2513,6 @@ export default function Organigrama() {
                       <small>El tono de cada clase de puesto y el color de tu empresa</small>
                     </div>
                   </button>
-                  {/* Este no abre nada: se enciende y se apaga acá mismo. Mandarlo a un modal con
-                      un solo interruptor sería un clic de más para llegar a la misma palanca. */}
-                  <button
-                    className="og-export-op og-op-switch"
-                    onClick={() => setConCodigos(v => !v)}
-                    role="switch"
-                    aria-checked={conCodigos}
-                  >
-                    <Hash size={14} />
-                    <div>
-                      {/* La palanca va junto al título y no al final de la fila: colgada a la
-                          derecha le robaba el ancho a la explicación, que quedaba en una columna
-                          de tres palabras mientras las otras dos opciones del menú usaban todo. */}
-                      <span className="og-op-titulo">
-                        <strong>Codificar puestos</strong>
-                        <span className={`og-switch${conCodigos ? ' on' : ''}`} />
-                      </span>
-                      <small>
-                        {conCodigos
-                          ? 'Cada puesto lleva su código en la ficha y en la tabla'
-                          : 'Los puestos se nombran sin código: «Puesto 1», «Puesto 2»…'}
-                      </small>
-                    </div>
-                  </button>
                 </div>
               </>
             )}
@@ -2642,7 +2609,6 @@ export default function Organigrama() {
                 setBusca={setBusca}
                 onAbrir={(c, aEditar) => setEditando({ cargo: c, editar: aEditar })}
                 onEliminarVarios={ids => setBorrando({ tipo: 'cargos', ids })}
-                conCodigos={conCodigos}
               />
             </div>
           )}
@@ -2709,7 +2675,6 @@ export default function Organigrama() {
 
       {editando && (
         <CargoModal
-          conCodigos={conCodigos}
           cargo={editando.cargo}
           base={editando.base}
           abrirEnEdicion={editando.editar}

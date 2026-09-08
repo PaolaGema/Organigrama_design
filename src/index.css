@@ -3534,23 +3534,6 @@ select.pl-input:focus {
 .og-marca-pie { margin: 10px 0 0; font-size: 10px; line-height: 1.45; color: var(--text-muted); }
 
 .og-export-menu { width: 236px; }
-/* Una opción del menú que no abre nada: se enciende y se apaga en el lugar. La palanca va al final
-   de la fila, donde ya está el ojo después de leer el texto. */
-.og-op-switch { cursor: pointer; }
-.og-op-titulo { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.og-switch {
-  flex-shrink: 0; align-self: center; position: relative;
-  width: 30px; height: 17px; border-radius: 9px;
-  background: var(--border-dark); transition: background .15s;
-}
-.og-switch::after {
-  content: ""; position: absolute; top: 2px; left: 2px;
-  width: 13px; height: 13px; border-radius: 50%;
-  background: #fff; transition: transform .15s;
-}
-.og-switch.on { background: var(--og-marca, var(--navy)); }
-.og-switch.on::after { transform: translateX(13px); }
-
 .og-export-op { display: flex; align-items: flex-start; gap: 9px; width: 100%; text-align: left; padding: 9px 10px; border: 1px solid transparent; border-radius: 9px; background: none; color: var(--navy-txt); font-family: inherit; cursor: pointer; }
 .og-export-op:hover { background: var(--surface-hover); border-color: var(--border); }
 .og-export-op svg { flex-shrink: 0; margin-top: 1px; color: var(--icon-muted); }
@@ -5067,7 +5050,6 @@ select.pl-input:focus {
 /* En la ficha del puesto la reja se invierte: el código mide veinte caracteres y el nombre de
    la sede no, así que el ancho va para la sede. */
 .og-fila-puesto { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 13px; align-items: start; }
-.og-fila-puesto.sinCodigo { grid-template-columns: minmax(0, 1fr); }
 .og-fila-puesto > * { min-width: 0; }
 .og-fila-campos > .pl-label { min-width: 0; }
 /* Mitad y mitad cuando los dos campos pesan lo mismo, como el área y su jefe. */

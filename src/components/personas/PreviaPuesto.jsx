@@ -55,7 +55,7 @@ export function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, ma
 }
 
 export default function PreviaPuesto({
-  form, org, cargoId, ocupantes, nuevo, conCodigos = true, sel = null, onSel, onBorrar,
+  form, org, cargoId, ocupantes, nuevo, sel = null, onSel, onBorrar,
 }) {
   const jefe = form.reportaA ? org.cargos.find(c => c.id === form.reportaA) : null
   /* Solo el staff va al costado. El outsourcing baja en la línea como cualquier reporte, así
@@ -151,7 +151,7 @@ export default function PreviaPuesto({
                 {/* QUIÉN LO OCUPA, A LA VISTA. Es la protección más barata que hay: se ve que hay
                     alguien adentro antes de que la mano llegue al tacho, y no después. */}
                 <span className="og-pv-pz-sub">
-                  {[conCodigos && p.codigo, sedeDe(p)].filter(Boolean).join(' · ')}
+                  {[p.codigo, sedeDe(p)].filter(Boolean).join(' · ')}
                   {gente.length ? (
                     <>
                       {' · '}
