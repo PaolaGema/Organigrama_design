@@ -3425,6 +3425,9 @@ grupos.forEach(g => g.addEventListener('click', () => {
   g.setAttribute('aria-expanded', g.getAttribute('aria-expanded') === 'true' ? 'false' : 'true')
 }))
 
+const toc = document.querySelector('.toc')
+const secciones = [...document.querySelectorAll('.sec')]
+
 let ultima = null
 const marcar = id => {
   if (id === ultima) return
@@ -3436,16 +3439,61 @@ const marcar = id => {
   if (grupo && grupo.getAttribute('aria-expanded') === 'false') {
     grupo.setAttribute('aria-expanded', 'true')
   }
+  seguir(activo)
 }
 
-const vistas = new Map()
-const obs = new IntersectionObserver(es => {
-  es.forEach(e => vistas.set(e.target.id, e.intersectionRatio > 0 ? e.boundingClientRect.top : Infinity))
-  const arriba = [...vistas.entries()].filter(([, t]) => t < 160).sort((a, b) => b[1] - a[1])[0]
-  if (arriba) marcar(arriba[0])
-}, { threshold: [0, 1], rootMargin: '-140px 0px -70% 0px' })
-document.querySelectorAll('.sec').forEach(s => obs.observe(s))
-marcar(items[0]?.dataset.id)
+/* EL ÍNDICE TAMBIÉN SE DESPLAZA. Son veintiuna entradas en seis grupos y no entran todas en la
+   altura de la pantalla, así que estando en 4.4 la fila marcada podía quedar por debajo del
+   borde del rail: el índice SÍ se estaba actualizando y no había manera de verlo. Solo se mueve
+   cuando la fila se salió —arrastrar el índice a mano y que se reacomode solo es peor que no
+   moverlo—, y se queda quieto si el sistema pide menos movimiento. */
+const quieto = matchMedia('(prefers-reduced-motion: reduce)')
+const seguir = a => {
+  if (!toc || toc.scrollHeight <= toc.clientHeight) return
+  const caja = toc.getBoundingClientRect()
+  const fila = a.getBoundingClientRect()
+  if (fila.top >= caja.top + 8 && fila.bottom <= caja.bottom - 8) return
+  a.scrollIntoView({ block: 'nearest', behavior: quieto.matches ? 'auto' : 'smooth' })
+}
+
+/* QUÉ SECCIÓN SE ESTÁ LEYENDO, MEDIDO EN EL MOMENTO Y NO CUANDO SE CRUZÓ UN BORDE.
+   Esto era un IntersectionObserver que guardaba el `top` de cada sección en el instante en que
+   se disparaba, y después ordenaba ESAS medidas. El problema es que solo se dispara al cruzar un
+   umbral: dentro de una sección larga —el PRD, los flujos y los wireframes miden miles de
+   píxeles— se puede bajar media pantalla tras otra sin que se dispare nada, y el índice seguía
+   decidiendo con posiciones tomadas mucho antes. Se retrasaba justo donde más se lee.
+
+   Leer los rectángulos en el momento cuesta veintiún `getBoundingClientRect` por cuadro, que en
+   una lista de este tamaño no se nota, y no puede quedar desfasado por definición.
+
+   `requestAnimationFrame` es lo que evita hacerlo en cada evento de desplazamiento —que llegan
+   de a decenas por cuadro— y el oyente es pasivo para no frenar el desplazamiento del navegador. */
+const LINEA = 150
+
+const revisar = () => {
+  pedido = false
+  let actual = null
+  /* Las secciones vienen en orden de documento, así que la última que ya pasó por encima de la
+     línea es la que se está leyendo, y en cuanto una no la pasó no la pasa ninguna de abajo. */
+  for (const sec of secciones) {
+    if (sec.getBoundingClientRect().top <= LINEA) actual = sec.id
+    else break
+  }
+  /* Arriba del todo —la portada— todavía no cruzó ninguna, y un índice sin nada marcado se lee
+     como un índice roto. Manda la primera. */
+  marcar(actual || secciones[0]?.id)
+}
+
+let pedido = false
+const pedirRevision = () => {
+  if (pedido) return
+  pedido = true
+  requestAnimationFrame(revisar)
+}
+
+addEventListener('scroll', pedirRevision, { passive: true })
+addEventListener('resize', pedirRevision)
+revisar()
 </script>
 </body>
 </html>
