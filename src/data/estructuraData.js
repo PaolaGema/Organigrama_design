@@ -861,9 +861,9 @@ export const EJES = {
     ],
     /* EL NIVEL DE MANDO no es un nodo del árbol —no cuelga de nada— pero pertenece a este eje: es
        lo que ordena el organigrama de arriba abajo, y sin él un cargo no se termina de definir.
-       Vive en Configuración, que es donde ya están los peldaños, y se llega desde acá porque es
-       acá donde alguien lo va a buscar. Existía desde siempre; lo que no existía era un sitio
-       evidente donde encontrarlo.
+       Tiene su propia pantalla y se llega desde acá, que es donde alguien lo va a buscar: es lo
+       que clasifica a un cargo, no de qué escalones está hecha la empresa —eso es Configuración—.
+       Existía desde siempre; lo que no existía era un sitio evidente donde encontrarlo.
 
        SOLO ÉL. «Tipos de cargo» llegó a estar en esta lista y se fue: es un catálogo de tres
        palabras que se elige dentro de la ficha del cargo y no una pantalla a la que nadie va a
