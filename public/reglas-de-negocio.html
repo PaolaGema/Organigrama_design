@@ -832,7 +832,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
       </figure>
     </div>
     <dl class="ficha">
-      <div><dt>Versión</dt><dd>2.3</dd></div>
+      <div><dt>Versión</dt><dd>2.4</dd></div>
       <div><dt>Fecha</dt><dd>10 de septiembre de 2026</dd></div>
       <div><dt>Autoría</dt><dd>Paola Gema — Diseñadora UX</dd></div>
       <div><dt>Revisa y aprueba</dt><dd>Naihara Rocha — reglas y uso de RR.HH.</dd></div>
@@ -846,7 +846,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <div class="cifras-w">
   <div class="cifras">
     <div><b>8</b><span>niveles de estructura del árbol</span></div>
-    <div><b>23</b><span>reglas de negocio</span></div>
+    <div><b>27</b><span>reglas de negocio</span></div>
     <div><b>32</b><span>requisitos funcionales</span></div>
     <div><b>6</b><span>no funcionales</span></div>
     <div><b>8</b><span>flujos de usuario</span></div>
@@ -1040,7 +1040,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
         </div>
         <div class="rail-s" data-sec="s4">
           <a href="#s4"><span>04</span>Reglas de negocio</a>
-          <button type="button" class="rail-x" aria-expanded="false" aria-controls="sub-s4"><svg class="rail-c" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M3.5 1.5 L7 5 L3.5 8.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Ver las 23 reglas</span></button>
+          <button type="button" class="rail-x" aria-expanded="false" aria-controls="sub-s4"><svg class="rail-c" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M3.5 1.5 L7 5 L3.5 8.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Ver las 27 reglas</span></button>
           <ul class="rail-sub" id="sub-s4" hidden>
             <li class="rail-g"><a href="#br-g-config">Configuración</a></li>
             <li><a href="#BR-ORG-004">004 · Cada empresa enciende sus niveles</a></li>
@@ -1050,11 +1050,15 @@ td.rg{color:var(--tinta-3);font-weight:700}
             <li><a href="#BR-ORG-003">003 · El menú de «Agregar» se deduce</a></li>
             <li><a href="#BR-ORG-005">005 · Dos dimensiones, un solo árbol</a></li>
             <li class="rail-g"><a href="#br-g-fisica">Estructura física</a></li>
-            <li><a href="#BR-ORG-006">006 · El sitio se declara una vez y baja</a></li>
+            <li><a href="#BR-ORG-025">025 · La regional agrupa y no depende de nada</a></li>
+            <li><a href="#BR-ORG-026">026 · La sucursal es la sede; el centro, el domicilio</a></li>
+            <li><a href="#BR-ORG-027">027 · Tres listas que se acotan entre sí</a></li>
+            <li><a href="#BR-ORG-028">028 · La dirección sale de catálogos</a></li>
             <li class="rail-g"><a href="#br-g-negocio">Unidades de negocio</a></li>
             <li><a href="#BR-ORG-022">022 · No es un padre: se hereda</a></li>
             <li class="rail-g"><a href="#br-g-unidades">Unidades organizacionales</a></li>
             <li><a href="#BR-ORG-023">023 · Cuelga de un puesto, no de otra unidad</a></li>
+            <li><a href="#BR-ORG-006">006 · El sitio se declara una vez y baja</a></li>
             <li class="rail-g"><a href="#br-g-cargos">Cargos</a></li>
             <li><a href="#BR-ORG-007">007 · El cargo es el rol; el puesto es la silla</a></li>
             <li><a href="#BR-ORG-008">008 · Un cargo cuelga de una unidad</a></li>
@@ -1185,7 +1189,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
       <figure class="perf-fig"><img src="assets/imagenes/via_developer.png" width="463" height="539" alt="VIA con anteojos de marco grueso, sosteniendo un portátil con código en pantalla"></figure>
       <div class="perf-txt">
         <p class="perf-mision"><b>Tu misión</b>Entregar el módulo completo y probado: cada regla de negocio cumplida, cubierta con pruebas unitarias y verificada con QA.</p>
-        <p class="perf-lead">Antes de escribir la primera línea, leer entero el punto <span class="id">04</span>. Las veintitrés reglas dicen qué tiene que pasar y qué tiene que estar impedido, y cada una trae un escenario —el camino que debe funcionar— que sirve como caso de prueba tal como está. El punto <span class="id">05</span> explica cómo está modelado el árbol; el <span class="id">03</span>, qué debe hacer cada pantalla.</p>
+        <p class="perf-lead">Antes de escribir la primera línea, leer entero el punto <span class="id">04</span>. Las veintisiete reglas dicen qué tiene que pasar y qué tiene que estar impedido, y cada una trae un escenario —el camino que debe funcionar— que sirve como caso de prueba tal como está. El punto <span class="id">05</span> explica cómo está modelado el árbol; el <span class="id">03</span>, qué debe hacer cada pantalla.</p>
         <dl class="perf-l">
           <div><dt>Empezar por</dt><dd><a href="#s0">00 · Glosario</a> · <a href="#s5">05 · Modelo de datos</a> · <a href="#s3">03 · Funcionalidades</a></dd></div>
           <div><dt>No omitir</dt><dd><a href="#s4">04 · Reglas de negocio</a> y <a href="#s2">02 · Integraciones</a>: definen qué se valida al guardar y qué queda expuesto a los demás módulos. Y <a href="#p6-6">6.6 · Riesgos</a>: hay dos decisiones que, tomadas mal, obligan a migrar todo</dd></div>
@@ -2013,7 +2017,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <header class="sec-h">
       <span class="sec-n" aria-hidden="true">04</span>
       <h2>Reglas de negocio</h2>
-      <p class="sec-d">Veintitrés condiciones que el sistema valida siempre, en el orden en que una empresa arma su estructura: primero de qué escalones está hecha, después qué pone en cada uno.</p>
+      <p class="sec-d">Veintisiete condiciones que el sistema valida siempre, en el orden en que una empresa arma su estructura: primero de qué escalones está hecha, después qué pone en cada uno.</p>
     </header>
 
 <h3 class="br-grupo" id="br-g-config">Configuración<em>De qué escalones está hecha esta empresa: lo primero que se decide y lo que gobierna a todo lo demás</em></h3>
@@ -2141,27 +2145,103 @@ td.rg{color:var(--tinta-3);font-weight:700}
           </li>
         </ol>
 
-<h3 class="br-grupo" id="br-g-fisica">Estructura física<em>Regiones, sucursales y centros de trabajo: dónde está la empresa</em></h3>
+<h3 class="br-grupo" id="br-g-fisica">Estructura física<em>Regiones, sucursales y centros de trabajo: dónde está la empresa y qué exige cada nivel</em></h3>
         <ol class="reglas">
           <li class="br">
             <span class="br-n">4.6</span>
             <div>
               <div class="br-cab">
-                <span class="br-id">BR-ORG-006</span>
+                <span class="br-id">BR-ORG-025</span>
                 <span class="br-estado">Borrador</span>
               </div>
-              <h3 id="BR-ORG-006">El sitio se declara una vez y baja por la rama</h3>
-              <p>Una unidad organizacional declara <b>en qué región, sucursal o centro de trabajo está</b>, y ese sitio vale para ella y para todo lo que cuelgue de ella. Las de más abajo no lo vuelven a contestar: su ficha muestra el heredado y, al lado, de qué unidad sale.</p>
-              <p>Declarar uno propio en una unidad de más abajo no contradice a su rama: la <b>afina</b> —«Almacén La Paz» dentro de «Logística», que está en Casa Matriz— y desde ahí manda el nuevo hacia abajo. No declarar ninguno significa «toda la empresa», que es la respuesta de una unidad que no está atada a ninguna sede.</p>
-              <p>Por eso la columna «Sucursal» tiene dato en unidades y cargos que nunca lo escribieron, y por eso mover una rama de sitio corrige el de todo lo que cuelga de ella sin tocar un solo registro.</p>
+              <h3 id="BR-ORG-025">La regional agrupa y no depende de nada</h3>
+              <p>La regional es <b>la cima del eje físico</b>: no hay ningún nivel por encima de ella, así que su ficha no pregunta de qué cuelga. Lo que hace es agrupar sucursales, y nada más: no manda, no factura y no liquida. Por eso es la ficha más corta de las tres.</p>
+              <p>Pide <b>nombre, país, ciudad y estado</b>, y nada más. El código, el responsable, la dirección, el teléfono y el correo se rellenan cuando se sepan: el responsable puede no estar dado de alta todavía y el teléfono puede no existir. <b>Una regional creada a medias vale más que una regional que no se pudo crear</b>, porque quien monta la estructura la necesita para colgarle sucursales, no para tenerla completa.</p>
+              <p>Lo de planillas no vive acá. Los parámetros de nómina —orden para planillas, dirección para liquidaciones— son datos de sueldos dentro de la pantalla con la que se monta la estructura: quien la está montando no los sabe todavía, y quien lleva planillas no entra por acá.</p>
               <div class="escenarios">
                 <div class="esc ok">
-                  <div class="esc-t"><i>✅</i>Una subunidad hereda el sitio de su rama</div>
+                  <div class="esc-t"><i>✅</i>Una regional que todavía no tiene responsable</div>
                   <ul>
-                    <li><b>Dado que</b>la unidad «Ventas» declara que está en «Casa Matriz»</li>
-                    <li><b>Cuando</b>se crea la subunidad «Preventa» dentro de Ventas</li>
-                    <li><b>Entonces</b>su ficha muestra «Casa Matriz» sin que nadie lo haya escrito, y al lado dice «Heredado de Ventas»</li>
-                    <li><b>Y</b>la tabla la lista en Casa Matriz, igual que a los cargos que cuelgan de ella</li>
+                    <li><b>Dado que</b>se crea la «Regional Oriente» con su país y su ciudad</li>
+                    <li><b>Cuando</b>se guarda sin responsable, sin teléfono y sin correo</li>
+                    <li><b>Entonces</b>la regional queda creada y ya se le pueden colgar sucursales</li>
+                    <li><b>Y</b>esos campos se completan más adelante, cuando la empresa los sepa</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="br">
+            <span class="br-n">4.7</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-026</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-026">La sucursal es la sede; el centro de trabajo es el domicilio</h3>
+              <p>Son dos niveles y contestan dos preguntas distintas. La <b>sucursal</b> es la sede: la unidad con la que la empresa se presenta en una ciudad, y es lo que hereda todo lo que cuelga de ella. El <b>centro de trabajo</b> es el sitio físico donde la gente trabaja, y su domicilio <b>es el que sale en los papeles laborales</b>: es el nivel donde de verdad se sabe dónde está una persona.</p>
+              <p>Por eso el centro pide una cosa que la sucursal no: <b>qué clase de sitio es</b> —oficina, planta, almacén, taller, obra, tienda u otro—, y es obligatorio. Sin el tipo, un almacén y una oficina se leen igual en toda la aplicación.</p>
+              <p>Una empresa que no separe sus centros de trabajo apaga ese nivel y su gente queda ubicada en la sucursal, que ahí pasa a ser las dos cosas. Es la decisión de <span class="id">BR‑ORG‑004</span>, y por eso el centro de trabajo no es obligatorio para nadie.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un depósito dentro de una sucursal</div>
+                  <ul>
+                    <li><b>Dado que</b>existe la sucursal «Casa Matriz» en Santa Cruz</li>
+                    <li><b>Cuando</b>se crea el centro de trabajo «Depósito Norte» dentro de ella, de tipo «Almacén»</li>
+                    <li><b>Entonces</b>el depósito guarda su propio domicilio, que es el que va en los papeles de quien marca ahí</li>
+                    <li><b>Y</b>la sucursal sigue siendo la sede: lo que cuelga del depósito hereda las dos cosas</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="br">
+            <span class="br-n">4.8</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-027</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-027">Un centro de trabajo se ubica con tres listas que se acotan entre sí</h3>
+              <p>La ficha pregunta por <b>regional, sucursal y centro superior</b> en tres campos separados, y <b>los tres son opcionales</b>: un centro puede colgar directo de la empresa. Preguntarlo así tiene un riesgo evidente —contestar «Occidente» y «Equipetrol», que está en Oriente— y son tres respuestas para una sola pregunta, sin forma de saber cuál vale.</p>
+              <p>Se resuelve <b>acotando la lista, no prohibiendo el campo</b>: elegida una regional, «Sucursal» solo ofrece las suyas; elegida una sucursal, «Centro superior» solo ofrece los que están dentro. Los tres campos existen y ninguna combinación imposible se puede siquiera elegir.</p>
+              <p>Lo que se guarda es <b>el más específico de los tres</b>, que es de quien cuelga en el árbol; los otros dos quedaron de camino y no son un dato aparte. Un campo cuyo nivel la empresa no usa no aparece: sin regionales creadas, «Regional» sería un desplegable con una sola opción y el nombre de un escalón que esta empresa apagó.</p>
+              <p>«Ninguna» es <b>una opción de la lista</b> y no un marcador gris. Elegida por error una sucursal, tiene que haber forma de volver a dejarlo vacío; y elegida a propósito, «Ninguna» dice algo distinto de un campo en blanco: en blanco es «no lo contesté», elegido es «este centro no cuelga de ninguna regional».</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>La sucursal se acota por su regional</div>
+                  <ul>
+                    <li><b>Dado que</b>se está creando un centro de trabajo y se elige la regional «Oriente»</li>
+                    <li><b>Cuando</b>se abre el desplegable «Sucursal»</li>
+                    <li><b>Entonces</b>solo se ofrecen las sucursales de Oriente</li>
+                    <li><b>Y</b>el centro queda colgado de la sucursal elegida, que es la más específica de las tres respuestas</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="br">
+            <span class="br-n">4.9</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-028</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-028">La dirección sale de catálogos, y solo hasta donde el catálogo alcanza</h3>
+              <p>País, departamento y ciudad se eligen de listas y <b>cada una acota a la siguiente</b>: del país sale la lista de ciudades, y con departamento elegido salen solo las suyas. Dos listas sueltas dejarían guardar «Departamento: La Paz · Ciudad: Sucre»; acotadas, esa combinación no se puede ni elegir.</p>
+              <p><b>El departamento solo aparece donde esa división existe con ese nombre.</b> Se intentó traducirlo país por país —Provincia en Argentina, Estado en México— y el remedio traía dos problemas: en Chile la división se llama «Región», y esa palabra ya es un nivel de esta estructura, así que dos «regiones» en el mismo formulario se confunden aunque las dos estén bien; y traducir el rótulo no traduce el dato, que sigue siendo texto libre y sigue sin agrupar nada. Donde no aplica, el campo no sale.</p>
+              <p>Provincia, municipio y localidad <b>se quitaron</b>. Eran la mitad de los campos exigidos para dar de alta un depósito y no agrupaban nada: «Santa Cruz» y «Sta. Cruz» son dos sitios distintos para una máquina. Queda la ciudad, que sí sale de un catálogo, y la dirección escrita.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una sucursal fuera de Bolivia</div>
+                  <ul>
+                    <li><b>Dado que</b>se crea una sucursal y se elige «Argentina» como país</li>
+                    <li><b>Cuando</b>se mira la tarjeta de ubicación</li>
+                    <li><b>Entonces</b>el campo «Departamento» no aparece y país y ciudad se reparten la fila</li>
+                    <li><b>Y</b>la ciudad se elige del catálogo del país, no se escribe a mano</li>
                   </ul>
                 </div>
               </div>
@@ -2173,7 +2253,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-negocio">Unidades de negocio<em>La línea a la que pertenece cada parte de la empresa</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.7</span>
+            <span class="br-n">4.10</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-022</span>
@@ -2203,7 +2283,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-unidades">Unidades organizacionales<em>Áreas, gerencias, departamentos y equipos: cómo se reparte el trabajo</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.8</span>
+            <span class="br-n">4.11</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-023</span>
@@ -2227,12 +2307,37 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
           </li>
+          <li class="br">
+            <span class="br-n">4.12</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-006</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-006">El sitio se declara una vez y baja por la rama</h3>
+              <p>Una unidad organizacional declara <b>en qué región, sucursal o centro de trabajo está</b>, y ese sitio vale para ella y para todo lo que cuelgue de ella. Las de más abajo no lo vuelven a contestar: su ficha muestra el heredado y, al lado, de qué unidad sale.</p>
+              <p>Declarar uno propio en una unidad de más abajo no contradice a su rama: la <b>afina</b> —«Almacén La Paz» dentro de «Logística», que está en Casa Matriz— y desde ahí manda el nuevo hacia abajo. No declarar ninguno significa «toda la empresa», que es la respuesta de una unidad que no está atada a ninguna sede.</p>
+              <p>Por eso la columna «Sucursal» tiene dato en unidades y cargos que nunca lo escribieron, y por eso mover una rama de sitio corrige el de todo lo que cuelga de ella sin tocar un solo registro.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una subunidad hereda el sitio de su rama</div>
+                  <ul>
+                    <li><b>Dado que</b>la unidad «Ventas» declara que está en «Casa Matriz»</li>
+                    <li><b>Cuando</b>se crea la subunidad «Preventa» dentro de Ventas</li>
+                    <li><b>Entonces</b>su ficha muestra «Casa Matriz» sin que nadie lo haya escrito, y al lado dice «Heredado de Ventas»</li>
+                    <li><b>Y</b>la tabla la lista en Casa Matriz, igual que a los cargos que cuelgan de ella</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
         </ol>
 
 <h3 class="br-grupo" id="br-g-cargos">Cargos<em>El rol: qué se hace, dentro de qué unidad y con cuántas sillas</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.9</span>
+            <span class="br-n">4.13</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-007</span>
@@ -2256,7 +2361,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.10</span>
+            <span class="br-n">4.14</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-008</span>
@@ -2280,7 +2385,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.11</span>
+            <span class="br-n">4.15</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-009</span>
@@ -2305,7 +2410,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.12</span>
+            <span class="br-n">4.16</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-014</span>
@@ -2330,7 +2435,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.13</span>
+            <span class="br-n">4.17</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-021</span>
@@ -2355,7 +2460,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.14</span>
+            <span class="br-n">4.18</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-024</span>
@@ -2380,7 +2485,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.15</span>
+            <span class="br-n">4.19</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-015</span>
@@ -2409,7 +2514,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-puestos">Puestos<em>La silla concreta: su código, su sitio, su jefatura y quién la ocupa</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.16</span>
+            <span class="br-n">4.20</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-010</span>
@@ -2433,7 +2538,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.17</span>
+            <span class="br-n">4.21</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-011</span>
@@ -2457,7 +2562,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.18</span>
+            <span class="br-n">4.22</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-012</span>
@@ -2483,7 +2588,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.19</span>
+            <span class="br-n">4.23</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-013</span>
@@ -2511,7 +2616,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-dibujo">El organigrama<em>El dibujo y las tablas, que son la misma estructura vista de dos maneras</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.20</span>
+            <span class="br-n">4.24</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-017</span>
@@ -2535,7 +2640,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.21</span>
+            <span class="br-n">4.25</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-018</span>
@@ -2563,7 +2668,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-todo">Vale para todo el módulo<em>Lo que se cumple en cualquier nivel y en cualquier pantalla</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.22</span>
+            <span class="br-n">4.26</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-016</span>
@@ -2587,7 +2692,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.23</span>
+            <span class="br-n">4.27</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-020</span>
@@ -3418,6 +3523,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
         <tr><td class="rg">1.0</td><td>7 sep 2026</td><td>La documentación del módulo en formato BR: veinte reglas con escenarios, treinta y un requisitos funcionales con código estable, ocho flujos y cinco wireframes. <strong>Cambia el modelo:</strong> un solo árbol de nodos, el esquema de niveles como dato de la empresa, y el cargo separado del puesto</td></tr>
         <tr><td class="rg"><strong>2.0</strong></td><td>7 sep 2026</td><td><strong>Los dos documentos se unen en uno.</strong> El contenido del módulo —reglas, requisitos, flujos y wireframes— entra en la estructura de nueve secciones del PRD, que es la que se sostiene: glosario al frente, contexto, integraciones módulo por módulo, modelo de datos y roadmap. <strong>Se rescata del PRD de agosto</strong> todo lo que seguía valiendo y se reescribe sobre el modelo nuevo: qué es un organigrama, los principios de diseño, las integraciones, el camino hasta desarrollo, los riesgos y el anexo de decisiones. <strong>Se anota lo que falta</strong> en vez de disimularlo: registro de actividad, estados vacíos y permisos verificados en el servidor quedan como <span class="id">ABIERTA‑07</span> a <span class="id">ABIERTA‑09</span>. <strong>Sin revisar todavía</strong></td></tr>
         <tr><td class="rg"><strong>2.1</strong></td><td>9 sep 2026</td><td>Entra <span class="id">BR‑ORG‑021</span>: <strong>el cargo y la plaza llevan códigos distintos</strong>, también cuando el cargo tiene una sola plaza. Es como lo maneja Recursos Humanos —el manual de cargos y la plantilla de personal son dos documentos— y no estaba escrito en ninguna parte, así que el formulario mostraba dos campos «Código» sin decir por qué eran dos</td></tr>
+        <tr><td class="rg"><strong>2.4</strong></td><td>10 sep 2026</td><td><strong>Estructura física deja de tener una sola regla y encima ajena.</strong> Entran cuatro escritas de lo que las fichas piden hoy: <span class="id">BR‑ORG‑025</span> la regional agrupa y no depende de nada —y pide nombre, país, ciudad y estado, nada más—, <span class="id">BR‑ORG‑026</span> la sucursal es la sede y el centro de trabajo el domicilio que sale en los papeles laborales, <span class="id">BR‑ORG‑027</span> los tres desplegables del centro se acotan entre sí y se guarda el más específico, y <span class="id">BR‑ORG‑028</span> la dirección sale de catálogos y el departamento solo aparece donde esa división existe con ese nombre. <span class="id">BR‑ORG‑006</span> se muda a Unidades organizacionales: habla de dónde está una unidad, no de un nivel físico</td></tr>
         <tr><td class="rg"><strong>2.3</strong></td><td>10 sep 2026</td><td><strong>Renombrar, reordenar y agregar niveles de estructura salen del producto</strong> y pasan a <span class="id">FUERA‑05</span>: la escalera se enciende y se apaga, y nada más. Se va <span class="id">BR‑ORG‑019</span> con ellos, y las dos mitades que los exigían —RF‑ORG‑004 y RF‑ORG‑005—, dejando el hueco en la numeración como manda el <span class="id">4.2</span>. Lo que <strong>no</strong> se toca es que ninguna etiqueta esté escrita en el código de una pantalla —<span class="id">RNF‑ORG‑06</span>—: sale de la lista de la empresa, y eso es lo que hará barato el editor el día que se agregue. <strong>El nivel de mando no se administra en Configuración</strong>: tiene su pantalla dentro de Estructura organizacional, así que <span class="id">BR‑ORG‑015</span> se muda al grupo de Cargos</td></tr>
         <tr><td class="rg"><strong>2.2</strong></td><td>10 sep 2026</td><td><strong>Las reglas se agrupan por lo que gobiernan</strong> —la configuración, los cimientos del modelo, la estructura física, las unidades de negocio, las organizacionales, los cargos, los puestos y el dibujo— y en el orden en que una empresa arma su estructura. <strong>Un solo escenario por regla:</strong> los segundos estaban marcados como el camino cerrado y casi ninguno lo era, así que lo que de verdad se impide pasó al párrafo de cada regla. <strong>Entran tres reglas:</strong> <span class="id">BR‑ORG‑022</span> la unidad de negocio se declara en un nivel y se hereda, <span class="id">BR‑ORG‑023</span> una unidad organizacional cuelga de un puesto, y <span class="id">BR‑ORG‑024</span> con qué jefatura nacen las sillas nuevas de un cargo. <strong>Se reescriben tres:</strong> el sitio se declara una vez y baja por la rama —<span class="id">BR‑ORG‑006</span>—, el cupo es un techo que no se puede bajar por debajo de las sillas abiertas —<span class="id">BR‑ORG‑009</span>—, y la jefatura se pregunta silla por silla —<span class="id">BR‑ORG‑012</span>—. <strong>Los tres tipos de cargo</strong> pasan a llamarse regular, staff y externo, con su definición completa</td></tr>
       </tbody>
