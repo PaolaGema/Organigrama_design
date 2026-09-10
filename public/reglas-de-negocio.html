@@ -1061,7 +1061,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             <li><a href="#BR-ORG-006">006 · El sitio se declara una vez y baja</a></li>
             <li class="rail-g"><a href="#br-g-cargos">Cargos</a></li>
             <li><a href="#BR-ORG-007">007 · El cargo es el rol; el puesto es la silla</a></li>
-            <li><a href="#BR-ORG-008">008 · Un cargo cuelga de una unidad</a></li>
+            <li><a href="#BR-ORG-008">008 · Pertenece a una unidad; la línea sale de sus sillas</a></li>
             <li><a href="#BR-ORG-009">009 · El cupo es un techo</a></li>
             <li><a href="#BR-ORG-014">014 · Los tres tipos de cargo</a></li>
             <li><a href="#BR-ORG-021">021 · El cargo y la plaza, códigos distintos</a></li>
@@ -2601,10 +2601,10 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-id">BR-ORG-008</span>
                 <span class="br-estado">Borrador</span>
               </div>
-              <h3 id="BR-ORG-008">Un cargo solo cuelga de una unidad organizacional</h3>
+              <h3 id="BR-ORG-008">Un cargo pertenece a una unidad; su línea de mando sale de sus sillas</h3>
               <p>La regla de jerarquía le permitiría colgar de una sucursal o de una región —están más arriba— y eso lo sacaría del organigrama. Un cargo pertenece a una unidad: ahí está su jefe, su presupuesto y su evaluación. Dónde se trabaja lo dice el puesto, que es otra cosa.</p>
               <p><b>«Cuelga de» quiere decir dos cosas, y esta regla habla de una.</b> En el <b>árbol</b> un cargo cuelga de su unidad, y es el único nodo superior que se le ofrece: eso es a qué área pertenece. En el <b>dibujo</b> el cuadro de un cargo aparece debajo del cuadro de otro cargo, y eso es la línea de mando, que no sale de acá: sale de <b>a quién responden sus sillas</b>, una por una —<span class="id">BR‑ORG‑012</span>—. Por eso la tabla de Cargos tiene las dos columnas, «Pertenece a» y «Depende de», y dicen cosas distintas.</p>
-              <p>Se contestan por separado porque tienen respuestas distintas. Un mismo cargo puede pertenecer a Ventas y tener cinco sillas repartidas entre dos supervisores: en el árbol es uno solo colgando de Ventas, y en el dibujo sus cuadros salen de dos sitios.</p>
+              <p>Se contestan por separado porque tienen respuestas distintas. El cargo «Vendedor» pertenece a Ventas y tiene nueve sillas repartidas entre dos jefaturas: en el árbol es <b>uno solo</b> colgando de Ventas, y en el dibujo sus cuadros salen de <b>dos sitios</b>. La columna «Depende de» de la tabla lo dice tal cual —«2 jefaturas»—, porque no la guarda: la lee de las sillas.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Cargo dentro de su unidad</div>
@@ -2627,9 +2627,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un cargo debajo de otro cargo</div>
                   <ul>
-                    <li><b>Dado que</b>el cargo «Ejecutivo Comercial» pertenece a Ventas y sus sillas responden al Supervisor Comercial</li>
+                    <li><b>Dado que</b>el cargo «Vendedor» pertenece a Ventas y seis de sus nueve sillas responden a la Coordinadora de Ventas</li>
                     <li><b>Cuando</b>se mira el organigrama</li>
-                    <li><b>Entonces</b>su cuadro aparece colgando del cuadro del supervisor</li>
+                    <li><b>Entonces</b>esos seis cuadros aparecen colgando del cuadro de la coordinadora, y los otros tres del de la supervisora</li>
                     <li><b>Y</b>en el árbol sigue colgando de Ventas: son dos preguntas distintas y el desplegable de esta regla solo ofrece unidades</li>
                   </ul>
                 </div>
