@@ -832,7 +832,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
       </figure>
     </div>
     <dl class="ficha">
-      <div><dt>Versión</dt><dd>3.1</dd></div>
+      <div><dt>Versión</dt><dd>3.2</dd></div>
       <div><dt>Fecha</dt><dd>10 de septiembre de 2026</dd></div>
       <div><dt>Autoría</dt><dd>Paola Gema — Diseñadora UX</dd></div>
       <div><dt>Revisa y aprueba</dt><dd>Naihara Rocha — reglas y uso de RR.HH.</dd></div>
@@ -850,6 +850,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <div><b>32</b><span>requisitos funcionales</span></div>
     <div><b>6</b><span>no funcionales</span></div>
     <div><b>15</b><span>historias de usuario</span></div>
+    <div><b>7</b><span>wireframes</span></div>
     <div><b>8</b><span>flujos de usuario</span></div>
     <div><b>8</b><span>decisiones abiertas</span></div>
   </div>
@@ -1144,14 +1145,16 @@ td.rg{color:var(--tinta-3);font-weight:700}
         </div>
         <div class="rail-s" data-sec="s8">
           <a href="#s8"><span>08</span>Recursos visuales</a>
-          <button type="button" class="rail-x" aria-expanded="false" aria-controls="sub-s8"><svg class="rail-c" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M3.5 1.5 L7 5 L3.5 8.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Ver los 6 subtítulos de Recursos visuales</span></button>
+          <button type="button" class="rail-x" aria-expanded="false" aria-controls="sub-s8"><svg class="rail-c" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M3.5 1.5 L7 5 L3.5 8.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Ver los 8 subtítulos de Recursos visuales</span></button>
           <ul class="rail-sub" id="sub-s8" hidden>
-            <li><a href="#p8-1">8.1 Las seis pantallas</a></li>
+            <li><a href="#p8-1">8.1 Las siete pantallas</a></li>
             <li><a href="#W-01">W‑01 Estructura organizacional</a></li>
             <li><a href="#W-02">W‑02 La ficha de un nodo</a></li>
             <li><a href="#W-03">W‑03 Organigrama</a></li>
             <li><a href="#W-04">W‑04 Configuración</a></li>
             <li><a href="#W-05">W‑05 Datos de la empresa</a></li>
+            <li><a href="#W-06">W‑06 Niveles de mando</a></li>
+            <li><a href="#W-07">W‑07 El cargo y sus plazas</a></li>
           </ul>
         </div>
         <div class="rail-s" data-sec="s9">
@@ -1634,6 +1637,109 @@ td.rg{color:var(--tinta-3);font-weight:700}
       </tbody>
     </table></div>
     <div class="nota"><p><strong>El puesto no tiene campo de nombre: se llama como su cargo.</strong> Y hereda de él la unidad y el nivel de mando, que se <em>enseñan</em> y no se preguntan. Volver a pedirlos permitiría que una silla de «Ejecutivo Comercial» declare estar en Contabilidad, y después nadie sabe cuál de las dos vale. <span class="id">BR‑ORG‑007</span> y <span class="id">BR‑ORG‑011</span>.</p></div>
+
+    <figure class="dgm">
+      <figcaption class="dgm-cap"><b>El caso, dibujado.</b> Un solo cargo llamado «Vendedor», con nueve sillas. Tres responden a la Supervisora de Supermercados y seis a la Coordinadora de Ventas: cada silla tiene su propia línea hacia arriba, y por eso la jefatura no puede vivir en el cargo.</figcaption>
+      <div class="lienzo">
+        <div class="lienzo-svg">
+          <svg viewBox="0 0 980 420" role="img" aria-labelledby="d9-t d9-d">
+            <title id="d9-t">Un cargo con nueve puestos repartidos entre dos jefaturas</title>
+            <desc id="d9-d">Arriba, dos cuadros: la Supervisora de Supermercados y la Coordinadora de Ventas. Debajo, un cuadro que dice «Cargo · Vendedor · nueve puestos». Abajo del todo, nueve cuadros de puesto numerados PU-01 a PU-09. Los tres primeros suben con una línea hasta la Supervisora de Supermercados; los seis restantes suben hasta la Coordinadora de Ventas. Los nueve pertenecen al mismo cargo.</desc>
+
+            <text class="dgm-rot" x="52" y="28">UN CARGO</text>
+            <text class="dgm-rot" x="52" y="316">NUEVE SILLAS, DOS LÍNEAS DE MANDO</text>
+
+            <g class="pop dgm-org">
+              <rect x="140" y="44" width="230" height="52" rx="4"/>
+              <text class="nd-e" x="154" y="63">PUESTO · JEFATURA</text>
+              <text class="nd-t" x="154" y="79">Supervisora de Supermercados</text>
+              <text class="nd-o" x="154" y="91">Gabriela Patzi · 3 puestos a cargo</text>
+            </g>
+            <g class="pop dgm-org">
+              <rect x="560" y="44" width="230" height="52" rx="4"/>
+              <text class="nd-e" x="574" y="63">PUESTO · JEFATURA</text>
+              <text class="nd-t" x="574" y="79">Coordinadora de Ventas</text>
+              <text class="nd-o" x="574" y="91">Pamela Álvarez · 6 puestos a cargo</text>
+            </g>
+
+            <g class="lin fis"><path d="M255 96 L255 140 L200 140 L200 330 M200 240 L860 240" stroke-dasharray="0"/></g>
+            <g class="lin org"><path d="M675 96 L675 140 L780 140 L780 330"/></g>
+
+            <g class="pop dgm-org">
+              <rect x="330" y="176" width="320" height="60" rx="4"/>
+              <text class="nd-e" x="346" y="196">CARGO</text>
+              <text class="nd-t" x="346" y="212">Vendedor</text>
+              <text class="dgm-mando" x="346" y="227">MANDO BAJO · UNIDAD: VENTAS · 9 PUESTOS</text>
+            </g>
+            <text class="dgm-cruce" x="666" y="236">un solo rol</text>
+
+            <g class="pop dgm-org">
+              <rect x="92" y="352" width="80" height="46" rx="4"/>
+              <text class="nd-e" x="102" y="369">PUESTO</text>
+              <text class="nd-t" x="102" y="384">PU-01</text>
+            </g>
+            <path class="silla" d="M132 330 L132 352" stroke="var(--funcional)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="188" y="352" width="80" height="46" rx="4"/>
+              <text class="nd-e" x="198" y="369">PUESTO</text>
+              <text class="nd-t" x="198" y="384">PU-02</text>
+            </g>
+            <path class="silla" d="M228 330 L228 352" stroke="var(--funcional)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="284" y="352" width="80" height="46" rx="4"/>
+              <text class="nd-e" x="294" y="369">PUESTO</text>
+              <text class="nd-t" x="294" y="384">PU-03</text>
+            </g>
+            <path class="silla" d="M324 330 L324 352" stroke="var(--funcional)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="380" y="352" width="80" height="46" rx="4"/>
+              <text class="nd-e" x="390" y="369">PUESTO</text>
+              <text class="nd-t" x="390" y="384">PU-04</text>
+            </g>
+            <path class="silla" d="M420 330 L420 352" stroke="var(--estructural)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="476" y="352" width="80" height="46" rx="4"/>
+              <text class="nd-e" x="486" y="369">PUESTO</text>
+              <text class="nd-t" x="486" y="384">PU-05</text>
+            </g>
+            <path class="silla" d="M516 330 L516 352" stroke="var(--estructural)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="572" y="352" width="80" height="46" rx="4"/>
+              <text class="nd-e" x="582" y="369">PUESTO</text>
+              <text class="nd-t" x="582" y="384">PU-06</text>
+            </g>
+            <path class="silla" d="M612 330 L612 352" stroke="var(--estructural)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="668" y="352" width="80" height="46" rx="4"/>
+              <text class="nd-e" x="678" y="369">PUESTO</text>
+              <text class="nd-t" x="678" y="384">PU-07</text>
+            </g>
+            <path class="silla" d="M708 330 L708 352" stroke="var(--estructural)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="764" y="352" width="80" height="46" rx="4"/>
+              <text class="nd-e" x="774" y="369">PUESTO</text>
+              <text class="nd-t" x="774" y="384">PU-08</text>
+            </g>
+            <path class="silla" d="M804 330 L804 352" stroke="var(--estructural)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="860" y="352" width="80" height="46" rx="4"/>
+              <text class="nd-e" x="870" y="369">PUESTO</text>
+              <text class="nd-t" x="870" y="384">PU-09</text>
+            </g>
+            <path class="silla" d="M900 330 L900 352" stroke="var(--estructural)" stroke-width="1.5" fill="none"/>
+
+            <path d="M92 330 L860 330" stroke="var(--regla)" stroke-width="1"/>
+            <text class="dgm-ord fis" x="188" y="414">3 puestos</text>
+            <text class="dgm-ord org" x="668" y="414">6 puestos</text>
+          </svg>
+        </div>
+      </div>
+      <dl class="dgm-lista">
+        <div><dt>Un solo cargo</dt><dd>Renombrarlo renombra los nueve, y la lista lo muestra en <b>una fila</b> con sus nueve sillas desplegables debajo. La descripción, el nivel de mando y la banda salarial son una sola.</dd></div>
+        <div><dt>Nueve jefaturas posibles</dt><dd>Cada silla guarda la suya. Preguntándole al cargo de quién depende <b>no hay una respuesta que dar</b>: hay dos, y tendría que elegir una y mentir sobre las otras.</dd></div>
+        <div><dt>En la tabla</dt><dd>La columna «Depende de» del cargo dice <b>«2 jefaturas»</b>, porque no la guarda: la lee de las sillas.</dd></div>
+      </dl>
+    </figure>
 
     <h3 id="p0-5">0.5 Los tres tipos de cargo</h3>
     <p>Se declaran en el cargo y bajan a sus puestos. Los tres nombres cortos son los que se ven en la columna y en el filtro; el nombre largo es la definición completa.</p>
@@ -2592,6 +2698,88 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <p>Una unidad de negocio —«Farmacias», «Institucional», «Distribución»— es una <b>etiqueta que reparte</b> la empresa, no un escalón del que cuelguen las cosas. No tiene nada dentro: lo que hace es marcar a qué línea pertenece cada parte de la estructura.</p>
               <p>Cada empresa la declara en <b>un solo escalón</b>, el que le sirve —un holding en sus regionales, una cadena en sus sucursales, una consultora en sus áreas—. La escalera de abajo es idéntica en los tres casos: lo único que cambia es dónde se pega la etiqueta. Elegido el escalón, los de más abajo la <b>leen y no la eligen</b>: su ficha la muestra y dice de dónde sale, así que mezclar dos niveles no es algo que haya que prohibir —no se puede hacer—.</p>
               <p>Pide <b>solo nombre y estado</b>: no tiene código ni descripción, porque no es un sitio ni un área, sino una manera de partir la empresa en líneas.</p>
+    <figure class="dgm">
+      <figcaption class="dgm-cap"><b>La escalera es la misma; lo único que cambia es en qué escalón se pega la etiqueta.</b> Un holding reparte por regionales, una cadena de farmacias por sucursales, una consultora por áreas. Elegido el escalón, todo lo que cuelga la hereda y no se le vuelve a preguntar.</figcaption>
+      <div class="lienzo">
+        <div class="lienzo-svg">
+          <svg viewBox="0 0 900 380" role="img" aria-labelledby="dl-t dl-d">
+            <title id="dl-t">Tres empresas asignando la unidad de negocio en tres escalones distintos</title>
+            <desc id="dl-d">Tres columnas. En la empresa A, la etiqueta se asigna en la regional y la heredan la sucursal y el centro de trabajo. En la empresa B, la regional queda sin unidad de negocio, se asigna en la sucursal y la hereda el centro de trabajo. En la empresa C, se asigna en el área y la heredan el cargo y el puesto. En las tres, solo un escalón asigna y los de abajo heredan.</desc>
+
+            <text class="dgm-rot" x="30" y="34">CADA EMPRESA ELIGE UN ESCALÓN</text>
+
+            <text class="dgm-dim fis" x="30" y="72">EMPRESA A · UN HOLDING</text>
+            <g class="pop dgm-fis">
+              <rect x="30" y="92" width="248" height="58" rx="4"/>
+              <text class="nd-e" x="44" y="111">REGIONAL</text>
+              <text class="nd-t" x="44" y="127">Oriente</text>
+              <text class="dgm-mando" x="44" y="141" style="fill:var(--funcional)">SE ASIGNA AQUÍ</text>
+            </g>
+            <path d="M154 150 L154 180" stroke="var(--regla)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="30" y="180" width="248" height="58" rx="4"/>
+              <text class="nd-e" x="44" y="199">SUCURSAL</text>
+              <text class="nd-t" x="44" y="215">Casa Matriz</text>
+              <text class="dgm-mando" x="44" y="229" style="fill:var(--tinta-3)">LO HEREDA</text>
+            </g>
+            <path d="M154 238 L154 268" stroke="var(--regla)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="30" y="268" width="248" height="58" rx="4"/>
+              <text class="nd-e" x="44" y="287">CENTRO DE TRABAJO</text>
+              <text class="nd-t" x="44" y="303">Depósito Norte</text>
+              <text class="dgm-mando" x="44" y="317" style="fill:var(--tinta-3)">LO HEREDA</text>
+            </g>
+            <text class="dgm-dim org" x="326" y="72">EMPRESA B · UNA CADENA</text>
+            <g class="pop dgm-org">
+              <rect x="326" y="92" width="248" height="58" rx="4" stroke-dasharray="6 4"/>
+              <text class="nd-e" x="340" y="111">REGIONAL</text>
+              <text class="nd-t" x="340" y="127">Occidente</text>
+              <text class="dgm-mando" x="340" y="141" style="fill:var(--tinta-3)">SIN UNIDAD</text>
+            </g>
+            <path d="M450 150 L450 180" stroke="var(--regla)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-fis">
+              <rect x="326" y="180" width="248" height="58" rx="4"/>
+              <text class="nd-e" x="340" y="199">SUCURSAL</text>
+              <text class="nd-t" x="340" y="215">El Prado</text>
+              <text class="dgm-mando" x="340" y="229" style="fill:var(--funcional)">SE ASIGNA AQUÍ</text>
+            </g>
+            <path d="M450 238 L450 268" stroke="var(--regla)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="326" y="268" width="248" height="58" rx="4"/>
+              <text class="nd-e" x="340" y="287">CENTRO DE TRABAJO</text>
+              <text class="nd-t" x="340" y="303">Farmacia 12</text>
+              <text class="dgm-mando" x="340" y="317" style="fill:var(--tinta-3)">LO HEREDA</text>
+            </g>
+            <text class="dgm-dim fis" x="622" y="72">EMPRESA C · UNA CONSULTORA</text>
+            <g class="pop dgm-fis">
+              <rect x="622" y="92" width="248" height="58" rx="4"/>
+              <text class="nd-e" x="636" y="111">UNIDAD ORGANIZACIONAL</text>
+              <text class="nd-t" x="636" y="127">Consultoría</text>
+              <text class="dgm-mando" x="636" y="141" style="fill:var(--funcional)">SE ASIGNA AQUÍ</text>
+            </g>
+            <path d="M746 150 L746 180" stroke="var(--regla)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="622" y="180" width="248" height="58" rx="4"/>
+              <text class="nd-e" x="636" y="199">CARGO</text>
+              <text class="nd-t" x="636" y="215">Consultor Senior</text>
+              <text class="dgm-mando" x="636" y="229" style="fill:var(--tinta-3)">LO HEREDA</text>
+            </g>
+            <path d="M746 238 L746 268" stroke="var(--regla)" stroke-width="1.5" fill="none"/>
+            <g class="pop dgm-org">
+              <rect x="622" y="268" width="248" height="58" rx="4"/>
+              <text class="nd-e" x="636" y="287">PUESTO</text>
+              <text class="nd-t" x="636" y="303">PU-014</text>
+              <text class="dgm-mando" x="636" y="317" style="fill:var(--tinta-3)">LO HEREDA</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <dl class="dgm-lista">
+        <div><dt>Solo un escalón asigna</dt><dd>Los de abajo la <b>leen y no la eligen</b>: su ficha la muestra y dice de dónde sale. Por eso mezclar dos niveles no hay que prohibirlo: no se puede hacer.</dd></div>
+        <div><dt>Cambiarla arriba</dt><dd>Cambia la de todo lo que cuelga, <b>sin tocar un solo registro</b>.</dd></div>
+        <div><dt>Cargos y puestos</dt><dd><b>Nunca la declaran</b>, solo la muestran. Un vendedor no elige de qué negocio es: lo es porque trabaja donde trabaja.</dd></div>
+      </dl>
+    </figure>
               <p>Los cargos y los puestos nunca la declaran, solo la muestran. La suya es la de su rama, y cambiar la de la sucursal cambia la de todo lo que cuelga sin tocar un registro.</p>
               <div class="escenarios">
                 <div class="esc ok">
@@ -4307,12 +4495,12 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <header class="sec-h">
       <span class="sec-n" aria-hidden="true">08</span>
       <h2>Recursos visuales</h2>
-      <p class="sec-d">Seis pantallas y cinco wireframes. Sirven para discutir la estructura sin discutir el estilo.</p>
+      <p class="sec-d">Siete pantallas y siete wireframes. Sirven para discutir la estructura sin discutir el estilo.</p>
     </header>
 
     <div class="nota"><p><strong>Los wireframes no son maquetas.</strong> No dicen de qué color es nada ni con qué tipografía se escribe: dibujan qué hay en cada pantalla, en qué orden y por qué. Por eso sirven para acordar la estructura antes de que exista el diseño, y por eso no reemplazan al prototipo.</p></div>
 
-    <h3 id="p8-1">8.1 Las seis pantallas del módulo</h3>
+    <h3 id="p8-1">8.1 Las siete pantallas del módulo</h3>
     <p>Seis pantallas y una sola idea: <strong>tres listan el árbol, una lo edita, una lo dibuja y una decide de qué escalones está hecho.</strong></p>
     <div class="tbl"><table>
       <thead><tr><th>Pantalla</th><th>Ruta</th><th>Para qué se entra</th><th>Requisitos</th><th>Wireframe</th></tr></thead>
@@ -4564,12 +4752,12 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <div class="wf-caja">
                 <div class="wf-caja-t"><span class="wf-n">1</span>Identificación</div>
                 <div class="wf-campos">
-                  <div class="wf-campo oblig"><b>Razón social</b><span>Comercial Andina S.A.</span></div>
-                  <div class="wf-campo"><b>Nombre comercial</b><span>Andina</span></div>
-                  <div class="wf-campo oblig"><b>NIT o identificación fiscal</b><span>1023456789</span></div>
+                  <div class="wf-campo oblig"><b>Nombre comercial</b><span>Andina</span></div>
+                  <div class="wf-campo"><b>Razón social</b><span>Comercial Andina S.A.</span></div>
+                  <div class="wf-campo"><b>NIT o identificación fiscal</b><span>1023456789</span></div>
                 </div>
                 <div class="wf-campos dos">
-                  <div class="wf-campo oblig"><b>País</b><span>Bolivia ▾</span></div>
+                  <div class="wf-campo"><b>País</b><span>Bolivia ▾</span></div>
                   <div class="wf-campo"><b>Rubro</b><span>Comercio ▾</span></div>
                 </div>
               </div>
@@ -4601,7 +4789,121 @@ td.rg{color:var(--tinta-3);font-weight:700}
           <li><span class="wf-n">2</span><span><b>Los dos logos son dos campos</b> porque el producto tiene dos temas, y un logo pensado para fondo claro desaparece sobre la tinta marina.</span></li>
           <li><span class="wf-n">3</span><span><b>Cada fila del formulario suma doce columnas exactas</b>, como toda ficha de Souly: es lo que hace que tres campos de un tercio y dos de un medio se lean como una sola retícula y no como cinco decisiones sueltas.</span></li>
         </ol>
-      
+              <h3 id="W-06">W-06 · Niveles de mando</h3>
+        <p class="wf-lead">El catálogo que dice cuánto pesa un cargo. Se llega desde Estructura organizacional, no desde Configuración: es lo que clasifica a un cargo y no de qué escalones está hecha la empresa.</p>
+        <div class="wf">
+          <div class="wf-tit"><strong>Niveles de mando</strong><span class="wf-ruta">/organizacion/mandos</span></div>
+          <div class="wf-app">
+            <div class="wf-rail">
+              <div class="wf-rail-t">Empresa</div>
+              <div class="wf-nav">Datos de la empresa</div>
+              <div class="wf-nav">Estructura física</div>
+              <div class="wf-nav on">Estructura organizacional</div>
+              <div class="wf-nav">Niveles de mando</div>
+              <div class="wf-rail-t">Puestos y personas</div>
+              <div class="wf-nav">Organigrama</div>
+              <div class="wf-nav">Configuración</div>
+            </div>
+            <div class="wf-cuerpo">
+              <div class="wf-h1">Niveles de mando</div>
+              <div class="wf-sub">De arriba abajo: el 1 es el que más manda.</div>
+              <div class="wf-caja">
+                <div class="wf-caja-t"><span class="wf-n">1</span>Los peldaños</div>
+                <div class="wf-tabla">
+                  <div class="wf-th"><span>#</span><span>Nombre</span><span>Cargos</span><span></span></div>
+                  <div class="wf-tr"><span>1</span><b>Mando superior</b><span>3</span><i><span class="wf-n">2</span>⠿ ✕</i></div>
+                  <div class="wf-tr"><span>2</span><b>Mando medio</b><span>10</span><i><span class="wf-n">3</span>⠿ ✕</i></div>
+                  <div class="wf-tr"><span>3</span><b>Mando bajo</b><span>22</span><i>⠿ ✕</i></div>
+                </div>
+                <div class="wf-barra"><span class="wf-btn"><span class="wf-n">4</span>Agregar un peldaño</span></div>
+              </div>
+              <div class="wf-caja">
+                <div class="wf-caja-t"><span class="wf-n">5</span>Cómo se ve en el organigrama</div>
+                <div class="wf-org">
+                  <div class="wf-org-fila"><div class="wf-nodo"><b>Mando superior</b><span>a ras de su jefe</span></div></div>
+                  <div class="wf-conector"></div>
+                  <div class="wf-org-fila"><div class="wf-nodo"><b>Mando medio</b><span>una caja más abajo</span></div></div>
+                  <div class="wf-conector"></div>
+                  <div class="wf-org-fila"><div class="wf-nodo"><b>Mando bajo</b><span>dos cajas más abajo</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ol class="wf-llaves">
+          <li><span class="wf-n">1</span><span><b>Los tres vienen sembrados y ahí termina la opinión del producto.</b> Cada empresa los renombra, los reordena y agrega los que le falten. El número no se escribe: es la posición en la lista. <em>BR-ORG-015.</em></span></li>
+          <li><span class="wf-n">2</span><span><b>Se reordena arrastrando</b>, y al soltar todos se renumeran solos. Ningún cargo cambia: lo que guarda es la llave del peldaño, nunca su número.</span></li>
+          <li><span class="wf-n">3</span><span><b>La columna «Cargos» es la que decide qué se puede borrar.</b> Borrar uno en uso avisa a cuántos cargos deja sin nivel <em>antes</em> de hacerlo: la decisión se toma sabiendo el costo.</span></li>
+          <li><span class="wf-n">4</span><span><b>Un peldaño nuevo pide solo su nombre</b>, y no puede quedar vacío ni repetir el de otro: dos peldaños que se llaman igual son dos filas que dicen lo mismo, y ninguna insignia sabría a cuál se refiere.</span></li>
+          <li><span class="wf-n">5</span><span><b>La escala se dibuja sin una sola línea entre los cuadros</b>, y es a propósito: en este producto una línea significa «depende de», y unirlos afirmaría que cada nivel le reporta al de arriba. Tampoco dibuja un caso concreto: la forma del organigrama sale de quién cuelga de quién, no de los peldaños. <em>BR-ORG-029 y BR-ORG-030.</em></span></li>
+        </ol>
+
+        <h3 id="W-07">W-07 · El cargo y sus plazas</h3>
+        <p class="wf-lead">La parte más difícil del módulo, dibujada: un cargo es un rol y sus plazas son sillas, y esas sillas pueden responder a jefaturas distintas. Es la misma forma en la ficha y en el modal del organigrama, porque son dos puertas a un solo formulario.</p>
+        <div class="wf">
+          <div class="wf-tit"><strong>Cargo · Vendedor</strong><span class="wf-ruta">/organizacion/nodo/:id?editar=1</span></div>
+          <div class="wf-app">
+            <div class="wf-rail">
+              <div class="wf-rail-t">Empresa</div>
+              <div class="wf-nav">Datos de la empresa</div>
+              <div class="wf-nav">Estructura física</div>
+              <div class="wf-nav on">Estructura organizacional</div>
+              <div class="wf-rail-t">Puestos y personas</div>
+              <div class="wf-nav">Organigrama</div>
+              <div class="wf-nav">Configuración</div>
+            </div>
+            <div class="wf-cuerpo">
+              <div class="wf-h1">Vendedor</div>
+              <div class="wf-sub">Comercial Andina › Ventas</div>
+              <div class="wf-caja">
+                <div class="wf-caja-t">Información general</div>
+                <div class="wf-campos">
+                  <div class="wf-campo oblig"><b>Nombre</b><span>Vendedor</span></div>
+                  <div class="wf-campo"><b>Código del cargo</b><span>CAR-014</span></div>
+                  <div class="wf-campo"><b>Estado</b><span>Activo</span></div>
+                </div>
+                <div class="wf-campos">
+                  <div class="wf-campo oblig"><b>Nivel de mando</b><span>Mando bajo ▾</span></div>
+                  <div class="wf-campo oblig"><b>Tipo de cargo</b><span><span class="wf-n">1</span>Regular ▾</span></div>
+                  <div class="wf-campo"><b>Máximo de ocupantes</b><span><span class="wf-n">2</span>Sin límite</span></div>
+                </div>
+              </div>
+              <div class="wf-caja">
+                <div class="wf-caja-t"><span class="wf-n">3</span>Sus puestos</div>
+                <div class="wf-campos dos">
+                  <div class="wf-campo oblig"><b>Unidad organizacional</b><span>Ventas ▾</span></div>
+                  <div class="wf-campo"><b>De quién dependen</b><span>Coordinadora de Ventas ▾</span></div>
+                </div>
+                <div class="wf-barra"><span class="wf-btn ghost"><span class="wf-n">4</span>☑ Todos los puestos dependen de la misma jefatura</span></div>
+                <div class="wf-tabla">
+                  <div class="wf-th"><span>#</span><span>Código</span><span>Dónde se trabaja</span><span>De quién depende</span><span></span></div>
+                  <div class="wf-tr"><span>1</span><b>PU-01</b><span>Casa Matriz</span><span><span class="wf-n">5</span>Supervisora de Supermercados ▾</span><i>🗑</i></div>
+                  <div class="wf-tr"><span>2</span><b>PU-02</b><span>Casa Matriz</span><span>Supervisora de Supermercados ▾</span><i>🗑</i></div>
+                  <div class="wf-tr"><span>3</span><b>PU-03</b><span>Casa Matriz</span><span>Supervisora de Supermercados ▾</span><i>🗑</i></div>
+                  <div class="wf-tr"><span>4</span><b>PU-04</b><span>El Prado</span><span>Coordinadora de Ventas ▾</span><i>🗑</i></div>
+                  <div class="wf-tr"><span>…</span><b>PU-09</b><span>El Prado</span><span>Coordinadora de Ventas ▾</span><i>🗑</i></div>
+                </div>
+              </div>
+              <div class="wf-caja">
+                <div class="wf-caja-t"><span class="wf-n">6</span>Cómo va a quedar en el organigrama</div>
+                <div class="wf-org">
+                  <div class="wf-org-fila">
+                    <div class="wf-nodo"><b>Supervisora de Supermercados</b><span>3 puestos</span></div>
+                    <div class="wf-nodo"><b>Coordinadora de Ventas</b><span>6 puestos</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ol class="wf-llaves">
+          <li><span class="wf-n">1</span><span><b>El nivel de mando solo aparece si el tipo es «Regular».</b> Los de staff y los externos se dibujan al costado de la línea, así que preguntarles a qué altura mandan no tiene respuesta. <em>BR-ORG-014.</em></span></li>
+          <li><span class="wf-n">2</span><span><b>El cupo es un techo, no una orden de creación.</b> Vacío significa «sin límite». Guardar con cupo cuatro no abre ninguna plaza, y bajarlo por debajo de las abiertas no guarda: el sistema dice cuántas sobran. <em>BR-ORG-009.</em></span></li>
+          <li><span class="wf-n">3</span><span><b>Las plazas se abren desde el cargo</b>, que es de donde cuelgan. El puesto no tiene lista propia ni campo de nombre: se llama como su cargo. <em>BR-ORG-007 y BR-ORG-011.</em></span></li>
+          <li><span class="wf-n">4</span><span><b>La casilla viene marcada, porque es lo que pasa casi siempre.</b> Marcada, la jefatura de arriba vale para todas las plazas y la columna de la tabla ni se dibuja. Desmarcarla es el paso que se pide cuando no. <em>BR-ORG-012.</em></span></li>
+          <li><span class="wf-n">5</span><span><b>Desmarcada, cada fila elige la suya</b>, y abre con el valor que la jefatura común venía diciendo —no en blanco—. Las que nadie toque conservan la que tenían. El desplegable no ofrece a los subordinados del propio puesto: un círculo no se puede dibujar.</span></li>
+          <li><span class="wf-n">6</span><span><b>La previa agrupa por jefatura</b> en vez de colgar las nueve de una sola, porque eso prometería un sitio que el organigrama no les va a dar. Es la misma previa en la ficha y en el modal del dibujo. <em>BR-ORG-017.</em></span></li>
+        </ol>
   </section>
 
 <section id="s9">
@@ -4948,6 +5250,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
         <tr><td class="rg">1.0</td><td>7 sep 2026</td><td>La documentación del módulo en formato BR: veinte reglas con escenarios, treinta y un requisitos funcionales con código estable, ocho flujos y cinco wireframes. <strong>Cambia el modelo:</strong> un solo árbol de nodos, el esquema de niveles como dato de la empresa, y el cargo separado del puesto</td></tr>
         <tr><td class="rg"><strong>2.0</strong></td><td>7 sep 2026</td><td><strong>Los dos documentos se unen en uno.</strong> El contenido del módulo —reglas, requisitos, flujos y wireframes— entra en la estructura de nueve secciones del PRD, que es la que se sostiene: glosario al frente, contexto, integraciones módulo por módulo, modelo de datos y roadmap. <strong>Se rescata del PRD de agosto</strong> todo lo que seguía valiendo y se reescribe sobre el modelo nuevo: qué es un organigrama, los principios de diseño, las integraciones, el camino hasta desarrollo, los riesgos y el anexo de decisiones. <strong>Se anota lo que falta</strong> en vez de disimularlo: registro de actividad, estados vacíos y permisos verificados en el servidor quedan como <span class="id">ABIERTA‑07</span> a <span class="id">ABIERTA‑09</span>. <strong>Sin revisar todavía</strong></td></tr>
         <tr><td class="rg"><strong>2.1</strong></td><td>9 sep 2026</td><td>Entra <span class="id">BR‑ORG‑021</span>: <strong>el cargo y la plaza llevan códigos distintos</strong>, también cuando el cargo tiene una sola plaza. Es como lo maneja Recursos Humanos —el manual de cargos y la plantilla de personal son dos documentos— y no estaba escrito en ninguna parte, así que el formulario mostraba dos campos «Código» sin decir por qué eran dos</td></tr>
+        <tr><td class="rg"><strong>3.2</strong></td><td>10 sep 2026</td><td><strong>Dos diagramas y dos wireframes.</strong> Se dibujan los dos casos que más cuesta contar por escrito: <b>los nueve vendedores</b> —un cargo, nueve sillas, dos líneas de mando— en el <span class="id">0.4</span>, y <b>las tres empresas</b> que pegan la unidad de negocio en tres escalones distintos, dentro de <span class="id">BR‑ORG‑022</span>. Entran <span class="id">W‑06</span> Niveles de mando y <span class="id">W‑07</span> El cargo y sus plazas —las dos pantallas sin dibujar, y W‑07 es donde vive lo más difícil del módulo—. Y <span class="id">W‑05</span> marcaba como obligatorios la razón social, el NIT y el país, que no lo son: el único obligatorio de la empresa es el nombre comercial</td></tr>
         <tr><td class="rg"><strong>3.1</strong></td><td>10 sep 2026</td><td><strong>Entra el punto <span class="id">09</span>: quince historias de usuario con sus criterios de aceptación, y el plan de prototipado.</strong> El documento decía qué es verdad —las reglas— y qué tiene que hacer cada pantalla —los requisitos—, pero no decía <b>qué se entrega ni cómo se acepta</b>, y sin eso dos personas leen los mismos requisitos y construyen cosas distintas, las dos defendibles. Los criterios están escritos como afirmaciones que se marcan hechas o no hechas delante de la pantalla: si uno necesita interpretación, no es un criterio. <span class="id">HU‑ORG‑09</span> cubre las tres vistas del organigrama —gráfico, cards y tabla— una por una. El <span class="id">9.2</span> dice qué contesta cada etapa del prototipo, cómo se sabe que terminó, y qué está construido hoy y qué está solo dibujado</td></tr>
         <tr><td class="rg"><strong>3.0</strong></td><td>10 sep 2026</td><td><strong>Barrido del prototipo buscando lo que un desarrollador necesita y el documento no decía.</strong> <b>Datos de la empresa</b> no tenía ninguna regla y es la primera pantalla del módulo: entran <span class="id">BR‑ORG‑036</span> —la raíz solo exige su nombre, porque el organigrama lo imprime en su cabecera— y <span class="id">BR‑ORG‑037</span> —el país se declara una vez y de él salen las ciudades de cada alta—. <b>Configuración</b> gana <span class="id">BR‑ORG‑038</span>: la vista previa se rehace en el momento y los interruptores se ajustan a lo que hay cargado. <b>Unidades de negocio</b> gana <span class="id">BR‑ORG‑039</span>: lo que agrupa se ve y no se asigna desde ahí, porque dos puertas para un dato terminan discrepando. Y entra el grupo <b>Las fichas y las listas</b>, que es la forma que comparten todos los tipos: <span class="id">BR‑ORG‑040</span> una sola ficha que abre para mirar, <span class="id">BR‑ORG‑041</span> lo obligatorio bloquea y dice por qué hace falta, y <span class="id">BR‑ORG‑042</span> la tabla dibuja el árbol y al buscar se aplana</td></tr>
         <tr><td class="rg"><strong>2.9</strong></td><td>10 sep 2026</td><td><strong>Tres asuntos con pantalla propia y sin reglas.</strong> <b>Dependencia funcional</b> pasa a ser su propio grupo: <span class="id">BR‑ORG‑031</span> cada apoyo es un par —la unidad y a quién responde ahí, elegido entre los cargos de esa unidad—, y <span class="id">BR‑ORG‑032</span> se dibuja con línea secundaria y no se cuenta dos veces, porque «¿cuánta gente tiene esta área?» no puede tener dos respuestas defendibles. <b>Los filtros:</b> <span class="id">BR‑ORG‑033</span> se leen como una frase que sin filtros sigue siendo verdad, y <span class="id">BR‑ORG‑034</span> «qué se dibuja» no es un filtro —cambia el papel, no a quién se deja afuera—. <b>Los colores:</b> <span class="id">BR‑ORG‑035</span> la empresa elige los tonos y nunca los significados, y el color nunca va solo: cada codificación lleva color, borde e ícono a la vez</td></tr>
