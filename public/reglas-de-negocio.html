@@ -832,7 +832,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
       </figure>
     </div>
     <dl class="ficha">
-      <div><dt>Versión</dt><dd>2.6</dd></div>
+      <div><dt>Versión</dt><dd>2.7</dd></div>
       <div><dt>Fecha</dt><dd>10 de septiembre de 2026</dd></div>
       <div><dt>Autoría</dt><dd>Paola Gema — Diseñadora UX</dd></div>
       <div><dt>Revisa y aprueba</dt><dd>Naihara Rocha — reglas y uso de RR.HH.</dd></div>
@@ -1057,7 +1057,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             <li class="rail-g"><a href="#br-g-negocio">Unidades de negocio</a></li>
             <li><a href="#BR-ORG-022">022 · No es un padre: se hereda</a></li>
             <li class="rail-g"><a href="#br-g-unidades">Unidades organizacionales</a></li>
-            <li><a href="#BR-ORG-023">023 · Cuelga de un puesto, no de otra unidad</a></li>
+            <li><a href="#BR-ORG-023">023 · Dentro de qué está y quién la manda</a></li>
             <li><a href="#BR-ORG-006">006 · El sitio se declara una vez y baja</a></li>
             <li class="rail-g"><a href="#br-g-cargos">Cargos</a></li>
             <li><a href="#BR-ORG-007">007 · El cargo es el rol; el puesto es la silla</a></li>
@@ -2421,34 +2421,35 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-022">La unidad de negocio no es un padre: se declara en un nivel y se hereda</h3>
               <p>Una unidad de negocio —«Farmacias», «Institucional», «Distribución»— es una <b>etiqueta que reparte</b> la empresa, no un escalón del que cuelguen las cosas. No tiene nada dentro: lo que hace es marcar a qué línea pertenece cada parte de la estructura.</p>
-              <p>Cada empresa la declara en <b>un solo nivel</b>, el que le sirve: una la declara en sus sucursales, otra en sus centros de trabajo, otra en sus unidades organizacionales. Elegido ese nivel, los de más abajo la <b>leen y no la eligen</b>: su ficha la muestra y dice de dónde sale. Así, mezclar dos niveles no es algo que haya que prohibir: no se puede hacer.</p>
+              <p>Cada empresa la declara en <b>un solo escalón</b>, el que le sirve —un holding en sus regionales, una cadena en sus sucursales, una consultora en sus áreas—. La escalera de abajo es idéntica en los tres casos: lo único que cambia es dónde se pega la etiqueta. Elegido el escalón, los de más abajo la <b>leen y no la eligen</b>: su ficha la muestra y dice de dónde sale, así que mezclar dos niveles no es algo que haya que prohibir —no se puede hacer—.</p>
+              <p>Pide <b>solo nombre y estado</b>: no tiene código ni descripción, porque no es un sitio ni un área, sino una manera de partir la empresa en líneas.</p>
               <p>Los cargos y los puestos nunca la declaran, solo la muestran. La suya es la de su rama, y cambiar la de la sucursal cambia la de todo lo que cuelga sin tocar un registro.</p>
               <div class="escenarios">
                 <div class="esc ok">
-                  <div class="esc-t"><i>✅</i>Una empresa que reparte por sucursal</div>
+                  <div class="esc-t"><i>✅</i>Empresa A · la pega en sus regionales</div>
                   <ul>
-                    <li><b>Dado que</b>la empresa declaró las unidades de negocio «Farmacias» e «Institucional» y las asignó en sus sucursales</li>
-                    <li><b>Cuando</b>se abre la ficha de un cargo de la sucursal «Casa Matriz»</li>
-                    <li><b>Entonces</b>muestra «Farmacias» como su unidad de negocio, con el nombre de la sucursal de donde sale</li>
-                    <li><b>Y</b>el campo no se puede cambiar desde ahí: se cambia en la sucursal, y cambia para toda su rama</li>
+                    <li><b>Dado que</b>un holding reparte su negocio por zonas y usa las tres capas físicas</li>
+                    <li><b>Cuando</b>declara «Farmacias» en la <b>Regional Oriente</b></li>
+                    <li><b>Entonces</b>las sucursales de Oriente la heredan, y los centros de trabajo de esas también</li>
+                    <li><b>Y</b>la ficha de cada uno la muestra y dice de qué regional sale: ninguno la elige</li>
                   </ul>
                 </div>
                 <div class="esc ok">
-                  <div class="esc-t"><i>✅</i>Cambiarla arriba la cambia en toda la rama</div>
+                  <div class="esc-t"><i>✅</i>Empresa B · la pega en sus sucursales</div>
                   <ul>
-                    <li><b>Dado que</b>la sucursal «Casa Matriz» declara «Farmacias» y tiene cuarenta cargos debajo</li>
-                    <li><b>Cuando</b>se le cambia a «Institucional»</li>
-                    <li><b>Entonces</b>los cuarenta pasan a mostrar «Institucional»</li>
-                    <li><b>Y</b>no se tocó ningún registro: la leen de su rama</li>
+                    <li><b>Dado que</b>una cadena de farmacias tiene regionales pero no reparte por ellas</li>
+                    <li><b>Cuando</b>declara «Institucional» en la sucursal <b>Casa Matriz</b></li>
+                    <li><b>Entonces</b>sus centros de trabajo la heredan, y la regional queda sin unidad de negocio</li>
+                    <li><b>Y</b>la escalera es la misma que en la empresa A: lo único que cambió es en qué escalón se pega la etiqueta</li>
                   </ul>
                 </div>
                 <div class="esc ok">
-                  <div class="esc-t"><i>✅</i>Pide nombre y estado, y nada más</div>
+                  <div class="esc-t"><i>✅</i>Empresa C · la pega en sus áreas</div>
                   <ul>
-                    <li><b>Dado que</b>se crea una unidad de negocio</li>
-                    <li><b>Cuando</b>se mira su ficha</li>
-                    <li><b>Entonces</b>pide el nombre y el estado, y no tiene código ni descripción</li>
-                    <li><b>Y</b>es coherente con lo que es: no es un sitio ni un área, es una manera de partir la empresa en líneas</li>
+                    <li><b>Dado que</b>una consultora reparte por áreas y no por geografía</li>
+                    <li><b>Cuando</b>declara «Servicios» en el área <b>Consultoría</b></li>
+                    <li><b>Entonces</b>sus cargos la heredan, y los puestos de esos cargos también</li>
+                    <li><b>Y</b>ni los cargos ni los puestos la declaran nunca: solo la muestran</li>
                   </ul>
                 </div>
               </div>
@@ -2466,9 +2467,11 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-id">BR-ORG-023</span>
                 <span class="br-estado">Borrador</span>
               </div>
-              <h3 id="BR-ORG-023">Una unidad organizacional declara de qué puesto cuelga</h3>
-              <p>En el organigrama, una unidad no cuelga de otra unidad: cuelga de un <b>puesto</b>. «Bajo el mando de» es ese dato, y es el que ata el área a la línea de mando: sin él, la unidad y todo lo que tiene adentro se dibujan sueltos, como si no dependieran de nadie.</p>
-              <p>Es distinto de «Depende de», que dice dentro de qué unidad está anidada. Una subunidad puede estar dentro de «Marketing» y responder al Líder de Marketing; una unidad de primer nivel está dentro de la empresa y responde al Gerente General. Las dos preguntas se contestan por separado porque tienen respuestas distintas.</p>
+              <h3 id="BR-ORG-023">Una unidad dice dentro de qué está y qué puesto la manda</h3>
+              <p>Son <b>dos preguntas y se contestan por separado</b>, porque tienen respuestas distintas.</p>
+              <p><b>«Depende de» dice dentro de qué está.</b> Una unidad organizacional <b>sí se anida en otra unidad</b>: una gerencia dentro de una dirección, un equipo dentro de esa gerencia, tan hondo como la empresa lo tenga. También puede estar directamente dentro de una sucursal, de un centro de trabajo o de la empresa. La tabla dibuja ese anidamiento con sangría, y el organigrama lo dibuja como áreas dentro de áreas.</p>
+              <p><b>«Bajo el mando de» dice qué puesto la manda</b>, y es de ahí de donde sale la línea del dibujo. Sin ese dato, la unidad y todo lo que tiene adentro quedan sueltos: se ven como si no dependieran de nadie, aunque estén perfectamente anidados.</p>
+              <p>Anidarse no es depender. «Marketing Digital» está dentro de «Marketing» y responde al Líder de Marketing, que es un puesto de Marketing; una unidad de primer nivel está dentro de la empresa y responde al Gerente General. En el dibujo, las cajas de las áreas se anidan unas en otras y las líneas salen de los puestos.</p>
               <p>Su <b>cabeza</b> —el cargo de la unidad que no le responde a nadie de adentro— se deduce y no se declara: es quien manda ahí, y por eso la ficha lo muestra sin preguntarlo.</p>
               <div class="escenarios">
                 <div class="esc ok">
@@ -2481,12 +2484,12 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
                 <div class="esc ok">
-                  <div class="esc-t"><i>✅</i>Una subunidad responde dentro de su rama</div>
+                  <div class="esc-t"><i>✅</i>Un área dentro de otra área</div>
                   <ul>
-                    <li><b>Dado que</b>«Marketing Digital» está dentro de «Marketing»</li>
-                    <li><b>Cuando</b>se declara al Líder de Marketing en su «Bajo el mando de»</li>
-                    <li><b>Entonces</b>se dibuja colgando de ese puesto, dentro de la píldora de Marketing</li>
-                    <li><b>Y</b>las dos preguntas quedan contestadas por separado: dentro de qué está y a quién le responde</li>
+                    <li><b>Dado que</b>la empresa tiene «Marketing Digital» dentro de «Marketing», y «Marketing» dentro de «Dirección Comercial»</li>
+                    <li><b>Cuando</b>se elige «Marketing» en el «Depende de» de Marketing Digital</li>
+                    <li><b>Entonces</b>queda anidada ahí, con la sangría que le corresponde en la tabla</li>
+                    <li><b>Y</b>a quién responde es otra pregunta: se declara aparte, y en su caso es el Líder de Marketing</li>
                   </ul>
                 </div>
                 <div class="esc ok">
@@ -3992,6 +3995,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
         <tr><td class="rg">1.0</td><td>7 sep 2026</td><td>La documentación del módulo en formato BR: veinte reglas con escenarios, treinta y un requisitos funcionales con código estable, ocho flujos y cinco wireframes. <strong>Cambia el modelo:</strong> un solo árbol de nodos, el esquema de niveles como dato de la empresa, y el cargo separado del puesto</td></tr>
         <tr><td class="rg"><strong>2.0</strong></td><td>7 sep 2026</td><td><strong>Los dos documentos se unen en uno.</strong> El contenido del módulo —reglas, requisitos, flujos y wireframes— entra en la estructura de nueve secciones del PRD, que es la que se sostiene: glosario al frente, contexto, integraciones módulo por módulo, modelo de datos y roadmap. <strong>Se rescata del PRD de agosto</strong> todo lo que seguía valiendo y se reescribe sobre el modelo nuevo: qué es un organigrama, los principios de diseño, las integraciones, el camino hasta desarrollo, los riesgos y el anexo de decisiones. <strong>Se anota lo que falta</strong> en vez de disimularlo: registro de actividad, estados vacíos y permisos verificados en el servidor quedan como <span class="id">ABIERTA‑07</span> a <span class="id">ABIERTA‑09</span>. <strong>Sin revisar todavía</strong></td></tr>
         <tr><td class="rg"><strong>2.1</strong></td><td>9 sep 2026</td><td>Entra <span class="id">BR‑ORG‑021</span>: <strong>el cargo y la plaza llevan códigos distintos</strong>, también cuando el cargo tiene una sola plaza. Es como lo maneja Recursos Humanos —el manual de cargos y la plantilla de personal son dos documentos— y no estaba escrito en ninguna parte, así que el formulario mostraba dos campos «Código» sin decir por qué eran dos</td></tr>
+        <tr><td class="rg"><strong>2.7</strong></td><td>10 sep 2026</td><td><strong>Dos reglas decían «no cuelga de X» donde la frase honesta es «cuelga de X en el árbol y de otra cosa en el dibujo».</strong> <span class="id">BR‑ORG‑008</span>: un cargo pertenece a una unidad y su cuadro aparece debajo del cuadro de otro cargo, porque la línea sale de a quién responden sus sillas. <span class="id">BR‑ORG‑023</span>: una unidad <b>sí se anida en otra unidad</b> —el nivel es anidable y hay empresas con cuatro escalones de área—; lo que no sale del anidamiento es la línea, que sale del puesto que la manda. Enunciadas como estaban, las dos contradecían lo que cualquiera ve en pantalla. <strong>Y los tres escenarios de <span class="id">BR‑ORG‑022</span></strong> pasan a ser tres empresas que pegan la etiqueta en tres escalones distintos —regionales, sucursales, áreas— con la misma escalera debajo, que es lo que la regla venía a enseñar</td></tr>
         <tr><td class="rg"><strong>2.6</strong></td><td>10 sep 2026</td><td><strong>Los ocho flujos y los cinco wireframes, contra la pantalla real.</strong> <span class="id">W‑04</span> dibujaba un lápiz en cada nivel, «Sede <i>(era Sucursal)</i>» y un botón «Agregar un nivel»: tres controles que ya no van a existir, y un wireframe que los dibuja es lo que alguien va a construir. Sale el vocabulario viejo —«clase de puesto: colaborador, staff u outsourcing»— del glosario, el modelo de datos, las integraciones, dos flujos, un wireframe y el anexo. <span class="id">F‑ORG‑02</span> pedía «nombre, país, estado» y la ficha también pide ciudad; <span class="id">F‑ORG‑04</span> seguía diciendo que la sucursal de una unidad se deduce, y se declara; <span class="id">F‑ORG‑03</span> gana el cupo y la jefatura de las sillas; y <span class="id">W‑02</span> decía seis tipos donde son siete</td></tr>
         <tr><td class="rg"><strong>2.5</strong></td><td>10 sep 2026</td><td><strong>Tres escenarios por regla</strong> —el camino corriente, el caso distinto que la regla también gobierna, y lo que el sistema hace cuando algo no cierra—: ochenta y uno en total, y lo que estaba dicho en prosa vuelve a ser verificable. <strong>Pasada del documento contra el prototipo:</strong> entra «Niveles de mando» al mapa de pantallas, que tiene su ruta y su editor y no estaba listada; <span class="id">RF‑ORG‑025</span> deja de confundir el cupo con las plazas abiertas, que son dos cosas; y <span class="id">RF‑ORG‑012</span> agrega que una columna también desaparece cuando ninguno de los tipos a la vista podría llenarla. <strong>Se cierra <span class="id">ABIERTA‑05</span>:</strong> un cupo que baja por debajo de los puestos abiertos se bloquea, y así está construido</td></tr>
         <tr><td class="rg"><strong>2.4</strong></td><td>10 sep 2026</td><td><strong>Estructura física deja de tener una sola regla y encima ajena.</strong> Entran cuatro escritas de lo que las fichas piden hoy: <span class="id">BR‑ORG‑025</span> la regional agrupa y no depende de nada —y pide nombre, país, ciudad y estado, nada más—, <span class="id">BR‑ORG‑026</span> la sucursal es la sede y el centro de trabajo el domicilio que sale en los papeles laborales, <span class="id">BR‑ORG‑027</span> los tres desplegables del centro se acotan entre sí y se guarda el más específico, y <span class="id">BR‑ORG‑028</span> la dirección sale de catálogos y el departamento solo aparece donde esa división existe con ese nombre. <span class="id">BR‑ORG‑006</span> se muda a Unidades organizacionales: habla de dónde está una unidad, no de un nivel físico</td></tr>
