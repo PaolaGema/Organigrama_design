@@ -832,7 +832,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
       </figure>
     </div>
     <dl class="ficha">
-      <div><dt>Versión</dt><dd>2.9</dd></div>
+      <div><dt>Versión</dt><dd>3.0</dd></div>
       <div><dt>Fecha</dt><dd>10 de septiembre de 2026</dd></div>
       <div><dt>Autoría</dt><dd>Paola Gema — Diseñadora UX</dd></div>
       <div><dt>Revisa y aprueba</dt><dd>Naihara Rocha — reglas y uso de RR.HH.</dd></div>
@@ -846,7 +846,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <div class="cifras-w">
   <div class="cifras">
     <div><b>8</b><span>niveles de estructura del árbol</span></div>
-    <div><b>34</b><span>reglas de negocio</span></div>
+    <div><b>41</b><span>reglas de negocio</span></div>
     <div><b>32</b><span>requisitos funcionales</span></div>
     <div><b>6</b><span>no funcionales</span></div>
     <div><b>8</b><span>flujos de usuario</span></div>
@@ -1040,10 +1040,14 @@ td.rg{color:var(--tinta-3);font-weight:700}
         </div>
         <div class="rail-s" data-sec="s4">
           <a href="#s4"><span>04</span>Reglas de negocio</a>
-          <button type="button" class="rail-x" aria-expanded="false" aria-controls="sub-s4"><svg class="rail-c" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M3.5 1.5 L7 5 L3.5 8.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Ver las 34 reglas</span></button>
+          <button type="button" class="rail-x" aria-expanded="false" aria-controls="sub-s4"><svg class="rail-c" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M3.5 1.5 L7 5 L3.5 8.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Ver las 41 reglas</span></button>
           <ul class="rail-sub" id="sub-s4" hidden>
+            <li class="rail-g"><a href="#br-g-empresa">Datos de la empresa</a></li>
+            <li><a href="#BR-ORG-036">036 · La raíz solo exige su nombre</a></li>
+            <li><a href="#BR-ORG-037">037 · El país se declara una vez</a></li>
             <li class="rail-g"><a href="#br-g-config">Configuración</a></li>
             <li><a href="#BR-ORG-004">004 · Cada empresa enciende sus niveles</a></li>
+            <li><a href="#BR-ORG-038">038 · La vista previa se rehace al momento</a></li>
             <li class="rail-g"><a href="#br-g-cimientos">Los cimientos</a></li>
             <li><a href="#BR-ORG-001">001 · Todo es un solo árbol de nodos</a></li>
             <li><a href="#BR-ORG-002">002 · La regla de jerarquía</a></li>
@@ -1056,6 +1060,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             <li><a href="#BR-ORG-028">028 · La dirección sale de catálogos</a></li>
             <li class="rail-g"><a href="#br-g-negocio">Unidades de negocio</a></li>
             <li><a href="#BR-ORG-022">022 · No es un padre: se hereda</a></li>
+            <li><a href="#BR-ORG-039">039 · Lo que agrupa se ve, no se asigna</a></li>
             <li class="rail-g"><a href="#br-g-unidades">Unidades organizacionales</a></li>
             <li><a href="#BR-ORG-023">023 · Dentro de qué está y quién la manda</a></li>
             <li><a href="#BR-ORG-006">006 · El sitio se declara una vez y baja</a></li>
@@ -1086,6 +1091,10 @@ td.rg{color:var(--tinta-3);font-weight:700}
             <li><a href="#BR-ORG-033">033 · Los filtros se leen como una frase</a></li>
             <li><a href="#BR-ORG-034">034 · «Qué se dibuja» no es un filtro</a></li>
             <li><a href="#BR-ORG-035">035 · Los tonos los elige la empresa</a></li>
+            <li class="rail-g"><a href="#br-g-forma">Las fichas y las listas</a></li>
+            <li><a href="#BR-ORG-040">040 · Una sola ficha, y abre para mirar</a></li>
+            <li><a href="#BR-ORG-041">041 · Lo obligatorio dice por qué hace falta</a></li>
+            <li><a href="#BR-ORG-042">042 · La tabla dibuja el árbol</a></li>
             <li class="rail-g"><a href="#br-g-todo">Vale para todo el módulo</a></li>
             <li><a href="#BR-ORG-016">016 · Desactivar no es borrar</a></li>
             <li><a href="#BR-ORG-020">020 · De esto dependen los demás módulos</a></li>
@@ -1200,7 +1209,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
       <figure class="perf-fig"><img src="assets/imagenes/via_developer.png" width="463" height="539" alt="VIA con anteojos de marco grueso, sosteniendo un portátil con código en pantalla"></figure>
       <div class="perf-txt">
         <p class="perf-mision"><b>Tu misión</b>Entregar el módulo completo y probado: cada regla de negocio cumplida, cubierta con pruebas unitarias y verificada con QA.</p>
-        <p class="perf-lead">Antes de escribir la primera línea, leer entero el punto <span class="id">04</span>. Las treinta y cuatro reglas dicen qué tiene que pasar y qué tiene que estar impedido, y cada una trae un escenario —el camino que debe funcionar— que sirve como caso de prueba tal como está. El punto <span class="id">05</span> explica cómo está modelado el árbol; el <span class="id">03</span>, qué debe hacer cada pantalla.</p>
+        <p class="perf-lead">Antes de escribir la primera línea, leer entero el punto <span class="id">04</span>. Las cuarenta y una reglas dicen qué tiene que pasar y qué tiene que estar impedido, y cada una trae un escenario —el camino que debe funcionar— que sirve como caso de prueba tal como está. El punto <span class="id">05</span> explica cómo está modelado el árbol; el <span class="id">03</span>, qué debe hacer cada pantalla.</p>
         <dl class="perf-l">
           <div><dt>Empezar por</dt><dd><a href="#s0">00 · Glosario</a> · <a href="#s5">05 · Modelo de datos</a> · <a href="#s3">03 · Funcionalidades</a></dd></div>
           <div><dt>No omitir</dt><dd><a href="#s4">04 · Reglas de negocio</a> y <a href="#s2">02 · Integraciones</a>: definen qué se valida al guardar y qué queda expuesto a los demás módulos. Y <a href="#p6-6">6.6 · Riesgos</a>: hay dos decisiones que, tomadas mal, obligan a migrar todo</dd></div>
@@ -2028,13 +2037,98 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <header class="sec-h">
       <span class="sec-n" aria-hidden="true">04</span>
       <h2>Reglas de negocio</h2>
-      <p class="sec-d">Treinta y cuatro condiciones que el sistema valida siempre, en el orden en que una empresa arma su estructura: primero de qué escalones está hecha, después qué pone en cada uno.</p>
+      <p class="sec-d">Cuarenta y una condiciones que el sistema valida siempre, en el orden en que una empresa arma su estructura: primero de qué escalones está hecha, después qué pone en cada uno.</p>
     </header>
+
+        <h3 class="br-grupo" id="br-g-empresa">Datos de la empresa<em>La raíz del árbol: lo que la empresa dice de sí misma antes de tener estructura</em></h3>
+        <ol class="reglas">
+          <li class="br">
+            <span class="br-n">4.1</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-036</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-036">La empresa es la raíz del árbol y solo exige su nombre</h3>
+              <p>Todo cuelga de ella: un nodo sin nodo superior declarado cuelga de la empresa —<span class="id">BR‑ORG‑001</span>—, así que sin empresa no hay de qué colgar nada. Es la primera pantalla del módulo y la primera de la puesta en marcha.</p>
+              <p>De todo lo que pide, <b>lo único obligatorio es el nombre comercial</b>, y por una razón concreta: <b>el organigrama lo imprime en su cabecera</b>, así que no puede quedar vacío. La razón social, el NIT, el rubro, el contacto y las redes se completan cuando se sepan.</p>
+              <p>Su dirección es la de la <b>casa matriz</b>. Las direcciones de cada oficina no van acá: van en cada sucursal y en cada centro de trabajo, que son los que las tienen.</p>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una empresa creada con lo mínimo</div>
+                  <ul>
+                    <li><b>Dado que</b>se está dando de alta una empresa nueva</li>
+                    <li><b>Cuando</b>se escribe solo el nombre comercial y se guarda</li>
+                    <li><b>Entonces</b>la raíz queda creada y ya se le pueden colgar regionales, sucursales y unidades</li>
+                    <li><b>Y</b>el resto se completa después, sin bloquear la puesta en marcha</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El nombre sale en la exportación</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa se llama «FarmaVida»</li>
+                    <li><b>Cuando</b>se exporta el organigrama</li>
+                    <li><b>Entonces</b>ese nombre va en la cabecera del archivo</li>
+                    <li><b>Y</b>por eso es el único campo que el sistema no deja vacío</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Las direcciones de cada oficina no van acá</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa tiene seis sucursales</li>
+                    <li><b>Cuando</b>se completa Datos de la empresa</li>
+                    <li><b>Entonces</b>se pide una sola dirección, la de la casa matriz</li>
+                    <li><b>Y</b>la de cada sucursal se carga en su propia ficha, que es la que la usa</li>
+                  </ul>
+                </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="br">
+            <span class="br-n">4.2</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-037</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-037">El país se declara una vez, en la empresa, y de él salen las ciudades</h3>
+              <p>El país se pregunta <b>en la empresa y en ningún otro sitio por defecto</b>. De él sale la lista de ciudades que se ofrece al crear regionales, sucursales y centros de trabajo, así que declararlo una vez ahorra contestarlo en cada alta.</p>
+              <p>No es un candado: una sucursal en otro país puede declarar el suyo —<span class="id">BR‑ORG‑028</span>—, y ahí la lista de ciudades cambia con él. Lo que la empresa aporta es <b>el valor con el que se empieza</b>, que es el correcto en la enorme mayoría de las altas.</p>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Las ciudades salen del país de la empresa</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa declaró «Bolivia»</li>
+                    <li><b>Cuando</b>se crea una sucursal</li>
+                    <li><b>Entonces</b>el desplegable de ciudades ofrece las bolivianas</li>
+                    <li><b>Y</b>nadie tuvo que volver a elegir el país</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una sede en otro país</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa es boliviana y abre una oficina en Argentina</li>
+                    <li><b>Cuando</b>esa sucursal declara «Argentina» como su país</li>
+                    <li><b>Entonces</b>sus ciudades salen del catálogo argentino</li>
+                    <li><b>Y</b>la empresa y las demás sedes no cambian</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Sin país no hay ciudades que ofrecer</div>
+                  <ul>
+                    <li><b>Dado que</b>todavía no se declaró ningún país</li>
+                    <li><b>Cuando</b>se abre el desplegable de ciudades</li>
+                    <li><b>Entonces</b>el formulario pide primero el país y lo dice así</li>
+                    <li><b>Y</b>el motivo es el que se lee en el campo: de él sale la lista de al lado</li>
+                  </ul>
+                </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+        </ol>
 
 <h3 class="br-grupo" id="br-g-config">Configuración<em>De qué escalones está hecha esta empresa: lo primero que se decide y lo que gobierna a todo lo demás</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.1</span>
+            <span class="br-n">4.3</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-004</span>
@@ -2074,12 +2168,53 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
           </li>
+          <li class="br">
+            <span class="br-n">4.4</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-038</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-038">«Así queda tu organización» se rehace mientras se configura</h3>
+              <p>La vista previa va <b>primera</b> en la pantalla porque es la pregunta que trae a alguien acá: «¿cómo queda mi organización?». Se lee como <b>dos caminos, uno por dimensión</b> —Empresa › Sucursal › Centro de trabajo, y Empresa › Unidad de negocio › Unidad organizacional › Cargo › Puesto—, con los niveles encendidos y en orden.</p>
+              <p>Se rehace <b>en el momento</b>, antes de guardar: encender «Regional» la mete entre la empresa y la sucursal y se ve ahí mismo. La consecuencia de un interruptor se ve sin ir a buscarla al árbol, que es lo que hace entendible una pantalla de interruptores sueltos.</p>
+              <p>Y los interruptores <b>se ajustan a lo que hay cargado</b>: un nivel con nodos dentro aparece encendido aunque la configuración guardada dijera lo contrario, para que nunca quede un nivel apagado con cosas adentro.</p>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>La consecuencia se ve antes de guardar</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa no usa regionales</li>
+                    <li><b>Cuando</b>enciende «Regional» en la lista</li>
+                    <li><b>Entonces</b>la vista previa de arriba pasa a decir Empresa › Regional › Sucursal › Centro de trabajo</li>
+                    <li><b>Y</b>no hace falta salir al árbol para ver qué cambió</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Dos caminos, uno por dimensión</div>
+                  <ul>
+                    <li><b>Dado que</b>se abre Configuración</li>
+                    <li><b>Cuando</b>se mira la vista previa</li>
+                    <li><b>Entonces</b>muestra la cadena física y la organizacional por separado</li>
+                    <li><b>Y</b>son dos recortes del mismo árbol, no dos árboles — <em>BR‑ORG‑005</em></li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Los interruptores siguen a los datos</div>
+                  <ul>
+                    <li><b>Dado que</b>se cargan datos que traen centros de trabajo y el nivel figuraba apagado</li>
+                    <li><b>Cuando</b>se abre Configuración</li>
+                    <li><b>Entonces</b>ese nivel aparece encendido</li>
+                    <li><b>Y</b>nunca queda un nivel apagado con nodos adentro, que sería gente sin pantalla donde verse</li>
+                  </ul>
+                </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
         </ol>
 
 <h3 class="br-grupo" id="br-g-cimientos">Los cimientos<em>De qué está hecha la estructura, antes de hablar de ningún nivel</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.2</span>
+            <span class="br-n">4.5</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-001</span>
@@ -2120,7 +2255,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.3</span>
+            <span class="br-n">4.6</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-002</span>
@@ -2161,7 +2296,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.4</span>
+            <span class="br-n">4.7</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-003</span>
@@ -2202,7 +2337,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.5</span>
+            <span class="br-n">4.8</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-005</span>
@@ -2247,7 +2382,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-fisica">Estructura física<em>Regiones, sucursales y centros de trabajo: dónde está la empresa y qué exige cada nivel</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.6</span>
+            <span class="br-n">4.9</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-025</span>
@@ -2290,7 +2425,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.7</span>
+            <span class="br-n">4.10</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-026</span>
@@ -2333,7 +2468,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.8</span>
+            <span class="br-n">4.11</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-027</span>
@@ -2377,7 +2512,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.9</span>
+            <span class="br-n">4.12</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-028</span>
@@ -2424,7 +2559,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-negocio">Unidades de negocio<em>La línea a la que pertenece cada parte de la empresa</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.10</span>
+            <span class="br-n">4.13</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-022</span>
@@ -2467,12 +2602,53 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
           </li>
+          <li class="br">
+            <span class="br-n">4.14</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-039</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-039">Lo que agrupa una unidad de negocio se ve, pero no se asigna desde ahí</h3>
+              <p>Su ficha muestra <b>qué declaró pertenecerle</b> —cuántos y cuáles—, y esa tarjeta es de solo lectura. La asignación se hace desde la ficha de cada uno, en su campo «A qué negocio pertenece», que es donde uno está cuando lo sabe: «esta sucursal es de Farmacias».</p>
+              <p>Ofrecer las dos puertas sería <b>una segunda entrada para el mismo dato</b>, y dos puertas para un dato terminan discrepando. Verlo junto sí hace falta —es la única forma de contestar «¿qué abarca esta línea?»— y por eso se muestra sin poder tocarse.</p>
+              <p>Es la misma forma que ya usa la unidad organizacional con sus apoyos funcionales: se declara donde se sabe, y se lee donde se pregunta.</p>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Qué abarca una línea</div>
+                  <ul>
+                    <li><b>Dado que</b>tres sucursales declararon pertenecer a «Farmacias»</li>
+                    <li><b>Cuando</b>se abre la ficha de esa unidad de negocio</li>
+                    <li><b>Entonces</b>las lista, y dice que lo que cuelga de cada una la hereda</li>
+                    <li><b>Y</b>ninguna se puede agregar ni quitar desde ahí</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una línea que todavía no agrupa nada</div>
+                  <ul>
+                    <li><b>Dado que</b>se acaba de crear la unidad de negocio «Distribución»</li>
+                    <li><b>Cuando</b>se abre su ficha</li>
+                    <li><b>Entonces</b>dice que todavía nadie declaró pertenecer a esa línea</li>
+                    <li><b>Y</b>no es un error: la línea existe antes de que se le asigne nada</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Se asigna donde uno está cuando lo sabe</div>
+                  <ul>
+                    <li><b>Dado que</b>se está creando la sucursal «Casa Matriz»</li>
+                    <li><b>Cuando</b>se llega a «A qué negocio pertenece»</li>
+                    <li><b>Entonces</b>ahí se elige «Farmacias»</li>
+                    <li><b>Y</b>la ficha de Farmacias pasa a listarla, sin que nadie la haya agregado desde allá</li>
+                  </ul>
+                </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
         </ol>
 
 <h3 class="br-grupo" id="br-g-unidades">Unidades organizacionales<em>Áreas, gerencias, departamentos y equipos: cómo se reparte el trabajo</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.11</span>
+            <span class="br-n">4.15</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-023</span>
@@ -2517,7 +2693,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.12</span>
+            <span class="br-n">4.16</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-006</span>
@@ -2564,7 +2740,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-cargos">Cargos<em>El rol: qué se hace, dentro de qué unidad y con cuántas sillas</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.13</span>
+            <span class="br-n">4.17</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-007</span>
@@ -2606,7 +2782,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.14</span>
+            <span class="br-n">4.18</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-008</span>
@@ -2649,7 +2825,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.15</span>
+            <span class="br-n">4.19</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-009</span>
@@ -2690,7 +2866,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.16</span>
+            <span class="br-n">4.20</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-014</span>
@@ -2732,7 +2908,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.17</span>
+            <span class="br-n">4.21</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-021</span>
@@ -2774,7 +2950,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.18</span>
+            <span class="br-n">4.22</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-024</span>
@@ -2821,7 +2997,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-mando">Niveles de mando<em>El catálogo que dice cuánto pesa un cargo, y cómo se traduce en el dibujo</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.19</span>
+            <span class="br-n">4.23</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-015</span>
@@ -2863,7 +3039,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.20</span>
+            <span class="br-n">4.24</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-029</span>
@@ -2904,7 +3080,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.21</span>
+            <span class="br-n">4.25</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-030</span>
@@ -2949,7 +3125,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-puestos">Puestos<em>La silla concreta: su código, su sitio, su jefatura y quién la ocupa</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.22</span>
+            <span class="br-n">4.26</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-010</span>
@@ -2990,7 +3166,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.23</span>
+            <span class="br-n">4.27</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-011</span>
@@ -3031,7 +3207,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.24</span>
+            <span class="br-n">4.28</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-012</span>
@@ -3076,10 +3252,10 @@ td.rg{color:var(--tinta-3);font-weight:700}
           </li>
         </ol>
 
-        <h3 class="br-grupo" id="br-g-funcional">Dependencia funcional<em>Dónde más trabaja un puesto sin pertenecer ahí, y cómo se dibuja</em></h3>
+<h3 class="br-grupo" id="br-g-funcional">Dependencia funcional<em>Dónde más trabaja un puesto sin pertenecer ahí, y cómo se dibuja</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.25</span>
+            <span class="br-n">4.29</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-013</span>
@@ -3120,7 +3296,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.26</span>
+            <span class="br-n">4.30</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-031</span>
@@ -3161,7 +3337,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.27</span>
+            <span class="br-n">4.31</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-032</span>
@@ -3206,7 +3382,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-dibujo">El organigrama<em>El dibujo y las tablas, que son la misma estructura vista de dos maneras</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.28</span>
+            <span class="br-n">4.32</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-017</span>
@@ -3247,7 +3423,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.29</span>
+            <span class="br-n">4.33</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-018</span>
@@ -3288,7 +3464,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.30</span>
+            <span class="br-n">4.34</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-033</span>
@@ -3329,7 +3505,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.31</span>
+            <span class="br-n">4.35</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-034</span>
@@ -3369,7 +3545,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.32</span>
+            <span class="br-n">4.36</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-035</span>
@@ -3412,10 +3588,137 @@ td.rg{color:var(--tinta-3);font-weight:700}
           </li>
         </ol>
 
+        <h3 class="br-grupo" id="br-g-forma">Las fichas y las listas<em>La forma que comparten todos los tipos: cómo se llenan y cómo se listan</em></h3>
+        <ol class="reglas">
+          <li class="br">
+            <span class="br-n">4.37</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-040</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-040">Una sola ficha para todos los tipos, y abre para mirar</h3>
+              <p>Regional, sucursal, centro de trabajo, unidad de negocio, unidad organizacional, cargo y puesto se editan en <b>la misma pantalla</b>, con los mismos gestos. No cambia de forma: cambia qué campos trae. Siete formularios distintos serían siete sitios donde arreglar el mismo error.</p>
+              <p><b>Abre en lectura y editar es un paso que se pide.</b> Un nodo se abre muchas más veces para consultarlo que para cambiarlo, y entrando directo al editor cualquier descuido —rozar un desplegable y guardar— muda algo de sitio sin que nadie lo haya pedido. Un alta no tiene nada que mirar todavía: nace en edición.</p>
+              <p>Y al pasar de mirar a editar <b>nada se mueve de sitio</b>: los campos son los mismos y están donde van a estar, solo que bloqueados. Cancelar vuelve a <b>la lista del tipo del nodo</b> y no a la pantalla desde la que se llegó: un nodo pertenece a la lista que lo lista, se haya llegado desde donde se haya llegado.</p>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Mirar antes de tocar</div>
+                  <ul>
+                    <li><b>Dado que</b>se abre un cargo desde la tabla</li>
+                    <li><b>Cuando</b>aparece la ficha</li>
+                    <li><b>Entonces</b>muestra sus datos sin ningún campo editable</li>
+                    <li><b>Y</b>editar es un botón que hay que apretar, así que no se cambia nada por descuido</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Los campos no se mueven al editar</div>
+                  <ul>
+                    <li><b>Dado que</b>se está mirando una sucursal</li>
+                    <li><b>Cuando</b>se pasa a edición</li>
+                    <li><b>Entonces</b>los campos siguen en el mismo sitio, ahora escribibles</li>
+                    <li><b>Y</b>no hay que volver a buscar el que se venía a cambiar</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Cancelar vuelve a la lista del tipo</div>
+                  <ul>
+                    <li><b>Dado que</b>se llegó a la ficha de una regional desde el organigrama</li>
+                    <li><b>Cuando</b>se cancela</li>
+                    <li><b>Entonces</b>se vuelve a la lista de regionales</li>
+                    <li><b>Y</b>no al organigrama: el nodo pertenece a la lista que lo lista</li>
+                  </ul>
+                </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="br">
+            <span class="br-n">4.38</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-041</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-041">Lo obligatorio bloquea el guardado y dice por qué hace falta</h3>
+              <p>Los campos obligatorios salen de <b>los propios campos</b> y no de una lista aparte, así que agregar uno mañana lo hace exigible sin tocar la validación.</p>
+              <p>El aviso <b>nombra cuál falta y para qué</b>: «es el domicilio que sale en cada finiquito», «sin nombre no hay forma de elegirla al colgarle una sucursal». Un «campo obligatorio» a secas no explica nada y deja a quien lo lee adivinando si de verdad hace falta. Con uno solo se dice su razón; con varios se enumeran.</p>
+              <p>Y los errores aparecen <b>después del primer intento de guardar</b>, no mientras se escribe. Marcar en rojo un campo que todavía se está llenando es acusar a alguien de un error que no cometió.</p>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El aviso dice el campo y su razón</div>
+                  <ul>
+                    <li><b>Dado que</b>se guarda una regional sin ciudad</li>
+                    <li><b>Cuando</b>se pulsa guardar</li>
+                    <li><b>Entonces</b>el aviso nombra el campo y para qué hace falta</li>
+                    <li><b>Y</b>no guarda hasta que se complete</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Nada en rojo mientras se escribe</div>
+                  <ul>
+                    <li><b>Dado que</b>se está llenando una ficha nueva y todavía faltan campos</li>
+                    <li><b>Cuando</b>se recorre el formulario sin intentar guardar</li>
+                    <li><b>Entonces</b>ningún campo aparece marcado como faltante</li>
+                    <li><b>Y</b>las marcas salen recién al primer intento de guardar</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Varios faltantes se enumeran</div>
+                  <ul>
+                    <li><b>Dado que</b>faltan tres campos obligatorios</li>
+                    <li><b>Cuando</b>se intenta guardar</li>
+                    <li><b>Entonces</b>el aviso dice cuántos son y los nombra</li>
+                    <li><b>Y</b>no hay que descubrirlos de a uno guardando tres veces</li>
+                  </ul>
+                </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="br">
+            <span class="br-n">4.39</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-042</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-042">La tabla dibuja el árbol, y al buscar se aplana</h3>
+              <p>Las listas no son planas: cada fila se cuelga <b>de su ancestro más cercano que también esté en la vista</b>, con sangría. Un cargo se despliega y muestra sus puestos como filas hijas, con las mismas columnas —el puesto no tiene lista propia: vive dentro de su cargo—.</p>
+              <p>El buscador dice <b>entre cuántos está buscando</b> y de qué habla —«Buscar entre 34 unidades organizacionales…»—, mira nombre, ciudad y código, y <b>no distingue tildes</b>: nadie escribe «Potosí» con acento en un buscador. El resultado vuelve a la primera página, porque buscar estando en la tercera dejaría a alguien mirando una página vacía.</p>
+              <p>Con la búsqueda puesta <b>la sangría se aplana</b>, y es a propósito: los resultados no son hermanos entre sí, así que dibujarlos anidados afirmaría un parentesco que no existe. Ahí la columna «Depende de» pasa a ser lo único que los ubica.</p>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El árbol con sangría</div>
+                  <ul>
+                    <li><b>Dado que</b>la unidad «Preventa» está dentro de «Gerencia de Ventas», que está dentro de «Dirección Comercial»</li>
+                    <li><b>Cuando</b>se abre la lista de unidades</li>
+                    <li><b>Entonces</b>las tres se dibujan anidadas, cada una bajo la suya</li>
+                    <li><b>Y</b>un cargo de Preventa se despliega para mostrar sus puestos como filas hijas</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Buscar aplana y vuelve al principio</div>
+                  <ul>
+                    <li><b>Dado que</b>se está en la página 3 de la lista</li>
+                    <li><b>Cuando</b>se escribe algo en el buscador</li>
+                    <li><b>Entonces</b>los resultados salen sin sangría y desde la primera página</li>
+                    <li><b>Y</b>«Depende de» los ubica, porque entre ellos no hay parentesco que dibujar</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Buscar sin acentos</div>
+                  <ul>
+                    <li><b>Dado que</b>existe la sucursal de «Potosí»</li>
+                    <li><b>Cuando</b>alguien escribe «potosi» sin tilde</li>
+                    <li><b>Entonces</b>aparece igual</li>
+                    <li><b>Y</b>la búsqueda mira también el código y la ciudad, no solo el nombre</li>
+                  </ul>
+                </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+        </ol>
+
 <h3 class="br-grupo" id="br-g-todo">Vale para todo el módulo<em>Lo que se cumple en cualquier nivel y en cualquier pantalla</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.33</span>
+            <span class="br-n">4.40</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-016</span>
@@ -3456,7 +3759,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.34</span>
+            <span class="br-n">4.41</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-020</span>
@@ -4303,6 +4606,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
         <tr><td class="rg">1.0</td><td>7 sep 2026</td><td>La documentación del módulo en formato BR: veinte reglas con escenarios, treinta y un requisitos funcionales con código estable, ocho flujos y cinco wireframes. <strong>Cambia el modelo:</strong> un solo árbol de nodos, el esquema de niveles como dato de la empresa, y el cargo separado del puesto</td></tr>
         <tr><td class="rg"><strong>2.0</strong></td><td>7 sep 2026</td><td><strong>Los dos documentos se unen en uno.</strong> El contenido del módulo —reglas, requisitos, flujos y wireframes— entra en la estructura de nueve secciones del PRD, que es la que se sostiene: glosario al frente, contexto, integraciones módulo por módulo, modelo de datos y roadmap. <strong>Se rescata del PRD de agosto</strong> todo lo que seguía valiendo y se reescribe sobre el modelo nuevo: qué es un organigrama, los principios de diseño, las integraciones, el camino hasta desarrollo, los riesgos y el anexo de decisiones. <strong>Se anota lo que falta</strong> en vez de disimularlo: registro de actividad, estados vacíos y permisos verificados en el servidor quedan como <span class="id">ABIERTA‑07</span> a <span class="id">ABIERTA‑09</span>. <strong>Sin revisar todavía</strong></td></tr>
         <tr><td class="rg"><strong>2.1</strong></td><td>9 sep 2026</td><td>Entra <span class="id">BR‑ORG‑021</span>: <strong>el cargo y la plaza llevan códigos distintos</strong>, también cuando el cargo tiene una sola plaza. Es como lo maneja Recursos Humanos —el manual de cargos y la plantilla de personal son dos documentos— y no estaba escrito en ninguna parte, así que el formulario mostraba dos campos «Código» sin decir por qué eran dos</td></tr>
+        <tr><td class="rg"><strong>3.0</strong></td><td>10 sep 2026</td><td><strong>Barrido del prototipo buscando lo que un desarrollador necesita y el documento no decía.</strong> <b>Datos de la empresa</b> no tenía ninguna regla y es la primera pantalla del módulo: entran <span class="id">BR‑ORG‑036</span> —la raíz solo exige su nombre, porque el organigrama lo imprime en su cabecera— y <span class="id">BR‑ORG‑037</span> —el país se declara una vez y de él salen las ciudades de cada alta—. <b>Configuración</b> gana <span class="id">BR‑ORG‑038</span>: la vista previa se rehace en el momento y los interruptores se ajustan a lo que hay cargado. <b>Unidades de negocio</b> gana <span class="id">BR‑ORG‑039</span>: lo que agrupa se ve y no se asigna desde ahí, porque dos puertas para un dato terminan discrepando. Y entra el grupo <b>Las fichas y las listas</b>, que es la forma que comparten todos los tipos: <span class="id">BR‑ORG‑040</span> una sola ficha que abre para mirar, <span class="id">BR‑ORG‑041</span> lo obligatorio bloquea y dice por qué hace falta, y <span class="id">BR‑ORG‑042</span> la tabla dibuja el árbol y al buscar se aplana</td></tr>
         <tr><td class="rg"><strong>2.9</strong></td><td>10 sep 2026</td><td><strong>Tres asuntos con pantalla propia y sin reglas.</strong> <b>Dependencia funcional</b> pasa a ser su propio grupo: <span class="id">BR‑ORG‑031</span> cada apoyo es un par —la unidad y a quién responde ahí, elegido entre los cargos de esa unidad—, y <span class="id">BR‑ORG‑032</span> se dibuja con línea secundaria y no se cuenta dos veces, porque «¿cuánta gente tiene esta área?» no puede tener dos respuestas defendibles. <b>Los filtros:</b> <span class="id">BR‑ORG‑033</span> se leen como una frase que sin filtros sigue siendo verdad, y <span class="id">BR‑ORG‑034</span> «qué se dibuja» no es un filtro —cambia el papel, no a quién se deja afuera—. <b>Los colores:</b> <span class="id">BR‑ORG‑035</span> la empresa elige los tonos y nunca los significados, y el color nunca va solo: cada codificación lleva color, borde e ícono a la vez</td></tr>
         <tr><td class="rg"><strong>2.8</strong></td><td>10 sep 2026</td><td><strong>Niveles de mando pasa a ser su propio grupo.</strong> Tiene su pantalla, su editor y su dibujo, y estaba al final del grupo de Cargos como si fuera un detalle del cargo. Entran dos reglas que nadie había escrito y salen del prototipo: <span class="id">BR‑ORG‑029</span> un nivel de mando <b>no es una línea de mando</b> —los peldaños no se reportan entre sí, y por eso la escala se dibuja sin una sola línea entre los cuadros—, y <span class="id">BR‑ORG‑030</span> la altura de un cuadro se mide <b>contra su jefe y no contra su fila</b>, porque medir contra la fila dibujaba a un jefe de planta y a un pasante como pares</td></tr>
         <tr><td class="rg"><strong>2.7</strong></td><td>10 sep 2026</td><td><strong>Dos reglas decían «no cuelga de X» donde la frase honesta es «cuelga de X en el árbol y de otra cosa en el dibujo».</strong> <span class="id">BR‑ORG‑008</span>: un cargo pertenece a una unidad y su cuadro aparece debajo del cuadro de otro cargo, porque la línea sale de a quién responden sus sillas. <span class="id">BR‑ORG‑023</span>: una unidad <b>sí se anida en otra unidad</b> —el nivel es anidable y hay empresas con cuatro escalones de área—; lo que no sale del anidamiento es la línea, que sale del puesto que la manda. Enunciadas como estaban, las dos contradecían lo que cualquiera ve en pantalla. <strong>Y los tres escenarios de <span class="id">BR‑ORG‑022</span></strong> pasan a ser tres empresas que pegan la etiqueta en tres escalones distintos —regionales, sucursales, áreas— con la misma escalera debajo, que es lo que la regla venía a enseñar</td></tr>
