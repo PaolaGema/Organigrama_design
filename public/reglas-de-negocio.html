@@ -2560,14 +2560,15 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-007">El cargo es el rol; el puesto es la silla</h3>
-              <p>El <b>cargo</b> define qué se hace —nombre, unidad, nivel de mando, tipo, descripción— y existe una sola vez. El <b>puesto</b> es una silla concreta de ese cargo: tiene su código, su sitio de trabajo y su ocupante. Cinco «Ejecutivo Comercial» son un cargo con cinco puestos, no cinco cargos.</p>
+              <p>El <b>cargo</b> define qué se hace —nombre, unidad, nivel de mando, tipo, descripción— y existe una sola vez. El <b>puesto</b> es una silla concreta de ese cargo: tiene su código, su sitio de trabajo, su jefatura y su ocupante. Nueve «Vendedor» son <b>un cargo con nueve puestos</b>, no nueve cargos.</p>
+              <p>Que sean uno solo es lo que permite que sus sillas se repartan entre dos jefaturas sin partir el rol en dos: nueve vendedores, seis bajo la Coordinadora de Ventas y tres bajo la Supervisora de Supermercados, siguen siendo el mismo «Vendedor» en el catálogo, con la misma descripción y la misma banda salarial. <span class="id">BR‑ORG‑012</span>.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Renombrar el rol</div>
                   <ul>
-                    <li><b>Dado que</b>el cargo «Ejecutivo Comercial» tiene cinco puestos abiertos</li>
+                    <li><b>Dado que</b>el cargo «Vendedor» tiene nueve puestos abiertos, repartidos entre dos jefaturas</li>
                     <li><b>Cuando</b>se lo renombra a «Asesor Comercial»</li>
-                    <li><b>Entonces</b>los cinco puestos pasan a llamarse así</li>
+                    <li><b>Entonces</b>los nueve puestos pasan a llamarse así, los de las dos jefaturas</li>
                     <li><b>Y</b>no hay forma de que queden dos roles que en realidad son uno</li>
                   </ul>
                 </div>
@@ -2581,12 +2582,12 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
                 <div class="esc ok">
-                  <div class="esc-t"><i>✅</i>Cinco sillas son una fila, no cinco</div>
+                  <div class="esc-t"><i>✅</i>Nueve sillas son una fila, no nueve</div>
                   <ul>
-                    <li><b>Dado que</b>el cargo «Ejecutivo Comercial» tiene cinco plazas abiertas</li>
+                    <li><b>Dado que</b>el cargo «Vendedor» tiene nueve plazas abiertas</li>
                     <li><b>Cuando</b>se mira la lista de cargos</li>
-                    <li><b>Entonces</b>figura una sola fila, con sus cinco sillas desplegables debajo</li>
-                    <li><b>Y</b>no cinco definiciones que haya que mantener iguales a mano</li>
+                    <li><b>Entonces</b>figura una sola fila, con sus nueve sillas desplegables debajo</li>
+                    <li><b>Y</b>no nueve definiciones que haya que mantener iguales a mano</li>
                   </ul>
                 </div>
               </div>
@@ -2940,17 +2941,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-012">«De quién depende» se declara y vive en el puesto</h3>
-              <p>La dependencia estructural del organigrama sale de este dato. Se guarda en el <b>puesto</b> y no en el cargo, porque dos sillas del mismo cargo pueden responderle a jefes distintos: nueve vendedores con el mismo cargo repartidos entre dos supervisores es una plantilla corriente, no una excepción.</p>
+              <p>La dependencia estructural del organigrama sale de este dato. Se guarda en el <b>puesto</b> y no en el cargo, porque dos sillas del mismo cargo pueden responderle a jefes distintos.</p>
+              <p><b>El caso que lo obliga.</b> Un solo cargo «Vendedor» con nueve sillas, <span class="mono">PU‑01</span> a <span class="mono">PU‑09</span>: seis responden a la Coordinadora de Ventas y tres a la Supervisora de Supermercados, que atiende esa cuenta. Es un cargo, nueve puestos y <b>dos líneas de mando</b>. Preguntándole al cargo de quién depende no hay una respuesta que dar: hay dos, y el dato tendría que elegir una y mentir sobre las otras seis o las otras tres. Cada silla tiene su propia línea hacia arriba, y por eso el dato vive ahí.</p>
               <p>Deducirlo —«cada cargo responde a la cabeza de su unidad»— alcanza para el caso corriente y miente en cuanto una unidad tiene dos jefaturas.</p>
               <p>El formulario lo pregunta en ese orden: una casilla dice <b>«todos los puestos dependen de la misma jefatura»</b>, marcada por defecto porque es lo que pasa casi siempre, y desmarcarla es el paso que se pide cuando no. Desmarcada, cada silla elige la suya y el dibujo las agrupa por jefatura en vez de colgarlas todas de una.</p>
               <div class="escenarios">
                 <div class="esc ok">
-                  <div class="esc-t"><i>✅</i>Un cargo con dos jefaturas</div>
+                  <div class="esc-t"><i>✅</i>Nueve vendedores, dos jefaturas</div>
                   <ul>
-                    <li><b>Dado que</b>el cargo «Ejecutivo Comercial» tiene cinco sillas</li>
-                    <li><b>Cuando</b>se desmarca «todos los puestos dependen de la misma jefatura» y tres se cuelgan del Supervisor de La Paz</li>
-                    <li><b>Entonces</b>las tres se dibujan bajo ese supervisor y las otras dos bajo el suyo</li>
-                    <li><b>Y</b>sigue siendo un solo cargo: renombrarlo los renombra a los cinco</li>
+                    <li><b>Dado que</b>el cargo «Vendedor» tiene nueve sillas, <span class="mono">PU‑01</span> a <span class="mono">PU‑09</span></li>
+                    <li><b>Cuando</b>se desmarca «todos los puestos dependen de la misma jefatura» y tres se cuelgan de la Supervisora de Supermercados</li>
+                    <li><b>Entonces</b>esas tres se dibujan bajo ella y las seis restantes bajo la Coordinadora de Ventas</li>
+                    <li><b>Y</b>sigue siendo <b>un solo cargo</b>: renombrarlo los renombra a los nueve, y la lista lo muestra en una fila con sus nueve sillas debajo</li>
                   </ul>
                 </div>
                 <div class="esc ok">
