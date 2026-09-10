@@ -315,6 +315,11 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
     unidadId: cargo?.unidadId || base?.unidadId || org.unidades[0]?.id || '',
     /* El primer cargo de un área vacía nace colgado de quien esa área declaró como su mando:
        es el jefe que el dibujo ya le estaba dando al área. */
+    /* DEL CARGO, NO DE LA SILLA: el techo de plazas aprobadas y la jefatura con la que nacen
+       las nuevas. Todas las plazas del cargo traen el mismo valor, así que da igual de cuál se
+       lea. */
+    maxPersonas: cargo?.maxPersonas || '',
+    jefeSillas: cargo?.jefeSillas || '',
     reportaA: cargo ? cargo.reportaA
       : base && 'reportaA' in base ? base.reportaA
       /* SIN JEFE INVENTADO. El último recurso era `org.cargos[0]` —el primer cargo de la
@@ -742,6 +747,62 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                     />
                   )}
                 </label>
+              </div>
+
+              {/* EL TECHO DE PLAZAS Y LA JEFATURA CON LA QUE NACEN LAS NUEVAS. Son del cargo y no
+                  de cada silla, y hasta ahora solo se podían poner desde la ficha: creando desde
+                  el dibujo, el cargo nacía sin techo y sus plazas futuras nacían sueltas.
+
+                  «Cuántos puestos» de más arriba es otra cosa: son los que se abren AHORA. Esto
+                  es cuántos autoriza la empresa, que puede ser más. */}
+              <div className="og-form-2col">
+                <label className="pl-label">
+                  <span className="og-label-fila">
+                    Máximo de ocupantes
+                    <AyudaCampo>
+                      El cupo aprobado para este cargo, que puede ser mayor que las plazas
+                      abiertas hoy.<br /><br />
+                      Vacío es <strong>sin límite</strong>: hay tantas plazas como se abran.
+                    </AyudaCampo>
+                  </span>
+                  {/* SE LIMPIA AL ESCRIBIR. El mínimo del navegador solo gobierna las flechitas:
+                      tecleando un menos o un cero, el valor entra igual y se guarda. */}
+                  <input
+                    className="pl-input"
+                    type="number"
+                    min={1}
+                    max={50}
+                    value={form.maxPersonas}
+                    placeholder="Sin límite"
+                    onChange={e => {
+                      const d = e.target.value.replace(/\D/g, '').replace(/^0+/, '')
+                      set('maxPersonas', d === '' ? '' : String(Math.min(Number(d), 50)))
+                    }}
+                  />
+                </label>
+
+                {jefesPosibles.length > 0 && (
+                  <div className="pl-label">
+                    <span className="og-label-fila">
+                      Jefatura de las plazas nuevas
+                      <AyudaCampo>
+                        Con la que <strong>nacen</strong> las plazas que se abran más adelante
+                        desde la tabla.<br /><br />
+                        No mueve a las que ya existen: cada una guarda la suya.
+                      </AyudaCampo>
+                    </span>
+                    <SelectorLista
+                      valor={form.jefeSillas || null}
+                      onCambio={v => set('jefeSillas', v || '')}
+                      vacia="De nadie: nacen como cima"
+                      opciones={jefesPosibles.map(c => ({
+                        id: c.id,
+                        nombre: c.nombre,
+                        detalle: getUnidad(c.unidadId, org)?.nombre,
+                      }))}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* NIVEL Y ESTADO, DE A DOS. Cada uno ocupaba una fila entera para un desplegable de

@@ -2059,8 +2059,16 @@ export function convertirTodo(sucursales, unidades, cargos = [], nombreDePersona
     apertura: s.apertura, estado: s.estado || 'activa',
   }))
 
+  /* De qué puesto cuelga cada unidad, leído de sus propios cargos. */
+  const mandoDeUnidad = uid => {
+    const dentro = cargos.filter(c => c.unidadId === uid)
+    const cabeza = dentro.find(c => !c.reportaA || !dentro.some(x => x.id === c.reportaA))
+    return cabeza?.reportaA || null
+  }
+
   const areas = unidades.map(u => ({
-    id: u.id, tipo: 'unidad', nombre: u.nombre, corto: u.corto,
+    id: u.id,
+    mandoId: mandoDeUnidad(u.id), tipo: 'unidad', nombre: u.nombre, corto: u.corto,
     padreId: u.padreId ?? null, estado: 'activa',
   }))
 
@@ -2154,9 +2162,19 @@ export function estructuraEjemplo(sucursales, unidades, cargos = []) {
      en `padreId`: colgarlas de la sucursal las sacaba del organigrama —dependían de un edificio y
      no de otra unidad— y era la confusión que el modelo nuevo separa en dos campos. Solo lo
      declaran las de primer nivel; las que cuelgan de otra heredan el suyo. */
+  /* De qué puesto cuelga cada unidad, leído de sus propios cargos: la cabeza de una unidad es el
+     cargo que vive en ella y le responde a alguien de AFUERA, y de quien depende esa cabeza es de
+     quien depende la unidad. Sin esto el dibujo no tiene de dónde colgar la rama y queda suelta. */
+  const mandoDeArea = uid => {
+    const dentro = cargos.filter(x => x.unidadId === uid)
+    const cabeza = dentro.find(x => !x.reportaA || !dentro.some(y => y.id === x.reportaA))
+    return cabeza?.reportaA || null
+  }
+
   const areas = unidades.map(u => ({
     id: u.id,
     tipo: 'unidad',
+    mandoId: mandoDeArea(u.id),
     tipoUnidad: u.padreId ? 'Departamento' : 'Gerencia',
     nombre: u.nombre,
     corto: u.corto,
@@ -2397,10 +2415,22 @@ const comoPlaza = (c, pu) => ({
   id: pu.id,
   nombre: c.nombre,
   unidadId: c.padreId ?? null,
-  reportaA: pu.reportaA ?? null,
+  /* LA SILLA PRESTADA CUELGA DONDE VAN A COLGAR LAS DE VERDAD. Un cargo sin ninguna plaza abierta
+     se dibuja con una silla inventada, y esa nacía SIN JEFE: en el dibujo quedaba colgando de la
+     nada, y peor, el organigrama la tomaba por la CABEZA de su unidad —es el cargo que no le
+     responde a nadie— y hacía que el área entera pareciera no depender de nadie.
+
+     Su jefatura por defecto es justamente la respuesta a «dónde van a colgar sus plazas», así que
+     es la que le toca a la prestada. Las plazas de verdad conservan la suya, incluida la de quien
+     eligió «de nadie» a propósito. */
+  reportaA: pu.reportaA ?? (esImplicita(pu.id) ? (c.jefeSillas || null) : null),
   tipo: c.tipoCargo || 'colaborador',
   grado: c.nivelMando || undefined,
   destacado: c.destacado || undefined,
+  /* DEL CARGO Y NO DE LA SILLA, aunque viajen en cada plaza: el modal edita el cargo entero, así
+     que necesita leerlos, y todas sus plazas traen el mismo valor. */
+  maxPersonas: c.maxPersonas ?? null,
+  jefeSillas: c.jefeSillas ?? '',
   estado: c.estado || 'activa',
   codigo: pu.codigo || null,
   sucursalIds: pu.ubicacion ? [pu.ubicacion] : [],
@@ -2503,6 +2533,8 @@ export function aplicarCargos(nodos, cargos) {
         nivelMando: plaza.grado || '',
         tipoCargo: plaza.tipo || 'colaborador',
         destacado: !!plaza.destacado,
+        ...(plaza.maxPersonas ? { maxPersonas: plaza.maxPersonas } : {}),
+        ...(plaza.jefeSillas ? { jefeSillas: plaza.jefeSillas } : {}),
       }
       cargo.estado = plaza.estado || 'activa'
       cargosNuevos.push(cargo)
@@ -2515,6 +2547,10 @@ export function aplicarCargos(nodos, cargos) {
         nivelMando: plaza.grado || '',
         tipoCargo: plaza.tipo || 'colaborador',
         destacado: !!plaza.destacado,
+        /* CADENA VACÍA Y NO `undefined`: vaciar el cupo significa «sin límite», y hay que poder
+           guardar esa respuesta. Con `|| null` se borraría igual, pero diciendo otra cosa. */
+        maxPersonas: plaza.maxPersonas || '',
+        jefeSillas: plaza.jefeSillas || '',
         estado: plaza.estado || 'activa',
       })
     }
