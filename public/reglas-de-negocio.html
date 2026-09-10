@@ -2423,7 +2423,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <p>Una unidad de negocio —«Farmacias», «Institucional», «Distribución»— es una <b>etiqueta que reparte</b> la empresa, no un escalón del que cuelguen las cosas. No tiene nada dentro: lo que hace es marcar a qué línea pertenece cada parte de la estructura.</p>
               <p>Cada empresa la declara en <b>un solo nivel</b>, el que le sirve: una la declara en sus sucursales, otra en sus centros de trabajo, otra en sus unidades organizacionales. Elegido ese nivel, los de más abajo la <b>leen y no la eligen</b>: su ficha la muestra y dice de dónde sale. Así, mezclar dos niveles no es algo que haya que prohibir: no se puede hacer.</p>
               <p>Los cargos y los puestos nunca la declaran, solo la muestran. La suya es la de su rama, y cambiar la de la sucursal cambia la de todo lo que cuelga sin tocar un registro.</p>
-              <p>A diferencia de los demás niveles, pide <b>solo nombre y estado</b>: no tiene código ni descripción, porque no es un sitio ni un área, sino una manera de partir la empresa en líneas.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Una empresa que reparte por sucursal</div>
@@ -2600,6 +2599,8 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-008">Un cargo solo cuelga de una unidad organizacional</h3>
               <p>La regla de jerarquía le permitiría colgar de una sucursal o de una región —están más arriba— y eso lo sacaría del organigrama. Un cargo pertenece a una unidad: ahí está su jefe, su presupuesto y su evaluación. Dónde se trabaja lo dice el puesto, que es otra cosa.</p>
+              <p><b>«Cuelga de» quiere decir dos cosas, y esta regla habla de una.</b> En el <b>árbol</b> un cargo cuelga de su unidad, y es el único nodo superior que se le ofrece: eso es a qué área pertenece. En el <b>dibujo</b> el cuadro de un cargo aparece debajo del cuadro de otro cargo, y eso es la línea de mando, que no sale de acá: sale de <b>a quién responden sus sillas</b>, una por una —<span class="id">BR‑ORG‑012</span>—. Por eso la tabla de Cargos tiene las dos columnas, «Pertenece a» y «Depende de», y dicen cosas distintas.</p>
+              <p>Se contestan por separado porque tienen respuestas distintas. Un mismo cargo puede pertenecer a Ventas y tener cinco sillas repartidas entre dos supervisores: en el árbol es uno solo colgando de Ventas, y en el dibujo sus cuadros salen de dos sitios.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Cargo dentro de su unidad</div>
@@ -2620,12 +2621,12 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
                 <div class="esc ok">
-                  <div class="esc-t"><i>✅</i>Una sucursal no figura en la lista</div>
+                  <div class="esc-t"><i>✅</i>Un cargo debajo de otro cargo</div>
                   <ul>
-                    <li><b>Dado que</b>se está creando un cargo</li>
-                    <li><b>Cuando</b>se abre el campo de unidad organizacional</li>
-                    <li><b>Entonces</b>solo se ofrecen unidades</li>
-                    <li><b>Y</b>una sucursal no aparece, aunque la regla de jerarquía la dejaría: lo sacaría del organigrama</li>
+                    <li><b>Dado que</b>el cargo «Ejecutivo Comercial» pertenece a Ventas y sus sillas responden al Supervisor Comercial</li>
+                    <li><b>Cuando</b>se mira el organigrama</li>
+                    <li><b>Entonces</b>su cuadro aparece colgando del cuadro del supervisor</li>
+                    <li><b>Y</b>en el árbol sigue colgando de Ventas: son dos preguntas distintas y el desplegable de esta regla solo ofrece unidades</li>
                   </ul>
                 </div>
               </div>
