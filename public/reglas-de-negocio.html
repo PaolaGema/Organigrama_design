@@ -1045,7 +1045,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
             <li class="rail-g"><a href="#br-g-config">Configuración</a></li>
             <li><a href="#BR-ORG-004">004 · Cada empresa enciende sus niveles</a></li>
             <li><a href="#BR-ORG-019">019 · Renombrar no migra datos</a></li>
-            <li><a href="#BR-ORG-015">015 · El nivel de mando es un catálogo</a></li>
             <li class="rail-g"><a href="#br-g-cimientos">Los cimientos</a></li>
             <li><a href="#BR-ORG-001">001 · Todo es un solo árbol de nodos</a></li>
             <li><a href="#BR-ORG-002">002 · La regla de jerarquía</a></li>
@@ -1064,6 +1063,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             <li><a href="#BR-ORG-014">014 · Los tres tipos de cargo</a></li>
             <li><a href="#BR-ORG-021">021 · El cargo y la plaza, códigos distintos</a></li>
             <li><a href="#BR-ORG-024">024 · Con qué jefatura nacen sus sillas</a></li>
+            <li><a href="#BR-ORG-015">015 · El nivel de mando es un catálogo</a></li>
             <li class="rail-g"><a href="#br-g-puestos">Puestos</a></li>
             <li><a href="#BR-ORG-010">010 · Donde las dimensiones se tocan</a></li>
             <li><a href="#BR-ORG-011">011 · El puesto hereda del cargo</a></li>
@@ -1915,7 +1915,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
         <tr><td class="id">RF‑ORG‑004</td><td>Reordenar o insertar un nivel de estructura <b>no migra ni un dato</b>: el orden es la posición en la lista, no un número guardado en cada nodo</td><td><span class="p p-m">Oblig.</span></td><td>Insertar «Distrito» entre región y sucursal no modifica ningún nodo existente</td></tr>
         <tr><td class="id">RF‑ORG‑005</td><td>Un nivel de estructura propio declara <b>en qué dimensión vive</b> y con eso arma su pestaña sola, en su posición, sin tocar código</td><td><span class="p p-m">Oblig.</span></td><td>El nivel de estructura nuevo aparece el mismo día en su lista, su menú y cada «Depende de». <em>BR‑ORG‑003</em></td></tr>
         <tr><td class="id">RF‑ORG‑006</td><td>La pantalla muestra una <b>vista previa del esquema de niveles resultante</b>: «así queda tu organización», con los niveles de estructura encendidos en orden y anidados</td><td><span class="p p-s">Import.</span></td><td>Apagar un nivel de estructura cambia la vista previa antes de guardar</td></tr>
-        <tr><td class="id">RF‑ORG‑007</td><td>El <b>catálogo de tipos de cargo</b> —regular, staff, externo— se administra en esta misma pantalla, porque decide cómo se dibuja el organigrama</td><td><span class="p p-m">Oblig.</span></td><td>Está donde se decide la forma de la estructura, no repartido en dos sitios</td></tr>
+        <tr><td class="id">RF‑ORG‑007</td><td>El <b>catálogo de tipos de cargo</b> —regular, staff, externo— se administra en esta misma pantalla, porque decide cómo se dibuja el organigrama. El de <b>niveles de mando</b> tiene la suya, dentro de Estructura organizacional</td><td><span class="p p-m">Oblig.</span></td><td>Está donde se decide la forma de la estructura, no repartido en dos sitios</td></tr>
       </tbody>
     </table></div>
     <div class="nota"><p><strong>El nivel de mando también es un catálogo de la empresa</strong> —<span class="id">BR‑ORG‑015</span>—: vienen tres, y cada empresa los renombra, los reordena y agrega los que le falten. El número no se guarda en el cargo: es la posición en la lista, y por eso intercalar un nivel de estructura renumera todo solo sin tocar un cargo.</p></div>
@@ -2065,31 +2065,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
-            </div>
-          </li>
-          <li class="br">
-            <span class="br-n">4.3</span>
-            <div>
-              <div class="br-cab">
-                <span class="br-id">BR-ORG-015</span>
-                <span class="br-estado">Borrador</span>
-              </div>
-              <h3 id="BR-ORG-015">El nivel de mando es un catálogo de la empresa</h3>
-              <p>Vienen tres —superior, medio y bajo— y ahí termina la opinión del producto: cada empresa los renombra, los reordena y agrega los que le falten. El <b>número no se guarda</b>: es la posición en la lista. Un cargo guarda la llave del nivel de estructura, nunca su nombre ni su número.</p>
-              <p>Borrar un nivel que está en uso avisa <b>a cuántos cargos deja sin nivel</b> antes de hacerlo: la decisión se toma sabiendo el costo y no descubriéndolo después.</p>
-              <div class="escenarios">
-                <div class="esc ok">
-                  <div class="esc-t"><i>✅</i>Intercalar un nivel de estructura</div>
-                  <ul>
-                    <li><b>Dado que</b>la empresa tiene tres niveles de mando</li>
-                    <li><b>Cuando</b>inserta «Jefatura» entre el primero y el segundo</li>
-                    <li><b>Entonces</b>todos los de abajo se renumeran solos</li>
-                    <li><b>Y</b>ningún cargo cambia: siguen apuntando a la misma llave</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <div class="traza">Ticket: pendiente · Diseño: <b>la pantalla no lo permite todavía</b>. El modelo ya guarda la llave y no la palabra, así que renombrar no migraría nada; el editor de la escalera se quitó del prototipo y falta volver a ponerlo — <span class="id">RF‑ORG‑001</span> y <span class="id">RF‑ORG‑002</span></div>
             </div>
           </li>
         </ol>
@@ -2097,7 +2073,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-cimientos">Los cimientos<em>De qué está hecha la estructura, antes de hablar de ningún nivel</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.4</span>
+            <span class="br-n">4.3</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-001</span>
@@ -2120,7 +2096,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.5</span>
+            <span class="br-n">4.4</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-002</span>
@@ -2144,7 +2120,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.6</span>
+            <span class="br-n">4.5</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-003</span>
@@ -2167,7 +2143,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.7</span>
+            <span class="br-n">4.6</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-005</span>
@@ -2194,7 +2170,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-fisica">Estructura física<em>Regiones, sucursales y centros de trabajo: dónde está la empresa</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.8</span>
+            <span class="br-n">4.7</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-006</span>
@@ -2223,7 +2199,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-negocio">Unidades de negocio<em>La línea a la que pertenece cada parte de la empresa</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.9</span>
+            <span class="br-n">4.8</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-022</span>
@@ -2253,7 +2229,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-unidades">Unidades organizacionales<em>Áreas, gerencias, departamentos y equipos: cómo se reparte el trabajo</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.10</span>
+            <span class="br-n">4.9</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-023</span>
@@ -2282,7 +2258,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 <h3 class="br-grupo" id="br-g-cargos">Cargos<em>El rol: qué se hace, dentro de qué unidad y con cuántas sillas</em></h3>
         <ol class="reglas">
           <li class="br">
-            <span class="br-n">4.11</span>
+            <span class="br-n">4.10</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-007</span>
@@ -2306,7 +2282,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.12</span>
+            <span class="br-n">4.11</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-008</span>
@@ -2330,7 +2306,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.13</span>
+            <span class="br-n">4.12</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-009</span>
@@ -2355,7 +2331,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.14</span>
+            <span class="br-n">4.13</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-014</span>
@@ -2380,7 +2356,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.15</span>
+            <span class="br-n">4.14</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-021</span>
@@ -2405,7 +2381,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
             </div>
           </li>
           <li class="br">
-            <span class="br-n">4.16</span>
+            <span class="br-n">4.15</span>
             <div>
               <div class="br-cab">
                 <span class="br-id">BR-ORG-024</span>
@@ -2423,6 +2399,31 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se abre una silla desde la lista de cargos</li>
                     <li><b>Entonces</b>nace colgada de ese supervisor, con su código propuesto a partir del código del cargo</li>
                     <li><b>Y</b>las sillas que ya existían conservan la jefatura que tenían</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+            </div>
+          </li>
+          <li class="br">
+            <span class="br-n">4.16</span>
+            <div>
+              <div class="br-cab">
+                <span class="br-id">BR-ORG-015</span>
+                <span class="br-estado">Borrador</span>
+              </div>
+              <h3 id="BR-ORG-015">El nivel de mando es un catálogo de la empresa</h3>
+              <p>Vienen tres —superior, medio y bajo— y ahí termina la opinión del producto: cada empresa los renombra, los reordena y agrega los que le falten. El número no se guarda: es <b>la posición en la lista</b>. Un cargo guarda <b>la llave de su nivel de mando</b>, nunca su nombre ni su número.</p>
+              <p>No se administra en Configuración: tiene su propia pantalla dentro de <b>Estructura organizacional</b>, porque es lo que clasifica a un cargo y no de qué escalones está hecha la empresa. Configuración contesta con qué niveles se arma el árbol; esto contesta cuánto pesa un cargo dentro de él.</p>
+              <p>Borrar un nivel que está en uso avisa <b>a cuántos cargos deja sin nivel</b> antes de hacerlo: la decisión se toma sabiendo el costo y no descubriéndolo después.</p>
+              <div class="escenarios">
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Intercalar un nivel de mando</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa tiene tres niveles de mando</li>
+                    <li><b>Cuando</b>inserta «Jefatura» entre el primero y el segundo</li>
+                    <li><b>Entonces</b>todos los de abajo se renumeran solos</li>
+                    <li><b>Y</b>ningún cargo cambia: siguen apuntando a la misma llave</li>
                   </ul>
                 </div>
               </div>
@@ -2632,7 +2633,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <div class="traza">Ticket: pendiente · Diseño: la estructura ya es la única fuente en el prototipo; los permisos por rol todavía no se verifican — <span class="id">ABIERTA‑09</span></div>
             </div>
           </li>
         </ol>
