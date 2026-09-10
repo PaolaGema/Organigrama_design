@@ -633,7 +633,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 .br h3 { margin: 0 0 10px; font-size: 21px; max-width: none; }
 .br h3::before, .flujo h3::before, .hu h3::before { display: none; }
 .br > div > p { font-size: 15.5px; color: var(--tinta-2); margin: 0; max-width: 82ch; }
-.escenarios { display: grid; gap: 12px; margin-top: 20px; }
+.escenarios { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px; margin-top: 20px; }
 .esc {
   background: var(--hoja); border: 1px solid var(--regla); border-left: 3px solid var(--funcional);
   border-radius: 0 var(--r-s) var(--r-s) 0; padding: 13px 16px 14px; box-shadow: var(--sombra);
@@ -2031,7 +2031,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-004">Cada empresa enciende los niveles de estructura que usa</h3>
               <p>El esquema de niveles es un dato de la empresa, no una lista fija del producto. Empresa, unidad organizacional y cargo son <b>fijos</b> —sin ellos no hay organigrama que dibujar—; los demás se encienden y se apagan. Lo apagado no aparece en ningún formulario, filtro ni menú.</p>
-              <p>Apagar un nivel que <b>tiene nodos dentro</b> está impedido: el interruptor queda trabado y dice cuántos habría que mover antes, porque quedarían colgando de un escalón que dejó de existir.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Apagar lo que no se usa</div>
@@ -2040,6 +2039,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>apaga «Región» en Configuración</li>
                     <li><b>Entonces</b>el nivel de estructura desaparece de toda la aplicación</li>
                     <li><b>Y</b>encenderlo de nuevo más adelante no migra nada: solo vuelve a aparecer el escalón donde colgar cosas</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un nivel con nodos dentro no se apaga</div>
+                  <ul>
+                    <li><b>Dado que</b>existen tres regiones en el árbol</li>
+                    <li><b>Cuando</b>se intenta apagar «Región»</li>
+                    <li><b>Entonces</b>el interruptor queda trabado y el contador dice tres</li>
+                    <li><b>Y</b>dice cuántos nodos habría que mover antes: quedarían colgando de un escalón que dejó de existir</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Los cuatro fijos no tienen interruptor</div>
+                  <ul>
+                    <li><b>Dado que</b>se abre Configuración</li>
+                    <li><b>Cuando</b>se busca el interruptor de «Unidad organizacional»</li>
+                    <li><b>Entonces</b>no existe, en vez de existir y rechazar</li>
+                    <li><b>Y</b>lo mismo empresa, cargo y puesto: sin ellos no hay organigrama que dibujar</li>
                   </ul>
                 </div>
               </div>
@@ -2069,6 +2086,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>aparece anidada bajo Oriente en la tabla y en cualquier pantalla que lea el árbol</li>
                   </ul>
                 </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un nodo de primer nivel</div>
+                  <ul>
+                    <li><b>Dado que</b>se crea una región y no se le elige nada en «Depende de»</li>
+                    <li><b>Cuando</b>se guarda</li>
+                    <li><b>Entonces</b>el nodo superior queda vacío, que significa «cuelga de la empresa»</li>
+                    <li><b>Y</b>no es un error: es la respuesta de todo lo de primer nivel</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un nivel más no es una tabla más</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa enciende «Centro de trabajo», que tenía apagado</li>
+                    <li><b>Cuando</b>crea el primero</li>
+                    <li><b>Entonces</b>se guarda con su tipo y su nodo superior, igual que los otros siete</li>
+                    <li><b>Y</b>su lista, su menú y su «Depende de» salen del mismo sitio: nadie programó una pantalla para él</li>
+                  </ul>
+                </div>
               </div>
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
@@ -2082,7 +2117,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-002">La regla de jerarquía: el nodo superior siempre va por encima</h3>
               <p>Los niveles de estructura están ordenados de lo más grande a lo más chico, y un nodo solo puede colgar de otro cuyo nivel de estructura esté <b>más arriba</b>. Es la única validación estructural del módulo, y de ella salen todas las demás: no hay que escribir «una región no puede ir dentro de un cargo», ya está prohibido.</p>
-              <p>El desplegable «Depende de» <b>solo ofrece niveles superiores</b>: lo imposible no se ofrece y después se rechaza, no se ofrece nunca. Saltarse un escalón sí es legal —una sucursal puede colgar directamente de la empresa aunque la empresa use regiones—: la regla pide que el nodo superior esté por encima, no que sea el inmediato.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Saltarse un nivel de estructura es legal</div>
@@ -2091,6 +2125,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se crea la sucursal «El Prado» colgando directamente de la empresa, sin región</li>
                     <li><b>Entonces</b>el sistema lo permite</li>
                     <li><b>Y</b>la sucursal se dibuja en primer nivel: la regla exige que el nodo superior esté por encima, no que sea el inmediato superior</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El desplegable no ofrece lo imposible</div>
+                  <ul>
+                    <li><b>Dado que</b>se está creando una unidad organizacional</li>
+                    <li><b>Cuando</b>se abre el desplegable «Depende de»</li>
+                    <li><b>Entonces</b>solo se ofrecen nodos de niveles superiores</li>
+                    <li><b>Y</b>un cargo o un puesto no figuran: lo imposible no se ofrece, no se rechaza después</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una unidad colgada de una sucursal</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa usa Sucursal y Unidad organizacional</li>
+                    <li><b>Cuando</b>se crea la unidad «Ventas» eligiendo la sucursal «Casa Matriz»</li>
+                    <li><b>Entonces</b>se permite: la sucursal está por encima</li>
+                    <li><b>Y</b>es el punto donde la dimensión física y la organizacional se tocan</li>
                   </ul>
                 </div>
               </div>
@@ -2116,6 +2168,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>no se ofrece crear una unidad organizacional, que es del otra dimensión</li>
                   </ul>
                 </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un nivel apagado desaparece de todas partes</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa apagó «Centro de trabajo» en Configuración</li>
+                    <li><b>Cuando</b>se recorre el módulo</li>
+                    <li><b>Entonces</b>no aparece su pestaña, ni su entrada de menú, ni la opción en ningún «Depende de»</li>
+                    <li><b>Y</b>las sucursales pasan a contener unidades organizacionales directamente</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una vista que agrupa varios tipos pregunta</div>
+                  <ul>
+                    <li><b>Dado que</b>se está en una lista que mezcla más de un nivel</li>
+                    <li><b>Cuando</b>se pulsa el botón de crear</li>
+                    <li><b>Entonces</b>pregunta qué se quiere crear, con los que caben ahí</li>
+                    <li><b>Y</b>en una lista de un solo tipo no pregunta: crea ese y el botón lo dice</li>
+                  </ul>
+                </div>
               </div>
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
@@ -2137,6 +2207,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se entra a Estructura física</li>
                     <li><b>Entonces</b>se listan solo los nodos de la dimensión física, anidados entre ellos</li>
                     <li><b>Y</b>una unidad organizacional que cuelga de una sucursal no rompe la lista: se salta al mostrarla, porque es del otra dimensión</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El menú no cruza dimensiones</div>
+                  <ul>
+                    <li><b>Dado que</b>se está en Estructura física</li>
+                    <li><b>Cuando</b>se pulsa «Agregar»</li>
+                    <li><b>Entonces</b>no se ofrece crear una unidad organizacional</li>
+                    <li><b>Y</b>la pantalla crea lo suyo: es una lista de la dimensión física</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>La ficha sí cruza, y a propósito</div>
+                  <ul>
+                    <li><b>Dado que</b>se abre la ficha de una unidad organizacional</li>
+                    <li><b>Cuando</b>se elige de qué cuelga</li>
+                    <li><b>Entonces</b>se ofrecen sucursales y centros de trabajo, que son de la otra dimensión</li>
+                    <li><b>Y</b>acá el cruce es deliberado: ya se eligió de qué se está hablando</li>
                   </ul>
                 </div>
               </div>
@@ -2168,6 +2256,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>esos campos se completan más adelante, cuando la empresa los sepa</li>
                   </ul>
                 </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>No pregunta de qué cuelga</div>
+                  <ul>
+                    <li><b>Dado que</b>se crea una regional</li>
+                    <li><b>Cuando</b>se mira su ficha</li>
+                    <li><b>Entonces</b>no hay ningún campo «Depende de»</li>
+                    <li><b>Y</b>es la cima del eje físico: no hay nivel por encima al que ofrecerle</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Sin nombre no se guarda</div>
+                  <ul>
+                    <li><b>Dado que</b>se llenan país y ciudad y se deja el nombre vacío</li>
+                    <li><b>Cuando</b>se intenta guardar</li>
+                    <li><b>Entonces</b>el sistema nombra el campo y su razón: sin nombre no hay forma de elegirla al colgarle una sucursal</li>
+                    <li><b>Y</b>no guarda hasta que se escriba</li>
+                  </ul>
+                </div>
               </div>
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
@@ -2191,6 +2297,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se crea el centro de trabajo «Depósito Norte» dentro de ella, de tipo «Almacén»</li>
                     <li><b>Entonces</b>el depósito guarda su propio domicilio, que es el que va en los papeles de quien marca ahí</li>
                     <li><b>Y</b>la sucursal sigue siendo la sede: lo que cuelga del depósito hereda las dos cosas</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El tipo de centro es obligatorio</div>
+                  <ul>
+                    <li><b>Dado que</b>se crea un centro de trabajo con su nombre y su domicilio</li>
+                    <li><b>Cuando</b>se guarda sin elegir de qué clase de sitio se trata</li>
+                    <li><b>Entonces</b>el sistema lo pide: sin el tipo, un almacén y una oficina se leen igual en toda la aplicación</li>
+                    <li><b>Y</b>no guarda hasta que se elija</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una empresa que no separa centros</div>
+                  <ul>
+                    <li><b>Dado que</b>toda la gente de la empresa marca en la propia sucursal</li>
+                    <li><b>Cuando</b>apaga «Centro de trabajo» en Configuración</li>
+                    <li><b>Entonces</b>la sucursal pasa a ser las dos cosas: la sede y el domicilio</li>
+                    <li><b>Y</b>nadie tiene que crear un centro por cada sucursal para que la estructura cierre</li>
                   </ul>
                 </div>
               </div>
@@ -2219,6 +2343,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>el centro queda colgado de la sucursal elegida, que es la más específica de las tres respuestas</li>
                   </ul>
                 </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Volver a dejarlo en «Ninguna»</div>
+                  <ul>
+                    <li><b>Dado que</b>se eligió una sucursal por error</li>
+                    <li><b>Cuando</b>se abre la lista otra vez</li>
+                    <li><b>Entonces</b>«Ninguna» está entre las opciones y se puede elegir</li>
+                    <li><b>Y</b>elegida a propósito dice algo distinto de un campo en blanco: es «no cuelga de ninguna», no «no lo contesté»</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un nivel que la empresa no usa no aparece</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa no tiene ninguna regional creada</li>
+                    <li><b>Cuando</b>se crea un centro de trabajo</li>
+                    <li><b>Entonces</b>el campo «Regional» no está, y quedan dos listas en vez de tres</li>
+                    <li><b>Y</b>no se ofrece un desplegable con una sola opción y el nombre de un escalón que esta empresa no usa</li>
+                  </ul>
+                </div>
               </div>
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
@@ -2242,6 +2384,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se mira la tarjeta de ubicación</li>
                     <li><b>Entonces</b>el campo «Departamento» no aparece y país y ciudad se reparten la fila</li>
                     <li><b>Y</b>la ciudad se elige del catálogo del país, no se escribe a mano</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>La ciudad se acota por el departamento</div>
+                  <ul>
+                    <li><b>Dado que</b>se elige «La Paz» como departamento</li>
+                    <li><b>Cuando</b>se abre la lista de ciudades</li>
+                    <li><b>Entonces</b>solo se ofrecen las de La Paz</li>
+                    <li><b>Y</b>«Departamento: La Paz · Ciudad: Sucre» no se puede ni elegir</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Lo que se elige y lo que se escribe</div>
+                  <ul>
+                    <li><b>Dado que</b>se completa la ubicación de una sucursal</li>
+                    <li><b>Cuando</b>se llega a «Dirección»</li>
+                    <li><b>Entonces</b>es texto libre: no hay catálogo que pueda contener una dirección</li>
+                    <li><b>Y</b>la ciudad de al lado sí sale de uno, que es lo que permite agrupar por zona</li>
                   </ul>
                 </div>
               </div>
@@ -2274,6 +2434,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>el campo no se puede cambiar desde ahí: se cambia en la sucursal, y cambia para toda su rama</li>
                   </ul>
                 </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Cambiarla arriba la cambia en toda la rama</div>
+                  <ul>
+                    <li><b>Dado que</b>la sucursal «Casa Matriz» declara «Farmacias» y tiene cuarenta cargos debajo</li>
+                    <li><b>Cuando</b>se le cambia a «Institucional»</li>
+                    <li><b>Entonces</b>los cuarenta pasan a mostrar «Institucional»</li>
+                    <li><b>Y</b>no se tocó ningún registro: la leen de su rama</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Pide nombre y estado, y nada más</div>
+                  <ul>
+                    <li><b>Dado que</b>se crea una unidad de negocio</li>
+                    <li><b>Cuando</b>se mira su ficha</li>
+                    <li><b>Entonces</b>pide el nombre y el estado, y no tiene código ni descripción</li>
+                    <li><b>Y</b>es coherente con lo que es: no es un sitio ni un área, es una manera de partir la empresa en líneas</li>
+                  </ul>
+                </div>
               </div>
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
@@ -2303,6 +2481,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>la ficha muestra como cabeza de Ventas al cargo que no le responde a nadie de adentro, sin pedir que se lo declare</li>
                   </ul>
                 </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una subunidad responde dentro de su rama</div>
+                  <ul>
+                    <li><b>Dado que</b>«Marketing Digital» está dentro de «Marketing»</li>
+                    <li><b>Cuando</b>se declara al Líder de Marketing en su «Bajo el mando de»</li>
+                    <li><b>Entonces</b>se dibuja colgando de ese puesto, dentro de la píldora de Marketing</li>
+                    <li><b>Y</b>las dos preguntas quedan contestadas por separado: dentro de qué está y a quién le responde</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>La cabeza no se declara</div>
+                  <ul>
+                    <li><b>Dado que</b>la unidad «Ventas» tiene doce cargos</li>
+                    <li><b>Cuando</b>se abre su ficha</li>
+                    <li><b>Entonces</b>muestra como cabeza al único que no le responde a nadie de adentro</li>
+                    <li><b>Y</b>nadie lo eligió: se lee del árbol, y por eso no queda viejo cuando alguien mueve un cargo</li>
+                  </ul>
+                </div>
               </div>
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
@@ -2328,6 +2524,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>la tabla la lista en Casa Matriz, igual que a los cargos que cuelgan de ella</li>
                   </ul>
                 </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una subunidad declara el suyo</div>
+                  <ul>
+                    <li><b>Dado que</b>«Logística» está en Casa Matriz</li>
+                    <li><b>Cuando</b>«Almacén La Paz», dentro de ella, declara la sucursal La Paz</li>
+                    <li><b>Entonces</b>ese pasa a valer para el almacén y para todo lo que cuelgue de él</li>
+                    <li><b>Y</b>Logística no cambia: la rama de más abajo se afina, no contradice</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una unidad que no está atada a ninguna sede</div>
+                  <ul>
+                    <li><b>Dado que</b>ni la unidad ni ninguna de su rama declara un sitio</li>
+                    <li><b>Cuando</b>se mira su ficha</li>
+                    <li><b>Entonces</b>dice «Toda la empresa»</li>
+                    <li><b>Y</b>no es un dato faltante: es la respuesta de una unidad que vale para todas las sedes</li>
+                  </ul>
+                </div>
               </div>
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
@@ -2345,7 +2559,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-007">El cargo es el rol; el puesto es la silla</h3>
               <p>El <b>cargo</b> define qué se hace —nombre, unidad, nivel de mando, tipo, descripción— y existe una sola vez. El <b>puesto</b> es una silla concreta de ese cargo: tiene su código, su sitio de trabajo y su ocupante. Cinco «Ejecutivo Comercial» son un cargo con cinco puestos, no cinco cargos.</p>
-              <p>Un cargo puede existir <b>sin ninguna silla abierta</b>: se aprueba el rol y las plazas se abren cuando hay presupuesto. Es un estado válido y frecuente, no un cargo a medio cargar.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Renombrar el rol</div>
@@ -2354,6 +2567,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se lo renombra a «Asesor Comercial»</li>
                     <li><b>Entonces</b>los cinco puestos pasan a llamarse así</li>
                     <li><b>Y</b>no hay forma de que queden dos roles que en realidad son uno</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un cargo definido y sin sillas</div>
+                  <ul>
+                    <li><b>Dado que</b>se aprueba el cargo «Analista de Datos» y todavía no hay presupuesto para la plaza</li>
+                    <li><b>Cuando</b>se guarda sin abrir ninguna</li>
+                    <li><b>Entonces</b>el cargo existe en el catálogo, con su unidad y su nivel de mando</li>
+                    <li><b>Y</b>es un estado válido y frecuente, no un cargo a medio cargar</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Cinco sillas son una fila, no cinco</div>
+                  <ul>
+                    <li><b>Dado que</b>el cargo «Ejecutivo Comercial» tiene cinco plazas abiertas</li>
+                    <li><b>Cuando</b>se mira la lista de cargos</li>
+                    <li><b>Entonces</b>figura una sola fila, con sus cinco sillas desplegables debajo</li>
+                    <li><b>Y</b>no cinco definiciones que haya que mantener iguales a mano</li>
                   </ul>
                 </div>
               </div>
@@ -2369,7 +2600,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-008">Un cargo solo cuelga de una unidad organizacional</h3>
               <p>La regla de jerarquía le permitiría colgar de una sucursal o de una región —están más arriba— y eso lo sacaría del organigrama. Un cargo pertenece a una unidad: ahí está su jefe, su presupuesto y su evaluación. Dónde se trabaja lo dice el puesto, que es otra cosa.</p>
-              <p>La unidad es obligatoria. Mientras la empresa no tenga ninguna, crear un cargo está bloqueado y el motivo se dice en el sitio: primero hace falta una unidad donde ponerlo.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Cargo dentro de su unidad</div>
@@ -2378,6 +2608,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se crea el cargo «Analista de Nóminas» eligiéndola</li>
                     <li><b>Entonces</b>el cargo queda dentro de esa rama del organigrama</li>
                     <li><b>Y</b>la unidad es obligatoria: sin ella no hay dónde dibujarlo</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Sin ninguna unidad todavía</div>
+                  <ul>
+                    <li><b>Dado que</b>la empresa recién empieza y no tiene ninguna unidad organizacional</li>
+                    <li><b>Cuando</b>se intenta crear un cargo</li>
+                    <li><b>Entonces</b>la opción está bloqueada</li>
+                    <li><b>Y</b>el motivo se dice en el sitio: primero hace falta una unidad donde ponerlo</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Una sucursal no figura en la lista</div>
+                  <ul>
+                    <li><b>Dado que</b>se está creando un cargo</li>
+                    <li><b>Cuando</b>se abre el campo de unidad organizacional</li>
+                    <li><b>Entonces</b>solo se ofrecen unidades</li>
+                    <li><b>Y</b>una sucursal no aparece, aunque la regla de jerarquía la dejaría: lo sacaría del organigrama</li>
                   </ul>
                 </div>
               </div>
@@ -2393,8 +2641,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-009">El cupo del cargo es un techo, no una orden de creación</h3>
               <p>«Máximo de ocupantes» declara <b>hasta cuántas personas pueden ocupar ese cargo a la vez</b>. Es el cupo aprobado, y puede ser mayor que las sillas abiertas hoy: dejarlo vacío significa «sin límite», que es el caso de la mayoría de los cargos.</p>
-              <p>No abre nada por sí solo. Guardar un cargo con cupo cuatro no crea cuatro sillas: crea un cargo que admite hasta cuatro, y las sillas se abren cuando alguien las abre.</p>
-              <p>Y no se puede bajar por debajo de lo que ya existe. Con cinco sillas abiertas, poner el tope en tres no las cierra ni las deja sin efecto: el sistema avisa cuántas sobran y no guarda hasta que se eliminen. Un techo por debajo del piso no dice nada verificable.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un cupo mayor que las sillas abiertas</div>
@@ -2403,6 +2649,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se mira la lista de cargos</li>
                     <li><b>Entonces</b>se despliegan las tres sillas, con su código y su ocupante</li>
                     <li><b>Y</b>el cargo admite dos más sin volver a pedir la aprobación del cupo</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El cupo no abre nada por sí solo</div>
+                  <ul>
+                    <li><b>Dado que</b>se crea un cargo con cupo cuatro</li>
+                    <li><b>Cuando</b>se guarda</li>
+                    <li><b>Entonces</b>no se crea ningún puesto</li>
+                    <li><b>Y</b>el cargo queda definido y admitiendo hasta cuatro, que se abren cuando alguien las abra</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Bajar el cupo por debajo de lo abierto</div>
+                  <ul>
+                    <li><b>Dado que</b>el cargo tiene cinco sillas abiertas</li>
+                    <li><b>Cuando</b>se pone el tope en tres</li>
+                    <li><b>Entonces</b>el sistema avisa que sobran dos y no guarda hasta que se eliminen</li>
+                    <li><b>Y</b>las sillas siguen ahí: un techo por debajo del piso no las cierra ni las deja sin efecto</li>
                   </ul>
                 </div>
               </div>
@@ -2419,7 +2683,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h3 id="BR-ORG-014">Los tres tipos de cargo se declaran, y dos de ellos no mandan</h3>
               <p>Hay tres tipos de cargo y se <b>declaran</b>, no se deducen. <b>Regular</b> (o de línea): puesto interno en planilla que forma parte de la jerarquía vertical —manda o reporta directamente—. <b>Staff</b> (asesoría o soporte): puesto interno en planilla que da soporte o asistencia a una dirección desde el costado, sin gente a su cargo. <b>Externo</b> (outsourcing): puesto cubierto por un prestador externo, que no genera planilla ni asistencia.</p>
               <p>Los dos últimos se dibujan <b>al costado</b> de la línea de mando, así que preguntarles a qué altura mandan no tiene respuesta posible: el campo «Nivel de mando» no aparece en su formulario.</p>
-              <p><b>«Jefe» no es un tipo, y «vacante» tampoco.</b> Un puesto es jefe porque tiene otros colgando de él —se lee del árbol, y por eso nunca queda viejo cuando alguien mueve a otro de lugar—, y una silla está vacante porque nadie la ocupa. Los dos se deducen; ninguno se marca a mano.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un cargo de staff</div>
@@ -2428,6 +2691,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se mira el formulario</li>
                     <li><b>Entonces</b>el campo «Nivel de mando» desaparece</li>
                     <li><b>Y</b>el cuadro se dibuja al costado de su jefe, sin nada colgando debajo</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un cargo externo</div>
+                  <ul>
+                    <li><b>Dado que</b>se marca un cargo como «Externo»</li>
+                    <li><b>Cuando</b>se mira el organigrama</li>
+                    <li><b>Entonces</b>se dibuja al costado de la línea, con su color propio y su línea punteada</li>
+                    <li><b>Y</b>no genera planilla ni asistencia: lo cubre un prestador</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Jefe no es un tipo</div>
+                  <ul>
+                    <li><b>Dado que</b>un puesto tiene otros colgando de él</li>
+                    <li><b>Cuando</b>se mira de qué tipo es</li>
+                    <li><b>Entonces</b>sigue diciendo «Regular»</li>
+                    <li><b>Y</b>«jefe» no se declara: se lee del árbol, y por eso nunca queda viejo cuando alguien mueve a otro de lugar</li>
                   </ul>
                 </div>
               </div>
@@ -2444,7 +2725,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h3 id="BR-ORG-021">El cargo y la plaza llevan códigos distintos</h3>
               <p>El código del <strong>cargo</strong> identifica el rol en el catálogo: de él cuelgan la descripción de puesto, el perfil y la banda salarial. El código del <strong>puesto</strong> identifica la plaza financiada: de él cuelgan el presupuesto, el contrato y la fila en planilla. En Recursos Humanos viven en dos documentos distintos —el manual de cargos y la plantilla de personal, donde en el sector público boliviano la plaza es el <em>ítem</em>— y por eso son dos códigos, también cuando el cargo tiene una sola plaza.</p>
               <p>Compartirlos obliga a renumerar el día que se abre la segunda, y para eso basta una transición entre el titular saliente y el entrante, o un interinato de seis meses. Ese código ya salió del sistema: está en un contrato y en una planilla, y renumerarlo ahí no es un cambio de pantalla. Además, un código suelto en una exportación dejaría de decir si nombra un rol o una silla.</p>
-              <p>Un código que ya identifica a un cargo no se puede usar para una plaza: el sistema lo avisa y no guarda hasta que se cambie.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un cargo con una sola plaza</div>
@@ -2453,6 +2733,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se abre esa plaza</li>
                     <li><b>Entonces</b>el sistema propone «CAR‑001‑01» como código de la plaza, derivado del cargo</li>
                     <li><b>Y</b>el día que se abre una segunda es «CAR‑001‑02», sin tocar la primera</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>La serie se propone y no se pisa</div>
+                  <ul>
+                    <li><b>Dado que</b>el cargo tiene código «EC‑001» y se abren cinco plazas</li>
+                    <li><b>Cuando</b>se miran sus códigos</li>
+                    <li><b>Entonces</b>se proponen «EC‑001‑01» a «EC‑001‑05», derivados del cargo</li>
+                    <li><b>Y</b>una plaza cuyo código se escribió a mano conserva el suyo aunque cambie el del cargo</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un código que ya es de otro</div>
+                  <ul>
+                    <li><b>Dado que</b>el código «CAR‑001» identifica a un cargo</li>
+                    <li><b>Cuando</b>alguien lo escribe como código de una plaza</li>
+                    <li><b>Entonces</b>el sistema avisa que ese código ya identifica a un cargo</li>
+                    <li><b>Y</b>no guarda hasta que se cambie</li>
                   </ul>
                 </div>
               </div>
@@ -2480,6 +2778,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>las sillas que ya existían conservan la jefatura que tenían</li>
                   </ul>
                 </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Cambiarla no mueve a las que ya existen</div>
+                  <ul>
+                    <li><b>Dado que</b>el cargo tiene cinco sillas con sus jefaturas puestas</li>
+                    <li><b>Cuando</b>se cambia con cuál nacen las nuevas</li>
+                    <li><b>Entonces</b>las cinco conservan la suya</li>
+                    <li><b>Y</b>la sexta, cuando se abra, nace con la nueva</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un cargo sin sillas también la contesta</div>
+                  <ul>
+                    <li><b>Dado que</b>el cargo está aprobado y no tiene ninguna plaza abierta</li>
+                    <li><b>Cuando</b>se abre su ficha</li>
+                    <li><b>Entonces</b>el campo aparece igual y dice que las que se abran nacen con esa jefatura</li>
+                    <li><b>Y</b>se guarda aunque todavía no haya a qué aplicarla</li>
+                  </ul>
+                </div>
               </div>
               <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
             </div>
@@ -2494,7 +2810,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h3 id="BR-ORG-015">El nivel de mando es un catálogo de la empresa</h3>
               <p>Vienen tres —superior, medio y bajo— y ahí termina la opinión del producto: cada empresa los renombra, los reordena y agrega los que le falten. El número no se guarda: es <b>la posición en la lista</b>. Un cargo guarda <b>la llave de su nivel de mando</b>, nunca su nombre ni su número.</p>
               <p>No se administra en Configuración: tiene su propia pantalla dentro de <b>Estructura organizacional</b>, porque es lo que clasifica a un cargo y no de qué escalones está hecha la empresa. Configuración contesta con qué niveles se arma el árbol; esto contesta cuánto pesa un cargo dentro de él.</p>
-              <p>Borrar un nivel que está en uso avisa <b>a cuántos cargos deja sin nivel</b> antes de hacerlo: la decisión se toma sabiendo el costo y no descubriéndolo después.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Intercalar un nivel de mando</div>
@@ -2503,6 +2818,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>inserta «Jefatura» entre el primero y el segundo</li>
                     <li><b>Entonces</b>todos los de abajo se renumeran solos</li>
                     <li><b>Y</b>ningún cargo cambia: siguen apuntando a la misma llave</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Borrar un nivel que está en uso</div>
+                  <ul>
+                    <li><b>Dado que</b>diez cargos tienen puesto «Mando medio»</li>
+                    <li><b>Cuando</b>se intenta borrarlo</li>
+                    <li><b>Entonces</b>el editor avisa a cuántos cargos deja sin nivel antes de hacerlo</li>
+                    <li><b>Y</b>la decisión se toma sabiendo el costo, no descubriéndolo después</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Dónde se administra</div>
+                  <ul>
+                    <li><b>Dado que</b>se busca dónde cambiar los niveles de mando</li>
+                    <li><b>Cuando</b>se entra a Estructura organizacional</li>
+                    <li><b>Entonces</b>están ahí, en su propia pantalla</li>
+                    <li><b>Y</b>no en Configuración, que contesta de qué escalones está hecho el árbol</li>
                   </ul>
                 </div>
               </div>
@@ -2522,7 +2855,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-010">El puesto es donde las dos dimensiones se tocan</h3>
               <p>Es el único nodo del árbol que apunta a los dos: cuelga de un <b>cargo</b> —dimensión organizacional— y declara un <b>sitio de trabajo</b> de la dimensión física. Ese sitio puede ser una sucursal o un centro de trabajo; de él se deduce la sucursal sin declararla aparte.</p>
-              <p>No declarar sitio es una respuesta, no un dato faltante: significa <b>toda la empresa</b>, y el puesto aparece igual con cualquier sucursal filtrada.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Trabajar en un centro</div>
@@ -2531,6 +2863,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>un puesto declara que se trabaja en el Depósito Central</li>
                     <li><b>Entonces</b>su columna Sucursal dice «Casa Matriz», deducida subiendo por la rama</li>
                     <li><b>Y</b>al filtrar el organigrama por Casa Matriz, ese puesto entra</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Un puesto sin sitio declarado</div>
+                  <ul>
+                    <li><b>Dado que</b>un puesto no declara dónde se trabaja</li>
+                    <li><b>Cuando</b>se filtra el organigrama por cualquier sucursal</li>
+                    <li><b>Entonces</b>el puesto aparece igual</li>
+                    <li><b>Y</b>sin sitio significa «toda la empresa», no «dato faltante»</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El mismo cargo en dos sedes</div>
+                  <ul>
+                    <li><b>Dado que</b>el cargo «Cajero» tiene una silla en Casa Matriz y otra en El Prado</li>
+                    <li><b>Cuando</b>se filtra por El Prado</li>
+                    <li><b>Entonces</b>aparece solo la segunda</li>
+                    <li><b>Y</b>las dos siguen siendo el mismo cargo: lo que cambia por sede es qué puestos existen</li>
                   </ul>
                 </div>
               </div>
@@ -2546,7 +2896,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-011">El puesto hereda del cargo lo que no es suyo</h3>
               <p>La unidad organizacional y el nivel de mando salen del cargo y se <b>enseñan</b>, no se preguntan. Volver a pedirlos permitiría que una silla de «Ejecutivo Comercial» declare estar en Contabilidad, y después nadie sabe cuál de las dos vale.</p>
-              <p>Lo que es de cada silla —su código, su sitio, su jefatura y quién la ocupa— no se hereda de nadie: cambiarlo en una no toca a las otras.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Lo heredado se lee</div>
@@ -2555,6 +2904,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se mira la tarjeta «El puesto»</li>
                     <li><b>Entonces</b>la unidad y el nivel de mando aparecen sin caja, con la nota «Sale del cargo»</li>
                     <li><b>Y</b>corregirlos se hace en la ficha del cargo, que es donde el dato vive</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Lo que sí es del puesto</div>
+                  <ul>
+                    <li><b>Dado que</b>un cargo tiene tres puestos en tres ciudades</li>
+                    <li><b>Cuando</b>se edita uno de ellos</li>
+                    <li><b>Entonces</b>su código, su sitio, su ocupante y su jefatura son solo suyos</li>
+                    <li><b>Y</b>cambiarlos no toca a los otros dos</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El puesto no tiene campo de nombre</div>
+                  <ul>
+                    <li><b>Dado que</b>se abre la ficha de un puesto</li>
+                    <li><b>Cuando</b>se busca el campo «Nombre»</li>
+                    <li><b>Entonces</b>no está: se llama como su cargo</li>
+                    <li><b>Y</b>no hay forma de que una silla de «Ejecutivo Comercial» diga que se llama otra cosa</li>
                   </ul>
                 </div>
               </div>
@@ -2572,7 +2939,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <p>La dependencia estructural del organigrama sale de este dato. Se guarda en el <b>puesto</b> y no en el cargo, porque dos sillas del mismo cargo pueden responderle a jefes distintos: nueve vendedores con el mismo cargo repartidos entre dos supervisores es una plantilla corriente, no una excepción.</p>
               <p>Deducirlo —«cada cargo responde a la cabeza de su unidad»— alcanza para el caso corriente y miente en cuanto una unidad tiene dos jefaturas.</p>
               <p>El formulario lo pregunta en ese orden: una casilla dice <b>«todos los puestos dependen de la misma jefatura»</b>, marcada por defecto porque es lo que pasa casi siempre, y desmarcarla es el paso que se pide cuando no. Desmarcada, cada silla elige la suya y el dibujo las agrupa por jefatura en vez de colgarlas todas de una.</p>
-              <p>No se puede elegir a un subordinado: los puestos que cuelgan de este no aparecen en la lista, porque un círculo en la dependencia estructural no se puede dibujar.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un cargo con dos jefaturas</div>
@@ -2581,6 +2947,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se desmarca «todos los puestos dependen de la misma jefatura» y tres se cuelgan del Supervisor de La Paz</li>
                     <li><b>Entonces</b>las tres se dibujan bajo ese supervisor y las otras dos bajo el suyo</li>
                     <li><b>Y</b>sigue siendo un solo cargo: renombrarlo los renombra a los cinco</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El caso corriente: todas la misma</div>
+                  <ul>
+                    <li><b>Dado que</b>las cinco sillas de un cargo responden al mismo jefe</li>
+                    <li><b>Cuando</b>se abre su ficha</li>
+                    <li><b>Entonces</b>la casilla «todos dependen de la misma jefatura» viene marcada y se elige una sola vez</li>
+                    <li><b>Y</b>vale para las cinco, sin contestar cinco veces lo mismo</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>No se puede depender de un subordinado</div>
+                  <ul>
+                    <li><b>Dado que</b>un puesto tiene otros colgando de él</li>
+                    <li><b>Cuando</b>se abre su «De quién depende»</li>
+                    <li><b>Entonces</b>los suyos no aparecen en la lista</li>
+                    <li><b>Y</b>un círculo en la dependencia estructural no se puede dibujar</li>
                   </ul>
                 </div>
               </div>
@@ -2596,7 +2980,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-013">Un puesto pertenece a una unidad y puede trabajar en otras</h3>
               <p>La <b>dependencia funcional</b> es eso: la unidad a la que pertenece es la que lo evalúa y donde se lo cuenta; las que apoya son donde además trabaja. En cada una se dibuja como un cuadro más, en azul, y sigue siendo el mismo puesto: no se cuenta dos veces.</p>
-              <p>No se puede apoyar a su propia unidad ni repetir una: dos filas con la misma unidad darían dos jefes funcionales sin forma de saber cuál vale.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Declarar un apoyo</div>
@@ -2605,6 +2988,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se declara que apoya a «Contenidos y Creatividad» respondiendo a su analista</li>
                     <li><b>Entonces</b>aparece dibujado también dentro de Contenidos, en azul y con línea punteada</li>
                     <li><b>Y</b>los contadores de Contenidos no lo suman como cargo propio</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Ni a sí misma ni repetida</div>
+                  <ul>
+                    <li><b>Dado que</b>se abre el editor de apoyos de un puesto</li>
+                    <li><b>Cuando</b>se despliega la lista de unidades</li>
+                    <li><b>Entonces</b>no aparece su propia unidad ni ninguna que ya esté en la lista</li>
+                    <li><b>Y</b>dos filas con la misma unidad darían dos jefes funcionales sin forma de saber cuál vale</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>No se cuenta dos veces</div>
+                  <ul>
+                    <li><b>Dado que</b>un puesto de Tecnología apoya a Marketing</li>
+                    <li><b>Cuando</b>se cuentan los puestos de Marketing</li>
+                    <li><b>Entonces</b>no está entre ellos: pertenece a Tecnología</li>
+                    <li><b>Y</b>en el dibujo de Marketing aparece igual, como un cuadro más en azul</li>
                   </ul>
                 </div>
               </div>
@@ -2624,7 +3025,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-017">El organigrama y las tablas son el mismo dato</h3>
               <p>No hay una copia para dibujar y otra para editar. Lo que se carga por una puerta está en la otra al instante, sin botón de sincronizar y sin posibilidad de que una diga una cosa y la otra otra.</p>
-              <p>Las dos puertas también <b>escriben</b> lo mismo: la ficha de un nodo y el cuadro del dibujo preguntan los mismos campos y guardan los mismos datos, así que un cargo no queda más pobre por haberse creado desde el dibujo. No existe un estado en el que una pantalla tenga razón y la otra no.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Crear desde el dibujo</div>
@@ -2633,6 +3033,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se abre la tabla de Unidades organizacionales</li>
                     <li><b>Entonces</b>la unidad ya está ahí, sin traerla ni sincronizar nada</li>
                     <li><b>Y</b>lo mismo al revés: lo creado en la tabla se dibuja al instante</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Las dos puertas escriben lo mismo</div>
+                  <ul>
+                    <li><b>Dado que</b>se crea un cargo desde un cuadro del organigrama</li>
+                    <li><b>Cuando</b>se abre después su ficha desde la tabla</li>
+                    <li><b>Entonces</b>trae su cupo y la jefatura con la que nacen sus sillas, igual que si se hubiera creado ahí</li>
+                    <li><b>Y</b>ningún cargo queda más pobre por la puerta que se usó</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Sin botón de sincronizar</div>
+                  <ul>
+                    <li><b>Dado que</b>se renombra una unidad desde la tabla</li>
+                    <li><b>Cuando</b>se mira el organigrama</li>
+                    <li><b>Entonces</b>el nombre nuevo ya está</li>
+                    <li><b>Y</b>no existe un estado en el que una pantalla tenga razón y la otra no</li>
                   </ul>
                 </div>
               </div>
@@ -2648,7 +3066,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-018">Los recortes del organigrama son de la vista, no del sistema</h3>
               <p>Filtrar por unidad, por sede, por clase de puesto o por estado cambia <b>lo que se está mirando</b> y nada más: no cambia lo que se crea ni lo que existe. Cada recorte queda escrito en la frase de arriba y se quita tocándolo.</p>
-              <p>Todo recorte puesto está <b>escrito en la pantalla</b> —«Viendo … de … en …»—: ninguno se aplica sin que quien mira sepa que lo puso.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Ver una sede</div>
@@ -2657,6 +3074,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se mira el dibujo</li>
                     <li><b>Entonces</b>se ven los puestos de esa sede con su dependencia estructural completa hasta arriba</li>
                     <li><b>Y</b>un jefe que no trabaja ahí se queda dibujado si alguno de los suyos sí: sin eso, los de abajo colgarían de nada</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Ningún recorte invisible</div>
+                  <ul>
+                    <li><b>Dado que</b>hay un filtro puesto</li>
+                    <li><b>Cuando</b>se mira la pantalla</li>
+                    <li><b>Entonces</b>el filtro está escrito en la frase: «Viendo … de … en …»</li>
+                    <li><b>Y</b>ningún recorte se aplica sin que quien mira sepa que lo puso</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El recorte no corta la línea de mando</div>
+                  <ul>
+                    <li><b>Dado que</b>se filtra por una sucursal</li>
+                    <li><b>Cuando</b>se mira un puesto de ahí</li>
+                    <li><b>Entonces</b>su dependencia sube completa hasta arriba</li>
+                    <li><b>Y</b>los jefes de otra sede se siguen viendo: si no, la rama quedaría colgando de la nada</li>
                   </ul>
                 </div>
               </div>
@@ -2676,7 +3111,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-016">Desactivar no es borrar</h3>
               <p>Una sucursal que cerró tiene historia, gente y planillas detrás. Lo mismo una unidad que se disolvió o un cargo que dejó de usarse. Se <b>desactivan</b>, con su fecha, y dejan de ofrecerse para cosas nuevas conservando todo lo que pasó por ahí.</p>
-              <p>Eliminar un nodo que tiene cosas dentro está impedido, y el sistema dice cuántas hay que mover primero. Eliminar deja de ser una sorpresa y pasa a ser una decisión informada.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Cerrar una sucursal</div>
@@ -2685,6 +3119,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se cambia su estado a «Cerrada»</li>
                     <li><b>Entonces</b>no se ofrece al crear puestos nuevos</li>
                     <li><b>Y</b>sigue visible en la tabla y en los históricos, marcada como cerrada</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Eliminar algo con cosas dentro</div>
+                  <ul>
+                    <li><b>Dado que</b>una unidad organizacional tiene cargos adentro</li>
+                    <li><b>Cuando</b>se intenta eliminarla</li>
+                    <li><b>Entonces</b>el sistema lo impide y dice cuántos hay que mover primero</li>
+                    <li><b>Y</b>eliminar deja de ser una sorpresa y pasa a ser una decisión informada</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>El estado se lee, no se rellena</div>
+                  <ul>
+                    <li><b>Dado que</b>se edita un nodo</li>
+                    <li><b>Cuando</b>se busca el estado en el formulario</li>
+                    <li><b>Entonces</b>es un dato mostrado y no un desplegable</li>
+                    <li><b>Y</b>se cambia por su único camino, la acción «Cambiar estado», que es donde se dice qué implica</li>
                   </ul>
                 </div>
               </div>
@@ -2700,7 +3152,6 @@ td.rg{color:var(--tinta-3);font-weight:700}
               </div>
               <h3 id="BR-ORG-020">La estructura es el dato del que dependen los demás módulos</h3>
               <p>Onboarding saca de aquí a quién le toca cada ruta; Evaluación, a quién apunta cada campaña; Comunicación, a quién le llega cada anuncio. Por eso escribir en la estructura es de Recursos Humanos y de nadie más: una unidad borrada deja rutas sin destino y campañas sin público.</p>
-              <p>Leer es de todos los roles administrativos; <b>escribir es solo de Recursos Humanos</b>. Un líder de unidad ve el organigrama entero y su unidad en detalle, y no puede crear ni mover nodos.</p>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un cambio se propaga</div>
@@ -2709,6 +3160,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Cuando</b>se abre un puesto de ese cargo en esa sede</li>
                     <li><b>Entonces</b>la persona que lo ocupe recibe esa ruta sin que nadie la elija</li>
                     <li><b>Y</b>el vínculo es el cargo y la sede, no la persona</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Quién puede escribir</div>
+                  <ul>
+                    <li><b>Dado que</b>un líder de unidad entra al módulo</li>
+                    <li><b>Cuando</b>mira la estructura</li>
+                    <li><b>Entonces</b>ve el organigrama entero y su unidad en detalle</li>
+                    <li><b>Y</b>no puede crear ni mover nodos: eso es de Recursos Humanos</li>
+                  </ul>
+                </div>
+                <div class="esc ok">
+                  <div class="esc-t"><i>✅</i>Ningún módulo guarda su copia</div>
+                  <ul>
+                    <li><b>Dado que</b>Evaluación necesita saber quién es el jefe de alguien</li>
+                    <li><b>Cuando</b>arma un ciclo</li>
+                    <li><b>Entonces</b>lo lee de la estructura en ese momento</li>
+                    <li><b>Y</b>no lo guarda: habría dos verdades y ninguna forma de saber cuál vale</li>
                   </ul>
                 </div>
               </div>
@@ -2737,7 +3206,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
         <tr><td><strong>Los códigos que ya existen no se renumeran</strong></td><td>Aunque la regla cambie de sección o de orden. Un número reutilizado es peor que un hueco</td></tr>
         <tr><td><strong>La regla dice qué y por qué</strong></td><td>El porqué es lo que permite discutirla antes de construirla, en vez de descubrirla rota meses después</td></tr>
         <tr><td><strong>El estado dice cuánta confianza merece</strong></td><td><em>Borrador</em>: escrita, sin revisar. Lo que no está aprobado no se presenta como si lo estuviera</td></tr>
-        <tr><td><strong>El escenario se lee como una prueba</strong></td><td>«Dado que» es la situación de partida, «Cuando» lo que hace el usuario y «Entonces» lo que tiene que pasar. Es uno solo y es el camino que debe andar: lo que el sistema impide se dice en el párrafo de la regla, porque es parte de lo que exige y no un caso aparte</td></tr>
+        <tr><td><strong>Los escenarios se leen como pruebas</strong></td><td>«Dado que» es la situación de partida, «Cuando» lo que hace el usuario y «Entonces» lo que tiene que pasar. <strong>Tres por regla</strong>: el camino corriente, el caso distinto que la regla también gobierna, y lo que el sistema hace cuando algo no cierra —dicho como lo que hace, «avisa y no guarda», y no como una puerta cerrada</td></tr>
         <tr><td><strong>La trazabilidad se declara aunque esté vacía</strong></td><td>«Pendiente» es información; en blanco solo deja la duda de si falta el dato o falta el enlace</td></tr>
       </tbody>
     </table></div>
