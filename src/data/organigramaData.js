@@ -98,11 +98,15 @@ export const unidades = [
    planilla, uno que asiste al costado, o uno que cubre un tercero. Sin declarar vale
    Colaborador, que es el caso común y el de todo lo que se guardó antes. */
 export const TIPOS_CARGO = [
-  { key: 'colaborador', label: 'Colaborador', desc: 'En planilla, baja en la línea de mando', lateral: false },
-  { key: 'staff', label: 'Staff', desc: 'Asiste a un cargo sin estar en su línea de mando', lateral: true },
-  /* No es lateral: cuelga de su jefe y queda dentro de su área como cualquier otro puesto. Lo
-     que dice que es externo es el color y la línea punteada, no el lugar donde se dibuja. */
-  { key: 'outsourcing', label: 'Outsourcing', desc: 'Lo cubre un prestador de servicios', lateral: true },
+  /* LA CLAVE NO CAMBIA AUNQUE EL NOMBRE SÍ. `colaborador` está escrito en cada cargo guardado y
+     en cada recorte de la vista: renombrar la clave obligaría a migrar el dato para arreglar una
+     palabra que solo se lee en pantalla. Es la misma regla que ya gobierna a los niveles de
+     estructura —BR‑ORG‑019—, aplicada acá. */
+  { key: 'colaborador', label: 'Regular', desc: 'De línea: en planilla, manda o reporta dentro de la jerarquía', lateral: false },
+  { key: 'staff', label: 'Staff', desc: 'Asesoría o soporte: en planilla, al costado y sin gente a cargo', lateral: true },
+  /* AL COSTADO Y CON SU COLOR. Se dibuja fuera de la línea de mando igual que el staff; lo que
+     además dice que es externo es el color y la línea punteada. */
+  { key: 'outsourcing', label: 'Externo', desc: 'Lo cubre un prestador externo: no genera planilla ni asistencia', lateral: true },
 ]
 
 /* `sucursalIds` sigue siendo una lista de a lo sumo UNA: un puesto pertenece a una sede y la
@@ -251,12 +255,12 @@ export const COLORES_LEYENDA = [
   },
   {
     key: 'ext', var: '--og-ext-el', porOmision: '#7c3aed',
-    label: 'Outsourcing', desc: 'Lo cubre un prestador de servicios',
+    label: 'Cargo externo', desc: 'Lo cubre un prestador externo',
     tonos: ['#7c3aed', '#6d28d9', '#9333ea', '#c026d3', '#a21caf'],
   },
   {
     key: 'staff', var: '--og-staff-el', porOmision: '#0d9488',
-    label: 'Staff', desc: 'Asiste al costado, sin mandar',
+    label: 'Cargo de staff', desc: 'Asesora al costado, sin gente a cargo',
     tonos: ['#0d9488', '#047857', '#059669', '#16a34a', '#65a30d'],
   },
   {

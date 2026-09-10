@@ -1778,11 +1778,11 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
           }] : []),
           /* OBLIGATORIO, IGUAL QUE EN EL MODAL DEL DIBUJO. Era opcional acá y obligatorio allá, y
              con las dos pantallas escribiendo el mismo dato eso significaba que la validez de un
-             cargo dependía de por qué puerta se creó. Cuesta cero: llega con «Colaborador». */
+             cargo dependía de por qué puerta se creó. Cuesta cero: llega con «Regular». */
           { key: 'tipoCargo', label: 'Tipo de cargo', requerido: true, col: 'c-tercio',
             tipo: 'lista', opciones: TIPOS_CARGO.map(t => ({ valor: t.key, etiqueta: t.label })),
-            ph: 'Colaborador',
-            ayuda: 'Staff y outsourcing se dibujan al costado de la línea de mando.',
+            ph: 'Regular',
+            ayuda: 'Los de staff y los externos se dibujan al costado de la línea de mando.',
             faltaMsg: 'Sin la clase, el dibujo no sabe si va en la línea de mando o al costado.' },
           /* CUÁNTA GENTE PUEDE HABER EN ESTE CARGO A LA VEZ. Es el cupo autorizado: no cuenta a
              nadie, pone un techo, y por eso es del ROL y no de sus sillas. Vacío es «sin límite»

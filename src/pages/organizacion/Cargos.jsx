@@ -175,7 +175,7 @@ export default function Cargos() {
                         Mixto
                       </span>
                     ) : (
-                      TIPOS_CARGO.find(t => t.key === fila.tipos[0])?.label || 'Colaborador'
+                      TIPOS_CARGO.find(t => t.key === fila.tipos[0])?.label || 'Regular'
                     )}
                   </td>
                   <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>{fila.plazas}</td>

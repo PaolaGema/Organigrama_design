@@ -66,9 +66,9 @@ const tipoVisual = tipo => {
    Los subtítulos hablan en el idioma del contrato —planilla, servicios, prestador de
    servicios— porque es como lo nombra RRHH al dar de alta. */
 const TIPOS_PUESTO = [
-  { key: 'colaborador', label: 'Colaborador', sub: 'En planilla, baja en la línea', Icon: User },
-  { key: 'staff', label: 'Staff', sub: 'Asiste al costado de la línea', Icon: Users },
-  { key: 'outsourcing', label: 'Outsourcing', sub: 'Lo cubre un prestador externo', Icon: Briefcase },
+  { key: 'colaborador', label: 'Regular', sub: 'De línea: manda o reporta', Icon: User },
+  { key: 'staff', label: 'Staff', sub: 'Asesora al costado, sin gente a cargo', Icon: Users },
+  { key: 'outsourcing', label: 'Externo', sub: 'Lo cubre un prestador externo', Icon: Briefcase },
 ]
 
 /* El formulario del puesto va en pestañas, como en el diseño: son preguntas de naturaleza
