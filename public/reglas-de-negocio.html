@@ -832,7 +832,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
       </figure>
     </div>
     <dl class="ficha">
-      <div><dt>Versión</dt><dd>3.0</dd></div>
+      <div><dt>Versión</dt><dd>3.1</dd></div>
       <div><dt>Fecha</dt><dd>10 de septiembre de 2026</dd></div>
       <div><dt>Autoría</dt><dd>Paola Gema — Diseñadora UX</dd></div>
       <div><dt>Revisa y aprueba</dt><dd>Naihara Rocha — reglas y uso de RR.HH.</dd></div>
@@ -849,6 +849,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <div><b>41</b><span>reglas de negocio</span></div>
     <div><b>32</b><span>requisitos funcionales</span></div>
     <div><b>6</b><span>no funcionales</span></div>
+    <div><b>15</b><span>historias de usuario</span></div>
     <div><b>8</b><span>flujos de usuario</span></div>
     <div><b>8</b><span>decisiones abiertas</span></div>
   </div>
@@ -1151,6 +1152,28 @@ td.rg{color:var(--tinta-3);font-weight:700}
             <li><a href="#W-03">W‑03 Organigrama</a></li>
             <li><a href="#W-04">W‑04 Configuración</a></li>
             <li><a href="#W-05">W‑05 Datos de la empresa</a></li>
+          </ul>
+        </div>
+        <div class="rail-s" data-sec="s9">
+          <a href="#s9"><span>09</span>Historias de usuario</a>
+          <button type="button" class="rail-x" aria-expanded="false" aria-controls="sub-s9"><svg class="rail-c" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M3.5 1.5 L7 5 L3.5 8.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Ver las 15 historias</span></button>
+          <ul class="rail-sub" id="sub-s9" hidden>
+            <li><a href="#HU-ORG-01">01 · Dejar el esquema como es mi empresa</a></li>
+            <li><a href="#HU-ORG-02">02 · Cargar los datos de mi empresa</a></li>
+            <li><a href="#HU-ORG-03">03 · Cargar dónde está mi empresa</a></li>
+            <li><a href="#HU-ORG-04">04 · Cargar cómo se organiza el trabajo</a></li>
+            <li><a href="#HU-ORG-05">05 · Repartir en líneas de negocio</a></li>
+            <li><a href="#HU-ORG-06">06 · Definir un cargo y abrir sus plazas</a></li>
+            <li><a href="#HU-ORG-07">07 · Repartir las plazas entre dos jefaturas</a></li>
+            <li><a href="#HU-ORG-08">08 · Declarar dónde más trabaja un puesto</a></li>
+            <li><a href="#HU-ORG-09">09 · Mirar el organigrama como me sirve</a></li>
+            <li><a href="#HU-ORG-10">10 · Mirar solo el pedazo que me importa</a></li>
+            <li><a href="#HU-ORG-11">11 · Llevarme el organigrama</a></li>
+            <li><a href="#HU-ORG-12">12 · Ajustar los colores</a></li>
+            <li><a href="#HU-ORG-13">13 · Reorganizar sin volver a cargar</a></li>
+            <li><a href="#HU-ORG-14">14 · Cerrar una sede sin perder su historia</a></li>
+            <li><a href="#HU-ORG-15">15 · Saber de quién dependo</a></li>
+            <li><a href="#p9-2">9.2 Plan de prototipado</a></li>
           </ul>
         </div>
         <p class="rail-g">Cierre</p>
@@ -4581,6 +4604,325 @@ td.rg{color:var(--tinta-3);font-weight:700}
       
   </section>
 
+<section id="s9">
+    <header class="sec-h">
+      <span class="sec-n" aria-hidden="true">09</span>
+      <h2>Historias de usuario</h2>
+      <p class="sec-d">Quince historias con sus criterios de aceptación, y el plan de prototipado. Es contra esto que se acepta o se devuelve lo construido.</p>
+    </header>
+
+    <p>Las reglas dicen qué es verdad y los requisitos qué tiene que hacer cada pantalla. Esta sección dice <strong>qué se entrega y cómo se acepta</strong>, que es otra cosa: sin ella, dos personas leen los mismos requisitos y construyen cosas distintas, las dos defendibles.</p>
+    <div class="nota"><p><strong>Un criterio de aceptación se marca hecho o no hecho delante de la pantalla, sin discutir.</strong> Por eso están escritos como afirmaciones comprobables y no como intenciones: «el aviso dice el motivo y no guarda», no «el sistema valida correctamente». Si un criterio necesita interpretación, no es un criterio.</p>
+    <p><strong>La historia dice para quién y para qué.</strong> Una historia sin el «para» se construye igual y se acepta peor: es lo que permite discutir si lo entregado sirve, y no solo si funciona.</p></div>
+
+    <h3 id="p9-1">9.1 Las quince historias</h3>
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-01">HU-ORG-01 · Dejar el esquema de niveles como es mi empresa</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos que está poniendo en marcha el módulo, <b>quiero</b> apagar los escalones de estructura que mi empresa no usa <b>para</b> que mis formularios no me pidan cosas que no tengo.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Cada nivel de estructura se ve en una lista con su dimensión, cuántos nodos tiene y su interruptor.</li>
+            <li>Empresa, unidad organizacional, cargo y puesto <b>no tienen interruptor</b>: no aparece el control, en vez de aparecer y rechazar.</li>
+            <li>Apagar un nivel con nodos dentro está <b>trabado</b>, y el sistema dice cuántos habría que mover antes.</li>
+            <li>Un nivel apagado <b>desaparece</b> de su pestaña, de su entrada de menú y de todo desplegable «Depende de».</li>
+            <li>Apagar no borra: los nodos de ese nivel se quedan donde están, y encenderlo de nuevo los vuelve a mostrar sin migrar nada.</li>
+            <li>La vista previa «así queda tu organización» está <b>arriba</b> y se rehace <b>antes de guardar</b>, mostrando las dos dimensiones por separado.</li>
+            <li>Al cargar datos que traen nodos de un nivel apagado, ese nivel <b>aparece encendido</b>: nunca queda un nivel apagado con cosas adentro.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑004 · BR‑ORG‑038 · RF‑ORG‑001 a 003, 006</b> · Pantalla: Configuración</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-02">HU-ORG-02 · Cargar los datos de mi empresa</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos, <b>quiero</b> registrar la identificación y el contacto de mi empresa <b>para</b> que exista la raíz de la que va a colgar todo lo demás.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>El <b>único campo obligatorio</b> es el nombre comercial.</li>
+            <li>Al intentar guardar sin él, el aviso dice el motivo —el organigrama lo imprime en su cabecera— y no guarda.</li>
+            <li>Razón social, NIT, rubro, contacto, dirección y redes se pueden dejar vacíos y completar después.</li>
+            <li>El <b>país</b> se elige de un catálogo, y de él salen las ciudades que se ofrecen al crear regionales, sucursales y centros de trabajo.</li>
+            <li>La dirección que se pide acá es la de la <b>casa matriz</b>; la de cada sede se carga en su propia ficha.</li>
+            <li>Guardado el nombre, ya se puede crear el primer nodo que cuelgue de la empresa.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑036 · BR‑ORG‑037 · BR‑ORG‑001</b> · Pantalla: Datos de la empresa</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-03">HU-ORG-03 · Cargar dónde está mi empresa</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos, <b>quiero</b> registrar mis regionales, sucursales y centros de trabajo <b>para</b> poder decir después dónde trabaja cada persona.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Cada nivel encendido tiene su <b>pestaña</b>, en el orden del esquema, y el botón de crear dice el nombre de ese nivel: «Nueva sucursal».</li>
+            <li>La <b>regional</b> no pregunta de qué cuelga, y exige nombre, país, ciudad y estado, y nada más.</li>
+            <li>La <b>sucursal</b> exige nombre, país, ciudad y estado; su «Depende de» ofrece la empresa y las regionales, y nada de más abajo.</li>
+            <li>El <b>centro de trabajo</b> exige además <b>de qué clase de sitio</b> se trata —oficina, planta, almacén, taller, obra, tienda u otro—.</li>
+            <li>El centro pregunta regional, sucursal y centro superior en <b>tres listas que se acotan entre sí</b>: elegida la regional, «Sucursal» solo ofrece las suyas.</li>
+            <li>Los tres son opcionales y «Ninguna» es <b>una opción elegible</b> de la lista, no solo un marcador gris.</li>
+            <li>Se guarda <b>el más específico</b> de los tres como nodo superior.</li>
+            <li>El campo de un nivel que la empresa no usa <b>no aparece</b> en el formulario.</li>
+            <li>La ciudad se acota por el departamento cuando existe, y el departamento solo se pide donde esa división existe con ese nombre.</li>
+            <li>La dirección se escribe libre; la ciudad se elige del catálogo.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑025 a 028 · BR‑ORG‑002 · BR‑ORG‑003</b> · Pantalla: Estructura física</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-04">HU-ORG-04 · Cargar cómo se organiza el trabajo</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos, <b>quiero</b> registrar mis áreas con la jerarquía que tienen de verdad <b>para</b> que el organigrama muestre la forma real de la empresa.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Una unidad organizacional se puede anidar <b>dentro de otra unidad</b>, a cualquier profundidad.</li>
+            <li>También puede colgar directamente de una sucursal, de un centro de trabajo o de la empresa.</li>
+            <li>Además del anidamiento, la unidad declara <b>«Bajo el mando de»</b>: el puesto que la manda, y de ahí sale su línea en el dibujo.</li>
+            <li>Sin «Bajo el mando de», la unidad y todo lo que tiene dentro se dibujan <b>sueltos</b>, y eso es visible.</li>
+            <li>La <b>cabeza</b> de la unidad —el cargo que no le responde a nadie de adentro— se muestra sin pedir que se la declare.</li>
+            <li>La unidad declara <b>en qué sede está</b>; las de más abajo lo muestran heredado y dicen de qué unidad sale.</li>
+            <li>Declarar una sede propia en una unidad de más abajo <b>afina</b> la rama y no contradice a la de arriba.</li>
+            <li>Sin ninguna sede declarada en toda la rama, la ficha dice «Toda la empresa», y eso no es un dato faltante.</li>
+            <li>La tabla dibuja el anidamiento <b>con sangría</b>.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑023 · BR‑ORG‑006 · BR‑ORG‑042</b> · Pantalla: Estructura organizacional</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-05">HU-ORG-05 · Repartir mi empresa en líneas de negocio</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos de una empresa con varios frentes, <b>quiero</b> marcar a qué línea pertenece cada parte de la estructura <b>para</b> poder responder cuánta gente tiene cada frente del negocio.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Una unidad de negocio se crea pidiendo <b>solo nombre y estado</b>: no tiene código ni descripción.</li>
+            <li>La línea se asigna desde la ficha de cada regional, sucursal, centro de trabajo o unidad organizacional, en su campo «A qué negocio pertenece».</li>
+            <li>Un nodo que <b>hereda</b> la línea de su rama la muestra y <b>no la puede cambiar desde ahí</b>: el campo dice de dónde sale.</li>
+            <li>Cambiar la línea de un nodo la cambia en <b>todo lo que cuelga</b> de él, sin escribir en ningún otro registro.</li>
+            <li>Los cargos y los puestos <b>nunca la declaran</b>: solo la muestran.</li>
+            <li>La ficha de la unidad de negocio <b>lista lo que declaró pertenecerle</b>, en solo lectura.</li>
+            <li>Una unidad de negocio sin nada asignado dice que todavía nadie declaró pertenecerle, y eso no es un error.</li>
+            <li>La columna «Unidad de negocio» de las tablas <b>no se dibuja</b> si la empresa no declaró ninguna.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑022 · BR‑ORG‑039</b> · Pantalla: Estructura organizacional › Unidades de negocio</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-06">HU-ORG-06 · Definir un cargo y abrir sus plazas</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos, <b>quiero</b> crear un cargo con las sillas que tiene <b>para</b> poder asignarle gente y verlo en el organigrama.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>El cargo exige <b>nombre, unidad organizacional y tipo de cargo</b>; el nivel de mando se exige solo si el tipo es «Regular».</li>
+            <li>El desplegable de unidad <b>solo ofrece unidades organizacionales</b>: ni sucursales ni regionales.</li>
+            <li>Sin ninguna unidad creada, crear un cargo está <b>bloqueado</b> y el motivo se dice en el sitio.</li>
+            <li>Un cargo <b>puede guardarse sin ninguna plaza abierta</b>, y queda en el catálogo con su unidad y su nivel.</li>
+            <li>El <b>cupo</b> es opcional: vacío significa «sin límite», y puede ser mayor que las plazas abiertas hoy.</li>
+            <li>Guardar un cargo con cupo cuatro <b>no crea ninguna plaza</b>.</li>
+            <li>Bajar el cupo por debajo de las plazas abiertas <b>no guarda</b>: el sistema dice cuántas sobran.</li>
+            <li>El código de la plaza se <b>propone</b> derivado del código del cargo —«EC‑001» propone «EC‑001‑01»— y una plaza con código escrito a mano conserva el suyo.</li>
+            <li>Un cargo con varias plazas figura en la lista como <b>una sola fila</b>, con sus plazas desplegables debajo con las mismas columnas.</li>
+            <li>Renombrar el cargo renombra <b>todas</b> sus plazas.</li>
+            <li>Los cargos de staff y los externos <b>no muestran el campo de nivel de mando</b>.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑007 a 009 · BR‑ORG‑014 · BR‑ORG‑021 · BR‑ORG‑024</b> · Pantalla: Estructura organizacional › Cargos</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-07">HU-ORG-07 · Repartir las plazas de un cargo entre dos jefaturas</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos de un equipo comercial, <b>quiero</b> que las nueve plazas de «Vendedor» respondan a dos supervisoras distintas <b>para</b> que el organigrama muestre quién le responde a quién de verdad.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>El formulario del cargo trae una casilla <b>«todos los puestos dependen de la misma jefatura»</b>, marcada por defecto.</li>
+            <li>Marcada, se elige <b>una sola jefatura</b> y vale para todas las plazas.</li>
+            <li>Desmarcada, <b>cada plaza elige la suya</b> y las que no se toquen conservan la que tenían.</li>
+            <li>Al desmarcarla, los desplegables de cada plaza abren <b>con el valor que la común venía diciendo</b>, no en blanco.</li>
+            <li>Volver a marcarla avisa, antes de guardar, que las plazas responden hoy a jefaturas distintas y que todas van a pasar a la elegida.</li>
+            <li>El desplegable de jefatura <b>no ofrece a los subordinados</b> del propio puesto.</li>
+            <li>Con las plazas repartidas, el panel de la izquierda del modal las <b>agrupa por jefatura</b> en vez de colgarlas todas de una.</li>
+            <li>La columna «Depende de» de la tabla dice <b>«2 jefaturas»</b> cuando están repartidas, y el nombre cuando es una sola.</li>
+            <li>En el organigrama, las plazas se dibujan bajo <b>su</b> jefatura, y siguen siendo un solo cargo.</li>
+            <li>El cargo declara además <b>con qué jefatura nacen las plazas nuevas</b>, y cambiarla no mueve a ninguna existente.</li>
+            <li>Un cargo sin plazas puede contestar esa jefatura por defecto y se guarda igual.</li>
+            <li>Todo lo anterior funciona <b>igual</b> desde la ficha del cargo y desde el modal del organigrama.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑012 · BR‑ORG‑024 · BR‑ORG‑017</b> · Pantalla: Cargos · Organigrama</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-08">HU-ORG-08 · Declarar dónde más trabaja un puesto</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos, <b>quiero</b> registrar que un analista de Tecnología también trabaja para Marketing <b>para</b> que su evaluación incluya a quien de verdad ve su trabajo.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Cada apoyo se declara como un <b>par</b>: la unidad y a quién responde en ella.</li>
+            <li>El desplegable del jefe funcional <b>solo ofrece cargos de la unidad elegida</b>.</li>
+            <li>Cambiar la unidad <b>limpia</b> el jefe funcional elegido antes.</li>
+            <li>El jefe funcional puede quedar vacío, y eso significa <b>«cuelga de la unidad»</b>, no un dato faltante.</li>
+            <li>La lista <b>no ofrece la unidad propia</b> del puesto.</li>
+            <li>La lista <b>no ofrece una unidad ya declarada</b> en otra fila del mismo puesto.</li>
+            <li>Si no queda ninguna unidad libre, el botón de agregar <b>no aparece</b>.</li>
+            <li>En el organigrama, el puesto se dibuja también dentro de cada unidad que apoya, con una <b>línea secundaria</b> distinguible de la estructural en escala de grises.</li>
+            <li>El puesto <b>no se cuenta</b> en la unidad que apoya: se cuenta en la que pertenece.</li>
+            <li>El apoyo <b>no cambia</b> de quién depende estructuralmente.</li>
+            <li>El editor es el mismo desde la ficha del cargo y desde el modal del organigrama.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑013 · BR‑ORG‑031 · BR‑ORG‑032</b> · Pantalla: Cargos · Organigrama</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-09">HU-ORG-09 · Mirar el organigrama de la manera que me sirve</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> directora general, <b>quiero</b> ver la estructura como gráfico, como cards o como tabla <b>para</b> poder entender su forma, recorrerla o compararla según lo que necesite.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Hay <b>tres vistas</b> y un control para cambiar entre ellas: <b>gráfico</b>, <b>cards</b> y <b>tabla</b>.</li>
+            <li>Las tres muestran <b>el mismo dato</b>: cambiar de vista no agrega ni saca a nadie.</li>
+            <li>Los <b>filtros puestos se conservan</b> al cambiar de vista.</li>
+            <li><b>Gráfico:</b> dibuja el árbol con sus líneas; las áreas se anidan unas en otras y las líneas salen de los puestos.</li>
+            <li><b>Gráfico:</b> los cargos de staff y los externos se dibujan <b>al costado</b> de la línea, no debajo.</li>
+            <li><b>Gráfico:</b> la altura de cada cuadro se mide contra el peldaño de su jefe; sin peldaño declarado, el cuadro no se mueve.</li>
+            <li><b>Gráfico:</b> un cargo con varias plazas se dibuja como <b>un cuadro</b> que se abre para mostrarlas.</li>
+            <li><b>Cards:</b> muestra cada nodo como una tarjeta recorrible, con su ocupante y su estado.</li>
+            <li><b>Tabla:</b> muestra las mismas columnas que la lista, para comparar y ordenar.</li>
+            <li>En cualquiera de las tres, un cuadro <b>se abre a la ficha</b> del nodo.</li>
+            <li>Crear o editar desde el dibujo pregunta lo mismo que la ficha y guarda los mismos datos.</li>
+            <li>Lo creado o cambiado en una vista está en las otras <b>al instante</b>, sin sincronizar nada.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑017 · BR‑ORG‑014 · BR‑ORG‑030 · RF‑ORG‑030, 037, 039</b> · Pantalla: Organigrama</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-10">HU-ORG-10 · Mirar solo el pedazo que me importa</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> líder de una unidad, <b>quiero</b> recortar el organigrama por sede, por área o por lo que hace a un cargo lo que es <b>para</b> poder revisar mi parte sin perderme en la empresa entera.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Lo que se está mirando se dice en <b>una frase legible</b> arriba del lienzo.</li>
+            <li>Cada trozo filtrable de la frase es un desplegable, y el texto que muestra es <b>la respuesta</b>, no el nombre del campo.</li>
+            <li>Sin ningún filtro puesto, la frase <b>sigue siendo verdad</b> y no hace falta ningún cartel de «sin filtros».</li>
+            <li>Se puede recortar por <b>sucursal</b>, por <b>unidad</b> y por <b>estado</b>.</li>
+            <li>Se puede recortar por lo que hace a un cargo lo que es —<b>tipo, nivel de mando y si está vacante</b>— y los tres comparten un solo hueco de la frase.</li>
+            <li>Filtrar <b>no borra ni oculta datos del sistema</b>: solo cambia lo que se dibuja.</li>
+            <li>Al filtrar por una sede, la <b>línea de mando sube completa</b> hasta arriba, aunque los jefes sean de otra sede.</li>
+            <li>El control de <b>«qué se dibuja»</b> —áreas y cargos, solo cargos, solo áreas— está a la vista sobre el lienzo y <b>no</b> entra en la frase de los filtros.</li>
+            <li>Cambiar «qué se dibuja» no deja a nadie afuera: cambia qué documento es.</li>
+            <li>«Qué se dibuja» y los recortes se pueden combinar.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑018 · BR‑ORG‑033 · BR‑ORG‑034</b> · Pantalla: Organigrama</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-11">HU-ORG-11 · Llevarme el organigrama</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> directora general, <b>quiero</b> exportar el organigrama a un archivo <b>para</b> poder pegarlo en una presentación de directorio.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Se exporta a <b>PNG</b>, a <b>SVG</b> y a impresión o PDF.</li>
+            <li>Lo que se exporta es el <b>organigrama entero a tamaño natural</b>, no el pedazo visible en pantalla.</li>
+            <li>El archivo lleva el <b>nombre de la empresa</b> en su cabecera.</li>
+            <li>Si hay filtros puestos, se exporta <b>lo que se está viendo</b>, y el archivo lo dice.</li>
+            <li>Una estructura de doscientos puestos sale completa y legible.</li>
+            <li>El PDF conserva el <b>texto buscable</b>.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>RF‑ORG‑034 · BR‑ORG‑036</b> · Pantalla: Organigrama</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-12">HU-ORG-12 · Ajustar los colores para que mi gente los distinga</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos, <b>quiero</b> cambiar los tonos de la leyenda del organigrama <b>para</b> que se lean bien proyectados, fotocopiados y por quien no distingue ciertos colores.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Se puede cambiar <b>el tono</b> de cada significado de la leyenda y el color de marca.</li>
+            <li>No se puede cambiar <b>cuántos significados hay</b> ni <b>cuál pinta qué</b>.</li>
+            <li>Al cambiar un tono, un pedazo de organigrama de al lado muestra <b>los cinco conviviendo</b>, no un cuadrito suelto.</li>
+            <li>Cada codificación lleva <b>tres señales a la vez</b>: color, forma del borde e ícono.</li>
+            <li>En blanco y negro, un cargo externo se sigue reconociendo por su borde y su ícono.</li>
+            <li>Cambiar los colores <b>no toca ningún dato</b> de la estructura.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑035 · RF‑ORG‑036</b> · Pantalla: Organigrama › Colores</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-13">HU-ORG-13 · Reorganizar sin volver a cargar nada</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos, <b>quiero</b> mover un área completa a otro sitio de la estructura <b>para</b> reflejar una reorganización sin rehacer el trabajo de carga.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Cambiar «Depende de» en la ficha de una unidad <b>mueve toda su rama</b>: sus subunidades, sus cargos y las plazas de esos cargos.</li>
+            <li>El desplegable <b>no ofrece</b> nodos de niveles inferiores, así que la opción imposible no está.</li>
+            <li>El organigrama y las tablas lo reflejan <b>en el acto</b>.</li>
+            <li>Los <b>ids no cambian</b>: los otros módulos siguen encontrando lo que tenían guardado.</li>
+            <li>La sede que la rama heredaba se <b>recalcula sola</b> con el sitio nuevo, sin tocar un registro.</li>
+            <li>Eliminar un nodo que tiene cosas dentro está <b>impedido</b>, y el sistema dice cuántas hay que mover primero.</li>
+            <li>Eliminar pide <b>escribir la palabra</b> y va marcado como acción de riesgo.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑002 · BR‑ORG‑006 · BR‑ORG‑016 · RNF‑ORG‑03</b> · Pantalla: Ficha de un nodo</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-14">HU-ORG-14 · Cerrar una sede sin perder su historia</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> responsable de Recursos Humanos, <b>quiero</b> dar de baja una sucursal que dejó de operar <b>para</b> que deje de ofrecerse sin borrar lo que pasó ahí.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>El estado se cambia por <b>una sola acción</b>, «Cambiar estado», desde el menú de la fila.</li>
+            <li>En la ficha el estado es un <b>dato mostrado</b>, no un desplegable del formulario.</li>
+            <li>Al cambiar el estado, el sistema pide el estado nuevo y avisa <b>qué cuelga</b> de ese nodo.</li>
+            <li>Una sucursal cerrada <b>deja de ofrecerse</b> para cosas nuevas.</li>
+            <li>Una sucursal cerrada <b>conserva</b> su historia, su gente y sus puestos.</li>
+            <li>Cerrar <b>no es</b> eliminar: eliminar es otra acción, marcada como riesgo, que pide escribir la palabra.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑016 · RF‑ORG‑015, 028</b> · Pantalla: Estructura física</div>
+      </div>
+
+      <div class="hu">
+        <div class="hu-h"><b id="HU-ORG-15">HU-ORG-15 · Saber de quién dependo</b></div>
+        <div class="hu-b">
+          <p class="hu-q"><b>Como</b> colaborador, <b>quiero</b> ver mi puesto y mi línea de mando <b>para</b> saber a quién le llevo lo que necesito resolver.</p>
+          <h6>Criterios de aceptación</h6>
+          <ul>
+            <li>Desde su aplicación, el colaborador ve el <b>organigrama</b> y su propio puesto señalado.</li>
+            <li>Ve <b>de quién depende</b> y quiénes dependen de él.</li>
+            <li>Si su puesto apoya funcionalmente a otra unidad, lo ve también.</li>
+            <li>No puede crear, mover ni editar nada de la estructura.</li>
+            <li>Lo que ve sale de la <b>misma estructura</b> que edita Recursos Humanos, sin copia intermedia.</li>
+          </ul>
+        </div>
+        <div class="hu-r">Se apoya en <b>BR‑ORG‑020 · BR‑ORG‑012 · BR‑ORG‑013</b> · Pantalla: Organigrama · App del colaborador</div>
+      </div>
+
+    <h3 id="p9-2">9.2 Plan de prototipado</h3>
+    <p>El prototipo no es la maqueta ni el producto: es <strong>dónde se contestan las preguntas que el documento no puede contestar solo</strong>. Cada etapa existe para responder una, y termina cuando esa pregunta está contestada —no cuando la pantalla se ve linda—.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Etapa</th><th>Qué se prototipa</th><th>La pregunta que contesta</th><th>Cómo se sabe que terminó</th></tr></thead>
+      <tbody>
+        <tr><td class="rg"><strong>P‑1</strong></td><td>El esquema de niveles y las dos listas del árbol</td><td>¿Una empresa reconoce su estructura en estos ocho niveles y puede armarla sola?</td><td>Tres empresas de rubros distintos arman su estructura completa sin pedir ayuda</td></tr>
+        <tr><td class="rg"><strong>P‑2</strong></td><td>La ficha de un nodo, con sus siete caras</td><td>¿Una sola forma sirve para los siete tipos sin que ninguno se sienta forzado?</td><td>Ningún tipo necesita un campo que la forma no sepa dibujar</td></tr>
+        <tr><td class="rg"><strong>P‑3</strong></td><td>El cargo, sus plazas y sus jefaturas</td><td>¿Se entiende la diferencia entre el rol y la silla sin que se la expliquen?</td><td>Alguien de RR.HH. carga «nueve vendedores con dos supervisoras» a la primera</td></tr>
+        <tr><td class="rg"><strong>P‑4</strong></td><td>El organigrama dibujado, en sus tres vistas</td><td>¿El dibujo dice lo mismo que las tablas, y se lee de un vistazo?</td><td>Nadie encuentra una diferencia entre lo que dibuja y lo que lista</td></tr>
+        <tr><td class="rg"><strong>P‑5</strong></td><td>Los filtros, la exportación y los colores</td><td>¿Se puede sacar de acá el documento que hoy se hace a mano en PowerPoint?</td><td>Una presentación de directorio sale del sistema sin retoques</td></tr>
+      </tbody>
+    </table></div>
+    <div class="nota"><p><strong>Qué está prototipado hoy y qué no.</strong> P‑1 a P‑4 están construidas y son lo que se puede tocar. De P‑5 están los filtros y los colores; la exportación y la importación desde planilla están dibujadas y no funcionan —el modal de importar muestra la plantilla y el sitio donde se suelta el archivo, y ahí termina—. La trazabilidad de cada regla lo dice caso por caso.</p>
+    <p><strong>Lo que el prototipo no contesta y hay que decidir en otro lado:</strong> los permisos por rol, que se verifican en el servidor y no escondiendo botones —<span class="id">ABIERTA‑09</span>—, y el histórico de la estructura, que cambia el modelo y no se puede agregar después —<span class="id">FUERA‑01</span>—.</p></div>
+  </section>
+
   <section id="sm" class="anx-s">
     <header class="sec-h">
       <span class="sec-n x" aria-hidden="true">—</span>
@@ -4606,6 +4948,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
         <tr><td class="rg">1.0</td><td>7 sep 2026</td><td>La documentación del módulo en formato BR: veinte reglas con escenarios, treinta y un requisitos funcionales con código estable, ocho flujos y cinco wireframes. <strong>Cambia el modelo:</strong> un solo árbol de nodos, el esquema de niveles como dato de la empresa, y el cargo separado del puesto</td></tr>
         <tr><td class="rg"><strong>2.0</strong></td><td>7 sep 2026</td><td><strong>Los dos documentos se unen en uno.</strong> El contenido del módulo —reglas, requisitos, flujos y wireframes— entra en la estructura de nueve secciones del PRD, que es la que se sostiene: glosario al frente, contexto, integraciones módulo por módulo, modelo de datos y roadmap. <strong>Se rescata del PRD de agosto</strong> todo lo que seguía valiendo y se reescribe sobre el modelo nuevo: qué es un organigrama, los principios de diseño, las integraciones, el camino hasta desarrollo, los riesgos y el anexo de decisiones. <strong>Se anota lo que falta</strong> en vez de disimularlo: registro de actividad, estados vacíos y permisos verificados en el servidor quedan como <span class="id">ABIERTA‑07</span> a <span class="id">ABIERTA‑09</span>. <strong>Sin revisar todavía</strong></td></tr>
         <tr><td class="rg"><strong>2.1</strong></td><td>9 sep 2026</td><td>Entra <span class="id">BR‑ORG‑021</span>: <strong>el cargo y la plaza llevan códigos distintos</strong>, también cuando el cargo tiene una sola plaza. Es como lo maneja Recursos Humanos —el manual de cargos y la plantilla de personal son dos documentos— y no estaba escrito en ninguna parte, así que el formulario mostraba dos campos «Código» sin decir por qué eran dos</td></tr>
+        <tr><td class="rg"><strong>3.1</strong></td><td>10 sep 2026</td><td><strong>Entra el punto <span class="id">09</span>: quince historias de usuario con sus criterios de aceptación, y el plan de prototipado.</strong> El documento decía qué es verdad —las reglas— y qué tiene que hacer cada pantalla —los requisitos—, pero no decía <b>qué se entrega ni cómo se acepta</b>, y sin eso dos personas leen los mismos requisitos y construyen cosas distintas, las dos defendibles. Los criterios están escritos como afirmaciones que se marcan hechas o no hechas delante de la pantalla: si uno necesita interpretación, no es un criterio. <span class="id">HU‑ORG‑09</span> cubre las tres vistas del organigrama —gráfico, cards y tabla— una por una. El <span class="id">9.2</span> dice qué contesta cada etapa del prototipo, cómo se sabe que terminó, y qué está construido hoy y qué está solo dibujado</td></tr>
         <tr><td class="rg"><strong>3.0</strong></td><td>10 sep 2026</td><td><strong>Barrido del prototipo buscando lo que un desarrollador necesita y el documento no decía.</strong> <b>Datos de la empresa</b> no tenía ninguna regla y es la primera pantalla del módulo: entran <span class="id">BR‑ORG‑036</span> —la raíz solo exige su nombre, porque el organigrama lo imprime en su cabecera— y <span class="id">BR‑ORG‑037</span> —el país se declara una vez y de él salen las ciudades de cada alta—. <b>Configuración</b> gana <span class="id">BR‑ORG‑038</span>: la vista previa se rehace en el momento y los interruptores se ajustan a lo que hay cargado. <b>Unidades de negocio</b> gana <span class="id">BR‑ORG‑039</span>: lo que agrupa se ve y no se asigna desde ahí, porque dos puertas para un dato terminan discrepando. Y entra el grupo <b>Las fichas y las listas</b>, que es la forma que comparten todos los tipos: <span class="id">BR‑ORG‑040</span> una sola ficha que abre para mirar, <span class="id">BR‑ORG‑041</span> lo obligatorio bloquea y dice por qué hace falta, y <span class="id">BR‑ORG‑042</span> la tabla dibuja el árbol y al buscar se aplana</td></tr>
         <tr><td class="rg"><strong>2.9</strong></td><td>10 sep 2026</td><td><strong>Tres asuntos con pantalla propia y sin reglas.</strong> <b>Dependencia funcional</b> pasa a ser su propio grupo: <span class="id">BR‑ORG‑031</span> cada apoyo es un par —la unidad y a quién responde ahí, elegido entre los cargos de esa unidad—, y <span class="id">BR‑ORG‑032</span> se dibuja con línea secundaria y no se cuenta dos veces, porque «¿cuánta gente tiene esta área?» no puede tener dos respuestas defendibles. <b>Los filtros:</b> <span class="id">BR‑ORG‑033</span> se leen como una frase que sin filtros sigue siendo verdad, y <span class="id">BR‑ORG‑034</span> «qué se dibuja» no es un filtro —cambia el papel, no a quién se deja afuera—. <b>Los colores:</b> <span class="id">BR‑ORG‑035</span> la empresa elige los tonos y nunca los significados, y el color nunca va solo: cada codificación lleva color, borde e ícono a la vez</td></tr>
         <tr><td class="rg"><strong>2.8</strong></td><td>10 sep 2026</td><td><strong>Niveles de mando pasa a ser su propio grupo.</strong> Tiene su pantalla, su editor y su dibujo, y estaba al final del grupo de Cargos como si fuera un detalle del cargo. Entran dos reglas que nadie había escrito y salen del prototipo: <span class="id">BR‑ORG‑029</span> un nivel de mando <b>no es una línea de mando</b> —los peldaños no se reportan entre sí, y por eso la escala se dibuja sin una sola línea entre los cuadros—, y <span class="id">BR‑ORG‑030</span> la altura de un cuadro se mide <b>contra su jefe y no contra su fila</b>, porque medir contra la fila dibujaba a un jefe de planta y a un pasante como pares</td></tr>
