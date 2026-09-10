@@ -13,6 +13,7 @@ import AyudaCampo from '../../components/personas/AyudaCampo'
 import ConfigMandos from '../../components/personas/ConfigMandos'
 import ConfigColores from '../../components/personas/ConfigColores'
 import SelectorLista from '../../components/personas/SelectorLista'
+import SelectorPersona from '../../components/personas/SelectorPersona'
 import ApoyoFuncional from '../../components/organizacion/ApoyoFuncional'
 import { ListaCrear } from '../../components/personas/MenuCrear'
 import ConfirmarAccionModal from '../../components/layout/ConfirmarAccionModal'
@@ -21,7 +22,7 @@ import PreviaLugar from '../../components/personas/PreviaLugar'
 import FraseFiltro from '../../components/personas/FraseFiltro'
 import Avatar from '../../components/personas/Avatar'
 import { exportarPNG, exportarSVG, imprimir } from '../../components/personas/exportarOrganigrama'
-import { TIPOS_UNIDAD, estadosDe } from '../../data/estructuraData'
+import { TIPOS_UNIDAD, estadosDe, lugaresPosibles, tipoDe as peldanoDe } from '../../data/estructuraData'
 import { colaboradoresData } from './colaboradoresData'
 import { useOnboardingData } from '../../context/OnboardingDataContext'
 import { lugaresDeSucursal } from '../../data/estructuraData'
@@ -639,10 +640,11 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                         mismo cargo esa confusión se paga. Y de paso deja de sugerir que acá se
                         elige gente: la persona se asigna en cada puesto, más abajo. */}
                     <span className="og-label-fila">
-                      Cuántos puestos
+                      Número máximo de ocupantes en este cargo
                       <AyudaCampo>
-                        Cuántas sillas de este mismo cargo se abren ahora. Cada una nace con su
-                        código y su sede — no es un puesto compartido entre varios.
+                        Cada ocupante ocupa una silla, y cada silla nace con su código y su sede —
+                        no es un puesto compartido entre varios. Es la misma pregunta que la ficha
+                        del cargo hace en Estructura organizacional.
                       </AyudaCampo>
                     </span>
                     <input
@@ -1034,7 +1036,12 @@ function avisoDeMudanza(unidad, form, org, empresa) {
 /* ---------- Modal: alta y detalle de una unidad organizacional ---------- */
 
 function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbrirCargo, abrirEnEdicion }) {
-  const { empresa } = useOnboardingData()
+  const { empresa, nodos, nivelesEstructura: nivelesEstr } = useOnboardingData()
+  /* EL DIRECTORIO, ORDENADO. Es el mismo que ofrece la ficha: si las dos pantallas eligen entre
+     listas distintas, el mismo nombre puede existir en una y no en la otra. */
+  const personasDelDirectorio = useMemo(() => colaboradoresData
+    .map(c => ({ nombre: c.name, cargo: c.cargo, initials: c.initials, color: c.color }))
+    .sort((a, b) => a.nombre.localeCompare(b.nombre)), [])
   const nueva = !unidad
   /* La misma regla que el cargo: se abre para mirar. Cambiar "Dentro de" o "Bajo el mando de"
      sin querer no corrige un nombre, mueve el área entera del dibujo y le cambia el jefe a su
@@ -1062,7 +1069,39 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
        no hay dónde más ponerlo; en cuanto tiene cabeza, el dueño del dato es esa cabeza y el
        campo lo lee de ella. Una sola verdad, mostrada desde el lado en que se está parado. */
     mandoId: (unidad ? cabezaDe(unidad.id, org)?.reportaA ?? unidad.mandoId : base?.mandoId) ?? null,
+    /* Vacío no es un dato que falte: es «usa el de la unidad de la que cuelgo». */
+    ubicacion: unidad?.ubicacion || '',
+    responsable: unidad?.responsable || '',
+    descripcion: unidad?.descripcion || '',
   }))
+
+  /* LOS SITIOS QUE SE PUEDEN ELEGIR salen del árbol y no de las sucursales de la demo: acá una
+     sede puede ser un nodo que alguien acaba de crear en Estructura. `arbol` los sangra por su
+     propio `padreId`, así que las sucursales cuelgan de su regional como en la otra pantalla. */
+  const sitios = useMemo(() => lugaresPosibles(nodos, nivelesEstr).map(n => ({
+    id: n.id,
+    nombre: `${peldanoDe(n.tipo, nivelesEstr)?.label}: ${n.nombre}`,
+    padreId: n.padreId ?? null,
+  })), [nodos, nivelesEstr])
+
+  /* QUÉ DICE «NO DECLARAR NADA». En primer nivel, «toda la empresa»: no hay de quién heredar.
+     Colgando de otra unidad, el sitio de su rama —se sube hasta la primera que declare uno— y se
+     nombra al PADRE, que es de quien lo saca y donde se cambia. */
+  /* SIN `useMemo`, como todo lo que depende del borrador: la dependencia sería un campo de
+     `form` y lo que se ahorraría son dos búsquedas en una lista de decenas de unidades. */
+  const heredaLugar = (() => {
+    const padre = form.padreId ? org.unidades.find(u => u.id === form.padreId) : null
+    if (!padre) return null
+    let p = padre
+    for (let i = 0; p && i < 30; i += 1) {
+      if (p.ubicacion) {
+        const sitio = sitios.find(x => x.id === p.ubicacion)
+        if (sitio) return { id: sitio.id, lugar: sitio.nombre, de: padre.nombre }
+      }
+      p = p.padreId ? org.unidades.find(u => u.id === p.padreId) : null
+    }
+    return { id: null, lugar: 'Toda la empresa', de: padre.nombre }
+  })()
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
   const valido = form.nombre.trim().length > 0 && !!form.tipoUnidad
@@ -1216,6 +1255,76 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
             />
           </div>
 
+          {/* DÓNDE ESTÁ: LA OTRA DIMENSIÓN. «Dentro de» y «Bajo el mando de» son las dos preguntas
+              del eje organizacional; esta es la del eje físico, y es la que decide si la unidad
+              aparece al filtrar el dibujo por una sucursal.
+
+              NO DECLARAR NADA ES UNA OPCIÓN Y SE LLAMA POR SU RESULTADO: la lista enseña qué sitio
+              se hereda y de quién, así que elegir otro es un paso y no un descubrimiento. */}
+          {sitios.length > 0 && (
+            <div className="pl-label">
+              <span className="og-label-fila">
+                Dónde está
+                <AyudaCampo>
+                  La región, la sucursal o el centro de trabajo al que pertenece esta unidad y
+                  todo lo que cuelgue de ella.<br /><br />
+                  Es la sede de la unidad, <strong>no la de su gente</strong>: cada puesto puede
+                  declarar otra si trabaja en otro sitio.
+                </AyudaCampo>
+              </span>
+              <SelectorLista
+                valor={form.ubicacion || null}
+                /* Elegir el que ya se hereda vuelve a heredar, no lo copia. */
+                onCambio={v => set('ubicacion', !v || v === heredaLugar?.id ? '' : v)}
+                vacia={heredaLugar ? heredaLugar.lugar : 'Toda la empresa'}
+                opciones={sitios}
+                arbol
+              />
+              {heredaLugar && !form.ubicacion && (
+                <p className="og-field-nota">Heredado de <strong>{heredaLugar.de}</strong></p>
+              )}
+              {heredaLugar && form.ubicacion && (
+                <p className="og-field-nota">
+                  Declarado en esta unidad: no cambia si <strong>{heredaLugar.de}</strong> se muda.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* AL FINAL Y NO ENTRE MEDIO. Es el único campo largo del formulario, y puesto arriba
+              empuja hacia abajo todo lo que sí hace falta para crear. */}
+          <label className="pl-label">
+            <span className="og-label-fila">Descripción</span>
+            <textarea
+              className="pl-input pl-area"
+              rows={3}
+              value={form.descripcion}
+              placeholder="Qué hace esta unidad, de qué responde…"
+              onChange={e => set('descripcion', e.target.value)}
+            />
+          </label>
+
+          {/* QUIÉN RESPONDE POR EL ÁREA, que no es de quién depende. Este es una PERSONA y es a
+              quién se le pregunta; el de abajo es un PUESTO y es lo que dibuja la línea. Puestos
+              uno al lado del otro sin aclararlo se confunden, así que cada uno lo dice. */}
+          <div className="pl-label">
+            <span className="og-label-fila">
+              Responsable
+              <AyudaCampo>
+                Quién contesta por esta unidad — una persona del directorio.<br /><br />
+                <strong>No dibuja la línea del organigrama</strong>: eso lo hace «Bajo el mando
+                de», que es un puesto y no una persona.
+              </AyudaCampo>
+            </span>
+            <SelectorPersona
+              valor={form.responsable}
+              personas={personasDelDirectorio}
+              onCambio={v => set('responsable', v || '')}
+              ariaLabel="Responsable de la unidad"
+              vacioNota="Cuando des de alta a tu gente en Colaboradores aparecerá aquí."
+            />
+          </div>
+
           {/* DE QUIÉN DEPENDE, que es distinto de dónde está. "Dentro de" agrupa; esto dibuja la
               línea. Se intentó deducirlo —colgar el área de la cabeza de su madre— y se cae en
               cuanto la madre tiene tres cargos sin jefe: el dibujo elegía uno adivinando. */}
@@ -1333,6 +1442,9 @@ function UnidadModal({ unidad, base, org, onGuardar, onEliminar, onCerrar, onAbr
               estado: form.estado || 'activa',
               padreId: form.padreId,
               mandoId: form.mandoId ?? null,
+              ubicacion: form.ubicacion || '',
+              responsable: form.responsable || '',
+              descripcion: form.descripcion.trim(),
             })}
           >
             {nueva ? 'Crear unidad' : 'Guardar cambios'}

@@ -12,11 +12,14 @@ import { getUnidad, subunidadesDe } from '../../data/organigramaData'
    en la lista de otra pantalla. */
 const MAX_HIJOS = 4
 
-function MiniPildora({ nombre, foco, marca }) {
+function MiniPildora({ nombre, tipo, foco, marca }) {
   return (
     <div className={`og-pv-card og-pv-uni${foco ? ' og-pv-foco' : ''}`}>
       {marca && <span className="og-pv-tag">{marca}</span>}
       <span className="og-pv-nom"><Building2 size={11} /> {nombre}</span>
+      {/* DEBAJO DEL NOMBRE Y NO AL LADO: es el mismo sitio donde el cuadro de un cargo pone su
+          área, así que las dos clases de caja se leen igual —nombre arriba, qué es abajo—. */}
+      {tipo && <span className="og-pv-sub">{tipo}</span>}
     </div>
   )
 }
@@ -36,7 +39,7 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
   const cargos = unidad ? org.cargos.filter(c => c.unidadId === unidad.id) : []
   const subs = unidad ? subunidadesDe(unidad.id, org) : []
   const dentro = [
-    ...subs.map(u => ({ id: `u-${u.id}`, nombre: u.nombre, unidad: true })),
+    ...subs.map(u => ({ id: `u-${u.id}`, nombre: u.nombre, tipo: u.tipoUnidad, unidad: true })),
     ...cargos.map(c => ({ id: c.id, nombre: c.nombre })),
   ]
   const visibles = dentro.slice(0, MAX_HIJOS)
@@ -49,6 +52,7 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
         foco
         marca={nueva ? 'Nueva' : 'Esta unidad'}
         nombre={form.nombre.trim() || 'Sin nombre todavía'}
+        tipo={form.tipoUnidad}
       />
 
       {dentro.length > 0 && (
@@ -56,7 +60,7 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
           {visibles.map(h => (
             <div key={h.id} className="og-pv-hijo">
               {h.unidad
-                ? <MiniPildora nombre={h.nombre} />
+                ? <MiniPildora nombre={h.nombre} tipo={h.tipo} />
                 : (
                   <div className="og-pv-card">
                     <span className="og-pv-nom"><User size={11} /> {h.nombre}</span>
@@ -80,7 +84,13 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
     <>
       <div className="og-pv-card">
         <span className="og-pv-nom"><User size={11} /> {mando.nombre}</span>
-        <span className="og-pv-sub">Manda esta unidad</span>
+        {/* «AL MANDO DE» Y NO «MANDA». Es el mismo verbo convertido en cargo: «manda» describe a
+            una persona mandando —y en español suena a orden— mientras que «al mando de» nombra la
+            posición, que es lo que el dibujo está enseñando. Y no se cambia por «lidera»: liderar
+            no es lo mismo que ser la jefatura formal —se puede liderar sin que nadie te reporte—
+            y además esa palabra no aparece ni una vez en la documentación del módulo, que se
+            apoya entera en «mando»: nivel de mando, línea de mando, bajo el mando de. */}
+        <span className="og-pv-sub">Al mando de esta unidad</span>
       </div>
       <div className="og-pv-rama"><div className="og-pv-hijo">{foco}</div></div>
     </>
@@ -92,7 +102,7 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
     <div className={`og-pv-rama${camino.length === 0 ? ' og-pv-rama-raiz' : ''}`}>
       <div className="og-pv-hijo">
         {i < camino.length
-          ? <><MiniPildora nombre={camino[i].nombre} />{escalon(i + 1)}</>
+          ? <><MiniPildora nombre={camino[i].nombre} tipo={camino[i].tipoUnidad} />{escalon(i + 1)}</>
           : rama}
       </div>
     </div>
@@ -113,7 +123,7 @@ export default function PreviaUnidad({ form, org, unidad, nueva, empresa }) {
 
       <div className="og-pv-tree">
         {camino.length > 0
-          ? <><MiniPildora nombre={camino[0].nombre} />{escalon(1)}</>
+          ? <><MiniPildora nombre={camino[0].nombre} tipo={camino[0].tipoUnidad} />{escalon(1)}</>
           : escalon(0)}
       </div>
 

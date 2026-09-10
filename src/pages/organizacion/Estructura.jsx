@@ -7,7 +7,7 @@ import {
 import { useOnboardingData } from '../../context/OnboardingDataContext'
 import {
   tipoDe, estaEncendido, tiposDeVista, vistasDeEje, gruposDe, padresPosibles, ordenDe, estadosDe, verboApagar,
-  descendientes, filasEje, ancestroDe, hexDeColor, nuevoDe, primerDe,
+  descendientes, filasEje, ancestroDe, hexDeColor, nuevoDe, primerDe, cargosDeNodos, lineaDe, MUESTRAN_LINEA,
 } from '../../data/estructuraData'
 import ConfirmarBorrado from '../../components/organizacion/ConfirmarBorrado'
 import PastillaEstado from '../../components/organizacion/PastillaEstado'
@@ -108,15 +108,32 @@ export default function Estructura({ eje }) {
   /* ABRIR UNA SILLA es crear su puesto y llevar a su ficha: lo que sigue después —el código, la
      sede, quién la ocupa— es justo lo que esa ficha pregunta. Crearla y dejar a alguien mirando la
      tabla obligaría a buscarla para completarla. */
-  const abrirSilla = (cargo, i) => {
+  const abrirSilla = (cargo, i, editar = true) => {
     const nid = `${cargo.id}-p${i + 1}`
     const libre = nodos.some(n => n.id === nid) ? `${nid}-${Date.now().toString(36)}` : nid
     setNodos(prev => [...prev, {
       id: libre, tipo: 'puesto', nombre: cargo.nombre, padreId: cargo.id,
-      codigo: '', ubicacion: '', ocupanteId: null, ocupante: '', reportaA: null,
+      /* NACE CON LA JEFATURA POR DEFECTO DE SU CARGO. Antes nacía suelta y había que entrar a su
+         ficha a decir de quién depende — un puesto sin eso se guarda bien y no aparece colgado de
+         ninguna parte en el organigrama, que es la peor forma de faltar un dato. */
+      codigo: '', ubicacion: '', ocupanteId: null, ocupante: '',
+      reportaA: cargo.jefeSillas || null,
       funcionales: [], estado: 'activa',
     }])
-    navigate(`/organizacion/nodo/${libre}?editar=1`)
+    navigate(`/organizacion/nodo/${libre}${editar ? '?editar=1' : ''}`)
+  }
+
+  /* ELIMINAR UNA SILLA QUE NADIE ABRIÓ ES BAJAR EL CUPO. No hay puesto que borrar: esa fila
+     existe porque el cargo declara que caben tantas personas, así que quitarla es decir que
+     caben una menos. Nunca baja por debajo de las sillas que sí existen —eso sería borrar
+     puestos con datos por la puerta de atrás—. */
+  const quitarSilla = cargo => {
+    const propias = nodos.filter(n => n.tipo === 'puesto' && n.padreId === cargo.id).length
+    const total = Math.max(propias, Number(cargo.maxPersonas) || 0)
+    setAccionesEn(null)
+    setNodos(prev => prev.map(n => (
+      n.id === cargo.id ? { ...n, maxPersonas: Math.max(propias, total - 1) } : n
+    )))
   }
 
   /* QUÉ SILLA TIENE ABIERTO SU «DÓNDE MÁS TRABAJA». Es un modal y no una fila que se despliega:
@@ -174,15 +191,68 @@ export default function Estructura({ eje }) {
 
   /* EL VALOR DE CADA COLUMNA, calculado aparte de la fila para poder preguntarle a la vista
      entera si alguna columna está vacía de arriba abajo. */
+  /* LAS PLAZAS, POR SU ID. `reportaA` guarda el id de una SILLA —no de un cargo—, porque dos
+     sillas del mismo cargo pueden responderle a jefes distintos. Para enseñar un nombre hay que
+     ir a buscarla, y es la misma cuenta que hace el organigrama para dibujar la línea. */
+  const plazas = useMemo(() => new Map(cargosDeNodos(nodos).map(p => [p.id, p])), [nodos])
+
+  /* DE QUIÉN DEPENDE ESTA FILA.
+       · Una silla lo dice ella misma: su `reportaA`.
+       · Un cargo no lo guarda —el dato vive en cada silla— así que se lee de las suyas. Si todas
+         responden al mismo, ese es el nombre; si no, se dice cuántas jefaturas hay y no se elige
+         una, que sería mentir en la fila donde el dato más importa. */
+  const jefeDe = nodo => {
+    if (nodo.tipo === 'puesto') return plazas.get(nodo.reportaA)?.nombre || null
+    if (nodo.tipo !== 'cargo') return null
+    const suyos = new Set(nodos
+      .filter(n => n.tipo === 'puesto' && n.padreId === nodo.id && n.reportaA)
+      .map(n => n.reportaA))
+    if (suyos.size === 0) return null
+    if (suyos.size === 1) return plazas.get([...suyos][0])?.nombre || null
+    return `${suyos.size} jefaturas`
+  }
+
+  /* CUÁNTA GENTE HAY EN UN CARGO. Las sillas son las que existen o las que declara el cupo —la
+     misma cuenta que hace `sillasDe` para desplegarlas— y de esas, las que tienen a alguien.
+
+       · Una sola silla  → el nombre de quien la ocupa, o «Vacante». Decir «1 de 1» sería esconder
+         el dato que ya cabe: quién es.
+       · Varias          → «2 de 5», que es la respuesta corta a si el rol está cubierto.
+       · Ninguna         → nada. El cargo existe y todavía no declaró cuántas sillas tiene; un
+         «0 de 0» sería inventar una cuenta que nadie hizo. */
+  const ocupacionDe = cargo => {
+    const propias = nodos.filter(n => n.tipo === 'puesto' && n.padreId === cargo.id)
+    const total = Math.max(propias.length, Number(cargo.maxPersonas) || 0)
+    if (total === 0) return null
+    const gente = propias.filter(p => p.ocupante || p.ocupanteId != null)
+    if (total === 1) return gente.length === 1 ? (gente[0].ocupante || 'Ocupado') : 'Vacante'
+    return `${gente.length} de ${total}`
+  }
+
+  const nombreDeLinea = id => (id ? nodos.find(n => n.id === id)?.nombre || null : null)
+
   const celdaDe = nodo => {
-    const padre = nodo.padreId ? nodos.find(n => n.id === nodo.padreId) : null
+    /* A QUÉ PERTENECE UNA SILLA: A LA UNIDAD, NO A SU CARGO. El padre de una silla es el cargo,
+       y ponerlo repetiría el nombre del renglón de arriba, del que ya cuelga visiblemente. Lo
+       que no se ve es en qué área trabaja, así que se sube un peldaño más. */
+    const directo = nodo.padreId ? nodos.find(n => n.id === nodo.padreId) : null
+    const padre = nodo.tipo === 'puesto' && directo?.padreId
+      ? nodos.find(n => n.id === directo.padreId) || directo
+      : directo
     const suc = ancestroDe(nodo.id, 'sucursal', nodos)
     return {
       padre: padre ? padre.nombre : null,
+      jefe: jefeDe(nodo),
       sucursal: suc && suc.id !== nodo.id ? suc.nombre : null,
       ciudad: nodo.ciudad || nodo.localidad,
       codigo: nodo.codigo,
-      responsable: nodo.responsable || nodo.ocupante,
+      responsable: nodo.tipo === 'cargo'
+        ? ocupacionDe(nodo)
+        : nodo.responsable || nodo.ocupante,
+      /* LA LÍNEA RESUELTA, no la declarada. La columna contesta «¿de qué negocio es esta fila?»,
+         y a esa pregunta una sucursal que hereda de su regional contesta igual de bien que la
+         regional que la declaró. Enseñar solo lo declarado dejaría la columna casi vacía. */
+      linea: nombreDeLinea(lineaDe(nodo.id, nodos)),
     }
   }
 
@@ -238,14 +308,45 @@ export default function Estructura({ eje }) {
     const hayPadres = tiposVisibles.some(k =>
       padresPosibles({ tipo: k }, nodos, niveles).length > 0)
 
-    const hayAncestroSucursal = tiposVisibles.some(k =>
-      ordenDe('sucursal', niveles) < ordenDe(k, niveles) && estaEncendido('sucursal', niveles))
+    /* LA REGLA DEL ORDEN NO ALCANZA PARA SABER SI ALGO PUEDE TENER SUCURSAL ENCIMA. Decía «la
+       sucursal está más arriba en la escalera, entonces puede ser su ancestro», y eso vale para
+       los peldaños que cuelgan por orden. La unidad de negocio no cuelga de NADA —declara
+       `soloBajo` vacío— así que no tiene ancestros de ninguna clase, y la columna «Sucursal» le
+       salía siempre en guiones.
 
-    return eje.columnas.filter(c => {
-      if (c.key === 'padre') return hayPadres
-      if (c.key === 'sucursal') return hayAncestroSucursal
-      return (c.claves || [c.key]).some(k => preguntados.has(k))
-    })
+       Un peldaño que no puede tener padre no puede tener abuelo: se pregunta eso primero. */
+    const cuelgaDeAlgo = k => {
+      const t = tipoDe(k, niveles)
+      return !(Array.isArray(t?.soloBajo) && t.soloBajo.length === 0)
+    }
+    const hayAncestroSucursal = tiposVisibles.some(k =>
+      cuelgaDeAlgo(k)
+      && ordenDe('sucursal', niveles) < ordenDe(k, niveles)
+      && estaEncendido('sucursal', niveles))
+
+    /* EN CARGOS LA COLUMNA NO DICE «RESPONSABLE», DICE «QUIÉN LO OCUPA». Es el rótulo que usa la
+       ficha del puesto para el mismo dato, así que la tabla y el formulario hablan igual; y
+       «Responsable» acá sonaba a jefatura, que es lo que contesta la columna de al lado. */
+    const enCargos = tiposVisibles.includes('cargo')
+
+    return eje.columnas
+      .filter(c => {
+        if (c.key === 'padre') return hayPadres
+        if (c.key === 'jefe') return enCargos
+        /* Sin ninguna línea declarada en la empresa, la columna sería de guiones de arriba abajo:
+           no es un dato que falte, es un nivel que esta empresa no usa. */
+        /* Y SOLO EN LAS TABLAS DE QUIEN PUEDE DECLARARLA. En «Unidades de negocio» la columna
+           preguntaba a qué línea pertenece cada línea, que no es una pregunta. */
+        if (c.key === 'linea') {
+          return nodos.some(n => n.tipo === 'negocio')
+            && tiposVisibles.some(k => MUESTRAN_LINEA.includes(k))
+        }
+        if (c.key === 'sucursal') return hayAncestroSucursal
+        return (c.claves || [c.key]).some(k => preguntados.has(k))
+      })
+      .map(c => (enCargos && c.key === 'responsable'
+        ? { ...c, label: 'Quién lo ocupa' }
+        : c))
   }, [eje, tiposVisibles.join(), nodos, niveles])
 
   const POR_PAGINA = 10
@@ -510,11 +611,12 @@ export default function Estructura({ eje }) {
 
                   <td><PastillaEstado tipo={nodo.tipo} estado={nodo.estado} /></td>
 
-                  {/* LA FILA MIRA, EL MENÚ HACE. Pulsar la fila abre la ficha en lectura, que
-                      es lo que uno quiere nueve de cada diez veces; lo que modifica —editar,
-                      eliminar— vive detrás de los tres puntos, que es donde no se pulsa por
-                      error mientras se recorre la tabla. Y editar abre YA en edición: un botón
-                      que dice editar no puede pedir que se pulse "Editar" otra vez. */}
+                  {/* LA FILA MIRA, EL MENÚ HACE. Ninguna fila de esta tabla navega: recorrerla
+                      es pulsar por error, y una fila que se va a otra pantalla convierte cada
+                      error en una salida. Ver, editar, cambiar estado y eliminar viven detrás de
+                      los tres puntos, que es donde se busca «qué puedo hacer con esto». Y editar
+                      abre YA en edición: un botón que dice editar no puede pedir que se pulse
+                      "Editar" otra vez. */}
                   <td className="est-acciones">
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                       <button
@@ -574,12 +676,11 @@ export default function Estructura({ eje }) {
                     enseñar las dos que faltan, no un hueco que hay que calcular restando. */}
                 {sillas.map((silla, i) => {
                   const cel = silla ? celdaDe(silla) : null
+                  const claveSilla = silla ? silla.id : `${nodo.id}#sin${i}`
                   return (
                     <tr
                       key={`${nodo.id}-silla-${i}`}
                       className={`est-silla${silla ? '' : ' est-silla-vacante'}`}
-                      onClick={silla ? () => navigate(`/organizacion/nodo/${silla.id}`) : undefined}
-                      style={silla ? { cursor: 'pointer' } : undefined}
                     >
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 9, paddingLeft: (nivel + 1) * 22 }}>
@@ -621,14 +722,17 @@ export default function Estructura({ eje }) {
 
                       {columnas.map(c => (
                         <td key={c.key} className={c.num ? 'est-col-num' : undefined}>
-                          {cel && cel[c.key]
-                            ? <span>{cel[c.key]}</span>
-                            /* «VACANTE» Y NO UN GUION en la columna de quién la ocupa. Un guion dice
-                               «este dato falta»; acá no falta nada, la plaza está abierta y sin
-                               cubrir, que es una respuesta y además la que se viene a buscar. */
-                            : c.key === 'responsable'
-                              ? <span className="est-silla-vac">Vacante</span>
-                              : <span style={{ color: 'var(--text-muted)' }}>—</span>}
+                          {!silla ? null
+                            : cel && cel[c.key]
+                              ? <span>{cel[c.key]}</span>
+                              /* «VACANTE» Y NO UN GUION en la columna de quién la ocupa. Un guion
+                                 dice «este dato falta»; acá no falta nada, la plaza está abierta y
+                                 sin cubrir, que es una respuesta y además la que se viene a
+                                 buscar. Y es la misma palabra que usa la fila del cargo cuando
+                                 tiene una sola silla y está libre. */
+                              : c.key === 'responsable'
+                                ? <span className="est-silla-vac">Vacante</span>
+                                : <span style={{ color: 'var(--text-muted)' }}>—</span>}
                         </td>
                       ))}
 
@@ -640,19 +744,67 @@ export default function Estructura({ eje }) {
 
                       <td className="est-acciones">
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                          {/* UN SOLO BOTÓN Y DICE LO QUE HACE. La silla abierta se edita; la que no
-                              existe todavía se abre, y abrirla es crearla y llevar a su ficha. */}
                           <button
-                            className="est-accion"
-                            onClick={e => {
-                              e.stopPropagation()
-                              if (silla) navigate(`/organizacion/nodo/${silla.id}?editar=1`)
-                              else abrirSilla(nodo, i)
-                            }}
+                            className="est-editar"
+                            aria-label={`Acciones de ${silla?.codigo || `la silla ${i + 1}`}`}
+                            aria-haspopup="menu"
+                            aria-expanded={accionesEn === claveSilla}
+                            onClick={e => abrirAcciones(e, claveSilla)}
                           >
-                            {silla ? <><Pencil size={13} /> Editar</> : <><Plus size={13} /> Abrir</>}
+                            <MoreVertical size={15} />
                           </button>
                         </div>
+
+                        {accionesEn === claveSilla && (
+                          <div className="est-acciones-menu" role="menu" style={posAcciones}>
+                            {/* ENTRAR A UNA SILLA SIN ABRIR LA ABRE. Antes había que pulsar
+                                «Abrir» y recién entonces existía algo que ver: dos pasos para lo
+                                que es una sola intención. La plaza ya está declarada en el cupo
+                                del cargo; crear su puesto es el trámite, y el trámite lo hace el
+                                sistema al entrar. */}
+                            <button
+                              className="est-accion"
+                              onClick={e => {
+                                e.stopPropagation()
+                                if (silla) navigate(`/organizacion/nodo/${silla.id}`)
+                                else abrirSilla(nodo, i, false)
+                              }}
+                            >
+                              <Eye size={13} /> Ver detalle
+                            </button>
+                            <button
+                              className="est-accion"
+                              onClick={e => {
+                                e.stopPropagation()
+                                if (silla) navigate(`/organizacion/nodo/${silla.id}?editar=1`)
+                                else abrirSilla(nodo, i)
+                              }}
+                            >
+                              <Pencil size={13} /> Editar
+                            </button>
+                            {/* CAMBIAR ESTADO SOLO EN LA QUE EXISTE. Una silla sin abrir no tiene
+                                estado que cambiar: el suyo es «sin abrir», y eso se arregla
+                                entrando, no eligiendo de una lista. */}
+                            {silla && (
+                              <button
+                                className="est-accion"
+                                onClick={e => { e.stopPropagation(); abrirEstado(silla) }}
+                              >
+                                <ToggleLeft size={13} /> Cambiar estado
+                              </button>
+                            )}
+                            <button
+                              className="est-accion est-accion-riesgo"
+                              onClick={e => {
+                                e.stopPropagation()
+                                if (silla) { setAccionesEn(null); setBorrando(silla) }
+                                else quitarSilla(nodo)
+                              }}
+                            >
+                              <Trash2 size={13} /> Eliminar
+                            </button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   )
@@ -772,7 +924,20 @@ export default function Estructura({ eje }) {
         <ConfirmarBorrado
           nombre={borrando.nombre}
           tipo={tipoDe(borrando.tipo, niveles)?.label}
-          hijos={descendientes(borrando.id, nodos).length}
+          /* A UNA UNIDAD DE NEGOCIO NO LE CUELGA NADA: la retienen los que la declararon. Sin
+             esto, la cuenta daba cero y borrarla dejaba a sus sucursales apuntando a algo que ya
+             no existe. */
+          hijos={borrando.tipo === 'negocio'
+            ? nodos.filter(n => n.lineaNegocio === borrando.id).length
+            : descendientes(borrando.id, nodos).length}
+          bloqueoTexto={borrando.tipo === 'negocio' ? (
+            <>
+              <strong>{borrando.nombre}</strong> la declararon{' '}
+              {nodos.filter(n => n.lineaNegocio === borrando.id).length} nodos de la estructura.
+              Cámbiales la unidad de negocio y vuelve a intentarlo: borrarla los dejaría apuntando
+              a algo que ya no existe. Si solo quieres dejar de usarla, desactívala.
+            </>
+          ) : undefined}
           onCerrar={() => setBorrando(null)}
           onEliminar={() => { setNodos(prev => prev.filter(n => n.id !== borrando.id)); setBorrando(null) }}
         />

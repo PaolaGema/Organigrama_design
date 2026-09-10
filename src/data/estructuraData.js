@@ -43,11 +43,11 @@ import { NOMBRES_PAISES, departamentosDe, ciudadesDeDepartamento } from './paise
    dónde vive, y eso es lo que hace que aparezca en su pantalla sin tocar una línea de código. */
 export const TIPOS_BASE = [
   { key: 'empresa',  label: 'Empresa',            plural: 'Empresa',      fijo: true, eje: null,
-    desc: 'La raíz. Se define en Datos de la empresa.' },
+    desc: 'La raíz del árbol: de ella cuelga todo lo demás. Se define en Datos de la empresa.' },
   { key: 'region',   label: 'Región',             plural: 'Regionales',   eje: 'fisica',
-    desc: 'Agrupa sucursales por geografía. Para filtrar y consolidar, no para mandar.' },
+    desc: 'Una agrupación geográfica de sucursales. Sirve para filtrar y consolidar información —las ventas de todo el oriente— y no para mandar: nadie le reporta a una región.' },
   { key: 'sucursal', label: 'Sucursal',           plural: 'Sucursales',   eje: 'fisica',
-    desc: 'La sede desde la que se opera en un sitio. Debajo van sus centros de trabajo.' },
+    desc: 'Una sede desde la que opera la empresa: una dirección física con su gente. Debajo van sus centros de trabajo.' },
   /* CENTRO DE TRABAJO Y NO «OFICINA». El nombre viejo era «Oficina o centro», y un nombre con
      «o» en el medio es un nombre que no se pudo decidir. La descripción ya decía lo que este
      peldaño es de verdad —donde se marca asistencia— y eso no es una oficina: es una oficina, un
@@ -59,7 +59,7 @@ export const TIPOS_BASE = [
      oficinas lo renombra «Oficina». Al revés no funciona —arrancar en «Oficina» obliga a
      descubrir que se puede renombrar para dejar de leer una palabra equivocada—. */
   { key: 'centro',   label: 'Centro de trabajo', plural: 'Centros de trabajo', eje: 'fisica',
-    desc: 'Dónde se marca asistencia: una oficina, un almacén, una planta.' },
+    desc: 'El sitio concreto donde se trabaja y se marca asistencia: una oficina, un almacén, una planta. Normalmente vive dentro de una sucursal, pero puede colgar de una regional o directo de la empresa.' },
   /* UN SOLO PELDAÑO PARA LA ESTRUCTURA INTERNA, Y LA PALABRA COMO DATO.
      Eran dos —«Área» y «Subárea o depto.»— y esa partición no describe ninguna empresa: nadie
      tiene áreas y subáreas, tiene una Dirección Comercial con una Gerencia de Ventas dentro y un
@@ -92,7 +92,12 @@ export const TIPOS_BASE = [
      decir «Negocios», que es otra cosa: el negocio es a lo que se dedica la empresa, la unidad
      de negocio es la división que lo lleva—. Al hacer que un campo mande, los campos flojos
      dejan de ser inofensivos. */
+  /* CUELGA DE LA EMPRESA Y DE NADA MÁS. `soloBajo` vacío no es un descuido: dice que ningún
+     peldaño puede ser su padre. Antes colgaba de una regional, una sucursal o un centro, y eso la
+     ataba a UN sitio cuando lo suyo es agrupar VARIOS —Farmacias toma Oriente y Valles, no una—.
+     La pertenencia va al revés: la declara cada nodo, no la línea. */
   { key: 'negocio',  label: 'Unidad de negocio',  plural: 'Unidades de negocio', eje: 'organizacional',
+    soloBajo: [],
     /* NO ES UN ESCALÓN DE AUTORIDAD, y la descripción vieja decía justo eso: «una división que
        manda, su gerente reporta a la gerencia general». La cadena de mando la arma la UNIDAD
        ORGANIZACIONAL —Dirección, Gerencia, Departamento, cada una colgando de la de arriba— y con
@@ -102,10 +107,10 @@ export const TIPOS_BASE = [
        tipo de peldaño que la Región, que agrupa para consolidar y tampoco manda, y por eso su
        descripción tiene la misma forma. Y de paso deja de prometer un gerente que la ficha no
        guarda en ninguna parte. */
-    desc: 'La línea de negocio por la que la empresa separa lo que hace: Retail, Corporativo, Servicios. Agrupa para medir, no para mandar.' },
+    desc: 'Uno de los frentes en los que la empresa separa lo que hace: Retail, Corporativo, Servicios. No manda sobre nadie: sirve para saber cuánta gente y cuánto cuesta cada frente.' },
   { key: 'unidad',   label: 'Unidad organizacional', plural: 'Unidades organizacionales',
     fijo: true, anidable: true, eje: 'organizacional',
-    desc: 'Agrupa personas y cargos: direcciones, gerencias, departamentos, áreas y equipos.' },
+    desc: 'Agrupa personas y cargos. Puede ser un área, una subárea, una dirección, una gerencia, un departamento, una sección o un equipo, y puede contener otras unidades sin límite de profundidad.' },
   /* EL CARGO ES PARTE DE CÓMO SE ORGANIZA EL TRABAJO, así que vive en ese eje y no fuera del
      mapa. Estaba fuera de todo eje —«se administra en su propia pantalla»— y esa pantalla no podía
      crear ninguno: el catálogo de cargos se DEDUCE agrupando los puestos por nombre, así que un
@@ -117,7 +122,7 @@ export const TIPOS_BASE = [
      pertenece a un área, y dónde se trabaja lo dice el puesto, que es otra cosa. */
   { key: 'cargo',    label: 'Cargo',              plural: 'Cargos',       fijo: true,
     eje: 'organizacional', soloBajo: ['unidad'],
-    desc: 'La definición de un rol: cómo se llama, en qué unidad vive y qué nivel de mando tiene.' },
+    desc: 'La definición de un rol, no una persona: cómo se llama, en qué unidad vive y qué nivel de mando tiene. Un mismo cargo puede tener varias personas a la vez.' },
   /* EL PUESTO ES LA SILLA, Y ES DONDE LOS TRES EJES SE TOCAN.
      El cargo dice QUÉ se hace —«Ejecutiva Comercial»— y el puesto es una de las sillas concretas
      de ese cargo: cuelga de él, se trabaja en un centro de trabajo y la ocupa una persona. Ahí
@@ -136,7 +141,7 @@ export const TIPOS_BASE = [
      exactamente una silla— y esa elección no la tiene que hacer nadie. */
   { key: 'puesto',   label: 'Puesto',             plural: 'Puestos',      fijo: true,
     eje: 'organizacional', soloBajo: ['cargo'], sinVista: true,
-    desc: 'Una silla concreta de un cargo: dónde se trabaja y quién la ocupa.' },
+    desc: 'Una silla concreta de un cargo: dónde se trabaja y quién la ocupa. Si el cargo «Vendedor» tiene seis puestos, son seis sillas, ocupadas o vacantes.' },
 ]
 
 /* CÓMO SE LLAMA CADA UNIDAD EN EL ORGANIGRAMA DE LA EMPRESA.
@@ -307,7 +312,14 @@ export const primerDe = tipo => (PELDAÑOS_MASCULINOS.has(tipo) ? 'el primero' :
    niveles guardados: seguiría diciendo que vive en «Estructura organizacional». La única salida
    era cambiar otra vez el nombre de la llave y hacerle perder los renombres a todo el mundo. Con
    esto, un cambio de estructura viaja solo y los renombres se quedan. */
-const DEL_SISTEMA = ['eje', 'fijo', 'anidable']
+const DEL_SISTEMA = ['eje', 'fijo', 'anidable', 'soloBajo']
+
+/* SE COMPARA CON CUIDADO PORQUE UNO DE ELLOS ES UNA LISTA. `soloBajo` es un arreglo, y dos
+   arreglos con el mismo contenido nunca son iguales con `!==`: sin esto el peldaño se daría por
+   desfasado en cada pasada y se reharía siempre. Se comparan por su contenido. */
+const distinto = (a, b) => (Array.isArray(a) || Array.isArray(b)
+  ? JSON.stringify(a ?? null) !== JSON.stringify(b ?? null)
+  : a !== b)
 
 export const sanearNiveles = niveles => {
   const conocidos = new Map(TIPOS_BASE.map(t => [t.key, t]))
@@ -315,7 +327,7 @@ export const sanearNiveles = niveles => {
     .filter(t => conocidos.has(t.key) || t.propio)
     .map(t => {
       const base = conocidos.get(t.key)
-      const desfasados = base ? DEL_SISTEMA.filter(k => t[k] !== base[k]) : []
+      const desfasados = base ? DEL_SISTEMA.filter(k => distinto(t[k], base[k])) : []
       if (!desfasados.length) return t
       const sig = { ...t }
       desfasados.forEach(k => { sig[k] = base[k] })
@@ -415,6 +427,16 @@ export const lugaresDeSucursal = (nodos, sucursalId) => {
 
 export const nivelesVisibles = niveles =>
   lista(niveles).filter(t => !t.sinVista && estaEncendido(t.key, niveles))
+
+/* LA CADENA DE ESCALONES, que es otra cosa que la lista de niveles. La cadena promete que «cada
+   uno cuelga del anterior», así que solo puede llevar a los que de verdad cuelgan: la línea de
+   negocio no cuelga de nada y nada cuelga de ella —agrupa por fuera del árbol— y dibujarla en el
+   medio prometía que la unidad organizacional depende de ella, que es falso.
+
+   Se reconoce por lo que declara y no por su nombre: cualquier peldaño que diga que ningún padre
+   le sirve queda fuera de la cadena por la misma razón. */
+export const nivelesEnCadena = niveles =>
+  nivelesVisibles(niveles).filter(t => !(Array.isArray(t.soloBajo) && t.soloBajo.length === 0))
 
 /* Y la lista completa para la tabla de configuración: los apagados también se enseñan —hay que
    poder encenderlos— pero los sin puerta propia siguen fuera. */
@@ -602,8 +624,105 @@ export function padresPosibles(nodo, nodos, niveles) {
    piden tres campos —uno por peldaño— porque son la misma pregunta a distinta altura, y tres
    desplegables sueltos dejan elegir una sucursal que no está en la regional elegida. Un solo
    nodo del árbol físico no puede contradecirse a sí mismo. */
+/* ══ A QUÉ LÍNEA DE NEGOCIO PERTENECE ALGO ═══════════════════════════════════════════
+   Los peldaños que pueden DECLARAR una línea. No están todos a propósito:
+
+     · La declaran los que una empresa reparte entre sus frentes —regionales, sucursales, centros
+       de trabajo y unidades organizacionales—. Cuál de esos usa cada empresa es cosa suya: una
+       cadena reparte por sucursales, un holding por regionales, una consultora por áreas.
+     · NO la declaran el cargo ni el puesto. Un vendedor no elige de qué negocio es: lo es porque
+       trabaja donde trabaja. Preguntárselo abriría la puerta a que su respuesta contradiga a la
+       de su área, y entonces «¿cuánta gente tiene Farmacias?» tendría dos respuestas. */
+export const DECLARAN_LINEA = ['region', 'sucursal', 'centro', 'unidad']
+
+/* Y quiénes la ENSEÑAN, que son más: el cargo y el puesto no eligen la suya —les llega por su
+   unidad— pero saberla es media razón de que el peldaño exista. */
+export const MUESTRAN_LINEA = [...DECLARAN_LINEA, 'cargo', 'puesto']
+
+/* DE QUÉ LÍNEA ES UN NODO: la del primero que la declare, subiendo. Y se sube por dos caminos,
+   en este orden:
+
+     1 · POR LA CADENA ORGANIZACIONAL —de quién cuelga— que es la respuesta natural: una subárea
+         es del negocio de su área.
+     2 · SI ESA CADENA NO DICE NADA, por el ANCLA FÍSICA: dónde opera. Es el mismo salto de un eje
+         al otro que ya hace `ancestroDe` con la sucursal, y es lo que hace que funcione la empresa
+         que reparte por sucursales: su Contabilidad no declara línea, pero opera en la Sucursal A,
+         que es de Farmacias.
+
+   EL ORDEN IMPORTA Y NO ES ARBITRARIO. Si las dos cadenas dicen algo distinto, manda la
+   organizacional: lo que uno hace pesa más que dónde lo hace. Sin un orden fijo, dos empresas
+   idénticas darían cuentas distintas.
+
+   SIN LÍNEA NO ES UN ERROR: es un nodo transversal. Recursos Humanos sirve a los tres frentes y
+   no pertenece a ninguno, igual que una unidad sin sede vale para toda la empresa. */
+export function lineaConOrigen(id, nodos) {
+  const porId = new Map(nodos.map(n => [n.id, n]))
+  const subir = (desde, saltar) => {
+    let n = porId.get(desde)
+    for (let i = 0; n && i < 30; i += 1) {
+      /* SE DEVUELVE TAMBIÉN QUIÉN LA DECLARA, no solo cuál es. El que la declara es a quien hay
+         que ir a cambiarla, así que la ficha necesita su nombre para poder decirlo. */
+      if (n.lineaNegocio) return { linea: n.lineaNegocio, origen: n.id }
+      /* El ancla se mira UNA vez y al final de su propia cadena, no en cada escalón: mirándola
+         en cada uno, una subárea sin línea contestaría con la sede de su padre antes de haber
+         terminado de preguntarle al abuelo. */
+      if (!n.padreId) break
+      n = porId.get(n.padreId)
+    }
+    if (saltar) {
+      let m = porId.get(desde)
+      for (let i = 0; m && i < 30; i += 1) {
+        if (m.ubicacion) return subir(m.ubicacion, false)
+        if (!m.padreId) break
+        m = porId.get(m.padreId)
+      }
+    }
+    return { linea: null, origen: null }
+  }
+  return subir(id, true)
+}
+
+export const lineaDe = (id, nodos) => lineaConOrigen(id, nodos).linea
+
 export const lugaresPosibles = (nodos, niveles) =>
   nodos.filter(n => tipoDe(n.tipo, niveles)?.eje === 'fisica' && estaEncendido(n.tipo, niveles))
+
+/* LOS LUGARES, CON LA FORMA DEL ÁRBOL Y NO EN EL ORDEN EN QUE SE CREARON.
+   Plana, la lista ponía «Casa Matriz Equipetrol» y «Oriente» como hermanas cuando una está dentro
+   de la otra, y encontrar las sucursales de una regional era leerlas todas. Sangradas, cada
+   sucursal cuelga de su regional y cada centro de su sucursal.
+
+   ES UN SOLO CAMPO Y NO DOS ENCADENADOS —primero la región, después la sucursal— por una razón de
+   fondo: una unidad puede operar a nivel de regional, de sucursal o de centro de trabajo. Con
+   campos encadenados habría que dejar los de abajo vacíos, y ahí «vacío» significaría dos cosas
+   —«no lo contesté» y «opera a nivel de regional»—, que es justo la ambigüedad que este módulo se
+   dedica a no tener. El encadenado sí está donde corresponde: en el centro de trabajo, que declara
+   de qué regional y de qué sucursal cuelga, y ahí los tres campos son opcionales a propósito.
+
+   La `pista` es para cuando se busca: escribiendo, la sangría se pierde —los resultados salen de
+   ramas distintas— y lo que ubica a cada uno pasa a ser de qué cuelga. */
+export function arbolDeLugares(lugares, niveles) {
+  const nombre = n => `${tipoDe(n.tipo, niveles)?.label}: ${n.nombre}`
+  const salida = []
+  const bajar = (padre, nivel) => {
+    lugares
+      .filter(n => (n.padreId || null) === padre)
+      .forEach(n => {
+        const p = padre ? lugares.find(x => x.id === padre) : null
+        salida.push({ valor: n.id, etiqueta: nombre(n), nivel, pista: p?.nombre })
+        bajar(n.id, nivel + 1)
+      })
+  }
+  bajar(null, 0)
+  /* EL QUE CUELGA DE UN NIVEL APAGADO NO DESAPARECE. Con las regionales apagadas, las sucursales
+     apuntan a un padre que no está en esta lista y el recorrido no llega a ellas: van al primer
+     nivel, que es donde están de verdad para quien mira. */
+  const puestos = new Set(salida.map(o => o.valor))
+  lugares
+    .filter(n => !puestos.has(n.id))
+    .forEach(n => salida.push({ valor: n.id, etiqueta: nombre(n), nivel: 0 }))
+  return salida
+}
 
 /* DÓNDE OPERA ALGO, DEDUCIDO. Se sube por las unidades hasta encontrar la primera que declare un
    lugar, y ese es el ancla de toda la rama. Por eso el lugar se pregunta UNA vez, arriba: si
@@ -696,6 +815,10 @@ export const EJES = {
          quedaba lejísimos de su cabecera y de su fila. */
       { key: 'codigo', label: 'Código' },
       { key: 'responsable', label: 'Responsable' },
+      /* LA LÍNEA DE NEGOCIO, EN LOS DOS EJES. Una empresa reparte por sucursales y otra por áreas,
+         así que la columna tiene que existir en las dos tablas — la de lugares y la de unidades—.
+         Solo se dibuja si la empresa declaró alguna línea. */
+      { key: 'linea', label: 'Unidad de negocio' },
     ],
     vistas: [
       { key: 'region', label: 'Regionales', tipos: ['region'],
@@ -715,13 +838,21 @@ export const EJES = {
        en el área, se lee subiendo por los padres. Puesta como columna deja de ser una promesa
        del modelo y se vuelve algo que se mira todos los días. */
     columnas: [
-      { key: 'padre', label: 'Depende de' },
+      /* DÓNDE VIVE, y por eso «Pertenece a» y no «Depende de»: el padre de un cargo es su unidad
+         organizacional, y una unidad no manda sobre nadie —manda una jefatura—. Para una unidad
+         dentro de otra se lee igual de bien: la subárea pertenece a su área. */
+      { key: 'padre', label: 'Pertenece a' },
+      /* DE QUIÉN DEPENDE: la jefatura, que es la línea que dibuja el organigrama. Solo tiene
+         sentido en Cargos —una unidad no le responde a nadie— así que la tabla la enseña ahí y
+         no en las otras vistas del eje. */
+      { key: 'jefe', label: 'Depende de' },
       { key: 'sucursal', label: 'Sucursal' },
       { key: 'responsable', label: 'Responsable' },
+      { key: 'linea', label: 'Unidad de negocio' },
     ],
     vistas: [
       { key: 'negocios', label: 'Unidades de negocio', tipos: ['negocio'],
-        desc: 'Las líneas de negocio por las que la empresa separa lo que hace.' },
+        desc: 'Los frentes en los que la empresa separa lo que hace.' },
       { key: 'unidades', label: 'Unidades organizacionales', tipos: ['unidad'],
         desc: 'Cómo se organiza el trabajo por dentro, con la jerarquía que tenga.' },
       { key: 'cargos', label: 'Cargos', tipos: ['cargo'],
@@ -909,7 +1040,40 @@ export const hexDeColor = v => COLORES_AREA.find(c => c.valor === v)?.hex || nul
    propósito —quien solo quiere saber QUÉ campos existe un nivel, como la tabla al decidir sus
    columnas, no tiene ningún formulario que pasar— y por eso todo lo que lo use se pregunta antes
    si está. */
-export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, valores, lugares, mandos, jefes, vinculos, heredado }) {
+export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, valores, lugares, mandos, jefes, vinculos, heredado, negocios }) {
+  /* ══ A QUÉ LÍNEA DE NEGOCIO PERTENECE ═══════════════════════════════════════════════════
+     Con la misma forma que «Dónde está»: el desplegable enseña la RESPUESTA —la que hereda o la
+     que declara— y el campo de al lado dice DE DÓNDE SALE. Son dos preguntas y estaban bien
+     separadas allá, así que no hay motivo para juntarlas acá.
+
+     SIN NINGUNA LÍNEA ES UNA RESPUESTA: hay áreas que sirven a todos los frentes por igual
+     —Recursos Humanos, Contabilidad— y obligarlas a elegir una inventaría un reparto que nadie
+     decidió. Se llama «transversal» y se elige de la lista, para poder volver a ella.
+
+     LA TARJETA NO APARECE SI LA EMPRESA NO TIENE LÍNEAS. Un desplegable con una sola opción
+     —«transversal»— es una pregunta sin respuestas posibles. */
+  const hereda = !!heredado?.linea
+  /* Los que no la declaran solo tienen tarjeta si heredan algo: sin nada arriba no hay nada que
+     enseñar, y ofrecerles el desplegable sería dejarlos declarar por la puerta de atrás. */
+  const puedeDeclararLinea = DECLARAN_LINEA.includes(tipo)
+  const tarjetaLinea = negocios?.length && (hereda || puedeDeclararLinea) ? [{
+    titulo: 'A qué negocio pertenece',
+    desc: hereda
+      ? 'Lo hereda de su rama: alguien más arriba ya lo declaró, y por eso acá se lee y no se elige. Así una empresa reparte sus frentes en un solo escalón y no en dos.'
+      : 'El frente del negocio al que pertenece esto y todo lo que cuelgue de ello. Si sirve a todos por igual, no pertenece a ninguno en particular.',
+    campos: [hereda || !puedeDeclararLinea
+      ? {
+        key: 'lineaHeredada', label: 'Unidad de negocio', col: 'c-medio',
+        deducido: heredado.linea,
+        ayuda: `Sale de «${heredado.lineaDe}». Se cambia en su ficha, y desde ahí baja a todo lo que cuelgue.`,
+      }
+      : {
+        key: 'lineaNegocio', label: 'Unidad de negocio', col: 'c-medio', tipo: 'lista',
+        opciones: [{ valor: RAIZ, etiqueta: 'Transversal: ninguna en particular' }, ...negocios],
+        ph: 'Transversal: ninguna en particular', vacio: 'Transversal: ninguna en particular',
+        ayuda: 'Lo que declares acá baja a todo lo que cuelgue de esto. Sirve para consolidar —cuánta gente y cuánto cuesta cada frente— y no dibuja nada en el organigrama.',
+      }],
+  }] : []
   const comoSeLlama = nivel?.label || 'nivel'
   /* LA CIUDAD ES UNA LISTA SI SABEMOS DE QUÉ PAÍS, y texto libre si no.
      Una lista cerrada que no contiene tu ciudad es peor que ningún catálogo: obliga a elegir
@@ -953,7 +1117,7 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
      información. */
   const nodosLugar = lugares || []
 
-  // Si  cuelga de uid=197609(USUARIO) gid=197121 groups=197121, a cualquier profundidad. Es lo que acota una lista a una rama.
+  // Si un nodo cuelga de `id`, a cualquier profundidad. Es lo que acota una lista a una rama.
   const bajoDe = (n, id) => {
     let p = n
     for (let i = 0; p && i < 30; i += 1) {
@@ -973,15 +1137,34 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
       && !(excluir && bajoDe(n, excluir)))
     .map(n => ({ valor: n.id, etiqueta: n.nombre }))
 
-  // Para quien pide UN lugar cualquiera: el tipo delante, que es lo que distingue dos homónimos.
-  const opcionesLugar = nodosLugar
-    .map(n => ({ valor: n.id, etiqueta: `${tipoDe(n.tipo, niveles)?.label}: ${n.nombre}` }))
+  /* Para quien pide UN lugar cualquiera: el tipo delante, que es lo que distingue dos homónimos.
+
+     Y CON LA FORMA DEL ÁRBOL, no en el orden en que se crearon. Plana, la lista ponía «Casa Matriz
+     Equipetrol» y «Oriente» como hermanas cuando una está dentro de la otra, y encontrar las
+     sucursales de una regional era leerlas todas. Sangradas, cada sucursal cuelga de su regional y
+     cada centro de su sucursal: es la misma pregunta que se contesta con dos campos encadenados
+     —primero la región, después la sucursal— pero en un solo campo, que es lo que corresponde
+     porque acá se elige UN lugar y no una ruta.
+
+     Y ES UN SOLO CAMPO POR UNA RAZÓN DE FONDO: una unidad puede operar a nivel de regional, de
+     sucursal o de centro de trabajo. Con campos encadenados habría que dejar los de abajo vacíos,
+     y ahí «vacío» significaría dos cosas —«no lo contesté» y «opera a nivel de regional»—, que es
+     justo la ambigüedad que este módulo se dedica a no tener.
+
+     La `pista` es para cuando se busca: escribiendo, la sangría se pierde —los resultados salen de
+     ramas distintas— y lo que ubica a cada uno pasa a ser de qué cuelga. */
+  const opcionesLugar = arbolDeLugares(nodosLugar, niveles)
   const nivelPadre = nivelSobre(tipo, niveles)
   const campoPadre = padres.length > 1 ? [{
     key: 'padreId', col: 'c-tercio', tipo: 'lista',
     label: nivelPadre ? `De qué ${nivelPadre.label.toLowerCase()} depende` : 'Depende de',
     ph: 'Ninguna', opciones: padres,
-    ayuda: 'Solo aparecen los niveles que van por encima de este.',
+  }] : []
+
+  const tarjetaJerarquia = campoPadre.length ? [{
+    titulo: 'Jerarquía',
+    desc: 'De qué nivel cuelga dentro de la estructura. Si no cuelga de ninguno, queda directo bajo la empresa.',
+    campos: [{ ...campoPadre[0], col: 'c-medio' }],
   }] : []
 
   const identidad = extra => ({
@@ -1037,12 +1220,6 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
      EL RÓTULO DEL CAMPO NOMBRA AL PELDAÑO DE ARRIBA —«De qué región depende»— y la línea gris
      de abajo avisa que la lista puede traer más de un nivel: encima de una sucursal también puede
      haber una unidad de negocio, y cada opción del desplegable dice de qué tipo es. */
-  const tarjetaDependencia = campoPadre.length ? [{
-    titulo: 'Dependencia',
-    desc: 'De qué nivel cuelga dentro de la organización. Si no cuelga de ninguno, queda directo bajo la empresa.',
-    campos: [{ ...campoPadre[0], col: 'c-medio' }],
-  }] : []
-
   /* LA MISMA UBICACIÓN PARA LOS DOS NIVELES QUE SON UN SITIO. La regional y la sucursal preguntan
      exactamente lo mismo —dónde queda y por dónde se le llama— y lo tuvieron escrito por separado:
      dos listas idénticas que se parecen hasta que alguien toca una. Misma lección que la pastilla
@@ -1092,22 +1269,17 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
      su ficha diría una cosa y este nodo otra para siempre—. `deducido` enseña lo que dice hoy,
      cada vez que se dibuja, y no hay caja donde teclearlo ni en modo edición. Se cambia donde
      vive: en Colaboradores. */
-  const tarjetaResponsable = desc => ({
-    titulo: 'Responsable',
-    desc,
-    campos: [
-      { ...responsable, col: 'c-medio' },
-      /* Y SOLO CON EL FORMULARIO ABIERTO. Leída, la tarjeta lo decía dos veces: la persona se
-         dibuja con su cara, su nombre y SU CARGO debajo, y al lado salía «Cargo del responsable»
-         con exactamente lo mismo. Editando sí hace falta —enseña qué viene junto con la persona
-         que estás eligiendo, antes de guardarla— y ahí se queda. */
-      ...(valores?.responsable ? [{
-        key: 'cargoResponsable', label: 'Cargo del responsable', col: 'c-medio',
-        deducido: cargoDe(valores.responsable), soloEdicion: true,
-        ayuda: 'Sale de su ficha en Colaboradores. Si cambia de cargo, esto cambia con ella.',
-      }] : []),
-    ],
-  })
+  /* Los dos campos del responsable, para las fichas que lo llevan dentro de su primera tarjeta. */
+  const camposResponsable = [
+    { ...responsable, col: valores?.responsable ? 'c-medio' : 'c-tercio' },
+    ...(valores?.responsable ? [{
+      key: 'cargoResponsable', label: 'Cargo del responsable', col: 'c-medio',
+      deducido: cargoDe(valores.responsable), soloEdicion: true,
+      ayuda: 'Sale de su ficha en Colaboradores. Si cambia de cargo, esto cambia con ella.',
+    }] : []),
+  ]
+  const anchoDesc = valores?.responsable ? 'c-todo' : 'c-ancho'
+
 
   /* LA SUCURSAL ES LA ÚNICA CON IDENTIDAD FISCAL, y por eso es la única que pregunta un código
      ante el SIN. Todo lo demás que se le pregunta —dónde queda, quién responde— se le pregunta
@@ -1149,13 +1321,14 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
              una respuesta mejor: un peldaño propio. Renombrar «Sucursal» a «Agencia» o agregar
              «Punto de venta» cambia la palabra en las pestañas, los menús y los formularios; un
              desplegable escondido en la ficha no cambia nada de eso. */
-          { key: 'descripcion', label: 'Descripción', col: 'c-todo', tipo: 'texto',
+          ...camposResponsable,
+          { key: 'descripcion', label: 'Descripción', col: anchoDesc, tipo: 'texto',
             ph: 'Qué se hace en esta sucursal, desde cuándo…' },
         ],
       },
-      ...tarjetaDependencia,
+      ...tarjetaJerarquia,
       tarjetaUbicacion('Dónde queda y por dónde se le llega.'),
-      tarjetaResponsable('Quién responde por esta sucursal.'),
+      ...tarjetaLinea,
     ]
   }
 
@@ -1182,7 +1355,11 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
     return [
       {
         titulo: 'Información general',
-        desc: 'Cómo se llama, de qué depende y si sigue operando.',
+        /* NO DICE «DE QUÉ DEPENDE» PORQUE UNA REGIONAL NO DEPENDE DE NADA: es la cima del eje
+           físico, no hay peldaño encima de ella y su ficha nunca tuvo ese campo. El subtítulo
+           prometía una pregunta que la tarjeta no hace, que es peor que no decir nada: quien lo
+           lee busca el campo y no lo encuentra. */
+        desc: 'Cómo se llama, con qué se la identifica y si sigue operando.',
         campos: [
           { key: 'nombre', label: 'Nombre', requerido: true, col: 'c-tercio', ph: 'Regional Santa Cruz',
             faltaMsg: 'Sin nombre no hay forma de elegirla al colgarle una sucursal.' },
@@ -1196,15 +1373,17 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
              «Código de zona» sin que nadie toque esto. */
           { key: 'codigo', label: `Código de ${comoSeLlama.toLowerCase()}`, ph: 'SCZ-01', col: 'c-tercio' },
           estado,
-          /* Nombre, código y estado cierran la primera fila con tres tercios; la descripción se
-             lleva la segunda entera, que es el único campo al que el ancho le da igual. */
-          { key: 'descripcion', label: 'Descripción', col: 'c-todo',
+          ...camposResponsable,
+          /* Nombre, código y estado cierran la primera fila con tres tercios; lo que quede de la
+             segunda —después del responsable y su cargo— se lo lleva la descripción, que es el
+             único campo al que el ancho le da igual. */
+          { key: 'descripcion', label: 'Descripción', col: anchoDesc,
             tipo: 'texto', ph: 'Qué abarca esta regional, con qué sucursales y desde cuándo…' },
         ],
       },
-      ...tarjetaDependencia,
+      ...tarjetaJerarquia,
       tarjetaUbicacion('Desde dónde opera y por dónde se le llega.'),
-      tarjetaResponsable('Quién responde por esta regional.'),
+      ...tarjetaLinea,
     ]
   }
 
@@ -1239,6 +1418,26 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
      CONTESTAR sí: el estado nace en «Activa» y el país se hereda de lo que tenga encima, así que
      quedan cuatro, y ninguno es una división política escrita a mano. */
   if (tipo === 'centro') {
+    /* Cada campo vive solo si su peldaño tiene nodos: sin regionales creadas, «Regional» sería un
+       desplegable con una sola opción y el nombre de un escalón que esta empresa no usa. */
+    const camposJerarquia = [
+      ...(opcionesDe('region').length ? [{
+        key: 'regionalId', label: 'Regional', col: 'c-tercio', tipo: 'lista',
+        opciones: [{ valor: RAIZ, etiqueta: 'Ninguna' }, ...opcionesDe('region')],
+        ph: 'Ninguna', ayuda: 'Opcional. Acota las sucursales de al lado.',
+      }] : []),
+      ...(opcionesDe('sucursal').length ? [{
+        key: 'sucursalId', label: 'Sucursal', col: 'c-tercio', tipo: 'lista',
+        opciones: [{ valor: RAIZ, etiqueta: 'Ninguna' }, ...opcionesDe('sucursal', sinRaiz(valores?.regionalId))],
+        ph: 'Ninguna', ayuda: 'Opcional. Solo las de la regional elegida.',
+      }] : []),
+      ...(opcionesDe('centro', null, valores?.id).length ? [{
+        key: 'centroPadre', label: 'Centro de trabajo superior', col: 'c-tercio', tipo: 'lista',
+        opciones: [{ valor: RAIZ, etiqueta: 'Ninguno' }, ...opcionesDe('centro', sinRaiz(valores?.sucursalId), valores?.id)],
+        ph: 'Ninguno', ayuda: 'Opcional. Un centro puede estar dentro de otro.',
+      }] : []),
+    ]
+
     return [
       {
         titulo: 'Información general',
@@ -1267,9 +1466,9 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
          están dentro. Así los tres campos existen y ninguna combinación imposible se puede
          elegir. Lo que se guarda es el más específico de los tres, que es lo que cuelga en el
          árbol; los otros dos quedan de camino, no de dato aparte. */
-      {
-        titulo: 'Ubicación organizacional',
-        desc: 'Puedes asociar el centro de trabajo directamente a la empresa, a una regional o a una sucursal.',
+      ...(camposJerarquia.length ? [{
+        titulo: 'Jerarquía',
+        desc: 'De qué cuelga dentro de la estructura. Sin ninguno, queda directo bajo la empresa.',
         /* «NINGUNA» ES UNA OPCIÓN DE LA LISTA Y NO UN MARCADOR GRIS. Los tres campos son
            opcionales, pero el gris que dice «Ninguna» solo se ve mientras no hayas elegido nada:
            elegida una sucursal por error, no había forma de volver a dejarla vacía —había que
@@ -1279,19 +1478,11 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
            «no lo contesté», elegido es «este centro no cuelga de ninguna regional». Leyendo la
            ficha esa diferencia es la que separa un dato que falta de una decisión tomada. */
         campos: [
-          { key: 'regionalId', label: 'Regional', col: 'c-tercio', tipo: 'lista',
-            opciones: [{ valor: RAIZ, etiqueta: 'Ninguna' }, ...opcionesDe('region')],
-            ph: 'Ninguna', ayuda: 'Opcional. Acota las sucursales de al lado.' },
-          { key: 'sucursalId', label: 'Sucursal', col: 'c-tercio', tipo: 'lista',
-            opciones: [{ valor: RAIZ, etiqueta: 'Ninguna' }, ...opcionesDe('sucursal', sinRaiz(valores?.regionalId))],
-            ph: 'Ninguna', ayuda: 'Opcional. Solo las de la regional elegida.' },
-          { key: 'centroPadre', label: 'Centro de trabajo superior', col: 'c-tercio', tipo: 'lista',
-            opciones: [{ valor: RAIZ, etiqueta: 'Ninguno' }, ...opcionesDe('centro', sinRaiz(valores?.sucursalId), valores?.id)],
-            ph: 'Ninguno', ayuda: 'Opcional. Un centro puede estar dentro de otro.' },
+          ...camposJerarquia,
         ],
-      },
+      }] : []),
       {
-        titulo: 'Ubicación física',
+        titulo: 'Ubicación',
         desc: 'El domicilio del centro: es el que sale en los papeles laborales.',
         campos: [
           { key: 'pais', label: 'País', requerido: true, tipo: 'lista',
@@ -1372,11 +1563,14 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
           { ...responsable, col: 'c-medio' },
           /* El cargo se completa solo y no se escribe nunca: sale de la ficha de la persona en
              Colaboradores, así que un ascenso se refleja acá sin que nadie lo copie. */
-          { key: 'cargoResponsable', label: 'Cargo', col: 'c-medio',
-            deducido: cargoDe(valores?.responsable),
-            ayuda: 'Se completa con el cargo que esa persona tiene hoy en Colaboradores.' },
+          ...(valores?.responsable ? [{
+            key: 'cargoResponsable', label: 'Cargo', col: 'c-medio',
+            deducido: cargoDe(valores.responsable), soloEdicion: true,
+            ayuda: 'Se completa con el cargo que esa persona tiene hoy en Colaboradores.',
+          }] : []),
         ],
       },
+      ...tarjetaLinea,
     ]
   }
 
@@ -1389,17 +1583,45 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
        contestado por su rama, y volver a preguntarlo es ofrecer la oportunidad de contradecirla.
        Lo que hereda se lee igual, abajo, en «Lo que sale solo del árbol». */
     const primerNivel = !valores?.padreId || valores.padreId === RAIZ
+    /* NO DECLARAR NADA SE LLAMA DISTINTO SEGÚN DE QUÉ CUELGUE, porque significa distinto: en
+       primer nivel no hay de quién heredar y la respuesta es «toda la empresa»; colgando de otra,
+       es «el de mi rama», y entonces el desplegable dice cuál es sin que haya que ir a buscarlo. */
+    /* EL CAMPO ENSEÑA EL SITIO Y NADA MÁS. Decía «Hereda de "Tecnología": Sucursal Casa Matriz»
+       —la respuesta y su procedencia apretadas en un renglón de desplegable— y lo que uno mira
+       ahí es dónde está. De dónde sale lo cuenta el campo de al lado, que para eso está. */
+    const vacioLugar = primerNivel || !heredado?.lugarDe ? 'Toda la empresa' : heredado.lugar
+
+    const propio = valores?.ubicacion && valores.ubicacion !== RAIZ
+
     const lugar = opcionesLugar.length ? [{
-      titulo: 'Dónde opera',
-      desc: 'El sitio al que pertenece esta unidad y todo lo que cuelgue de ella. Si no pertenece a ninguno en particular, queda para toda la empresa.',
-      campos: [{
-        key: 'ubicacion', label: 'Lugar', col: 'c-medio', tipo: 'lista',
-        /* Igual que en el centro: «toda la empresa» es una respuesta, no la ausencia de una, así
-           que se elige de la lista y se puede volver a ella. */
-        opciones: [{ valor: RAIZ, etiqueta: 'Toda la empresa' }, ...opcionesLugar],
-        ph: 'Toda la empresa',
-        ayuda: 'Lo que cuelgue de esta unidad hereda este lugar; no hay que repetirlo abajo.',
-      }],
+      titulo: 'Dónde está',
+      desc: primerNivel
+        ? 'La región, la sucursal o el centro de trabajo al que pertenece esta unidad y todo lo que cuelgue de ella. Si no pertenece a ninguno en particular, vale para toda la empresa.'
+        : 'La región, la sucursal o el centro de trabajo al que pertenece. Sin declarar ninguno usa el de la unidad de la que cuelga; declarando uno propio, ese pasa a valer para todo lo que tenga debajo.',
+      campos: [
+        {
+          key: 'ubicacion', label: 'Está en', col: 'c-medio', tipo: 'lista',
+          /* Igual que en el centro: no declarar nada es una respuesta, no la ausencia de una, así
+             que se elige de la lista y se puede volver a ella. */
+          opciones: [{ valor: RAIZ, etiqueta: vacioLugar }, ...opcionesLugar],
+          ph: vacioLugar, vacio: vacioLugar,
+          ayuda: primerNivel
+            ? 'Es la sede de la unidad, no la de su gente: cada puesto puede declarar otra si trabaja en otro sitio.'
+            : 'Es la sede de la unidad, no la de su gente. Declarar una propia no contradice a la de arriba: la afina para esta rama —«Almacén La Paz» dentro de «Logística», que está en Casa Matriz—.',
+        },
+        /* DE DÓNDE SALE EL DATO, AL LADO Y NO DENTRO. El desplegable ya no tiene que explicarse a
+           sí mismo: enseña el sitio y ya. Que sea heredado o propio es OTRA pregunta, y tenía la
+           media fila de la derecha vacía esperándola. */
+        ...(primerNivel ? [] : [{
+          key: 'lugarDeDonde', label: 'De dónde sale', col: 'c-medio',
+          deducido: propio
+            ? 'Declarado en esta unidad'
+            : `Heredado de «${heredado?.lugarDe || 'la unidad superior'}»`,
+          ayuda: propio
+            ? 'Esta unidad declara el suyo, así que no depende del de arriba.'
+            : 'Cambiando el sitio de esa unidad, este cambia con ella. Para que no cambie, declara uno propio aquí al lado.',
+        }]),
+      ],
     }] : []
 
     return [
@@ -1427,10 +1649,26 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
              el campo obligaba a pasar por encima de él en cada alta. Si el color hace falta, el
              sitio donde se decide es el organigrama —mirando el dibujo, que es lo único que
              contesta si se distingue de la rama de al lado— y no una ficha de datos. */
-          { key: 'corto', label: 'Nombre corto', ph: 'RRHH', col: 'c-medio',
+          { key: 'corto', label: 'Nombre corto', ph: 'RRHH', col: 'c-tercio',
             ayuda: 'El que entra en la tarjeta del organigrama cuando el largo no cabe.' },
-          { ...estado, col: 'c-medio' },
-          { key: 'descripcion', label: 'Descripción', tipo: 'texto', col: 'c-todo',
+          { ...estado, col: 'c-tercio' },
+          /* QUIÉN RESPONDE NO ES DE QUIÉN DEPENDE, y por eso lo dice. «Responsable» es una
+             persona y es un dato de contacto: quién contesta cuando hay que preguntar algo de
+             esta unidad. «Bajo el mando de», dos tarjetas más abajo, es un PUESTO y es lo que
+             dibuja la línea del organigrama. Puestos uno al lado del otro sin aclararlo, se
+             confunden —y llenar el equivocado deja el dibujo colgado de otra parte—. */
+          { ...responsable, col: 'c-tercio',
+            ayuda: 'Quién contesta por esta unidad. No dibuja la línea del organigrama: eso lo hace «Bajo el mando de».' },
+          /* SALE CON EL RESPONSABLE Y SE VA CON ÉL, así que la descripción cede cuatro columnas
+             cuando está y se las queda cuando no. La rejilla es de doce y cada fila tiene que
+             sumar doce: es lo único que hace que un formulario se lea como una tabla. */
+          ...(valores?.responsable ? [{
+            key: 'cargoResponsable', label: 'Cargo del responsable', col: 'c-tercio',
+            deducido: cargoDe(valores.responsable), soloEdicion: true,
+            ayuda: 'Sale de su ficha en Colaboradores. Si cambia de cargo, esto cambia con ella.',
+          }] : []),
+          { key: 'descripcion', label: 'Descripción', tipo: 'texto',
+            col: valores?.responsable ? 'c-ancho' : 'c-todo',
             ph: 'Qué hace esta unidad, de qué responde…' },
         ],
       },
@@ -1482,19 +1720,8 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
             },
         ],
       },
-      ...(primerNivel ? lugar : []),
-      {
-        titulo: 'Responsable',
-        desc: 'Quién responde por esta unidad.',
-        campos: [
-          { ...responsable, col: 'c-medio' },
-          ...(valores?.responsable ? [{
-            key: 'cargoResponsable', label: 'Cargo del responsable', col: 'c-medio',
-            deducido: cargoDe(valores.responsable), soloEdicion: true,
-            ayuda: 'Sale de su ficha en Colaboradores. Si cambia de cargo, esto cambia con ella.',
-          }] : []),
-        ],
-      },
+      ...lugar,
+      ...tarjetaLinea,
     ]
   }
 
@@ -1518,12 +1745,18 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
     return [
       {
         titulo: 'Información general',
-        desc: 'Cómo se llama el rol y si sigue vigente.',
+        desc: 'Qué rol es, con qué nivel manda y cuántos ocupantes admite.',
         campos: [
-          { key: 'nombre', label: 'Nombre del cargo', requerido: true, col: 'c-medio',
+          { key: 'nombre', label: 'Nombre del cargo', requerido: true, col: 'c-tercio',
             ph: 'Ejecutiva Comercial',
             faltaMsg: 'Sin nombre no hay forma de elegirlo al abrir un puesto.' },
-          { key: 'codigo', label: 'Código', ph: 'CAR-014', col: 'c-medio' },
+          /* «CÓDIGO DEL CARGO» Y NO «CÓDIGO». Es el del rol en el catálogo —el que va en la
+             descripción de puesto y en la banda salarial— y abajo, en cada silla, hay otro que
+             identifica la plaza. Con los dos rotulados «Código» en la misma pantalla, el de
+             arriba parecía el mismo campo repetido. Es la misma regla que ya seguían la sucursal
+             y la regional: el rótulo dice de qué es el código. */
+          { key: 'codigo', label: 'Código del cargo', ph: 'CAR-014', col: 'c-tercio' },
+          { ...estado, col: 'c-tercio' },
           /* CUÁNTA GENTE PUEDE HABER EN ESTE CARGO A LA VEZ. Es el cupo autorizado: no cuenta a
              nadie, pone un techo. Quien lo ocupa se resuelve en los puestos —cada puesto es una
              silla— y este número dice cuántas sillas se pueden llegar a abrir.
@@ -1532,9 +1765,33 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
              ejecutivas comerciales como plazas se abran. Obligar a poner un número inventaría un
              límite que nadie decidió, así que el campo es opcional y su vacío tiene nombre propio
              —se lee «Sin límite», no un guion—. */
-          { key: 'descripcion', label: 'Descripción', tipo: 'texto', col: 'c-ancho',
+          /* EL NIVEL DE MANDO SALE DEL CATÁLOGO DE LA EMPRESA, no de una lista escrita acá: se
+             renombra y se reordena en «Niveles de mando», y este campo lo sigue.
+
+             SOLO SI MANDA EN LA LÍNEA. Un staff o un tercerizado se dibujan al costado, así que
+             preguntarles a qué altura mandan no tiene respuesta. */
+          ...((valores?.tipoCargo || 'colaborador') === 'colaborador' ? [{
+            key: 'nivelMando', label: 'Nivel de mando', requerido: true, col: 'c-tercio',
+            tipo: 'lista', opciones: mandos || [], ph: 'Elige uno',
+            ayuda: 'Se administran en «Niveles de mando», en el menú de la izquierda.',
+            faltaMsg: 'El nivel de mando es lo que ordena el organigrama de arriba abajo.',
+          }] : []),
+          /* OBLIGATORIO, IGUAL QUE EN EL MODAL DEL DIBUJO. Era opcional acá y obligatorio allá, y
+             con las dos pantallas escribiendo el mismo dato eso significaba que la validez de un
+             cargo dependía de por qué puerta se creó. Cuesta cero: llega con «Colaborador». */
+          { key: 'tipoCargo', label: 'Tipo de cargo', requerido: true, col: 'c-tercio',
+            tipo: 'lista', opciones: TIPOS_CARGO.map(t => ({ valor: t.key, etiqueta: t.label })),
+            ph: 'Colaborador',
+            ayuda: 'Staff y outsourcing se dibujan al costado de la línea de mando.',
+            faltaMsg: 'Sin la clase, el dibujo no sabe si va en la línea de mando o al costado.' },
+          /* CUÁNTA GENTE PUEDE HABER EN ESTE CARGO A LA VEZ. Es el cupo autorizado: no cuenta a
+             nadie, pone un techo, y por eso es del ROL y no de sus sillas. Vacío es «sin límite»
+             y no «falta»: la mayoría de los cargos no tiene tope. */
+          { key: 'maxPersonas', label: 'Máximo de ocupantes', col: 'c-tercio', html: 'number',
+            min: 1, max: 50, ph: 'Sin límite', vacio: 'Sin límite',
+            ayuda: 'Con 4, el cargo tiene cuatro sillas: las que no estén cubiertas figuran como vacantes.' },
+          { key: 'descripcion', label: 'Descripción', tipo: 'texto', col: 'c-todo',
             ph: 'De qué responde este cargo…' },
-          { ...estado, col: 'c-tercio' },
         ],
       },
       /* EL NIVEL DE MANDO NO EXISTE PARA STAFF NI TERCERIZADOS, y por eso desaparece en vez de
@@ -1546,75 +1803,10 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
          cargo de staff creado allá no se podía guardar acá: la ficha exigía un nivel que la otra
          pantalla no deja poner y que el modelo no quiere. Con las dos escribiendo el mismo dato,
          eso pasó de rareza a callejón sin salida. */
-      (() => {
-        const mandaEnLinea = (valores?.tipoCargo || 'colaborador') === 'colaborador'
-        const ancho = mandaEnLinea ? 'c-tercio' : 'c-medio'
-        return {
-        titulo: 'Dónde vive y qué manda',
-        desc: 'La unidad a la que pertenece y su altura en la línea de mando.',
-        campos: [
-          /* LA UNIDAD ES OBLIGATORIA, y es el único padre posible. Un cargo suelto no se puede
-             dibujar en ningún organigrama: la rama de la que cuelga es la mitad de lo que un
-             cargo es. */
-          { key: 'padreId', label: 'Unidad organizacional', requerido: true, col: ancho,
-            tipo: 'lista', opciones: padres.filter(o => o.valor !== RAIZ), ph: 'Elige una',
-            faltaMsg: 'Un cargo pertenece a una unidad: sin ella no hay dónde dibujarlo.' },
-          /* EL NIVEL DE MANDO SALE DEL CATÁLOGO DE LA EMPRESA, no de una lista escrita acá: se
-             renombra y se reordena en Configuración, y este campo lo sigue. */
-          ...(mandaEnLinea ? [{
-            key: 'nivelMando', label: 'Nivel de mando', requerido: true, col: 'c-tercio',
-            tipo: 'lista', opciones: mandos || [], ph: 'Elige uno',
-            ayuda: 'Se administra en Configuración, junto a los peldaños.',
-            faltaMsg: 'El nivel de mando es lo que ordena el organigrama de arriba abajo.',
-          }] : []),
-          /* OBLIGATORIO, IGUAL QUE EN EL MODAL DEL DIBUJO. Era opcional acá y obligatorio allá, y
-             con las dos pantallas escribiendo el mismo dato eso significa que la validez de un
-             cargo dependía de por qué puerta se creó. Cuesta cero: llega con «Colaborador» puesto,
-             que es el caso de casi todos. */
-          { key: 'tipoCargo', label: 'Tipo de cargo', requerido: true, col: ancho,
-            tipo: 'lista', opciones: TIPOS_CARGO.map(t => ({ valor: t.key, etiqueta: t.label })),
-            ph: 'Colaborador',
-            ayuda: 'Staff y outsourcing se dibujan al costado de la línea de mando.',
-            faltaMsg: 'Sin la clase, el dibujo no sabe si va en la línea de mando o al costado.' },
-        ],
-        }
-      })(),
-      /* UN CARGO SIN NINGUNA SILLA NO SE VE EN NINGUNA PARTE, y crear una a mano después es un
-         segundo viaje que nadie espera hacer: se define «Analista» y lo que se quiere es tener
-         analistas. El modal del dibujo ya preguntaba esto —«Cuántos puestos»— y la ficha no, así
-         que un cargo creado desde la tabla nacía hueco.
-
-         SOLO AL CREAR. Después las sillas se agregan y se quitan de a una desde Puestos, que es
-         donde se les pone código, sede y ocupante; un número acá que las creara y borrara en
-         bloque destruiría datos de cada silla sin decir cuáles. */
-      /* LOS DOS NÚMEROS DEL CARGO NO PUEDEN CONVIVIR EN LA MISMA PANTALLA, y ese fue el error.
-         Uno CREA sillas y el otro pone un TECHO, se leían igual —«4»— y estaban a dos campos de
-         distancia: al crear un cargo con «Máximo de personas: 4», Puestos quedaba en cero y no
-         había forma de entender por qué. Pasó dos veces, y la segunda después de reescribirle la
-         ayuda, que es la prueba de que no era un problema de redacción.
-
-         Ahora se turnan. AL CREAR solo se pregunta cuántas sillas abrir, que es lo único que se
-         sabe en ese momento: nadie decide el cupo autorizado de un cargo que todavía no existe.
-         EDITANDO desaparece esa pregunta —las sillas ya se agregan y se quitan de a una desde
-         Puestos, con su código y su gente— y aparece el techo, junto a la cuenta de las que hay,
-         que es el único sitio donde el techo significa algo: al lado del número que limita. */
-      {
-        /* UNA SOLA PREGUNTA SOBRE LAS SILLAS, Y ES EL CUPO.
-           Llegó a haber dos números acá —cuántas abrir ahora y hasta cuántas puede haber— y la
-           primera se fue: no hacía falta preguntarla. El cupo YA DICE cuántas sillas tiene el
-           cargo; la tabla las despliega debajo y cada una se completa cuando le toca.
-
-           «Hasta 4 personas» es una frase que alguien de RRHH sabe contestar de memoria al definir
-           el cargo. «Cuántos puestos abro ahora» le hacía tomar una decisión operativa —abrir
-           plazas— en medio de una pantalla que le estaba pidiendo definir un rol. */
-        titulo: 'Sus puestos',
-        desc: 'Hasta cuántas personas pueden ocupar este cargo a la vez. Cada una es una silla, y se completan desde la lista de cargos.',
-        campos: [{
-          key: 'maxPersonas', label: 'Máximo de personas', col: 'c-tercio', html: 'number',
-          ph: 'Sin límite', vacio: 'Sin límite',
-          ayuda: 'Con 4, el cargo tiene cuatro sillas: las que no estén cubiertas figuran como vacantes.',
-        }],
-      },
+      /* LA UNIDAD NO SE PREGUNTA ACÁ: se dibuja con las sillas, que es lo que depende de ella.
+         La ficha la sigue exigiendo —un cargo suelto no se puede dibujar en ningún organigrama—
+         pero esa comprobación vive en la pantalla, junto al campo. */
+      ...tarjetaLinea,
     ]
   }
 
@@ -1724,37 +1916,43 @@ export function gruposDe(tipo, { personas, padres, ciudades, nivel, niveles, val
 
   if (tipo === 'negocio') {
     const anchoLateral = campoPadre.length ? 'c-tercio' : 'c-medio'
+    /* QUÉ AGRUPA, DE SOLO LECTURA Y A PROPÓSITO. El dato se escribe en la ficha de cada nodo
+       —«esta sucursal es de Farmacias»— porque es ahí donde uno está cuando lo sabe. Repetir la
+       asignación acá sería una segunda puerta para el mismo dato, y dos puertas para un dato
+       terminan discrepando. Lo que sí hace falta es VERLO junto: cuántos y cuáles.
+
+       Es la misma forma que ya usa la unidad organizacional con sus apoyos funcionales. */
+    const queAgrupa = valores?.id ? [{
+      titulo: 'Qué agrupa',
+      desc: 'Lo que declaró pertenecer a esta línea. Se asigna desde la ficha de cada uno, en «A qué negocio pertenece».',
+      campos: [{
+        key: 'agrupa', label: 'Le pertenecen', col: 'c-todo',
+        deducido: vinculos?.agrupa || '',
+        vacio: 'Todavía nadie declaró pertenecer a esta línea',
+        ayuda: 'Lo que cuelgue de cada uno la hereda, así que no hace falta declararla dos veces en la misma rama.',
+      }],
+    }] : []
     return [{
       titulo: 'Información general',
       desc: 'Cómo se llama y si sigue vigente.',
       campos: [
-        /* EL NOMBRE SE ELIGE DE UNA LISTA, Y «OTRO» ABRE UN CAMPO AL LADO.
-           Casi todas las empresas reparten su negocio en las mismas media docena de palabras
-           —Corporativo, Retail, Servicios, Industrial— y ofrecerlas ahorra teclear y, sobre todo,
-           ahorra que la misma división se llame «Corporativo» en una empresa y «Corporativa» en la
-           de al lado. Pero la lista no puede estar completa: una distribuidora de vacunas tiene
-           «Cadena de frío» y ningún catálogo lo iba a adivinar.
+        /* EL NOMBRE SE ESCRIBE, Y LOS EJEMPLOS VIVEN DENTRO DEL CAMPO.
+           Fue un desplegable de ocho palabras más «Otro», y «Otro» abría un segundo campo al
+           lado. La idea era normalizar —que no convivan «Corporativo» y «Corporativa»— pero eso
+           solo importa dentro de UNA empresa, y ahí la línea de negocio se escribe una vez y
+           después se elige de la lista de nodos, no de este catálogo. Lo que sí pasaba en cada
+           alta era el baile de dos campos, porque ningún catálogo iba a adivinar la «Cadena de
+           frío» de una distribuidora de vacunas.
 
-           «OTRO» NO ES EL DATO, ES UNA PUERTA. El nodo guardado nunca dice «Otro»: al guardar, lo
-           escrito en el campo de al lado PASA A SER el nombre y el campo auxiliar desaparece. Es
-           la misma conversión de bordes que hace `RAIZ` con el padre —la pantalla necesita una
-           opción que el dato no tiene— y por eso vive en la ficha y no acá.
-
-           Así, quien lea el dato ve «Cadena de frío» y no tiene que saber que hubo un desplegable
-           con un «Otro» de por medio. */
-        { key: 'nombre', label: 'Nombre', requerido: true, tipo: 'lista',
-          col: valores?.nombre === OTRO ? 'c-tercio' : anchoLateral,
-          opciones: [...NEGOCIOS_COMUNES, OTRO], ph: 'Elige una',
+           Los ejemplos siguen estando: adentro del campo, donde sugieren sin obligar. Salen de
+           `NEGOCIOS_COMUNES` para que haya una sola lista y no dos que se separen. */
+        { key: 'nombre', label: 'Nombre', requerido: true, col: anchoLateral,
+          ph: `${NEGOCIOS_COMUNES.slice(0, 3).join(', ')}…`,
           faltaMsg: 'Sin nombre no hay forma de elegirla al colgarle algo debajo.' },
-        ...(valores?.nombre === OTRO ? [{
-          key: 'nombreOtro', label: 'Escribe cuál', requerido: true, col: 'c-tercio',
-          ph: 'Cadena de frío',
-          faltaMsg: 'Elegiste «Otro»: falta decir cómo se llama esta unidad de negocio.',
-        }] : []),
         ...campoPadre.map(c => ({ ...c, col: 'c-tercio' })),
-        { ...estado, col: valores?.nombre === OTRO ? 'c-tercio' : anchoLateral },
+        { ...estado, col: anchoLateral },
       ],
-    }]
+    }, ...queAgrupa]
   }
 
   // Un peldaño propio de la empresa: no es un lugar, así que no pide dirección ni horario.
@@ -1820,6 +2018,11 @@ export function cargosYPuestos(cargos = [], nombreDePersona = nombreDeOcupante) 
       cargosNodo.push({
         id, tipo: 'cargo', nombre, padreId: c.unidadId || null,
         nivelMando: c.grado || '', tipoCargo: c.tipo || 'colaborador', estado: 'activa',
+        /* EL CUPO Y LA JEFATURA POR DEFECTO SON DEL CARGO, no de cada silla, así que se toman de
+           la PRIMERA entrada del grupo: es la que crea el cargo, y las demás solo le agregan
+           sillas. Sin declarar, el cargo queda sin techo, que es el caso corriente. */
+        ...(c.maxPersonas ? { maxPersonas: c.maxPersonas } : {}),
+        ...(c.jefeSillas ? { jefeSillas: c.jefeSillas } : {}),
       })
     }
     puestos.push({
@@ -1922,13 +2125,29 @@ const DEPOSITOS = [
 export function estructuraEjemplo(sucursales, unidades, cargos = []) {
   const regionales = REGIONALES.map(r => ({ ...r, tipo: 'region', padreId: null, estado: 'activa' }))
 
+  /* De qué frente atiende cada sede. Casa Matriz no está: es la corporativa y sirve a las tres. */
+  const LINEA_DE_SEDE = {
+    mtr: 'neg-farmacias', lpz: 'neg-farmacias', cbb: 'neg-farmacias',
+    sre: 'neg-farmacias', tja: 'neg-farmacias', oru: 'neg-farmacias',
+    pot: 'neg-farmacias',
+    eal: 'neg-institucional',
+    /* La casa matriz atiende a los tres frentes: es corporativa y no es de ninguno. Por eso las
+       áreas ancladas en ella —Dirección, RRHH, Finanzas— salen transversales, que es lo correcto.
+       «neg-distribucion» se queda sin sedes propias a propósito: enseña que una unidad de negocio
+       puede existir antes de que se le asigne nada. */
+  }
+
   const sedes = sucursales.map(s => ({
     id: s.id, tipo: 'sucursal', nombre: s.nombre, padreId: REGION_DE[s.id] || null,
+    lineaNegocio: LINEA_DE_SEDE[s.id] || '',
     ciudad: s.ciudad, codigo: s.codigo, direccion: s.direccion, telefono: s.telefono,
     correo: s.correo, responsable: s.responsable, horario: s.horario,
     apertura: s.apertura, estado: s.estado || 'activa',
   }))
 
+  /* LOS DEPÓSITOS NO DECLARAN: HEREDAN DE SU SUCURSAL. Declaraban «Distribución» y con eso la
+     demo repartía a dos niveles a la vez —sucursales y centros—, que es lo que el modelo no
+     admite: una empresa elige UN nivel y reparte todo ahí. FarmaVida reparte por sucursal. */
   const centros = DEPOSITOS.map(d => ({ ...d, tipo: 'centro', estado: 'activa' }))
 
   /* Operaciones opera desde el depósito; el resto, desde la casa matriz. Va en `ubicacion` y no
@@ -1942,11 +2161,47 @@ export function estructuraEjemplo(sucursales, unidades, cargos = []) {
     nombre: u.nombre,
     corto: u.corto,
     padreId: u.padreId ?? null,
-    ...(u.padreId ? {} : { ubicacion: u.id === 'operaciones' ? 'dep-central' : 'central' }),
+    /* OPERACIONES OPERA DESDE EL DEPÓSITO, y hasta ahora no lo hacía. La condición decía «solo las
+       de primer nivel declaran sitio» y adentro preguntaba por Operaciones —que cuelga de
+       Dirección General y por lo tanto NO es de primer nivel—, así que esa rama nunca se ejecutó y
+       Operaciones heredaba la casa matriz como todas las demás.
+
+       Sacada de la condición, la demo enseña de una vez las dos cosas que más cuesta explicar sin
+       verlas: una unidad que AFINA la sede que heredaba, y una unidad que saca su LÍNEA DE NEGOCIO
+       de dónde opera —Distribución, del depósito— sin haberla declarado. */
+    ...(u.id === 'operaciones'
+      ? { ubicacion: 'dep-central' }
+      : u.padreId ? {} : { ubicacion: 'central' }),
     estado: 'activa',
   }))
 
-  return [...regionales, ...sedes, ...centros, ...areas, ...cargosYPuestos(cargos)]
+  /* NADA CUELGA DE ELLAS TODAVÍA, y es a propósito. En este modelo una unidad organizacional
+     que cuelga de una línea de negocio deja de tener padre DIBUJABLE —el organigrama no dibuja
+     las líneas de negocio— y pasa a ser otra raíz del dibujo. Colgarle «Ventas» a «Retail»
+     partiría el organigrama de la demo en dos árboles, y lo que hoy se lee de un vistazo pasaría
+     a leerse en dos. Cómo repartir las áreas entre líneas es una decisión de cada empresa; la
+     demo enseña que el peldaño existe y deja el reparto abierto. */
+  const negocios = [
+    { id: 'neg-farmacias', nombre: 'Farmacias', descripcion: 'Venta al público en farmacias propias y afiliadas.' },
+    { id: 'neg-institucional', nombre: 'Institucional', descripcion: 'Provisión a hospitales, clínicas y entidades del Estado.' },
+    { id: 'neg-distribucion', nombre: 'Distribución', descripcion: 'Venta mayorista a distribuidoras y cadenas.' },
+  ].map(n => ({ ...n, tipo: 'negocio', padreId: null, estado: 'activa' }))
+
+  /* UN CARGO DEFINIDO Y SIN NINGUNA PLAZA ABIERTA. Es un estado válido y frecuente —se aprueba
+     el rol y las plazas se abren cuando hay presupuesto— y no salía de la lista de arriba, que
+     nace de los puestos: sin puesto no hay cargo. Trae su jefatura por defecto puesta, así que la
+     primera silla que alguien abra desde la tabla ya nace colgada de la coordinación y no suelta.
+
+     Es además el único de la demo con «sin límite» y jefatura declarada a la vez, que es el caso
+     que hace visible para qué sirve ese campo. */
+  const cargoSinPlazas = {
+    id: 'cargo-sin-plazas', tipo: 'cargo', nombre: 'Ejecutivo Comercial Junior',
+    padreId: 'ventas', nivelMando: 'bajo', tipoCargo: 'colaborador', estado: 'activa',
+    jefeSillas: 'sup-lpz',
+    descripcion: 'Aprobado para la próxima campaña. Todavía sin plazas abiertas.',
+  }
+
+  return [...regionales, ...sedes, ...centros, ...negocios, ...areas, cargoSinPlazas, ...cargosYPuestos(cargos)]
 }
 
 /* NO EXISTE UNA EMPRESA SIN NINGÚN SITIO DONDE OPERA.
@@ -2015,7 +2270,7 @@ export const nivelesDeSemilla = nodos => {
 /* QUÉ CRUZA. Empezó siendo lo que el organigrama ya sabía —nombre, corto, padre, código, mando— y
    ahora lleva también `tipoUnidad` y `estado`, porque el modal del dibujo pasó a preguntarlos: un
    campo que se puede editar de un lado y no viaja al otro se pierde al guardar, en silencio. */
-const CAMPOS_UNIDAD = ['nombre', 'corto', 'padreId', 'codigo', 'mandoId', 'tipoUnidad', 'estado']
+const CAMPOS_UNIDAD = ['nombre', 'corto', 'padreId', 'codigo', 'mandoId', 'tipoUnidad', 'estado', 'ubicacion', 'responsable', 'descripcion']
 
 /* El nodo visto como la unidad de siempre. `corto` cae al nombre cuando falta porque el dibujo lo
    usa para la píldora y una píldora vacía no se puede leer. */
@@ -2029,6 +2284,14 @@ export const unidadesDeNodos = nodos => nodos
     codigo: n.codigo ?? null,
     mandoId: n.mandoId ?? null,
     tipoUnidad: n.tipoUnidad ?? null,
+    /* DÓNDE ESTÁ: la región, la sucursal o el centro de trabajo al que pertenece. Vacío no es un
+       dato que falte —es «usa el de la rama de la que cuelga», y arriba de todo, «toda la
+       empresa»—. Por eso viaja como cadena vacía y no como null. */
+    ubicacion: n.ubicacion || '',
+    /* QUIÉN RESPONDE POR EL ÁREA. Es una persona y es un dato de contacto: no dibuja la línea del
+       organigrama —eso lo hace `mandoId`— pero las dos pantallas lo escriben, así que viaja. */
+    responsable: n.responsable || '',
+    descripcion: n.descripcion || '',
     estado: n.estado || 'activa',
   }))
 
@@ -2039,6 +2302,9 @@ const comoNodo = u => ({
   codigo: u.codigo ?? null,
   mandoId: u.mandoId ?? null,
   tipoUnidad: u.tipoUnidad ?? null,
+  ubicacion: u.ubicacion || '',
+  responsable: u.responsable || '',
+  descripcion: u.descripcion || '',
   estado: u.estado || 'activa',
 })
 

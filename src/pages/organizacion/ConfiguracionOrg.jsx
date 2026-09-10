@@ -4,7 +4,7 @@ import {
 } from 'lucide-react'
 import { useOnboardingData } from '../../context/OnboardingDataContext'
 import {
-  tipoDe, estaEncendido, nivelesVisibles, nivelesDeCatalogo, hayApagados, encenderTodos, EJES,
+  tipoDe, estaEncendido, nivelesEnCadena, nivelesDeCatalogo, hayApagados, encenderTodos, EJES,
 } from '../../data/estructuraData'
 import { TIPOS_CARGO } from '../../data/organigramaData'
 
@@ -47,7 +47,9 @@ export default function ConfiguracionOrg() {
     return c
   }, [nodos])
 
-  const cadena = nivelesVisibles(niveles)
+  /* LOS QUE DE VERDAD CUELGAN UNO DEL OTRO. La línea de negocio se enseña abajo con los demás
+     niveles, pero no en la cadena: no cuelga de nada y nada cuelga de ella. */
+  const cadena = nivelesEnCadena(niveles)
 
   /* LOS ESCALONES, REPARTIDOS EN LOS MISMOS TRES GRUPOS QUE EL MENÚ.
      Eran una lista corrida de siete y había que leerlos uno por uno para descubrir que la Región y

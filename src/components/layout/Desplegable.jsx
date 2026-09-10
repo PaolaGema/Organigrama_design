@@ -217,12 +217,17 @@ export default function Desplegable({
                      —salen de ramas distintas— así que sangrarlos dibuja una jerarquía falsa. Se
                      aplana, y lo que ubica a cada uno pasa a ser su camino, escrito al lado. Es
                      lo mismo que hace la tabla al filtrar: aplana y deja la columna «Depende de». */
-                  ...(o.nivel && !escrito ? { paddingLeft: 12 + o.nivel * 15 } : null),
+                  ...(o.nivel && !escrito ? { paddingLeft: 12 + (o.nivel - 1) * 15 } : null),
                   ...(i === activo && !puesta ? { background: 'var(--surface-hover)' } : null),
                 }}
                 onMouseEnter={() => setActivo(i)}
                 onClick={() => elegir(o.valor)}
               >
+                {/* EL CODO VA DENTRO DE LA OPCIÓN, no de fondo: la sangría ya le reservó el hueco
+                    a la izquierda del texto, así que el codo lo ocupa y no hace falta medir nada.
+                    Buscando no se dibuja, por lo mismo que no se sangra: los resultados salen de
+                    ramas distintas y una jerarquía dibujada entre ellos sería falsa. */}
+                {!!o.nivel && !escrito && <span className="pl-dd-rama" aria-hidden="true" />}
                 <span>
                   {o.etiqueta}
                   {escrito && o.pista && <span className="pl-dd-pista">en {o.pista}</span>}

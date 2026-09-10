@@ -15,12 +15,21 @@
   --navy-dark: #051B26;
   --blue: #3b82f6;
   --green: #00E091;
+  /* El verde de marca, oscurecido hasta que sirve como LÍNEA sobre fondo claro: el de marca da
+     1.74:1 sobre blanco y el mínimo para una forma es 3:1. Mismo tono, más oscuro. */
+  --green-fuerte: #00875A;
+  --green-halo: rgba(0,224,145,.22);
   --green-light: #9FFFD8;
   --green-tint: #F3FFF9;
   --red: #ef4444;
   --yellow: #f59e0b;
   --purple: #8b5cf6;
   --blue-bg: rgba(59,130,246,.08);
+  /* El cuadro de «depende de» en la previa: el navy de marca, apenas insinuado. */
+  --og-jefe-bg: rgba(12,45,64,.055);
+  --og-jefe-linea: var(--navy);
+  --alto-plaza: #C2410C;
+  --alto-plaza-bg: rgba(194,65,12,.06);
   --green-bg: rgba(0,224,145,.08);
   --yellow-bg: rgba(245,158,11,.08);
   --purple-bg: rgba(139,92,246,.08);
@@ -118,6 +127,9 @@
   --navy: #1D4B60;
   --navy-alt: #2B6379;
   --green: #00E091;
+  /* Sobre fondo oscuro el verde de marca ya se lee solo —6.59:1— así que acá no se oscurece. */
+  --green-fuerte: #00E091;
+  --green-halo: rgba(0,224,145,.26);
   --green-light: #9FFFD8;
   --green-tint: rgba(0,224,145,.08);
   --blue: #60a5fa;
@@ -125,6 +137,11 @@
   --yellow: #fbbf24;
   --purple: #a78bfa;
   --blue-bg: rgba(96,165,250,.12);
+  /* En oscuro el navy se pierde contra el fondo: el tono se levanta con blanco. */
+  --og-jefe-bg: rgba(255,255,255,.055);
+  --og-jefe-linea: color-mix(in srgb, var(--navy) 42%, #fff);
+  --alto-plaza: #FB923C;
+  --alto-plaza-bg: rgba(251,146,60,.10);
   --green-bg: rgba(0,224,145,.1);
   --yellow-bg: rgba(251,191,36,.12);
   --purple-bg: rgba(167,139,250,.12);
@@ -1039,7 +1056,11 @@ button.chip-link {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
 }
+/* El bloque del título cede: sin `min-width: 0` una caja flexible no se encoge por debajo de su
+   contenido, y su contenido acá es un párrafo que puede ser largo. */
+.pl-header > div:first-child { min-width: 0; }
 
 .pl-title {
   font-size: 26px;
@@ -1048,7 +1069,15 @@ button.chip-link {
   letter-spacing: -0.2px;
 }
 
+/* EL TÉRMINO QUE SE ESTÁ DEFINIENDO, en el color del texto y no en el del subtítulo: es lo
+   único de esa línea que hay que retener, y en gris pesaba lo mismo que su explicación. */
+.pl-subtitle-que { color: var(--text-heading); font-weight: 700; }
+
+/* UNA DESCRIPCIÓN LARGA NECESITA ANCHO DE PÁRRAFO. Desde que estos textos dicen QUÉ ES cada
+   peldaño en vez de una frase corta, sin tope se estiraban de borde a borde: un renglón de
+   ciento veinte caracteres se lee peor que dos de sesenta. */
 .pl-subtitle {
+  max-width: 64ch;
   font-size: 14px;
   color: var(--text-muted);
   margin-top: 2px;
@@ -1058,6 +1087,10 @@ button.chip-link {
 .pl-btn-new {
   display: inline-flex;
   align-items: center;
+  /* NI SE ENCOGE NI SE PARTE. Las dos cosas hacen falta: sin la primera lo aprieta el párrafo de
+     al lado, y sin la segunda su texto se parte en dos renglones dentro del ancho que le quede. */
+  flex-shrink: 0;
+  white-space: nowrap;
   gap: 6px;
   background: var(--navy);
   color: #fff;
@@ -1498,7 +1531,24 @@ select.pl-input:focus {
   text-align: left;
   transition: all .1s;
 }
-.pl-dd-pista { margin-left: 7px; font-size: 10.5px; font-weight: 500; color: var(--text-muted); }
+/* EL CODO DE UNA OPCIÓN ANIDADA. El mismo trazo que `.est-rama` dibuja en la tabla de la
+   estructura: sube hacia la opción de arriba y gira hacia el nombre, que es exactamente lo que
+   dice «este cuelga de aquel». Se copia el trazo y no la clase porque las dos viven en cajas
+   distintas —una fila de tabla y un renglón de desplegable— y compartir clase ataría el alto de
+   una al de la otra. */
+.pl-dd-rama {
+  flex-shrink: 0;
+  width: 12px;
+  height: 14px;
+  margin: -12px 3px 0 3px;
+  border-left: 2px solid var(--icon-muted);
+  border-bottom: 2px solid var(--icon-muted);
+  border-bottom-left-radius: 7px;
+}
+/* El texto se lleva el espacio que sobra para que la pista y el tilde queden donde siempre. */
+.pl-dropdown-item > span:not(.pl-dd-rama) { flex: 1; min-width: 0; }
+
+.pl-dd-pista { margin-left: 7px; font-size: 12px; font-weight: 500; color: var(--text-muted); }
 .pl-dropdown-item:hover { background: var(--surface-hover); color: var(--text-heading); }
 .pl-dropdown-item.selected {
   background: var(--green-tint);
@@ -1549,6 +1599,8 @@ select.pl-input:focus {
 .pl-btn-cancel:hover { background: var(--green-tint); border-color: var(--green); }
 
 .pl-btn-save {
+  flex-shrink: 0;
+  white-space: nowrap;
   padding: 9px 22px;
   border: none;
   background: var(--navy);
@@ -5175,6 +5227,54 @@ select.pl-input:focus {
 /* Las áreas de arriba, apagadas: ubican sin competirle al nombre del área propia. */
 .og-pv-area-ruta { font-weight: 600; opacity: .58; }
 .og-pv-rot { margin-bottom: 8px; font-size: 8.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--text-muted); }
+/* ── EL CUADRO DEL QUE DEPENDE ──────────────────────────────────────────────────────────
+   Toma el color de marca del organigrama, que es el que ya pinta la píldora de unidad: en el
+   dibujo, ese color es «esto manda». En tono bajo y no pleno, para que no compita con la
+   píldora del área que encabeza el panel —son dos respuestas distintas y no pueden pesar
+   igual—, con la franja al costado que es lo que lo separa de un cuadro cualquiera.
+
+   El rótulo, en el mismo color y con la flecha: deja de ser un renglón gris más. */
+/* CUANDO LAS SILLAS RESPONDEN A JEFATURAS DISTINTAS no hay un cuadro que dibujar arriba: lo que
+   se dice es cuántas son, y cada silla lleva la suya escrita en su renglón. */
+/* LOS GRUPOS, SEPARADOS POR UNA LÍNEA. Cada uno es una rama entera del organigrama —un jefe y
+   sus sillas— y sin separación se leían como una lista larga de cuadros. */
+/* SIN `gap` Y CON RELLENO: tenía los dos, así que entre un grupo y el siguiente quedaban
+   cuarenta y cuatro píxeles y la línea flotaba en el medio de un hueco. El relleno solo, encima
+   del filete, deja el aire donde tiene que estar —debajo de la línea, no repartido a los dos
+   lados—. Y una sola regla en vez de dos que decían lo mismo. */
+.og-pv-grupo-jefe + .og-pv-grupo-jefe {
+  margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);
+}
+
+.og-pv-repartidas {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 14px; padding: 11px 13px;
+  border: 1px dashed var(--border-dark); border-radius: 11px;
+  font-size: 12.5px; font-weight: 600; color: var(--tinta, var(--navy-txt));
+}
+.og-pv-repartidas em {
+  display: block; font-style: normal; font-weight: 500; font-size: 11.5px;
+  color: var(--text-muted); margin-top: 2px;
+}
+.og-pv-repartidas-n {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 22px; border-radius: 11px;
+  background: var(--og-jefe-linea); color: var(--surface-card);
+  font-size: 12px; font-weight: 700;
+}
+
+.og-pv-rot-jefe { display: flex; align-items: center; gap: 4px; color: var(--og-jefe-linea); opacity: .9; }
+.og-pv-rot-jefe svg { flex-shrink: 0; }
+
+.og-pv-jefe {
+  /* El borde de siempre en tres lados y la franja en el cuarto: sin borde, el cuadro flotaba
+     sobre su propio tono y perdía el contorno que lo hace un cuadro. */
+  border-left: 3px solid var(--og-jefe-linea);
+  background: var(--og-jefe-bg);
+  box-shadow: none;
+}
+.og-pv-jefe .og-pv-nom svg { color: var(--og-jefe-linea); opacity: .9; }
+
 .og-pv-staff { border: 1.5px dashed var(--og-staff); background: var(--og-staff-bg); }
 .og-pv-staff .og-pv-nom, .og-pv-staff .og-pv-nom svg { color: var(--og-staff-txt); }
 .og-pv-ext { border: 1.5px dashed var(--og-ext); background: var(--og-ext-bg); }
@@ -5182,11 +5282,36 @@ select.pl-input:focus {
 /* El cuadro en foco lleva anillo azul, pero el BORDE sigue siendo el de su tipo: pintarlo de
    azul tapaba justo lo que la previa tiene que mostrar —que un staff o un tercerizado se ven
    distintos y cuelgan en otro lado—. El anillo alcanza para señalar cuál es. */
-.og-pv-foco { border: 1.5px solid var(--blue); box-shadow: 0 0 0 3px var(--blue-bg); }
-.og-pv-foco.og-pv-staff { border: 1.5px dashed var(--og-staff); }
-.og-pv-foco.og-pv-ext { border: 1.5px dashed var(--og-ext); }
+/* EL LATIDO, TRES VECES Y SE QUEDA QUIETO. Un parpadeo permanente compite con el formulario
+   mientras se escribe, y algo que titila para siempre deja de significar «mírame» a los diez
+   segundos. Tres latidos al aparecer alcanzan para que el ojo lo encuentre, y después el cuadro
+   descansa en un anillo que ya se ve solo.
+
+   Y NO ES UN PARPADEO SINO UN HALO QUE RESPIRA: nada en pantalla se apaga y se enciende —eso
+   además de molestar es un riesgo real para quien tiene fotosensibilidad—. Lo que crece y se
+   encoge es el halo de alrededor, que llama sin apagar nada. */
+@keyframes og-pv-latido {
+  0%, 100% { box-shadow: 0 0 0 4px var(--green-halo); }
+  50%      { box-shadow: 0 0 0 10px var(--green-halo); }
+}
+.og-pv-foco {
+  border: 2px solid var(--green-fuerte);
+  box-shadow: 0 0 0 4px var(--green-halo);
+  animation: og-pv-latido 1.5s ease-in-out 3;
+}
+/* Quien pidió menos movimiento no lo recibe: el anillo grueso ya distingue el cuadro sin él. */
+@media (prefers-reduced-motion: reduce) {
+  .og-pv-foco { animation: none; }
+}
+.og-pv-foco.og-pv-staff { border: 2px dashed var(--og-staff); }
+.og-pv-foco.og-pv-ext { border: 2px dashed var(--og-ext); }
 .og-pv-foco .og-pv-estado { color: var(--navy-txt); }
-.og-pv-tag { position: absolute; top: -7px; right: 10px; padding: 1px 6px; border-radius: 5px; background: var(--blue); color: #fff; font-size: 8px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
+/* LA ETIQUETA, LEGIBLE. Iba en 8 px, que es el cuerpo más chico de toda la aplicación, para
+   decir la única palabra que explica por qué ese cuadro está resaltado. */
+/* EL OSCURO VA ESCRITO Y NO SALE DE UN TOKEN: el fondo de la etiqueta es el mismo verde en los
+   dos temas, así que su texto también tiene que ser el mismo en los dos. Con `--text-heading` se
+   volvía casi blanco en oscuro y quedaba en 1.74:1 sobre el verde. */
+.og-pv-tag { position: absolute; top: -9px; right: 10px; padding: 2px 8px; border-radius: 6px; background: var(--green); color: #0C2D40; font-size: 10px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; box-shadow: 0 2px 6px rgba(0,0,0,.14); }
 /* Sin jefe, la bajada nace del bloque del área: el primer hijo estira su tramo hacia arriba
    hasta tocar el borde de abajo del encabezado. */
 .og-pv-rama-raiz .og-pv-hijo:first-child::before { top: -30px; }
@@ -5195,6 +5320,15 @@ select.pl-input:focus {
 /* La píldora de unidad dentro de la previa: el mismo cuadro, pintado como en el dibujo. */
 .og-pv-uni { background: var(--og-marca-area, var(--navy)); border-color: transparent; }
 .og-pv-uni .og-pv-nom, .og-pv-uni .og-pv-nom svg { color: #fff; }
+/* EL SUBTÍTULO DE LA PÍLDORA, en blanco rebajado y no en el gris de siempre: ese gris está
+   pensado para fondo claro y sobre el navy de la píldora daba menos de 3:1. Al 85 % da 5.40:1.
+   No baja más: al 70 % ya cae por debajo del mínimo de texto. */
+.og-pv-uni .og-pv-sub { color: rgba(255,255,255,.85); }
+/* EL ANILLO SOBREVIVE A LA PÍLDORA. `.og-pv-uni` apaga el borde para verse como en el dibujo
+   grande, y al ir después que `.og-pv-foco` —misma especificidad— se lo borraba también al
+   cuadro en foco. La unidad nueva se quedaba sin anillo, que es justo la que más lo necesita:
+   es la que se está creando. */
+.og-pv-uni.og-pv-foco { border-color: var(--green-fuerte); }
 .og-pv-rot-pie { display: flex; align-items: center; gap: 5px; margin: 20px 0 8px; }
 /* Con rótulo, el codo tiene que bajar hasta la primera línea del cuadro: apuntando al rótulo
    la línea parece terminar en el aire. */
@@ -6139,6 +6273,13 @@ select.pl-input:focus {
 
    No es un campo desactivado: un campo desactivado dice «hoy no puedes», y esto dice «esto no se
    contesta acá». Por eso no lleva la caja de un campo apagado sino la de una nota. */
+/* UN DATO DEDUCIDO SIGUE SIENDO UN DATO. Iba en el gris de los textos secundarios y sobre el
+   fondo gris de la caja daba 4.34:1, por debajo del 4.5:1 que pide la norma para texto normal:
+   «Gerente de Recursos Humanos» estaba escrito y no se leía.
+
+   Lo que hay que decir con el color es «este campo no se rellena», y eso ya lo dice la FORMA
+   —una caja plana, sin borde y sin cursor— más la nota que explica de dónde sale. Apagar además
+   el valor era decirlo dos veces, y la segunda a costa de lo único que la caja contiene. */
 .emp-campo-fijo {
   display: flex;
   align-items: center;
@@ -6148,8 +6289,8 @@ select.pl-input:focus {
   border-radius: 12px;
   background: var(--surface-hover);
   font-size: 14px;
-  font-weight: 500;
-  color: var(--text-muted);
+  font-weight: 600;
+  color: var(--text-heading);
 }
 
 /* SUBRAYADO DE SIEMPRE Y NO SOLO AL PASAR POR ENCIMA: en una lista de datos donde casi todo es
@@ -6990,10 +7131,229 @@ a.emp-valor-enlace:hover { color: var(--green); border-bottom-color: var(--green
   height: 15px;
   margin-top: -13px;
   margin-right: -1px;
-  border-left: 1.5px solid var(--border-dark);
-  border-bottom: 1.5px solid var(--border-dark);
+  border-left: 2px solid var(--icon-muted);
+  border-bottom: 2px solid var(--icon-muted);
   border-bottom-left-radius: 7px;
-  opacity: .65;
+}
+
+/* ── LAS PLAZAS DE UN CARGO, dentro de su ficha ──────────────────────────────────────
+   Es una tarjeta más de la ficha, con la misma piel que las de campos, pero su contenido es
+   una lista repetida y no una reja de campos sueltos: cada renglón es una silla y lleva su
+   número delante, que es lo único que las distingue mientras no tengan código.
+
+   SE LLAMAN «PLAZA» Y NO «SILLA» POR UNA RAZÓN DE HOJA DE ESTILOS: `.est-silla` ya era la fila
+   de la tabla de cargos, y escribirle encima un `display: grid` la sacaba de la tabla. */
+.est-plazas {
+  background: var(--surface-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 20px 22px;
+  box-shadow: var(--shadow-card);
+}
+.est-plazas-tit {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+.est-plazas-desc {
+  margin: 6px 0 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-soft);
+  max-width: 68ch;
+}
+/* La jefatura con la que nacen las sillas: va arriba de la lista porque vale para todas,
+   y su aclaración debajo porque es una excepción que conviene decir una vez. */
+.est-plazas-jefe { margin-top: 16px; max-width: 520px; }
+.est-plazas-jefe small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-soft);
+}
+
+.est-plazas-lista {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+/* El número, el código y el sitio en un solo renglón. Por debajo de 720 px el número se queda
+   arriba y los dos campos se apilan: en un teléfono, tres columnas dejan cajas de cinco letras. */
+.est-plaza {
+  display: grid;
+  /* La cuarta columna es la papelera: ancho fijo, para que las de los campos no se muevan al
+     cambiar de fila. */
+  grid-template-columns: 26px minmax(0, 1fr) minmax(0, 1.2fr) 34px;
+}
+/* CON JEFATURAS QUE OFRECER, LA FILA LLEVA TRES CAMPOS y los tres pesan lo mismo: código, sitio
+   y de quién depende son las tres cosas que definen una silla, y ninguna manda sobre las otras.
+   Sin jefaturas —un cargo en la cima del árbol— la columna no existe y la fila vuelve a dos. */
+.est-plazas-lista.con-jefe .est-plaza {
+  grid-template-columns: 26px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 34px;
+  gap: 12px;
+  align-items: end;
+}
+/* LA SILLA QUE SOBRA. No se esconde ni se tacha: sigue siendo un puesto con su código y su
+   sitio, y se puede seguir editando. Lo único que se agrega es la marca de que está por encima
+   del tope que se acaba de escribir, y qué hay que hacer con ella. */
+.est-plaza-sobra {
+  margin: 0 -12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--alto-plaza-bg);
+  box-shadow: inset 3px 0 0 var(--alto-plaza);
+}
+/* LA PAPELERA DE UNA SILLA. En gris hasta que se la mira: es una acción destructiva y no tiene
+   que competir con los campos que se están llenando, pero tampoco esconderse. */
+/* EL REPARTO DE JEFATURAS DE UN CARGO. Una lista y no una tabla: son dos o tres renglones y
+   cada uno es una frase corta —«6 dependen de Coordinadora de Ventas»—. El número va en un disco
+   para que se lea antes que el nombre, que es el orden en que se pregunta. */
+/* LA CASILLA DE «TODAS IGUALES», y lo que aparece según su respuesta. Va en su propia caja,
+   encima de las filas: es la pregunta que decide cuántas columnas tienen. */
+/* EL HUECO EXPLICADO. No es un aviso de error —no hay nada mal— es el motivo de que falte una
+   pregunta, escrito donde iba esa pregunta. */
+/* LAS DOS MITADES DE LA MISMA PREGUNTA, EN UNA FILA: dónde viven las sillas y a quién le
+   responden. En pantalla angosta se apilan, que es lo único que se puede hacer con dos campos
+   que no caben. */
+.est-cargo-donde {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px 18px; margin-bottom: 18px; align-items: start;
+}
+@media (max-width: 720px) { .est-cargo-donde { grid-template-columns: 1fr; } }
+.est-unidad-cargo .pl-req { font-style: normal; color: var(--red); }
+/* EL RÓTULO DEL BLOQUE DE FILAS. No es el título de la tarjeta —ese ya lo dio— sino el de su
+   última parte: más chico, y con su explicación en gris debajo. */
+.est-plazas-sub {
+  margin: 4px 0 12px; padding-top: 16px; border-top: 1px solid var(--border);
+  font-size: 14px; font-weight: 700; color: var(--text-heading);
+}
+.est-plazas-sub em {
+  display: block; font-style: normal; font-size: 12.5px; font-weight: 500;
+  line-height: 1.5; color: var(--text-muted); margin-top: 3px;
+}
+
+.est-mismo-jefe-falta {
+  margin: 0 0 16px; padding: 12px 15px;
+  border: 1px dashed var(--border-dark); border-radius: 12px;
+  font-size: 13px; line-height: 1.5; color: var(--text-muted);
+}
+
+.est-mismo-jefe {
+  margin-bottom: 16px; padding: 16px 18px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--surface-hover);
+}
+.est-mismo-jefe-check { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.est-mismo-jefe-check input { flex-shrink: 0; width: 17px; height: 17px; margin: 3px 0 0; accent-color: var(--green); cursor: pointer; }
+.est-mismo-jefe-check > span { font-size: 14px; font-weight: 600; color: var(--text-heading); }
+.est-mismo-jefe-check em { display: block; font-style: normal; font-size: 12.5px; font-weight: 500; color: var(--text-muted); margin-top: 2px; }
+/* Y el desplegable respira de su rótulo y de su nota: el bloque tiene tres alturas de texto
+   seguidas y sin separación se leen como un párrafo. */
+.est-mismo-jefe-cual .pl-input { margin-top: 3px; }
+.est-mismo-jefe-cual small { margin-top: 7px; line-height: 1.5; }
+.est-mismo-jefe-nota {
+  margin: 16px 0 0; padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px; color: var(--text-muted);
+}
+/* El aviso de que se va a aplanar el reparto: informa, no impide. */
+.est-mismo-jefe-aviso {
+  margin: 12px 0 0; padding: 10px 13px; border-radius: 9px;
+  background: var(--alto-plaza-bg); border: 1px solid var(--alto-plaza);
+  font-size: 12.5px; font-weight: 500; line-height: 1.5; color: var(--alto-plaza);
+}
+
+.est-jefes { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 8px; }
+.est-jefes li {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 14px; border-radius: 10px;
+  background: var(--blue-bg); border: 1px solid var(--border);
+  font-size: 14px;
+}
+.est-jefes-n {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  min-width: 26px; height: 26px; padding: 0 7px; border-radius: 13px;
+  background: var(--blue); color: #fff; font-size: 13px; font-weight: 700;
+}
+.est-jefes b { font-weight: 600; }
+
+.est-plaza-x {
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 38px; margin-bottom: 1px;
+  border: none; border-radius: 9px; background: transparent;
+  color: var(--icon-muted); cursor: pointer; transition: all .12s;
+}
+.est-plaza-x:hover { background: var(--alto-plaza-bg); color: var(--alto-plaza); }
+
+.est-plaza-aviso {
+  grid-column: 1 / -1;
+  margin: -2px 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--alto-plaza);
+}
+
+.est-plaza-n {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 34px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-soft);
+  background: var(--surface-hover);
+  border-radius: 8px;
+}
+@media (max-width: 720px) {
+  .est-plaza { grid-template-columns: 1fr; gap: 8px; }
+  .est-plaza-n { width: 100%; height: 26px; }
+}
+
+/* ── LA FICHA DEL CARGO, EN DOS COLUMNAS ────────────────────────────────────────────────
+   Los campos a la izquierda y el dibujo de dónde va a quedar a la derecha, igual que en el
+   modal del organigrama —solo que allá el dibujo va primero porque el modal se abre para
+   mirar, y acá va segundo porque la ficha se abre para escribir—.
+
+   El dibujo queda pegado arriba al bajar por el formulario: es lo que CAMBIA mientras se
+   llenan los campos, y perderlo de vista justo al elegir la unidad sería perderlo cuando
+   sirve. Los demás tipos de nodo no se dibujan en el organigrama, así que su ficha sigue
+   siendo una sola columna y la clase sin el modificador no hace nada. */
+.est-ficha { display: flex; flex-direction: column; gap: 18px; max-width: 1180px; }
+.est-ficha-campos { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+
+.est-ficha.con-previa { flex-direction: row; align-items: flex-start; gap: 22px; max-width: 1320px; }
+.est-ficha.con-previa .est-ficha-campos { flex: 1; }
+.est-ficha-previa {
+  flex: 0 0 340px; position: sticky; top: 14px;
+  /* LOS TOKENS DEL DIBUJO VIVEN EN `.og-page`, y esta ficha no está ahí adentro: sin ellos la
+     bajada punteada se pintaba del color del texto y la píldora del área salía en navy pleno en
+     vez del tono bajo. Se declaran acá para que la previa se vea igual entrando por las dos
+     puertas. */
+  --og-marca: var(--navy);
+  --og-marca-area: var(--og-marca);
+  --og-marca-area: color-mix(in srgb, var(--og-marca) 76%, #fff);
+  --og-linea: #8fa3b5;
+}
+
+/* `.og-pv` nació como columna de un modal: ancho fijo, scroll propio y un borde a la derecha
+   que la separaba de los campos que tenía al lado. Acá es una tarjeta más de la página, así
+   que se le sacan las tres cosas y se le pone marco propio. */
+.est-ficha-previa .og-pv {
+  flex: none; width: auto; overflow: visible;
+  border: 1px solid var(--border); border-right: 1px solid var(--border);
+  border-radius: 14px; padding: 20px 20px 24px;
+}
+
+/* Sin ancho para las dos, el dibujo baja y se pone a lo ancho debajo del formulario. */
+@media (max-width: 1180px) {
+  .est-ficha.con-previa { flex-direction: column; }
+  .est-ficha-previa { flex: none; width: 100%; position: static; }
 }
 
 .est-deducido {

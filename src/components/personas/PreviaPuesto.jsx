@@ -28,11 +28,14 @@ const genteDe = cargo => ocupantesDe(cargo).map(getPersona).filter(Boolean)
 
 /* Se exporta porque la previa de lectura (`PreviaLugar`) dibuja los mismos cuadros: dos
    versiones de esta pieza harían que la ficha y el editor se vean como dos productos. */
-export function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, marca, gente }) {
+export function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, marca, gente, jefe }) {
   const Icon = ICONO[tipo] || User
   const clases = ['og-pv-card']
   if (tipo === 'staff') clases.push('og-pv-staff')
   if (tipo === 'outsourcing') clases.push('og-pv-ext')
+  /* El jefe antes del foco: un cargo no es las dos cosas a la vez, pero si alguna vez lo fuera,
+     lo que importa señalar es cuál se está editando. */
+  if (jefe) clases.push('og-pv-jefe')
   if (foco) clases.push('og-pv-foco')
 
   return (
@@ -54,10 +57,21 @@ export function MiniCargo({ nombre, tipo = 'colaborador', area, estado, foco, ma
   )
 }
 
+/* `propios` SON LAS SILLAS DE ESTE CARGO, en plural. Antes se pasaba una sola —`cargoId`— y
+   alcanzaba porque el modal edita una silla a la vez; la ficha del cargo edita todas juntas, y
+   con una sola id las demás sillas del mismo cargo se dibujaban como si fueran sus COMPAÑERAS
+   de fila. Se sigue aceptando `cargoId` para no tocar el modal: es el caso de una. */
 export default function PreviaPuesto({
-  form, org, cargoId, ocupantes, nuevo, sel = null, onSel, onBorrar,
+  form, org, cargoId, propios, ocupantes, nuevo, sel = null, onSel, onBorrar,
+  sedes = sucursales,
 }) {
+  const mios = propios || (cargoId ? [cargoId] : [])
   const jefe = form.reportaA ? org.cargos.find(c => c.id === form.reportaA) : null
+  /* CUÁNTAS JEFATURAS DISTINTAS HAY ENTRE SUS SILLAS. Con una, el dibujo cuelga el cuadro de
+     siempre; con varias, no hay de cuál colgarlo y se dice cuántas son. */
+  const jefaturas = new Set((form.puestos || []).map(p => p.jefe || ''))
+  const repartidas = jefaturas.size > 1
+  const nombreJefe = id => (id ? org.cargos.find(c => c.id === id)?.nombre : null)
   /* Solo el staff va al costado. El outsourcing baja en la línea como cualquier reporte, así
      que acá también: la previa tiene que dibujar lo mismo que el árbol o promete un lugar que
      el organigrama no le va a dar. */
@@ -81,14 +95,14 @@ export default function PreviaPuesto({
   const hermanos = (jefe
     ? org.cargos.filter(c => c.reportaA === jefe.id)
     : org.cargos.filter(c => !c.reportaA)
-  ).filter(c => c.id !== cargoId && c.tipo !== 'staff' && c.tipo !== 'outsourcing' && c.unidadId === form.unidadId)
+  ).filter(c => !mios.includes(c.id) && c.tipo !== 'staff' && c.tipo !== 'outsourcing' && c.unidadId === form.unidadId)
 
   /* Al final de la fila, que es donde lo pone la lista. El campo para reordenarlo se sacó del
      formulario: el orden entre iguales no es un dato del puesto, es cómo quedó dibujado. */
   const lugar = hermanos.length
   const visibles = hermanos.slice(0, MAX_HERMANOS)
   const resto = hermanos.length - visibles.length
-  const aCargo = cargoId ? org.cargos.filter(c => c.reportaA === cargoId).length : 0
+  const aCargo = mios.length ? org.cargos.filter(c => mios.includes(c.reportaA)).length : 0
 
   const area = getUnidad(form.unidadId, org)?.nombre
   const areaJefe = jefe ? getUnidad(jefe.unidadId, org)?.nombre : null
@@ -102,9 +116,13 @@ export default function PreviaPuesto({
   const ancestros = ruta.slice(0, -1).map(u => u.nombre)
   /* Un puesto pertenece a UNA sede; sin ninguna, no está atado a ninguna sucursal. Es la misma
      regla que dice el formulario, y el pie tiene que decir lo mismo que el campo. */
-  const sede = sucursales.find(s => s.id === form.sucursalIds[0]) || null
+  /* LAS SEDES SE PUEDEN PASAR. Entrando por la ficha, las sucursales son nodos del árbol y no
+     las de la demo: sin esto, una sucursal creada por el usuario no se encontraba y el pie decía
+     «Toda la empresa», que es lo contrario de lo que el formulario acababa de declarar. */
+  const nombreSede = s => s?.ciudad || s?.nombre || null
+  const sede = sedes.find(s => s.id === form.sucursalIds[0]) || null
   /* La ciudad de un puesto de la bandeja: es lo único que los distingue cuando comparten nombre. */
-  const sedeDe = p => sucursales.find(s => s.id === p.sucursalIds?.[0])?.ciudad || null
+  const sedeDe = p => nombreSede(sedes.find(s => s.id === p.sucursalIds?.[0]))
 
   /* CON VARIOS PUESTOS, EL PANEL DEJA DE SER UNA ESTAMPA Y SE VUELVE EL MENÚ.
 
@@ -151,7 +169,8 @@ export default function PreviaPuesto({
                 {/* QUIÉN LO OCUPA, A LA VISTA. Es la protección más barata que hay: se ve que hay
                     alguien adentro antes de que la mano llegue al tacho, y no después. */}
                 <span className="og-pv-pz-sub">
-                  {[p.codigo, sedeDe(p)].filter(Boolean).join(' · ')}
+                  {[p.codigo, sedeDe(p), repartidas ? nombreJefe(p.jefe) : null]
+                    .filter(Boolean).join(' · ')}
                   {gente.length ? (
                     <>
                       {' · '}
@@ -230,10 +249,69 @@ export default function PreviaPuesto({
       {/* Sin jefe no hay rótulo: la bajada sale del bloque del área, y meterle "Dentro del
           área" en el medio partía la línea en dos y hacía parecer que nacía del texto. Con
           jefe sí, porque ahí el rótulo encabeza al cuadro del que se cuelga. */}
-      {jefe && <div className="og-pv-rot">Depende de</div>}
+      {/* EL RÓTULO CON FLECHA. «Depende de» en gris de 8 px no decía hacia dónde: la flecha
+          hacia arriba dice que ese cuadro está POR ENCIMA, que es la mitad de la respuesta. */}
+      {jefe && (
+        <div className="og-pv-rot og-pv-rot-jefe">Depende de</div>
+      )}
+      {/* REPARTIDAS: NO HAY UN CUADRO QUE DIBUJAR ARRIBA. Elegir una de las cuatro y colgarla ahí
+          trazaría una línea que el organigrama no va a trazar; se dice cuántas son y cada silla
+          lleva la suya escrita en su renglón. */}
+      {repartidas && (
+        <div className="og-pv-repartidas">
+          <span className="og-pv-repartidas-n">{jefaturas.size}</span>
+          <span>
+            jefaturas distintas entre sus puestos
+            <em>Cada grupo de abajo cuelga de la suya.</em>
+          </span>
+        </div>
+      )}
 
+      {/* UN GRUPO POR JEFATURA, ordenados de más sillas a menos: lo primero que se quiere saber
+          es cuál se lleva la mayoría. */}
+      {repartidas ? (
+        <div className="og-pv-grupos">
+          {[...jefaturas]
+            .map(jid => ({ jid, suyos: (form.puestos || []).filter(p => (p.jefe || '') === jid) }))
+            .sort((a, b) => b.suyos.length - a.suyos.length)
+            .map(({ jid, suyos }) => {
+              const j = jid ? org.cargos.find(x => x.id === jid) : null
+              return (
+                <div className="og-pv-grupo-jefe" key={jid || '__nadie__'}>
+                  <div className="og-pv-rot og-pv-rot-jefe">Depende de</div>
+                  {j ? (
+                    <MiniCargo
+                      jefe
+                      nombre={j.nombre}
+                      tipo={tipoDe(j)}
+                      area={getUnidad(j.unidadId, org)?.nombre}
+                      gente={genteDe(j)}
+                    />
+                  ) : (
+                    <div className="og-pv-card og-pv-jefe">
+                      <span className="og-pv-nom">De nadie: son la cima</span>
+                    </div>
+                  )}
+                  <div className="og-pv-rama">
+                    {suyos.map((p, i) => (
+                      <div className="og-pv-hijo" key={p.id ?? i}>
+                        <MiniCargo
+                          nombre={form.nombre.trim() || 'Sin nombre todavía'}
+                          tipo={form.tipo}
+                          area={[p.codigo, sedeDe(p)].filter(Boolean).join(' · ') || undefined}
+                          gente={(p.ocupantes || []).map(getPersona).filter(Boolean)}
+                          estado="Vacante"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+        </div>
+      ) : (
       <div className="og-pv-tree">
-        {jefe && <MiniCargo nombre={jefe.nombre} tipo={tipoDe(jefe)} area={areaJefe} gente={genteDe(jefe)} />}
+        {jefe && <MiniCargo jefe nombre={jefe.nombre} tipo={tipoDe(jefe)} area={areaJefe} gente={genteDe(jefe)} />}
 
         <div className={`og-pv-rama${jefe ? '' : ' og-pv-rama-raiz'}`}>
           {/* El lateral va antes que la línea de mando, como en el dibujo grande: primero lo
@@ -263,6 +341,7 @@ export default function PreviaPuesto({
           )}
         </div>
       </div>
+      )}
 
       {alCostado && (
         <p className="og-pv-nota">
@@ -273,7 +352,7 @@ export default function PreviaPuesto({
 
       <p className="og-pv-pie">
         <MapPin size={11} />
-        {sede ? `Pertenece a ${sede.ciudad}` : 'Toda la empresa'}
+        {sede ? `Pertenece a ${nombreSede(sede)}` : 'Toda la empresa'}
       </p>
       {aCargo > 0 && (
         <p className="og-pv-pie">

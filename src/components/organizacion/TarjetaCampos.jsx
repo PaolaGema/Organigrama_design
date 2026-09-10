@@ -231,9 +231,18 @@ function CampoFicha({ campo, form, set, editando, prefijo, marcarFaltas }) {
              llevar https:// delante, que es justo como lo escribe todo el mundo. */
           type={campo.html || 'text'}
           required={!!campo.requerido}
+          min={campo.min}
+          max={campo.max}
           value={form[campo.key] || ''}
           placeholder={campo.ph}
-          onChange={e => set(campo.key, e.target.value)}
+          /* UN NÚMERO CON TOPES SE LIMPIA AL ESCRIBIRLO. El `min` y el `max` del navegador solo
+             gobiernan las flechitas y el aviso al enviar: tecleando «-1» el valor entra igual y se
+             guarda. Se queda con los dígitos —el signo menos se cae solo— y se recorta al máximo;
+             vaciarlo sigue permitido, porque en estos campos vacío es una respuesta («sin límite»)
+             y no un cero. */
+          onChange={e => set(campo.key, campo.max != null
+            ? (v => (v === '' ? '' : String(Math.min(Number(v), campo.max))))(e.target.value.replace(/\D/g, '').replace(/^0+/, ''))
+            : e.target.value)}
           style={falta ? { borderColor: 'var(--red)' } : undefined}
         />
       )}

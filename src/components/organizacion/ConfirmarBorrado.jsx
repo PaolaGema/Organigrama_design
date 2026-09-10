@@ -19,7 +19,11 @@ import { AlertTriangle, X } from 'lucide-react'
 
 const PALABRA = 'eliminar'
 
-export default function ConfirmarBorrado({ nombre, tipo, hijos = 0, nota, onCerrar, onEliminar }) {
+/* `bloqueoTexto` REEMPLAZA LA EXPLICACIÓN, NO EL AVISO. Lo que impide borrar no siempre son
+   hijos: a una unidad de negocio la retienen los nodos que la declararon, que no cuelgan de ella.
+   El titular —«No se puede eliminar todavía»— vale igual en los dos casos; lo que cambia es la
+   frase que dice qué hay que hacer antes. */
+export default function ConfirmarBorrado({ nombre, tipo, hijos = 0, nota, bloqueoTexto, onCerrar, onEliminar }) {
   const [escrito, setEscrito] = useState('')
   const bloqueado = hijos > 0
   const puede = !bloqueado && escrito.trim().toLowerCase() === PALABRA
@@ -40,9 +44,11 @@ export default function ConfirmarBorrado({ nombre, tipo, hijos = 0, nota, onCerr
                 <span>No se puede eliminar todavía</span>
               </div>
               <p className="cb-texto">
+                {bloqueoTexto || <>
                 <strong>{nombre}</strong> tiene {hijos} {hijos === 1 ? 'nodo colgando' : 'nodos colgando'}.
                 Muévelos a otro padre y vuelve a intentarlo: borrarlo los dejaría apuntando a algo
                 que ya no existe.
+                </>}
               </p>
             </>
           ) : (

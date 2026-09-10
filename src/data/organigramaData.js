@@ -125,7 +125,7 @@ export const cargos = [
   { id: 'asist-dir', nombre: 'Asistente de Dirección', unidadId: 'direccion', reportaA: 'gg', ocupanteId: 29, tipo: 'staff', sucursalIds: ['central'] },
   { id: 'legal-ext', nombre: 'Asesoría Legal Externa', unidadId: 'direccion', reportaA: 'gg', ocupanteId: null, tipo: 'outsourcing', sucursalIds: [] },
 
-  { id: 'dir-tec', nombre: 'Dirección de Tecnología', unidadId: 'tecnologia', reportaA: 'gg', ocupanteId: null, grado: 'medio', sucursalIds: ['central'] },
+  { id: 'dir-tec', nombre: 'Director de Tecnología', unidadId: 'tecnologia', reportaA: 'gg', ocupanteId: null, grado: 'medio', sucursalIds: ['central'] },
   { id: 'dev-back', nombre: 'Desarrollador Backend', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 1, grado: 'bajo', sucursalIds: ['central'] },
   { id: 'dev-front', nombre: 'Frontend Developer', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 6, sucursalIds: ['lpz'] },
   { id: 'qa', nombre: 'QA Engineer', unidadId: 'tecnologia', reportaA: 'dir-tec', ocupanteId: 4, grado: 'bajo', sucursalIds: ['central'] },
@@ -138,7 +138,7 @@ export const cargos = [
   { id: 'recluta', nombre: 'Reclutadora', unidadId: 'rrhh', reportaA: 'dir-rrhh', ocupanteId: null, sucursalIds: ['central'] },
 
   { id: 'dir-mkt', nombre: 'Líder de Marketing', unidadId: 'marketing', reportaA: 'gg', ocupanteId: 25, grado: 'medio', sucursalIds: ['central'] },
-  { id: 'jefe-mkt-dig', nombre: 'Jefatura de Marketing Digital', unidadId: 'mkt-digital', reportaA: 'dir-mkt', ocupanteId: null, grado: 'medio', sucursalIds: ['central'] },
+  { id: 'jefe-mkt-dig', nombre: 'Jefe de Marketing Digital', unidadId: 'mkt-digital', reportaA: 'dir-mkt', ocupanteId: null, grado: 'medio', sucursalIds: ['central'] },
   /* El caso de apoyo funcional del sembrado: es de Marketing Digital y ayuda en Contenidos.
      Pertenece a una sola área —la de su jefe— y trabaja en dos. */
   { id: 'cm', nombre: 'Community Manager', unidadId: 'mkt-digital', reportaA: 'jefe-mkt-dig', ocupanteId: 11, sucursalIds: ['central'], funcionales: [{ unidadId: 'contenidos', reportaA: 'analista-mkt' }] },
@@ -157,14 +157,24 @@ export const cargos = [
   { id: 'analista-proc', nombre: 'Analista de Procesos', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: 8, sucursalIds: ['central'] },
   { id: 'asist-op', nombre: 'Asistente Operativo', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: null, sucursalIds: ['oru'] },
   { id: 'limpieza-ext', nombre: 'Servicio de Limpieza', unidadId: 'operaciones', reportaA: 'coord-log', ocupanteId: null, tipo: 'outsourcing', sucursalIds: [] },
-  /* CINCO PUESTOS INTERCAMBIABLES: mismo nombre, misma área, mismo jefe y ninguno con gente
-     debajo. Es el caso que se apila. Tres están en Santa Cruz y dos en La Paz, para que se vea
-     cuándo la sede pasa a ser lo que los distingue. */
-  { id: 'ec-1', nombre: 'Ejecutivo Comercial', codigo: 'EC-001', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['central'] },
+  /* CINCO PUESTOS DEL MISMO CARGO: mismo nombre, misma área, ninguno con gente debajo. Es el
+     caso que se apila. Tres están en Santa Cruz y dos en La Paz, y esa diferencia de sede es la
+     que arrastra la de jefatura: los de La Paz responden a su supervisor local. */
+  /* LA SEGUNDA JEFATURA DE VENTAS, y la razón de que exista: sin ella los cinco ejecutivos
+     dependen del mismo y el caso que el modelo resuelve —un cargo repartido entre dos jefes— no
+     se puede ver en ninguna pantalla. Es el caso de los nueve vendedores, en chico. */
+  { id: 'sup-lpz', nombre: 'Supervisor Comercial La Paz', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, grado: 'bajo', sucursalIds: ['lpz'] },
+
+  /* EL CUPO Y LA JEFATURA POR DEFECTO viajan en la primera entrada del grupo, que es la que
+     crea el cargo. Cinco plazas aprobadas y cinco abiertas: bajando el número en su ficha se ve
+     el aviso del techo y las sillas que sobran, que es lo que este cargo viene a enseñar. */
+  { id: 'ec-1', nombre: 'Ejecutivo Comercial', codigo: 'EC-001', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['central'], maxPersonas: 5, jefeSillas: 'lider-ventas' },
   { id: 'ec-2', nombre: 'Ejecutivo Comercial', codigo: 'EC-002', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['central'] },
   { id: 'ec-3', nombre: 'Ejecutivo Comercial', codigo: 'EC-003', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['central'] },
-  { id: 'ec-4', nombre: 'Ejecutivo Comercial', codigo: 'EC-004', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['lpz'] },
-  { id: 'ec-5', nombre: 'Ejecutivo Comercial', codigo: 'EC-005', unidadId: 'ventas', reportaA: 'lider-ventas', ocupanteId: null, sucursalIds: ['lpz'] },
+  /* Los dos de La Paz responden a su supervisor local y no al líder de Santa Cruz: mismo cargo,
+     misma área, otra jefatura. Es exactamente lo que BR‑ORG‑012 permite. */
+  { id: 'ec-4', nombre: 'Ejecutivo Comercial', codigo: 'EC-004', unidadId: 'ventas', reportaA: 'sup-lpz', ocupanteId: null, sucursalIds: ['lpz'] },
+  { id: 'ec-5', nombre: 'Ejecutivo Comercial', codigo: 'EC-005', unidadId: 'ventas', reportaA: 'sup-lpz', ocupanteId: null, sucursalIds: ['lpz'] },
 
   { id: 'tesorero', nombre: 'Tesorero', unidadId: 'finanzas', reportaA: 'gg', ocupanteId: 23, grado: 'medio', sucursalIds: ['central'] },
   { id: 'contador', nombre: 'Contador General', unidadId: 'finanzas', reportaA: 'tesorero', ocupanteId: 10, sucursalIds: ['central'] },
@@ -315,6 +325,12 @@ const personaPorId = new Map(colaboradoresData.map(c => [c.id, c]))
 
 export const getPersona = id => (id == null ? null : personaPorId.get(id) || null)
 export const getUnidad = (id, org = orgSeed) => org.unidades.find(u => u.id === id) || null
+
+/* ES RAÍZ DEL DIBUJO LA QUE NO CUELGA DE OTRA UNIDAD: ni porque no tenga padre, ni porque su
+   padre sea algo que el organigrama no dibuja —una unidad de negocio, una regional—. Las dos
+   respuestas significan lo mismo para quien mira: arriba de ella no hay nada que ver. */
+export const esRaizDeUnidad = (u, org = orgSeed) =>
+  !!u && (!u.padreId || !getUnidad(u.padreId, org))
 
 /* Lateral = va al COSTADO del jefe en vez de bajar en la línea. Hoy solo el staff, que es lo
    que un staff es: alguien que asiste a un cargo sin estar en su línea de mando.
@@ -833,7 +849,7 @@ export function buildOrgTree(modo = 'completo', org = orgSeed, opciones = {}) {
     }
     return {
       tipo: 'empresa', id: 'empresa', empresa, staff: [],
-      hijos: org.unidades.filter(u => u.padreId === null).map(conApoyo).filter(Boolean),
+      hijos: unidadesRaiz(org).map(conApoyo).filter(Boolean),
     }
   }
 
@@ -848,7 +864,7 @@ export function buildOrgTree(modo = 'completo', org = orgSeed, opciones = {}) {
       ...nodoUnidad(u, org, undefined, false),
       hijos: org.unidades.filter(x => x.padreId === u.id).map(rama),
     })
-    return apilarArbol({ tipo: 'empresa', id: 'empresa', empresa, staff: [], hijos: org.unidades.filter(u => u.padreId === null).map(rama) })
+    return apilarArbol({ tipo: 'empresa', id: 'empresa', empresa, staff: [], hijos: unidadesRaiz(org).map(rama) })
   }
 
   /* RAÍCES, en plural. Antes se tomaba solo la primera y cualquier otro cargo sin jefe —con
@@ -1042,7 +1058,7 @@ export function cabezaDe(unidadId, org = orgSeed) {
   return propios.find(c => !c.reportaA || !propios.some(p => p.id === c.reportaA)) || propios[0] || null
 }
 
-export const unidadesRaiz = (org = orgSeed) => org.unidades.filter(u => u.padreId === null)
+export const unidadesRaiz = (org = orgSeed) => org.unidades.filter(u => esRaizDeUnidad(u, org))
 
 export const subunidadesDe = (unidadId, org = orgSeed) => org.unidades.filter(u => u.padreId === unidadId)
 
@@ -1087,7 +1103,7 @@ export function grupoDe(unidadId, org = orgSeed) {
   if (!u) return null
   while (u.padreId) {
     const padre = getUnidad(u.padreId, org)
-    if (!padre || padre.padreId === null) break
+    if (!padre || esRaizDeUnidad(padre, org)) break
     u = padre
   }
   return u
