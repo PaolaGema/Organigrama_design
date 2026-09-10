@@ -139,6 +139,10 @@ const jefeDeUnidadVacia = (unidadId, org) => {
    fue al panel de la izquierda, que ahora es el menú. */
 function PuestoFicha({
   puesto, org, sucursales, puestosPorSede, unidadPropia, cargoId, onCambio,
+  /* SOLO CUANDO LOS PUESTOS ESTÁN REPARTIDOS. Compartiendo jefatura la pregunta ya está
+     contestada arriba y repetirla acá sería el mismo dato en dos sitios, que es la forma segura
+     de que un día digan cosas distintas. */
+  jefes = null,
 }) {
   const sedeId = puesto.sucursalIds?.[0] || null
   const apoyos = puesto.funcionales || []
@@ -192,6 +196,31 @@ function PuestoFicha({
           />
         </div>
       </div>
+
+      {/* DE QUIÉN DEPENDE ESTE PUESTO Y NO EL CARGO — BR‑ORG‑012. La línea de mando vive en el
+          puesto, no en el cargo: es lo que hace posible que nueve vendedores con el mismo cargo
+          respondan a dos supervisores. */}
+      {jefes && (
+        <div className="pl-label">
+          <span className="og-label-fila">
+            De quién depende <em className="og-req">*</em>
+            <AyudaCampo>
+              Solo de este puesto. Los otros del mismo cargo conservan la suya.
+            </AyudaCampo>
+          </span>
+          <SelectorLista
+            valor={puesto.jefe === undefined ? SIN_ELEGIR : puesto.jefe}
+            onCambio={v => onCambio({ jefe: v })}
+            placeholder="Elige de quién depende"
+            vacia="Sin jefe · es otra cabeza de la organización"
+            opciones={jefes.map(c => ({
+              id: c.id,
+              nombre: c.nombre,
+              detalle: getUnidad(c.unidadId, org)?.nombre,
+            }))}
+          />
+        </div>
+      )}
 
       {/* EL RÓTULO QUE LE FALTABA. «Apoya funcionalmente a» arrancaba pegado a la sucursal, sin
           nada que dijera que empieza otro asunto: los dos campos de arriba dicen dónde está el
@@ -269,8 +298,21 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
     && c.nombre === cargo.nombre
     && c.unidadId === cargo.unidadId
     && (c.tipo || 'colaborador') === (cargo.tipo || 'colaborador')
-    && c.reportaA === cargo.reportaA
+    /* SIN EXIGIR EL MISMO JEFE. Lo pedía, y con eso un cargo cuyas plazas responden a dos
+       coordinaciones se abría partido en dos grupos que se editaban por separado y no se veían
+       entre sí: renombrarlo era hacerlo dos veces, y la cuenta de puestos mentía en las dos.
+       Nombre, área y clase es lo que hace que dos puestos sean el mismo puesto; el jefe es de
+       cada uno —BR‑ORG‑012— y por eso no entra en la agrupación. */
   )) : []), [cargo, org])
+
+  /* ¿SUS PUESTOS RESPONDEN A JEFATURAS DISTINTAS? Se mira lo guardado y no lo que se está
+     escribiendo: es el estado del que parte el modal. */
+  const jefeRepartido = useMemo(() => (cargo
+    ? new Set([cargo, ...hermanos].map(x => x.reportaA || '')).size > 1
+    : false), [cargo, hermanos])
+  /* `null` es «como esté»: la casilla sigue a la realidad hasta que alguien la toca, y desde ahí
+     manda su decisión. */
+  const [mismoJefe, setMismoJefe] = useState(null)
 
   /* LO QUE HABÍA AL ABRIR. Sirve para saber si se escribió algo y no cerrar el formulario de un
      clic al costado: perder seis campos por errarle al modal por veinte píxeles no es un
@@ -305,6 +347,9 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
       .map(c => ({
         id: c.id,
         codigo: c.codigo || '',
+        /* DE CADA UNO Y NO DEL CARGO. `?? null` y no `|| null`: responder «a nadie» es una
+           respuesta dada, no un campo vacío, y hay que poder distinguirla de la que falta. */
+        jefe: c.reportaA ?? null,
         sucursalIds: (c.sucursalIds || []).slice(0, 1),
         funcionales: funcionalesDe(c).map(f => ({ ...f })),
         ocupantes: ocupantesDe(c),
@@ -365,6 +410,37 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
   /* Al quedar uno solo, la selección vuelve al cargo: apuntar a un renglón que ya no existe
      dejaría el formulario en blanco. */
   useEffect(() => { if (unico) setSel('cargo') }, [unico])
+
+  /* CON UN SOLO PUESTO NO HAY REPARTO POSIBLE: un puesto responde a una jefatura y la pregunta
+     común y la de cada uno son la misma. La casilla ni se ofrece. */
+  const todasIguales = unico || (mismoJefe === null ? !jefeRepartido : mismoJefe)
+
+  /* LAS PLAZAS, CON LA JEFATURA QUE LES TOCA. Marcada la casilla, la común gana sobre lo que
+     tenga cada una —es lo que la casilla promete—; desmarcada manda la de cada fila, y las que
+     nunca se tocaron parten de la común. */
+  const puestosConJefe = useMemo(() => form.puestos.map(p => ({
+    ...p,
+    jefe: todasIguales ? (form.reportaA ?? null) : (p.jefe ?? form.reportaA ?? null),
+  })), [form.puestos, form.reportaA, todasIguales])
+
+  /* AL DESMARCAR SE ESCRIBE LO QUE LA COMÚN VENÍA DICIENDO. Sin esto, los desplegables de cada
+     puesto abrirían en blanco y parecería que nadie tiene jefe. */
+  const cambiarMismoJefe = v => {
+    setMismoJefe(v)
+    if (!v) setForm(f => ({ ...f, puestos: f.puestos.map(p => ({ ...p, jefe: p.jefe ?? f.reportaA ?? null })) }))
+  }
+
+  /* EL DIBUJO LEE LO MISMO QUE VA A GUARDARSE. Y con las plazas repartidas no hay un jefe del
+     cargo que dibujar: el panel agrupa por jefatura y dice cuántas son, en vez de colgar las
+     cinco de una sola y prometer un sitio que el organigrama no les va a dar. */
+  const previaForm = useMemo(() => {
+    const unaSola = new Set(puestosConJefe.map(p => p.jefe || '')).size <= 1
+    return {
+      ...form,
+      puestos: puestosConJefe,
+      reportaA: unaSola ? (puestosConJefe[0]?.jefe ?? form.reportaA ?? null) : null,
+    }
+  }, [form, puestosConJefe])
   /* Cuántos puestos existen ya en cada sede. El que se está editando no se cuenta: la pregunta
      es qué hay allá, no qué va a haber cuando se guarde. Sale de `estaEnSucursal`, que es la
      misma regla que usa el filtro de la pantalla —contarlos a mano acá sería una segunda verdad
@@ -388,7 +464,12 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
      preguntarles a qué altura mandan no tiene respuesta. Exigirlo siempre habría bloqueado
      justamente los dos casos en que el campo ni se ve. */
   const pideNivel = form.tipo === 'colaborador'
-  const valido = !!form.nombre.trim() && !!form.unidadId && form.reportaA !== undefined
+  /* CADA PUESTO CON SU JEFATURA DECIDIDA. Repartidas, no alcanza con que la común esté
+     contestada: la que manda es la de cada fila, y una sin decidir es un puesto que nace suelto. */
+  const jefeDecidido = todasIguales
+    ? form.reportaA !== undefined
+    : form.puestos.every(p => p.jefe !== undefined)
+  const valido = !!form.nombre.trim() && !!form.unidadId && jefeDecidido
     && (!pideNivel || !!form.grado)
   /* Los cargos de los que este puesto podría colgar. Vacío quiere decir que es el primero del
      organigrama, y entonces "de quién depende" deja de ser una pregunta. */
@@ -426,6 +507,9 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
     const codigos = codigosDeSerie(base.codigo, n, org)
     return Array.from({ length: n }, (_, i) => previos[i] || {
       codigo: codigos[i] || '',
+      /* Nace con la jefatura de arriba, que es «el valor con el que nacen todos». Si todavía no
+         se eligió ninguna, nace en `undefined` —«falta decidirlo»— y el botón de guardar espera. */
+      jefe: base.reportaA,
       /* Nacen con la sede y los apoyos del formulario: es «el valor con el que nacen todos», y la
          bandeja corrige a los que difieren. */
       sucursalIds: base.sucursalIds.slice(0, 1),
@@ -524,12 +608,15 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
        Creando de cero la lista todavía no existe —«Ocupantes» ni se tocó—, y sin ella la página no
        tendría ninguna entrada que escribir. Se arma una con lo que hay arriba: un puesto es la
        lista de uno. */
-    puestos: form.puestos.length ? form.puestos : [{
+    /* CON LA JEFATURA YA RESUELTA. La página no tiene por qué saber si la casilla estaba
+       marcada: recibe una lista donde cada entrada dice la suya. */
+    puestos: (form.puestos.length ? puestosConJefe : [{
+      jefe: form.reportaA,
       codigo: form.codigo,
       sucursalIds: form.sucursalIds,
       funcionales: form.funcionales,
       ocupantes: form.ocupantes,
-    }],
+    }]),
     quitados,
   })
 
@@ -556,7 +643,7 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
               mando y muestra los reportes, que es lo que uno viene a ver. */}
           {soloVer ? <PreviaLugar cargo={cargo} org={org} /> : (
             <PreviaPuesto
-              form={form}
+              form={previaForm}
               org={org}
               cargoId={cargo?.id}
               ocupantes={ocupantes}
@@ -713,6 +800,11 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                   )}
                 </label>
   
+                {/* LA JEFATURA COMÚN, MIENTRAS VALGA PARA TODOS. Desmarcada la casilla de abajo,
+                    esta pregunta no tiene una sola respuesta y cada puesto contesta la suya en su
+                    propia hoja: dejar el campo acá diciendo un nombre sería anunciar una línea de
+                    mando que tres de los cinco no tienen. */}
+                {todasIguales && (
                 <label className="pl-label">
                   <span className="og-label-fila">
                     De quién depende {jefesPosibles.length > 0 && <em className="og-req">*</em>}
@@ -747,7 +839,48 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                     />
                   )}
                 </label>
+                )}
               </div>
+
+              {/* ¿UNA JEFATURA O VARIAS? Es la misma casilla que la ficha del cargo, con las
+                  mismas palabras: nueve vendedores repartidos entre dos supervisores es un cargo
+                  normal, y hasta ahora el dibujo lo abría partido en dos grupos que no se veían
+                  entre sí.
+
+                  Marcada por defecto porque es el caso corriente —todos responden al mismo— y
+                  desmarcarla es el paso que se pide cuando no. */}
+              {!unico && jefesPosibles.length > 0 && (
+                <div className="est-mismo-jefe">
+                  <label className="est-mismo-jefe-check">
+                    <input
+                      type="checkbox"
+                      checked={todasIguales}
+                      onChange={e => cambiarMismoJefe(e.target.checked)}
+                    />
+                    <span>
+                      Todos los puestos dependen de la misma jefatura
+                      <em>Desmárcalo si alguno responde a otra persona.</em>
+                    </span>
+                  </label>
+
+                  {!todasIguales && (
+                    <p className="est-mismo-jefe-nota">
+                      Cada puesto elige la suya en su propia hoja. Tócalo en el panel de la
+                      izquierda para abrirla.
+                    </p>
+                  )}
+
+                  {/* AVISO Y NO BLOQUEO: aplanar el reparto es una decisión válida —«todos pasan
+                      a depender del nuevo coordinador»— pero tiene que decirse antes de guardar
+                      y no descubrirse después. */}
+                  {todasIguales && jefeRepartido && (
+                    <p className="est-mismo-jefe-aviso">
+                      Sus {form.puestos.length} puestos responden hoy a jefaturas distintas. Al
+                      guardar, todos pasan a depender de la que elijas arriba.
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* EL TECHO DE PLAZAS Y LA JEFATURA CON LA QUE NACEN LAS NUEVAS. Son del cargo y no
                   de cada silla, y hasta ahora solo se podían poner desde la ficha: creando desde
@@ -963,6 +1096,7 @@ function CargoModal({ cargo, base, sedeActiva, onGuardar, onEliminar, onEliminar
                 puestosPorSede={puestosPorSede}
                 unidadPropia={form.unidadId}
                 cargoId={cargo?.id}
+                jefes={todasIguales || !jefesPosibles.length ? null : jefesPosibles}
                 /* Con uno solo el dato vive en el formulario; con varios, en su renglón de la
                    lista. Es el mismo campo escribiendo en dos lugares distintos, y por eso el
                    componente no sabe en cuál: se lo dice quien lo dibuja. */
@@ -2396,7 +2530,10 @@ export default function Organigrama() {
     const { puestos, quitados, ...comun } = form
     /* Lo propio de cada puesto no puede salir del bloque común: mandarlo pisaría cinco sedes
        distintas con una sola. Sale de la entrada, no de acá. */
-    const { codigo, sucursalIds, funcionales, ocupantes, ...compartido } = comun
+    /* LA JEFATURA SE VA CON LO PROPIO. Viajaba en el bloque común, así que escribir el grupo
+       pisaba las cinco líneas de mando con una sola: era la razón de fondo por la que el modal
+       tenía que abrir partido un cargo repartido. */
+    const { codigo, sucursalIds, funcionales, ocupantes, reportaA, ...compartido } = comun
 
     setOrg(prev => {
       let cargos = prev.cargos
@@ -2411,6 +2548,10 @@ export default function Organigrama() {
             .filter(f => f.unidadId && f.unidadId !== compartido.unidadId)
             .map(f => ({ unidadId: f.unidadId, reportaA: f.reportaA || null })),
           ocupantes: pz.ocupantes || [],
+          /* Sin decidir, la común: es el caso de siempre —un cargo con una sola jefatura— donde
+             el modal ni pregunta por puesto. `?? null` en los dos pasos para no confundir «no
+             depende de nadie» con «falta contestarlo». */
+          reportaA: (pz.jefe === undefined ? reportaA : pz.jefe) ?? null,
         }
         if (pz.id && cargos.some(c => c.id === pz.id)) {
           cargos = cargos.map(c => (c.id === pz.id ? { ...c, ...compartido, ...propio } : c))
