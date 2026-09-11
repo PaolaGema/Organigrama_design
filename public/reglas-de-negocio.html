@@ -610,8 +610,8 @@ td.rg{color:var(--tinta-3);font-weight:700}
   font-style: normal; font-size: 14px; font-weight: 500; line-height: 1.45; color: var(--tinta-3);
 }
 .reglas + .br-grupo { margin-top: 62px; }
-.br { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 0 28px; padding-top: 30px; }
-.br + .br { margin-top: 30px; border-top: 1px solid var(--regla); }
+.br { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 0 28px; padding-top: 34px; }
+.br + .br { margin-top: 44px; border-top: 1px solid var(--regla); }
 .br-n {
   font-family: var(--mono); font-size: 11px; font-weight: 650; letter-spacing: .06em;
   color: var(--tinta-3); padding-top: 6px; font-variant-numeric: lining-nums tabular-nums;
@@ -648,38 +648,55 @@ td.rg{color:var(--tinta-3);font-weight:700}
   font-family: var(--mono); font-size: 9px; font-weight: 650; letter-spacing: .1em;
   text-transform: uppercase; color: var(--tinta-3); margin-right: 7px;
 }
-.traza {
-  margin-top: 16px; font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em;
-  text-transform: uppercase; color: var(--tinta-3);
-}
-
 
 /* Los cuatro apartados de cada regla ─────────────────────────
-   Siempre los mismos y siempre en el mismo orden: qué dice, cómo se prueba, qué la acota
-   y con qué se enlaza. El número del apartado va en el mismo mono que el código de la regla. */
+   Siempre los mismos y en el mismo orden: qué dice, cómo se prueba, qué la acota y con qué
+   se enlaza. El número del apartado va en un chip al margen del título, y la línea que lo
+   sigue hace de separador sin cortar la columna de texto. Los metadatos —el 1 y el 4— son
+   la misma rejilla: celdas separadas por el fondo, que es lo que dibuja las líneas. */
 .br-h {
-  display: flex; align-items: baseline; gap: 9px;
-  margin: 26px 0 12px; padding-bottom: 6px;
-  border-bottom: 1px solid var(--regla);
-  font-size: 9.5px; letter-spacing: .15em;
+  display: flex; align-items: center; gap: 9px;
+  margin: 32px 0 14px; padding: 0; border: 0;
+  font-family: var(--mono); font-size: 9.5px; font-weight: 650;
+  letter-spacing: .15em; text-transform: uppercase; color: var(--tinta-2);
 }
+.br-h::after { content: ''; flex: 1; height: 1px; background: var(--regla); }
 .br-h em {
-  font-style: normal; font-family: var(--mono); font-size: 9.5px; font-weight: 650;
+  flex: none; width: 19px; height: 19px; display: grid; place-items: center;
+  font-style: normal; font-family: var(--mono); font-size: 10px; font-weight: 650;
   letter-spacing: 0; color: var(--estructural);
+  background: color-mix(in srgb, var(--estructural) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--estructural) 24%, transparent);
+  border-radius: var(--r-xs);
 }
 .br-meta, .br-traza {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px 20px; margin: 0 0 16px; padding: 0;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 0 0 18px; padding: 0;
+  background: var(--regla); border: 1px solid var(--regla);
+  border-radius: var(--r-s); overflow: hidden;
 }
 .br-traza { margin-bottom: 0; }
-.br-meta > div, .br-traza > div { min-width: 0; }
-.br-meta dt, .br-traza dt, .br > div > p.br-dg-t {
-  font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: .13em;
-  text-transform: uppercase; color: var(--tinta-3); margin: 0 0 3px;
+.br-meta > div, .br-traza > div { background: var(--hoja-2); padding: 11px 15px; min-width: 0; }
+.br-traza > div:last-child { grid-column: 1 / -1; }
+.br-meta dt, .br-traza dt {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--tinta-3); margin: 0 0 5px;
 }
-.br-meta dd, .br-traza dd { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--tinta-2); }
-.br-cond { margin: 0; padding-left: 1.25em; max-width: 82ch; }
-.br-cond li { font-size: 15px; line-height: 1.6; color: var(--tinta-2); }
+.br-meta dd, .br-traza dd {
+  margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--tinta); font-weight: 500;
+}
+.br > div > p.br-dg-t {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--tinta-3); margin: 0 0 7px;
+}
+.br-cond { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; max-width: 82ch; }
+.br-cond li {
+  position: relative; margin: 0; padding-left: 21px;
+  font-size: 14.5px; line-height: 1.62; color: var(--tinta-2);
+}
+.br-cond li::before {
+  content: ''; position: absolute; left: 2px; top: .68em;
+  width: 10px; height: 1px; background: var(--estructural); opacity: .5;
+}
 .br .escenarios { margin-top: 0; }
 .br > div > p + p { margin-top: 11px; }
 
@@ -829,6 +846,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 @media (max-width: 1100px) {
   .br { grid-template-columns: 1fr; gap: 0; }
   .br-n { padding: 0 0 8px; }
+  .br-meta, .br-traza { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .escenarios { grid-template-columns: 1fr; }
 }
 @media (max-width: 860px) {
