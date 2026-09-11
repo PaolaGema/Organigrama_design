@@ -634,32 +634,54 @@ td.rg{color:var(--tinta-3);font-weight:700}
 .br h3::before, .flujo h3::before, .hu h3::before { display: none; }
 .br > div > p { font-size: 15.5px; color: var(--tinta-2); margin: 0; max-width: 82ch; }
 /* Los escenarios ──────────────────────────────────────────────
-   Sin caja: uno debajo del otro, separados por una línea, y el peso visual puesto en el
-   texto y no en el recuadro. La regla ya trae dos paneles —el 1 y el 4— y tres cajas más
-   adentro la volvían un tablero. Los cuatro pasos van en dos columnas: la palabra al margen,
-   el hecho a la derecha, así que un paso de dos líneas no vuelve al borde. */
-.escenarios { display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 18px; }
-.esc { background: none; border: 0; padding: 0; }
-.esc + .esc { margin-top: 6px; border-top: 1px solid var(--regla); }
+   Dado que · Cuando · Entonces · Y no es una tabla: es una secuencia, y los 123 escenarios
+   tienen los cuatro pasos en ese orden. Por eso se dibujan como un hilo con cuatro nudos,
+   y el nudo del ENTONCES —el resultado, lo único que de verdad se verifica— va relleno y en
+   color. Ahí vive la señal que antes daba el ✅: verde cuando el camino tiene que funcionar,
+   ámbar quemado cuando tiene que estar cerrado. */
+.escenarios { display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 16px; counter-reset: esc; }
+.esc {
+  counter-increment: esc; position: relative;
+  background: none; border: 0; padding: 22px 0 8px;
+}
+.esc::before {
+  content: 'Escenario ' counter(esc);
+  display: block; margin-bottom: 5px;
+  font-family: var(--mono); font-size: 8.5px; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--tinta-3);
+}
 .esc-t {
-  display: flex; align-items: center; gap: 8px; margin: 0; padding: 18px 0 9px;
-  font-size: 14px; font-weight: 650; line-height: 1.35; color: var(--tinta);
+  display: block; margin: 0; padding: 0 0 12px; background: none; border: 0;
+  font-size: 14.5px; font-weight: 650; line-height: 1.35; color: var(--tinta);
 }
-.esc-t i { flex: none; font-style: normal; font-size: 12px; line-height: 1; color: var(--funcional); }
-.esc-t i::before { content: '✓'; font-weight: 700; }
-.esc.no .esc-t i { color: var(--outsourcing); }
-.esc.no .esc-t i::before { content: '✕'; }
-.esc ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; max-width: none; }
+.esc-t i { display: none; }
+.esc ul {
+  position: relative; margin: 0; padding: 0; list-style: none;
+  display: grid; gap: 0; max-width: none;
+}
+.esc li::after {          /* el hilo va de nudo a nudo, no de borde a borde */
+  content: ''; position: absolute; left: 3.5px; top: 15px; bottom: -15px;
+  width: 1px; background: var(--regla-2);
+}
+.esc li:last-child::after { display: none; }
 .esc li {
-  position: relative; margin: 0; padding: 6px 0 6px 71px;
-  font-size: 13px; line-height: 1.55; color: var(--tinta-2);
+  position: relative; margin: 0; padding: 6px 0 6px 96px;
+  font-size: 13.5px; line-height: 1.55; color: var(--tinta-2);
 }
-.esc li + li { border-top: 1px solid color-mix(in srgb, var(--regla) 55%, transparent); }
+.esc li::before {
+  content: ''; position: absolute; left: 0; top: 11px; box-sizing: border-box;
+  width: 8px; height: 8px; border-radius: var(--r-full);
+  background: var(--papel); border: 1.5px solid var(--regla-2);
+}
+.esc li:nth-child(3)::before { background: var(--funcional); border-color: var(--funcional); }
+.esc.no li:nth-child(3)::before { background: var(--outsourcing); border-color: var(--outsourcing); }
 .esc li > b:first-child {
+  position: absolute; left: 24px; top: 8.5px; width: 66px; margin: 0;
   font-family: var(--mono); font-size: 9px; font-weight: 650; letter-spacing: .1em;
-  text-transform: uppercase; color: var(--tinta-3); margin: 0;
-  position: absolute; left: 0; top: 8.5px; width: 62px;
+  text-transform: uppercase; color: var(--tinta-3);
 }
+.esc li:nth-child(3) > b:first-child { color: var(--funcional); }
+.esc.no li:nth-child(3) > b:first-child { color: var(--outsourcing); }
 .esc li b { font-weight: 640; color: var(--tinta); }
 
 /* Los cuatro apartados de cada regla ─────────────────────────
@@ -869,6 +891,10 @@ td.rg{color:var(--tinta-3);font-weight:700}
   .wf-th span:nth-child(3), .wf-th span:nth-child(4),
   .wf-tr > *:nth-child(3), .wf-tr > *:nth-child(4) { display: none; }
   .wf-campos, .wf-campos.dos { grid-template-columns: 1fr; }
+}
+@media (max-width: 620px) {
+  .esc li { padding: 5px 0 5px 22px; }
+  .esc li > b:first-child { position: static; display: block; width: auto; margin-bottom: 3px; }
 }
 @media print {
   .br, .flujo, .wf, .esc { break-inside: avoid; box-shadow: none; }
