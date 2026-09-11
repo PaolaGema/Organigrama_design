@@ -716,6 +716,8 @@ td.rg{color:var(--tinta-3);font-weight:700}
   font-family: var(--mono); font-size: 8.5px; font-weight: 600; letter-spacing: .14em;
   text-transform: uppercase; color: var(--tinta-3); margin: 0 0 5px;
 }
+.br-traza a.id { text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--estructural) 35%, transparent); }
+.br-traza a.id:hover { border-bottom-color: var(--estructural); background: color-mix(in srgb, var(--estructural) 8%, transparent); }
 .br-meta dd, .br-traza dd {
   margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--tinta); font-weight: 500;
 }
@@ -1248,6 +1250,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
           <a href="#s9"><span>09</span>Historias de usuario</a>
           <button type="button" class="rail-x" aria-expanded="false" aria-controls="sub-s9"><svg class="rail-c" viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M3.5 1.5 L7 5 L3.5 8.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Ver las 15 historias</span></button>
           <ul class="rail-sub" id="sub-s9" hidden>
+            <li><a href="#p9-1">9.1 Las quince historias y sus criterios</a></li>
             <li><a href="#HU-ORG-01">01 · Dejar el esquema como es mi empresa</a></li>
             <li><a href="#HU-ORG-02">02 · Cargar los datos de mi empresa</a></li>
             <li><a href="#HU-ORG-03">03 · Cargar dónde está mi empresa</a></li>
@@ -2148,11 +2151,11 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <div class="tbl"><table>
       <thead><tr><th>#</th><th>Requisito</th><th>Prior.</th><th>Cómo se comprueba</th></tr></thead>
       <tbody>
-        <tr><td class="id">RF‑ORG‑001</td><td>La empresa administra <b>de qué niveles de estructura está hecho su árbol</b>: enciende los que usa y apaga los que no</td><td><span class="p p-m">Oblig.</span></td><td>Una empresa de una sola ciudad saca «Regional» de todos sus formularios sin que nadie toque código</td></tr>
-        <tr><td class="id">RF‑ORG‑002</td><td>Los niveles de estructura fijos —empresa, unidad organizacional, cargo y puesto— <b>no se apagan</b>: sin ellos no hay organigrama que dibujar</td><td><span class="p p-m">Oblig.</span></td><td>El interruptor no existe para esos cuatro, en vez de existir y rechazar</td></tr>
-        <tr><td class="id">RF‑ORG‑003</td><td>Apagar o borrar un nivel de estructura que tiene nodos dentro está <b>trabado</b>, y el sistema dice cuántos nodos habría que mover antes</td><td><span class="p p-m">Oblig.</span></td><td>Con 3 regiones cargadas, el interruptor de «Regional» no se puede mover y el contador dice 3. <em>BR‑ORG‑004</em></td></tr>
-        <tr><td class="id">RF‑ORG‑006</td><td>La pantalla muestra una <b>vista previa del esquema de niveles resultante</b>: «así queda tu organización», con los niveles de estructura encendidos en orden y anidados</td><td><span class="p p-s">Import.</span></td><td>Apagar un nivel de estructura cambia la vista previa antes de guardar</td></tr>
-        <tr><td class="id">RF‑ORG‑007</td><td>El <b>catálogo de tipos de cargo</b> —regular, staff, externo— se administra en esta misma pantalla, porque decide cómo se dibuja el organigrama. El de <b>niveles de mando</b> tiene la suya, dentro de Estructura organizacional</td><td><span class="p p-m">Oblig.</span></td><td>Está donde se decide la forma de la estructura, no repartido en dos sitios</td></tr>
+        <tr><td class="id" id="RF-ORG-001">RF‑ORG‑001</td><td>La empresa administra <b>de qué niveles de estructura está hecho su árbol</b>: enciende los que usa y apaga los que no</td><td><span class="p p-m">Oblig.</span></td><td>Una empresa de una sola ciudad saca «Regional» de todos sus formularios sin que nadie toque código</td></tr>
+        <tr><td class="id" id="RF-ORG-002">RF‑ORG‑002</td><td>Los niveles de estructura fijos —empresa, unidad organizacional, cargo y puesto— <b>no se apagan</b>: sin ellos no hay organigrama que dibujar</td><td><span class="p p-m">Oblig.</span></td><td>El interruptor no existe para esos cuatro, en vez de existir y rechazar</td></tr>
+        <tr><td class="id" id="RF-ORG-003">RF‑ORG‑003</td><td>Apagar o borrar un nivel de estructura que tiene nodos dentro está <b>trabado</b>, y el sistema dice cuántos nodos habría que mover antes</td><td><span class="p p-m">Oblig.</span></td><td>Con 3 regiones cargadas, el interruptor de «Regional» no se puede mover y el contador dice 3. <em>BR‑ORG‑004</em></td></tr>
+        <tr><td class="id" id="RF-ORG-006">RF‑ORG‑006</td><td>La pantalla muestra una <b>vista previa del esquema de niveles resultante</b>: «así queda tu organización», con los niveles de estructura encendidos en orden y anidados</td><td><span class="p p-s">Import.</span></td><td>Apagar un nivel de estructura cambia la vista previa antes de guardar</td></tr>
+        <tr><td class="id" id="RF-ORG-007">RF‑ORG‑007</td><td>El <b>catálogo de tipos de cargo</b> —regular, staff, externo— se administra en esta misma pantalla, porque decide cómo se dibuja el organigrama. El de <b>niveles de mando</b> tiene la suya, dentro de Estructura organizacional</td><td><span class="p p-m">Oblig.</span></td><td>Está donde se decide la forma de la estructura, no repartido en dos sitios</td></tr>
       </tbody>
     </table></div>
     <div class="nota"><p><strong>El nivel de mando también es un catálogo de la empresa</strong> —<span class="id">BR‑ORG‑015</span>—: vienen tres, y cada empresa los renombra, los reordena y agrega los que le falten. El número no se guarda en el cargo: es la posición en la lista, y por eso intercalar un nivel de estructura renumera todo solo sin tocar un cargo.</p></div>
@@ -2162,13 +2165,13 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <div class="tbl"><table>
       <thead><tr><th>#</th><th>Requisito</th><th>Prior.</th><th>Cómo se comprueba</th></tr></thead>
       <tbody>
-        <tr><td class="id">RF‑ORG‑010</td><td>Cada dimensión muestra <b>una pestaña por nivel de estructura encendido</b>, en el orden del esquema de niveles, y nombra al final los apagados para poder encenderlos desde ahí</td><td><span class="p p-m">Oblig.</span></td><td>Encender un nivel de estructura agrega su pestaña sin tocar la pantalla</td></tr>
-        <tr><td class="id">RF‑ORG‑011</td><td>La tabla dibuja el <b>árbol anidado</b>, no una lista plana: cada fila se cuelga de su ancestro más cercano que también esté en la vista, y el camino que se saltó se enseña en gris</td><td><span class="p p-m">Oblig.</span></td><td>Una unidad que cuelga de una sucursal se sigue viendo anidada en la lista de unidades</td></tr>
-        <tr><td class="id">RF‑ORG‑012</td><td>Las columnas <b>se deducen de los tipos a la vista</b>: se dibuja la que <b>puede</b> tener dato, no la que ya lo tiene, y desaparece cuando ninguno de los tipos listados podría llenarla</td><td><span class="p p-m">Oblig.</span></td><td>Una tabla sin ningún responsable cargado igual dibuja la columna Responsable, vacía; una sin ninguna unidad de negocio declarada no dibuja esa columna</td></tr>
-        <tr><td class="id">RF‑ORG‑013</td><td>Un buscador filtra dentro de la vista, y el resultado <b>vuelve a la primera página</b>. La lista se pagina</td><td><span class="p p-m">Oblig.</span></td><td>Buscar estando en la página 3 no deja al usuario mirando una página vacía</td></tr>
-        <tr><td class="id">RF‑ORG‑014</td><td>El botón de crear <b>se deduce</b>: en una vista de un solo tipo crea directamente ese tipo y dice «Nueva sucursal»; en una que agrupa varios, pregunta qué se quiere crear</td><td><span class="p p-m">Oblig.</span></td><td>En la pestaña Sucursales no se ofrece crear una unidad organizacional. <em>BR‑ORG‑003</em></td></tr>
-        <tr><td class="id">RF‑ORG‑015</td><td>Cada fila ofrece un menú con <b>ver detalle, editar, cambiar estado y eliminar</b>, y nada más. Eliminar va marcado como riesgo y pide escribir la palabra</td><td><span class="p p-m">Oblig.</span></td><td>El estado se cambia por un solo camino, y borrar nunca es un clic distraído</td></tr>
-        <tr><td class="id">RF‑ORG‑016</td><td>Un cargo se despliega y muestra <b>sus puestos como filas hijas</b>, con las mismas columnas. El puesto no tiene lista propia: vive dentro de su cargo</td><td><span class="p p-m">Oblig.</span></td><td>Un cargo de cupo 5 con 1 puesto abierto despliega 5 filas: la abierta y 4 vacantes. <em>BR‑ORG‑009</em></td></tr>
+        <tr><td class="id" id="RF-ORG-010">RF‑ORG‑010</td><td>Cada dimensión muestra <b>una pestaña por nivel de estructura encendido</b>, en el orden del esquema de niveles, y nombra al final los apagados para poder encenderlos desde ahí</td><td><span class="p p-m">Oblig.</span></td><td>Encender un nivel de estructura agrega su pestaña sin tocar la pantalla</td></tr>
+        <tr><td class="id" id="RF-ORG-011">RF‑ORG‑011</td><td>La tabla dibuja el <b>árbol anidado</b>, no una lista plana: cada fila se cuelga de su ancestro más cercano que también esté en la vista, y el camino que se saltó se enseña en gris</td><td><span class="p p-m">Oblig.</span></td><td>Una unidad que cuelga de una sucursal se sigue viendo anidada en la lista de unidades</td></tr>
+        <tr><td class="id" id="RF-ORG-012">RF‑ORG‑012</td><td>Las columnas <b>se deducen de los tipos a la vista</b>: se dibuja la que <b>puede</b> tener dato, no la que ya lo tiene, y desaparece cuando ninguno de los tipos listados podría llenarla</td><td><span class="p p-m">Oblig.</span></td><td>Una tabla sin ningún responsable cargado igual dibuja la columna Responsable, vacía; una sin ninguna unidad de negocio declarada no dibuja esa columna</td></tr>
+        <tr><td class="id" id="RF-ORG-013">RF‑ORG‑013</td><td>Un buscador filtra dentro de la vista, y el resultado <b>vuelve a la primera página</b>. La lista se pagina</td><td><span class="p p-m">Oblig.</span></td><td>Buscar estando en la página 3 no deja al usuario mirando una página vacía</td></tr>
+        <tr><td class="id" id="RF-ORG-014">RF‑ORG‑014</td><td>El botón de crear <b>se deduce</b>: en una vista de un solo tipo crea directamente ese tipo y dice «Nueva sucursal»; en una que agrupa varios, pregunta qué se quiere crear</td><td><span class="p p-m">Oblig.</span></td><td>En la pestaña Sucursales no se ofrece crear una unidad organizacional. <em>BR‑ORG‑003</em></td></tr>
+        <tr><td class="id" id="RF-ORG-015">RF‑ORG‑015</td><td>Cada fila ofrece un menú con <b>ver detalle, editar, cambiar estado y eliminar</b>, y nada más. Eliminar va marcado como riesgo y pide escribir la palabra</td><td><span class="p p-m">Oblig.</span></td><td>El estado se cambia por un solo camino, y borrar nunca es un clic distraído</td></tr>
+        <tr><td class="id" id="RF-ORG-016">RF‑ORG‑016</td><td>Un cargo se despliega y muestra <b>sus puestos como filas hijas</b>, con las mismas columnas. El puesto no tiene lista propia: vive dentro de su cargo</td><td><span class="p p-m">Oblig.</span></td><td>Un cargo de cupo 5 con 1 puesto abierto despliega 5 filas: la abierta y 4 vacantes. <em>BR‑ORG‑009</em></td></tr>
       </tbody>
     </table></div>
 
@@ -2177,17 +2180,17 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <div class="tbl"><table>
       <thead><tr><th>#</th><th>Requisito</th><th>Prior.</th><th>Cómo se comprueba</th></tr></thead>
       <tbody>
-        <tr><td class="id">RF‑ORG‑020</td><td>Una <b>sola ficha</b> sirve a regional, sucursal, centro de trabajo, unidad de negocio, unidad organizacional, cargo y puesto</td><td><span class="p p-m">Oblig.</span></td><td>Los siete tipos se editan en la misma pantalla, con los mismos gestos</td></tr>
-        <tr><td class="id">RF‑ORG‑021</td><td>La ficha <b>abre en lectura</b> y se pasa a edición. Los campos son los mismos y están donde van a estar, solo que bloqueados</td><td><span class="p p-m">Oblig.</span></td><td>Nada se mueve de sitio al pasar de mirar a editar</td></tr>
-        <tr><td class="id">RF‑ORG‑022</td><td>El desplegable <b>«Depende de» solo ofrece nodos de niveles de estructura superiores</b>, ya filtrados por lo que la empresa encendió</td><td><span class="p p-m">Oblig.</span></td><td>Creando una unidad, ni un cargo ni un puesto figuran en la lista. <em>BR‑ORG‑002</em></td></tr>
-        <tr><td class="id">RF‑ORG‑023</td><td>Los obligatorios <b>salen de los propios campos</b> y bloquean el guardado nombrando cuáles faltan y por qué hacen falta —«es el domicilio que sale en cada finiquito»—</td><td><span class="p p-m">Oblig.</span></td><td>El error nombra el campo y su razón, no un «campo obligatorio» que no explica nada</td></tr>
-        <tr><td class="id">RF‑ORG‑024</td><td>Un <b>puesto no tiene campo de nombre</b>: se llama como su cargo. Lo que lo distingue es su código, dónde está y quién lo ocupa; su unidad y su nivel de mando se muestran heredados y en gris</td><td><span class="p p-m">Oblig.</span></td><td>Renombrar el cargo renombra sus puestos, y no hay forma de que una silla declare otra unidad. <em>BR‑ORG‑011</em></td></tr>
-        <tr><td class="id">RF‑ORG‑025</td><td>El cargo declara <b>su cupo</b> —hasta cuántas personas admite— y <b>cuántas plazas abre</b>, que son dos cosas: sus puestos se crean y se corrigen desde su ficha</td><td><span class="p p-m">Oblig.</span></td><td>Un cargo con cupo 4 y ninguna plaza abierta es válido, y bajar el cupo por debajo de las abiertas no guarda. <em>BR‑ORG‑009</em></td></tr>
-        <tr><td class="id">RF‑ORG‑026</td><td>Un centro de trabajo pregunta por <b>regional, sucursal y centro superior en tres campos separados</b>, y el sistema los traduce a un solo nodo superior</td><td><span class="p p-s">Import.</span></td><td>El formulario habla como habla la empresa; el árbol guarda un <span class="mono">padreId</span></td></tr>
-        <tr><td class="id">RF‑ORG‑027</td><td>Cancelar <b>vuelve a la lista del tipo del nodo</b>, no a la pantalla desde la que se llegó</td><td><span class="p p-s">Import.</span></td><td>Un nodo pertenece a la lista que lo lista, se haya llegado desde donde se haya llegado</td></tr>
-        <tr><td class="id">RF‑ORG‑029</td><td>El cargo pregunta <b>si todos sus puestos dependen de la misma jefatura</b>: marcado —el caso corriente— se elige una y vale para todos; desmarcado, cada puesto elige el suyo</td><td><span class="p p-m">Oblig.</span></td><td>Un cargo de cinco sillas repartidas entre dos supervisores se edita en una sola ficha. <em>BR‑ORG‑012</em></td></tr>
-        <tr><td class="id">RF‑ORG‑038</td><td>El cargo declara <b>con qué jefatura nacen sus sillas nuevas</b>, y cambiarla no mueve a ninguna de las que ya existen</td><td><span class="p p-s">Import.</span></td><td>Una silla abierta desde la lista nace colgada y no suelta. <em>BR‑ORG‑024</em></td></tr>
-        <tr><td class="id">RF‑ORG‑028</td><td>El <b>estado se lee, no se rellena</b>: en la ficha es un dato mostrado, y se cambia por su único camino —la acción «Cambiar estado»—</td><td><span class="p p-m">Oblig.</span></td><td>No existe un desplegable de estado en el formulario de edición. <em>BR‑ORG‑016</em></td></tr>
+        <tr><td class="id" id="RF-ORG-020">RF‑ORG‑020</td><td>Una <b>sola ficha</b> sirve a regional, sucursal, centro de trabajo, unidad de negocio, unidad organizacional, cargo y puesto</td><td><span class="p p-m">Oblig.</span></td><td>Los siete tipos se editan en la misma pantalla, con los mismos gestos</td></tr>
+        <tr><td class="id" id="RF-ORG-021">RF‑ORG‑021</td><td>La ficha <b>abre en lectura</b> y se pasa a edición. Los campos son los mismos y están donde van a estar, solo que bloqueados</td><td><span class="p p-m">Oblig.</span></td><td>Nada se mueve de sitio al pasar de mirar a editar</td></tr>
+        <tr><td class="id" id="RF-ORG-022">RF‑ORG‑022</td><td>El desplegable <b>«Depende de» solo ofrece nodos de niveles de estructura superiores</b>, ya filtrados por lo que la empresa encendió</td><td><span class="p p-m">Oblig.</span></td><td>Creando una unidad, ni un cargo ni un puesto figuran en la lista. <em>BR‑ORG‑002</em></td></tr>
+        <tr><td class="id" id="RF-ORG-023">RF‑ORG‑023</td><td>Los obligatorios <b>salen de los propios campos</b> y bloquean el guardado nombrando cuáles faltan y por qué hacen falta —«es el domicilio que sale en cada finiquito»—</td><td><span class="p p-m">Oblig.</span></td><td>El error nombra el campo y su razón, no un «campo obligatorio» que no explica nada</td></tr>
+        <tr><td class="id" id="RF-ORG-024">RF‑ORG‑024</td><td>Un <b>puesto no tiene campo de nombre</b>: se llama como su cargo. Lo que lo distingue es su código, dónde está y quién lo ocupa; su unidad y su nivel de mando se muestran heredados y en gris</td><td><span class="p p-m">Oblig.</span></td><td>Renombrar el cargo renombra sus puestos, y no hay forma de que una silla declare otra unidad. <em>BR‑ORG‑011</em></td></tr>
+        <tr><td class="id" id="RF-ORG-025">RF‑ORG‑025</td><td>El cargo declara <b>su cupo</b> —hasta cuántas personas admite— y <b>cuántas plazas abre</b>, que son dos cosas: sus puestos se crean y se corrigen desde su ficha</td><td><span class="p p-m">Oblig.</span></td><td>Un cargo con cupo 4 y ninguna plaza abierta es válido, y bajar el cupo por debajo de las abiertas no guarda. <em>BR‑ORG‑009</em></td></tr>
+        <tr><td class="id" id="RF-ORG-026">RF‑ORG‑026</td><td>Un centro de trabajo pregunta por <b>regional, sucursal y centro superior en tres campos separados</b>, y el sistema los traduce a un solo nodo superior</td><td><span class="p p-s">Import.</span></td><td>El formulario habla como habla la empresa; el árbol guarda un <span class="mono">padreId</span></td></tr>
+        <tr><td class="id" id="RF-ORG-027">RF‑ORG‑027</td><td>Cancelar <b>vuelve a la lista del tipo del nodo</b>, no a la pantalla desde la que se llegó</td><td><span class="p p-s">Import.</span></td><td>Un nodo pertenece a la lista que lo lista, se haya llegado desde donde se haya llegado</td></tr>
+        <tr><td class="id" id="RF-ORG-029">RF‑ORG‑029</td><td>El cargo pregunta <b>si todos sus puestos dependen de la misma jefatura</b>: marcado —el caso corriente— se elige una y vale para todos; desmarcado, cada puesto elige el suyo</td><td><span class="p p-m">Oblig.</span></td><td>Un cargo de cinco sillas repartidas entre dos supervisores se edita en una sola ficha. <em>BR‑ORG‑012</em></td></tr>
+        <tr><td class="id" id="RF-ORG-038">RF‑ORG‑038</td><td>El cargo declara <b>con qué jefatura nacen sus sillas nuevas</b>, y cambiarla no mueve a ninguna de las que ya existen</td><td><span class="p p-s">Import.</span></td><td>Una silla abierta desde la lista nace colgada y no suelta. <em>BR‑ORG‑024</em></td></tr>
+        <tr><td class="id" id="RF-ORG-028">RF‑ORG‑028</td><td>El <b>estado se lee, no se rellena</b>: en la ficha es un dato mostrado, y se cambia por su único camino —la acción «Cambiar estado»—</td><td><span class="p p-m">Oblig.</span></td><td>No existe un desplegable de estado en el formulario de edición. <em>BR‑ORG‑016</em></td></tr>
       </tbody>
     </table></div>
 
@@ -2196,15 +2199,15 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <div class="tbl"><table>
       <thead><tr><th>#</th><th>Requisito</th><th>Prior.</th><th>Cómo se comprueba</th></tr></thead>
       <tbody>
-        <tr><td class="id">RF‑ORG‑030</td><td>Tres vistas del mismo dato: <b>gráfico, cards y tabla</b>. Cambiar de vista no cambia lo que hay, cambia cómo se mira</td><td><span class="p p-m">Oblig.</span></td><td>Lo creado en una pantalla está en la otra al instante, sin sincronizar. <em>BR‑ORG‑017</em></td></tr>
-        <tr><td class="id">RF‑ORG‑031</td><td>Los filtros —sucursal, unidad, tipo de cargo— <b>recortan la vista, no el sistema</b>, y la pantalla dice en una frase qué se está mirando</td><td><span class="p p-m">Oblig.</span></td><td>Filtrar por una sede conserva la dependencia estructural completa hasta arriba. <em>BR‑ORG‑018</em></td></tr>
-        <tr><td class="id">RF‑ORG‑032</td><td><b>Los cargos de staff y los externos se dibujan al costado</b> de la línea, no debajo, porque no mandan</td><td><span class="p p-m">Oblig.</span></td><td>Un puesto de staff nunca aparece como subordinado de quien asiste. <em>BR‑ORG‑014</em></td></tr>
-        <tr><td class="id">RF‑ORG‑033</td><td>La dependencia funcional —«también trabaja en»— se dibuja como <b>línea secundaria</b>, distinguible de la estructural</td><td><span class="p p-s">Import.</span></td><td>En escala de grises las dos líneas se siguen distinguiendo. <em>BR‑ORG‑013</em></td></tr>
-        <tr><td class="id">RF‑ORG‑034</td><td>Se exporta a <b>PNG, SVG e impresión o PDF</b>, y siempre <b>el organigrama entero a tamaño natural</b>, no el pedazo que se ve en pantalla</td><td><span class="p p-m">Oblig.</span></td><td>La exportación de una estructura de 200 puestos sale completa y legible</td></tr>
-        <tr><td class="id">RF‑ORG‑035</td><td>Se puede <b>importar la estructura desde una planilla</b>, con una plantilla de ejemplo descargable</td><td><span class="p p-s">Import.</span></td><td>Se revisa antes de escribir: se rechaza la fila mala nombrando el motivo, no la planilla entera</td></tr>
-        <tr><td class="id">RF‑ORG‑036</td><td>El organigrama tiene su propia configuración de presentación: <b>colores por unidad, niveles de mando y si los puestos muestran su código</b></td><td><span class="p p-c">Deseable</span></td><td>Cambiar cómo se ve no toca el dato</td></tr>
-        <tr><td class="id">RF‑ORG‑037</td><td>Un cuadro <b>se abre a la ficha del nodo</b></td><td><span class="p p-m">Oblig.</span></td><td>Mirar el dibujo y corregir el dato no son dos viajes distintos</td></tr>
-        <tr><td class="id">RF‑ORG‑039</td><td>Crear y editar desde el dibujo <b>pregunta lo mismo que la ficha</b> y guarda los mismos datos: son dos puertas a un solo formulario, no dos formularios</td><td><span class="p p-m">Oblig.</span></td><td>Un cargo creado desde el dibujo no queda sin cupo ni sin la jefatura de sus sillas. <em>BR‑ORG‑017</em></td></tr>
+        <tr><td class="id" id="RF-ORG-030">RF‑ORG‑030</td><td>Tres vistas del mismo dato: <b>gráfico, cards y tabla</b>. Cambiar de vista no cambia lo que hay, cambia cómo se mira</td><td><span class="p p-m">Oblig.</span></td><td>Lo creado en una pantalla está en la otra al instante, sin sincronizar. <em>BR‑ORG‑017</em></td></tr>
+        <tr><td class="id" id="RF-ORG-031">RF‑ORG‑031</td><td>Los filtros —sucursal, unidad, tipo de cargo— <b>recortan la vista, no el sistema</b>, y la pantalla dice en una frase qué se está mirando</td><td><span class="p p-m">Oblig.</span></td><td>Filtrar por una sede conserva la dependencia estructural completa hasta arriba. <em>BR‑ORG‑018</em></td></tr>
+        <tr><td class="id" id="RF-ORG-032">RF‑ORG‑032</td><td><b>Los cargos de staff y los externos se dibujan al costado</b> de la línea, no debajo, porque no mandan</td><td><span class="p p-m">Oblig.</span></td><td>Un puesto de staff nunca aparece como subordinado de quien asiste. <em>BR‑ORG‑014</em></td></tr>
+        <tr><td class="id" id="RF-ORG-033">RF‑ORG‑033</td><td>La dependencia funcional —«también trabaja en»— se dibuja como <b>línea secundaria</b>, distinguible de la estructural</td><td><span class="p p-s">Import.</span></td><td>En escala de grises las dos líneas se siguen distinguiendo. <em>BR‑ORG‑013</em></td></tr>
+        <tr><td class="id" id="RF-ORG-034">RF‑ORG‑034</td><td>Se exporta a <b>PNG, SVG e impresión o PDF</b>, y siempre <b>el organigrama entero a tamaño natural</b>, no el pedazo que se ve en pantalla</td><td><span class="p p-m">Oblig.</span></td><td>La exportación de una estructura de 200 puestos sale completa y legible</td></tr>
+        <tr><td class="id" id="RF-ORG-035">RF‑ORG‑035</td><td>Se puede <b>importar la estructura desde una planilla</b>, con una plantilla de ejemplo descargable</td><td><span class="p p-s">Import.</span></td><td>Se revisa antes de escribir: se rechaza la fila mala nombrando el motivo, no la planilla entera</td></tr>
+        <tr><td class="id" id="RF-ORG-036">RF‑ORG‑036</td><td>El organigrama tiene su propia configuración de presentación: <b>colores por unidad, niveles de mando y si los puestos muestran su código</b></td><td><span class="p p-c">Deseable</span></td><td>Cambiar cómo se ve no toca el dato</td></tr>
+        <tr><td class="id" id="RF-ORG-037">RF‑ORG‑037</td><td>Un cuadro <b>se abre a la ficha del nodo</b></td><td><span class="p p-m">Oblig.</span></td><td>Mirar el dibujo y corregir el dato no son dos viajes distintos</td></tr>
+        <tr><td class="id" id="RF-ORG-039">RF‑ORG‑039</td><td>Crear y editar desde el dibujo <b>pregunta lo mismo que la ficha</b> y guarda los mismos datos: son dos puertas a un solo formulario, no dos formularios</td><td><span class="p p-m">Oblig.</span></td><td>Un cargo creado desde el dibujo no queda sin cupo ni sin la jefatura de sus sillas. <em>BR‑ORG‑017</em></td></tr>
       </tbody>
     </table></div>
 
@@ -2321,9 +2324,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑023</span> · <span class="id">RF‑ORG‑034</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑02</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑05</span> Datos de la empresa</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-023">RF‑ORG‑023</a> · <a class="id" href="#RF-ORG-034">RF‑ORG‑034</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-02">HU‑ORG‑02</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-05">W‑05</a> Datos de la empresa</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -2389,9 +2392,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑02</span> · <span class="id">HU‑ORG‑03</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑05</span> Datos de la empresa</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-020">RF‑ORG‑020</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-02">HU‑ORG‑02</a> · <a class="id" href="#HU-ORG-03">HU‑ORG‑03</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-05">W‑05</a> Datos de la empresa</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -2460,9 +2463,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑001</span> · <span class="id">RF‑ORG‑002</span> · <span class="id">RF‑ORG‑003</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑01</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑04</span> Configuración de la organización</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-001">RF‑ORG‑001</a> · <a class="id" href="#RF-ORG-002">RF‑ORG‑002</a> · <a class="id" href="#RF-ORG-003">RF‑ORG‑003</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-01">HU‑ORG‑01</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-04">W‑04</a> Configuración de la organización</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -2529,9 +2532,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑006</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑01</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑04</span> Configuración de la organización</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-006">RF‑ORG‑006</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-01">HU‑ORG‑01</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-04">W‑04</a> Configuración de la organización</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -2600,9 +2603,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span> · <span class="id">RF‑ORG‑014</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑01</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑01</span> Estructura organizacional</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-020">RF‑ORG‑020</a> · <a class="id" href="#RF-ORG-014">RF‑ORG‑014</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-01">HU‑ORG‑01</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-01">W‑01</a> Estructura organizacional</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -2667,9 +2670,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑022</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑04</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-022">RF‑ORG‑022</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-04">HU‑ORG‑04</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -2734,9 +2737,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑014</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑04</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑01</span> Estructura organizacional</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-014">RF‑ORG‑014</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-04">HU‑ORG‑04</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-01">W‑01</a> Estructura organizacional</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -2801,9 +2804,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑010</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑03</span> · <span class="id">HU‑ORG‑04</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑01</span> Estructura organizacional</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-010">RF‑ORG‑010</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-03">HU‑ORG‑03</a> · <a class="id" href="#HU-ORG-04">HU‑ORG‑04</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-01">W‑01</a> Estructura organizacional</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -2875,9 +2878,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span> · <span class="id">RF‑ORG‑023</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑03</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-020">RF‑ORG‑020</a> · <a class="id" href="#RF-ORG-023">RF‑ORG‑023</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-03">HU‑ORG‑03</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -2944,9 +2947,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑026</span> · <span class="id">RF‑ORG‑023</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑03</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-026">RF‑ORG‑026</a> · <a class="id" href="#RF-ORG-023">RF‑ORG‑023</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-03">HU‑ORG‑03</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3015,9 +3018,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑026</span> · <span class="id">RF‑ORG‑022</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑03</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-026">RF‑ORG‑026</a> · <a class="id" href="#RF-ORG-022">RF‑ORG‑022</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-03">HU‑ORG‑03</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3084,9 +3087,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑023</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑03</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-023">RF‑ORG‑023</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-03">HU‑ORG‑03</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3240,9 +3243,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑05</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-020">RF‑ORG‑020</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-05">HU‑ORG‑05</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3309,9 +3312,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span> · <span class="id">RF‑ORG‑021</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑05</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-020">RF‑ORG‑020</a> · <a class="id" href="#RF-ORG-021">RF‑ORG‑021</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-05">HU‑ORG‑05</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3384,9 +3387,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑022</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑04</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-022">RF‑ORG‑022</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-04">HU‑ORG‑04</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3453,9 +3456,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑012</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑04</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-012">RF‑ORG‑012</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-04">HU‑ORG‑04</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3525,9 +3528,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑016</span> · <span class="id">RF‑ORG‑024</span> · <span class="id">RF‑ORG‑025</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-016">RF‑ORG‑016</a> · <a class="id" href="#RF-ORG-024">RF‑ORG‑024</a> · <a class="id" href="#RF-ORG-025">RF‑ORG‑025</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-06">HU‑ORG‑06</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-07">W‑07</a> El cargo y sus plazas</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3594,9 +3597,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑022</span> · <span class="id">RF‑ORG‑029</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span> · <span class="id">HU‑ORG‑07</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-022">RF‑ORG‑022</a> · <a class="id" href="#RF-ORG-029">RF‑ORG‑029</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-06">HU‑ORG‑06</a> · <a class="id" href="#HU-ORG-07">HU‑ORG‑07</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-07">W‑07</a> El cargo y sus plazas</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3661,9 +3664,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑025</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-025">RF‑ORG‑025</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-06">HU‑ORG‑06</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-07">W‑07</a> El cargo y sus plazas</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3729,9 +3732,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑007</span> · <span class="id">RF‑ORG‑032</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑04</span> Configuración de la organización</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-007">RF‑ORG‑007</a> · <a class="id" href="#RF-ORG-032">RF‑ORG‑032</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-06">HU‑ORG‑06</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-04">W‑04</a> Configuración de la organización</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3797,9 +3800,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑024</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-024">RF‑ORG‑024</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-06">HU‑ORG‑06</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-07">W‑07</a> El cargo y sus plazas</dd></div>
                 <div><dt>Diseño</dt><dd>El código derivado ya se propone en el prototipo; la validación de códigos repetidos todavía no está construida</dd></div>
               </dl>
             </div>
@@ -3866,9 +3869,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑038</span> · <span class="id">RF‑ORG‑029</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑07</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-038">RF‑ORG‑038</a> · <a class="id" href="#RF-ORG-029">RF‑ORG‑029</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-07">HU‑ORG‑07</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-07">W‑07</a> El cargo y sus plazas</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -3938,9 +3941,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑036</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑06</span> Niveles de mando</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-036">RF‑ORG‑036</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-06">HU‑ORG‑06</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-06">W‑06</a> Niveles de mando</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4007,9 +4010,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑036</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑06</span> Niveles de mando</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-036">RF‑ORG‑036</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-06">HU‑ORG‑06</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-06">W‑06</a> Niveles de mando</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4076,9 +4079,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑036</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑09</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-036">RF‑ORG‑036</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-09">HU‑ORG‑09</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-03">W‑03</a> Organigrama</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4147,9 +4150,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑024</span> · <span class="id">RF‑ORG‑016</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-024">RF‑ORG‑024</a> · <a class="id" href="#RF-ORG-016">RF‑ORG‑016</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-06">HU‑ORG‑06</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-07">W‑07</a> El cargo y sus plazas</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4214,9 +4217,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑024</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-024">RF‑ORG‑024</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-06">HU‑ORG‑06</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-07">W‑07</a> El cargo y sus plazas</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4284,9 +4287,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑029</span> · <span class="id">RF‑ORG‑038</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑07</span> · <span class="id">HU‑ORG‑15</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-029">RF‑ORG‑029</a> · <a class="id" href="#RF-ORG-038">RF‑ORG‑038</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-07">HU‑ORG‑07</a> · <a class="id" href="#HU-ORG-15">HU‑ORG‑15</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-07">W‑07</a> El cargo y sus plazas</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4355,9 +4358,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑033</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑08</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-033">RF‑ORG‑033</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-08">HU‑ORG‑08</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4425,9 +4428,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑033</span> · <span class="id">RF‑ORG‑039</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑08</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-033">RF‑ORG‑033</a> · <a class="id" href="#RF-ORG-039">RF‑ORG‑039</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-08">HU‑ORG‑08</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4494,9 +4497,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑033</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑08</span> · <span class="id">HU‑ORG‑09</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-033">RF‑ORG‑033</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-08">HU‑ORG‑08</a> · <a class="id" href="#HU-ORG-09">HU‑ORG‑09</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-03">W‑03</a> Organigrama</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4565,9 +4568,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑039</span> · <span class="id">RF‑ORG‑030</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑09</span> · <span class="id">HU‑ORG‑13</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-039">RF‑ORG‑039</a> · <a class="id" href="#RF-ORG-030">RF‑ORG‑030</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-09">HU‑ORG‑09</a> · <a class="id" href="#HU-ORG-13">HU‑ORG‑13</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-03">W‑03</a> Organigrama</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4632,9 +4635,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑031</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑10</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-031">RF‑ORG‑031</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-10">HU‑ORG‑10</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-03">W‑03</a> Organigrama</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4701,9 +4704,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑031</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑10</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-031">RF‑ORG‑031</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-10">HU‑ORG‑10</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-03">W‑03</a> Organigrama</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4769,9 +4772,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑030</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑09</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-030">RF‑ORG‑030</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-09">HU‑ORG‑09</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-03">W‑03</a> Organigrama</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4839,9 +4842,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑036</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑12</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-036">RF‑ORG‑036</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-12">HU‑ORG‑12</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-03">W‑03</a> Organigrama</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4913,9 +4916,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span> · <span class="id">RF‑ORG‑021</span> · <span class="id">RF‑ORG‑027</span></dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-020">RF‑ORG‑020</a> · <a class="id" href="#RF-ORG-021">RF‑ORG‑021</a> · <a class="id" href="#RF-ORG-027">RF‑ORG‑027</a></dd></div>
                 <div><dt>Historia de usuario</dt><dd>—</dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -4983,9 +4986,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑023</span></dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-023">RF‑ORG‑023</a></dd></div>
                 <div><dt>Historia de usuario</dt><dd>—</dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -5053,9 +5056,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑011</span> · <span class="id">RF‑ORG‑013</span> · <span class="id">RF‑ORG‑016</span></dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-011">RF‑ORG‑011</a> · <a class="id" href="#RF-ORG-013">RF‑ORG‑013</a> · <a class="id" href="#RF-ORG-016">RF‑ORG‑016</a></dd></div>
                 <div><dt>Historia de usuario</dt><dd>—</dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑01</span> Estructura organizacional</dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-01">W‑01</a> Estructura organizacional</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -5124,9 +5127,9 @@ td.rg{color:var(--tinta-3);font-weight:700}
               <h4 class="br-h"><em>4</em>Trazabilidad</h4>
               <dl class="br-traza">
                 <div><dt>Ticket</dt><dd>Pendiente</dd></div>
-                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑028</span> · <span class="id">RF‑ORG‑015</span></dd></div>
-                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑14</span></dd></div>
-                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Requisitos</dt><dd><a class="id" href="#RF-ORG-028">RF‑ORG‑028</a> · <a class="id" href="#RF-ORG-015">RF‑ORG‑015</a></dd></div>
+                <div><dt>Historia de usuario</dt><dd><a class="id" href="#HU-ORG-14">HU‑ORG‑14</a></dd></div>
+                <div><dt>Pantalla</dt><dd><a class="id" href="#W-02">W‑02</a> La ficha de un nodo</dd></div>
                 <div><dt>Diseño</dt><dd>Prototipado</dd></div>
               </dl>
             </div>
@@ -5693,7 +5696,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <div class="tbl"><table>
       <thead><tr><th>Pantalla</th><th>Ruta</th><th>Para qué se entra</th><th>Requisitos</th><th>Wireframe</th></tr></thead>
       <tbody>
-        <tr><td><strong>Datos de la empresa</strong></td><td><span class="mono">/organizacion/datos</span></td><td>Identificación, contacto y presencia digital de la raíz del árbol. Es la primera pantalla del módulo y la primera de la puesta en marcha</td><td class="id">RF‑ORG‑023</td><td><a href="#W-05">W‑05</a></td></tr>
+        <tr><td><strong>Datos de la empresa</strong></td><td><span class="mono">/organizacion/datos</span></td><td>Identificación, contacto y presencia digital de la raíz del árbol. Es la primera pantalla del módulo y la primera de la puesta en marcha</td><td class="id" id="RF-ORG-023">RF‑ORG‑023</td><td><a href="#W-05">W‑05</a></td></tr>
         <tr><td><strong>Estructura física</strong></td><td><span class="mono">/organizacion/distribucion</span></td><td>La lista de la dimensión de la geografía, con una pestaña por nivel de estructura encendido: Regionales, Sucursales, Centros de trabajo</td><td class="id">RF‑ORG‑010 a 015</td><td><a href="#W-01">W‑01</a></td></tr>
         <tr><td><strong>Estructura organizacional</strong></td><td><span class="mono">/organizacion/estructura</span></td><td>La lista de la dimensión del trabajo: Unidades de negocio, Unidades organizacionales, Cargos. Los puestos se ven desplegando su cargo</td><td class="id">RF‑ORG‑010 a 016</td><td><a href="#W-01">W‑01</a></td></tr>
         <tr><td><strong>Ficha de un nodo</strong></td><td><span class="mono">/organizacion/nodo/:id</span></td><td>Una sola pantalla para los siete tipos que se crean. No cambia de forma: cambia qué campos trae. Abre en lectura y se pasa a edición</td><td class="id">RF‑ORG‑020 a 029 · 038</td><td><a href="#W-02">W‑02</a></td></tr>
@@ -6105,7 +6108,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <div class="nota"><p><strong>Un criterio de aceptación se marca hecho o no hecho delante de la pantalla, sin discutir.</strong> Por eso están escritos como afirmaciones comprobables y no como intenciones: «el aviso dice el motivo y no guarda», no «el sistema valida correctamente». Si un criterio necesita interpretación, no es un criterio.</p>
     <p><strong>La historia dice para quién y para qué.</strong> Una historia sin el «para» se construye igual y se acepta peor: es lo que permite discutir si lo entregado sirve, y no solo si funciona.</p></div>
 
-    <h3 id="p9-1">9.1 Las quince historias</h3>
+    <h3 id="p9-1">9.1 Las quince historias y sus criterios de aceptación</h3>
       <div class="hu">
         <div class="hu-h"><b id="HU-ORG-01">HU-ORG-01 · Dejar el esquema de niveles como es mi empresa</b></div>
         <div class="hu-b">
