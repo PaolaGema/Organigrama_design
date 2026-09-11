@@ -634,48 +634,31 @@ td.rg{color:var(--tinta-3);font-weight:700}
 .br h3::before, .flujo h3::before, .hu h3::before { display: none; }
 .br > div > p { font-size: 15.5px; color: var(--tinta-2); margin: 0; max-width: 82ch; }
 /* Los escenarios ──────────────────────────────────────────────
-   Cada uno es una ficha con cabecera: arriba qué caso es, abajo los cuatro pasos en dos
-   columnas —la palabra a la izquierda, el hecho a la derecha— para que las palabras formen
-   una columna y un paso de dos líneas no vuelva al margen. La marca es un chip, no un emoji:
-   verde cuando el camino tiene que funcionar, ámbar quemado cuando tiene que estar cerrado. */
-.escenarios {
-  display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px;
-}
-.esc {
-  background: var(--hoja); border: 1px solid var(--regla); border-left: 3px solid var(--funcional);
-  border-radius: 0 var(--r-s) var(--r-s) 0; padding: 0; overflow: hidden;
-}
-.esc.no { border-left-color: var(--outsourcing); }
+   Sin caja: uno debajo del otro, separados por una línea, y el peso visual puesto en el
+   texto y no en el recuadro. La regla ya trae dos paneles —el 1 y el 4— y tres cajas más
+   adentro la volvían un tablero. Los cuatro pasos van en dos columnas: la palabra al margen,
+   el hecho a la derecha, así que un paso de dos líneas no vuelve al borde. */
+.escenarios { display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 18px; }
+.esc { background: none; border: 0; padding: 0; }
+.esc + .esc { margin-top: 6px; border-top: 1px solid var(--regla); }
 .esc-t {
-  display: flex; align-items: center; gap: 9px; margin: 0;
-  padding: 10px 15px 10px 13px; background: var(--hoja-2);
-  border-bottom: 1px solid var(--regla);
-  font-size: 12.5px; font-weight: 650; line-height: 1.35; color: var(--tinta);
+  display: flex; align-items: center; gap: 8px; margin: 0; padding: 18px 0 9px;
+  font-size: 14px; font-weight: 650; line-height: 1.35; color: var(--tinta);
 }
-.esc-t i {
-  flex: none; width: 17px; height: 17px; display: grid; place-items: center;
-  font-style: normal; font-size: 0; border-radius: var(--r-xs);
-  color: var(--funcional);
-  background: color-mix(in srgb, var(--funcional) 11%, transparent);
-  border: 1px solid color-mix(in srgb, var(--funcional) 26%, transparent);
-}
-.esc-t i::before { content: '✓'; font-size: 10px; font-weight: 700; line-height: 1; }
-.esc.no .esc-t i {
-  color: var(--outsourcing);
-  background: color-mix(in srgb, var(--outsourcing) 11%, transparent);
-  border-color: color-mix(in srgb, var(--outsourcing) 26%, transparent);
-}
+.esc-t i { flex: none; font-style: normal; font-size: 12px; line-height: 1; color: var(--funcional); }
+.esc-t i::before { content: '✓'; font-weight: 700; }
+.esc.no .esc-t i { color: var(--outsourcing); }
 .esc.no .esc-t i::before { content: '✕'; }
-.esc ul { margin: 0; padding: 2px 15px 8px; list-style: none; display: grid; gap: 0; max-width: none; }
+.esc ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; max-width: none; }
 .esc li {
-  position: relative; margin: 0; padding: 7px 0 7px 71px;
-  font-size: 13px; line-height: 1.5; color: var(--tinta-2);
+  position: relative; margin: 0; padding: 6px 0 6px 71px;
+  font-size: 13px; line-height: 1.55; color: var(--tinta-2);
 }
-.esc li + li { border-top: 1px solid color-mix(in srgb, var(--regla) 60%, transparent); }
+.esc li + li { border-top: 1px solid color-mix(in srgb, var(--regla) 55%, transparent); }
 .esc li > b:first-child {
   font-family: var(--mono); font-size: 9px; font-weight: 650; letter-spacing: .1em;
   text-transform: uppercase; color: var(--tinta-3); margin: 0;
-  position: absolute; left: 0; top: 9.5px; width: 62px;
+  position: absolute; left: 0; top: 8.5px; width: 62px;
 }
 .esc li b { font-weight: 640; color: var(--tinta); }
 
