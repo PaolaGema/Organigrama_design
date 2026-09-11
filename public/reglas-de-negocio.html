@@ -653,6 +653,36 @@ td.rg{color:var(--tinta-3);font-weight:700}
   text-transform: uppercase; color: var(--tinta-3);
 }
 
+
+/* Los cuatro apartados de cada regla ─────────────────────────
+   Siempre los mismos y siempre en el mismo orden: qué dice, cómo se prueba, qué la acota
+   y con qué se enlaza. El número del apartado va en el mismo mono que el código de la regla. */
+.br-h {
+  display: flex; align-items: baseline; gap: 9px;
+  margin: 26px 0 12px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--regla);
+  font-size: 9.5px; letter-spacing: .15em;
+}
+.br-h em {
+  font-style: normal; font-family: var(--mono); font-size: 9.5px; font-weight: 650;
+  letter-spacing: 0; color: var(--estructural);
+}
+.br-meta, .br-traza {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px 20px; margin: 0 0 16px; padding: 0;
+}
+.br-traza { margin-bottom: 0; }
+.br-meta > div, .br-traza > div { min-width: 0; }
+.br-meta dt, .br-traza dt, .br > div > p.br-dg-t {
+  font-family: var(--mono); font-size: 9px; font-weight: 600; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--tinta-3); margin: 0 0 3px;
+}
+.br-meta dd, .br-traza dd { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--tinta-2); }
+.br-cond { margin: 0; padding-left: 1.25em; max-width: 82ch; }
+.br-cond li { font-size: 15px; line-height: 1.6; color: var(--tinta-2); }
+.br .escenarios { margin-top: 0; }
+.br > div > p + p { margin-top: 11px; }
+
 /* ══ Flujos de usuario ═════════════════════════════════════════ */
 .flujo {
   background: var(--hoja); border: 1px solid var(--regla); border-radius: var(--r);
@@ -832,7 +862,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
       </figure>
     </div>
     <dl class="ficha">
-      <div><dt>Versión</dt><dd>3.2</dd></div>
+      <div><dt>Versión</dt><dd>3.3</dd></div>
       <div><dt>Fecha</dt><dd>10 de septiembre de 2026</dd></div>
       <div><dt>Autoría</dt><dd>Paola Gema — Diseñadora UX</dd></div>
       <div><dt>Revisa y aprueba</dt><dd>Naihara Rocha — reglas y uso de RR.HH.</dd></div>
@@ -2166,7 +2196,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
     <header class="sec-h">
       <span class="sec-n" aria-hidden="true">04</span>
       <h2>Reglas de negocio</h2>
-      <p class="sec-d">Cuarenta y una condiciones que el sistema valida siempre, en el orden en que una empresa arma su estructura: primero de qué escalones está hecha, después qué pone en cada uno.</p>
+      <p class="sec-d">Cuarenta y una condiciones que el sistema valida siempre, en el orden en que una empresa arma su estructura: primero de qué escalones está hecha, después qué pone en cada uno. Todas se leen igual, en cuatro apartados: información básica, escenarios ágiles de ejecución, condiciones y excepciones, y trazabilidad.</p>
     </header>
 
         <h3 class="br-grupo" id="br-g-empresa">Datos de la empresa<em>La raíz del árbol: lo que la empresa dice de sí misma antes de tener estructura</em></h3>
@@ -2179,9 +2209,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-036">La empresa es la raíz del árbol y solo exige su nombre</h3>
-              <p>Todo cuelga de ella: un nodo sin nodo superior declarado cuelga de la empresa —<span class="id">BR‑ORG‑001</span>—, así que sin empresa no hay de qué colgar nada. Es la primera pantalla del módulo y la primera de la puesta en marcha.</p>
-              <p>De todo lo que pide, <b>lo único obligatorio es el nombre comercial</b>, y por una razón concreta: <b>el organigrama lo imprime en su cabecera</b>, así que no puede quedar vacío. La razón social, el NIT, el rubro, el contacto y las redes se completan cuando se sepan.</p>
-              <p>Su dirección es la de la <b>casa matriz</b>. Las direcciones de cada oficina no van acá: van en cada sucursal y en cada centro de trabajo, que son los que las tienen.</p>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-036</dd></div>
+                <div><dt>Grupo</dt><dd>Datos de la empresa</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Empresa</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
+              <p>La empresa es el nodo raíz de la estructura: todo nodo que no declara nodo superior cuelga de ella —<span class="id">BR‑ORG‑001</span>—. Es la primera pantalla del módulo y el primer paso de la puesta en marcha.</p>
+              <p>El único campo obligatorio es el <b>nombre comercial</b>, porque el organigrama lo imprime en su cabecera al exportar. La razón social, el NIT, el rubro, el contacto y las redes son opcionales y se completan cuando la empresa los tenga.</p>
+              <p>La dirección que registra esta ficha es la de la <b>casa matriz</b>. Las direcciones de cada oficina se registran en la sucursal y en el centro de trabajo.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Una empresa creada con lo mínimo</div>
                   <ul>
@@ -2209,7 +2251,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>la de cada sucursal se carga en su propia ficha, que es la que la usa</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Sin nombre comercial el sistema no guarda la empresa. Ningún otro campo bloquea el guardado.</li>
+                <li>Una empresa sin datos fiscales admite el alta de regionales, sucursales y unidades.</li>
+                <li>Las direcciones de sucursales y centros de trabajo no se registran en esta ficha.</li>
+                <li>El país declarado acá gobierna las listas de ciudades de cada alta —<span class="id">BR‑ORG‑037</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑023</span> · <span class="id">RF‑ORG‑034</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑02</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑05</span> Datos de la empresa</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -2220,8 +2279,20 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-037">El país se declara una vez, en la empresa, y de él salen las ciudades</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-037</dd></div>
+                <div><dt>Grupo</dt><dd>Datos de la empresa</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Empresa</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>El país se pregunta <b>en la empresa y en ningún otro sitio por defecto</b>. De él sale la lista de ciudades que se ofrece al crear regionales, sucursales y centros de trabajo, así que declararlo una vez ahorra contestarlo en cada alta.</p>
-              <p>No es un candado: una sucursal en otro país puede declarar el suyo —<span class="id">BR‑ORG‑028</span>—, y ahí la lista de ciudades cambia con él. Lo que la empresa aporta es <b>el valor con el que se empieza</b>, que es el correcto en la enorme mayoría de las altas.</p>
+              <p>No es una restricción: una sucursal en otro país puede declarar el suyo —<span class="id">BR‑ORG‑028</span>—, y ahí la lista de ciudades cambia con él. Lo que la empresa aporta es <b>el valor con el que empieza cada alta</b>, correcto en la mayoría de los casos.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Las ciudades salen del país de la empresa</div>
                   <ul>
@@ -2249,7 +2320,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>el motivo es el que se lee en el campo: de él sale la lista de al lado</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>El país de la empresa es el valor con el que arranca cada alta; no impide declarar otro.</li>
+                <li>Una sucursal o un centro de trabajo pueden declarar su propio país, y sus ciudades salen de ese catálogo —<span class="id">BR‑ORG‑028</span>—.</li>
+                <li>Sin país declarado el formulario no ofrece ciudades: pide primero el país y dice por qué.</li>
+                <li>Cambiar el país de la empresa no reescribe las ciudades ya guardadas en otros nodos.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑02</span> · <span class="id">HU‑ORG‑03</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑05</span> Datos de la empresa</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -2264,7 +2351,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-004">Cada empresa enciende los niveles de estructura que usa</h3>
-              <p>El esquema de niveles es un dato de la empresa, no una lista fija del producto. Empresa, unidad organizacional y cargo son <b>fijos</b> —sin ellos no hay organigrama que dibujar—; los demás se encienden y se apagan. Lo apagado no aparece en ningún formulario, filtro ni menú.</p>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-004</dd></div>
+                <div><dt>Grupo</dt><dd>Configuración</dd></div>
+                <div><dt>Alcance</dt><dd>Toda la estructura</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
+              <p>El esquema de niveles es un dato de la empresa, no una lista fija del producto. Empresa, unidad organizacional, cargo y puesto son <b>fijos</b> —sin ellos no hay organigrama que dibujar—; los demás se encienden y se apagan. Lo apagado no aparece en ningún formulario, filtro ni menú.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Apagar lo que no se usa</div>
@@ -2294,7 +2392,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Empresa, unidad organizacional, cargo y puesto no tienen interruptor: sin ellos no hay organigrama que dibujar.</li>
+                <li>Un nivel con nodos dentro no se puede apagar; el sistema dice cuántos habría que mover antes —<span class="id">RF‑ORG‑003</span>—.</li>
+                <li>Un nivel apagado no aparece en ningún formulario, filtro ni menú.</li>
+                <li>Volver a encender un nivel no migra datos: solo reaparece el escalón donde colgar nodos.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑001</span> · <span class="id">RF‑ORG‑002</span> · <span class="id">RF‑ORG‑003</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑01</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑04</span> Configuración de la organización</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -2305,9 +2418,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-038">«Así queda tu organización» se rehace mientras se configura</h3>
-              <p>La vista previa va <b>primera</b> en la pantalla porque es la pregunta que trae a alguien acá: «¿cómo queda mi organización?». Se lee como <b>dos caminos, uno por dimensión</b> —Empresa › Sucursal › Centro de trabajo, y Empresa › Unidad de negocio › Unidad organizacional › Cargo › Puesto—, con los niveles encendidos y en orden.</p>
-              <p>Se rehace <b>en el momento</b>, antes de guardar: encender «Regional» la mete entre la empresa y la sucursal y se ve ahí mismo. La consecuencia de un interruptor se ve sin ir a buscarla al árbol, que es lo que hace entendible una pantalla de interruptores sueltos.</p>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-038</dd></div>
+                <div><dt>Grupo</dt><dd>Configuración</dd></div>
+                <div><dt>Ámbito</dt><dd>Configuración de la empresa</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
+              <p>La vista previa va <b>primera</b> en la pantalla y contesta «¿cómo queda mi organización?», que es la pregunta de quien entra a configurar. Se lee como <b>dos caminos, uno por dimensión</b> —Empresa › Sucursal › Centro de trabajo, y Empresa › Unidad de negocio › Unidad organizacional › Cargo › Puesto—, con los niveles encendidos y en orden.</p>
+              <p>Se rehace <b>en el momento</b>, antes de guardar: encender «Regional» la mete entre la empresa y la sucursal y se ve ahí mismo. La consecuencia de cada interruptor se ve en la misma pantalla, sin ir a buscarla al árbol.</p>
               <p>Y los interruptores <b>se ajustan a lo que hay cargado</b>: un nivel con nodos dentro aparece encendido aunque la configuración guardada dijera lo contrario, para que nunca quede un nivel apagado con cosas adentro.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>La consecuencia se ve antes de guardar</div>
                   <ul>
@@ -2335,7 +2460,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>nunca queda un nivel apagado con nodos adentro, que sería gente sin pantalla donde verse</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>La vista previa muestra el esquema resultante antes de guardar, no el guardado.</li>
+                <li>Un nivel con nodos cargados aparece encendido aunque la configuración guardada diga lo contrario.</li>
+                <li>La previa se lee como dos caminos, uno por dimensión, con los niveles encendidos y en orden.</li>
+                <li>Salir sin guardar deja la configuración anterior: la previa no escribe nada.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑006</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑01</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑04</span> Configuración de la organización</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -2350,7 +2491,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-001">Toda la estructura es un solo árbol de nodos</h3>
-              <p>Empresa, región, sucursal, centro de trabajo, unidad de negocio, unidad organizacional, cargo y puesto no son ocho tablas: son ocho TIPOS del mismo nodo. Cada uno declara qué <b>tipo</b> es y de qué <b>nodo superior</b> cuelga, y nada más. Es lo que permite que la estructura de una empresa no se parezca a la de la de al lado sin que haya que programar una pantalla nueva.</p>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-001</dd></div>
+                <div><dt>Grupo</dt><dd>Los cimientos</dd></div>
+                <div><dt>Alcance</dt><dd>Toda la estructura</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
+              <p>Empresa, región, sucursal, centro de trabajo, unidad de negocio, unidad organizacional, cargo y puesto no son ocho tablas: son ocho <b>tipos</b> del mismo nodo. Cada uno declara qué <b>tipo</b> es y de qué <b>nodo superior</b> cuelga, y nada más. Es lo que permite que la estructura de una empresa no se parezca a la de la de al lado sin que haya que programar una pantalla nueva.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Una sucursal dentro de una región</div>
@@ -2380,7 +2532,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Cada nodo declara de qué tipo es y de qué nodo superior cuelga; no hay una tabla por tipo.</li>
+                <li>Un nodo que no declara nodo superior cuelga de la empresa —<span class="id">BR‑ORG‑036</span>—.</li>
+                <li>Los ocho tipos comparten ficha, lista y menú de acciones —<span class="id">RF‑ORG‑020</span>—.</li>
+                <li>Agregar un tipo de nodo no exige una pantalla nueva.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span> · <span class="id">RF‑ORG‑014</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑01</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑01</span> Estructura organizacional</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -2391,7 +2558,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-002">La regla de jerarquía: el nodo superior siempre va por encima</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-002</dd></div>
+                <div><dt>Grupo</dt><dd>Los cimientos</dd></div>
+                <div><dt>Alcance</dt><dd>Toda la estructura</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Los niveles de estructura están ordenados de lo más grande a lo más chico, y un nodo solo puede colgar de otro cuyo nivel de estructura esté <b>más arriba</b>. Es la única validación estructural del módulo, y de ella salen todas las demás: no hay que escribir «una región no puede ir dentro de un cargo», ya está prohibido.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Saltarse un nivel de estructura es legal</div>
@@ -2421,7 +2599,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Un nodo solo cuelga de otro cuyo nivel esté más arriba en el orden del esquema.</li>
+                <li>Saltarse un nivel intermedio es válido: la regla exige que el superior esté por encima, no que sea el inmediato.</li>
+                <li>El desplegable «Depende de» solo ofrece nodos de niveles superiores encendidos —<span class="id">RF‑ORG‑022</span>—.</li>
+                <li>Es la única validación estructural del módulo: las demás prohibiciones salen de ella.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑022</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑04</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -2432,7 +2625,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-003">El menú de «Agregar» se deduce, no se escribe</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-003</dd></div>
+                <div><dt>Grupo</dt><dd>Los cimientos</dd></div>
+                <div><dt>Alcance</dt><dd>Toda la estructura</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Qué se puede crear en cada sitio sale de la regla de jerarquía cruzada con la dimensión de la pantalla. Nadie mantiene una lista de opciones por pantalla, así que un nivel de estructura encendido aparece donde corresponde el mismo día, y uno apagado desaparece de todas partes sin tocar una línea.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>La pantalla ofrece lo suyo</div>
@@ -2462,7 +2666,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Las opciones de «Agregar» salen de la regla de jerarquía cruzada con la dimensión de la pantalla.</li>
+                <li>Un nivel encendido aparece en el menú el mismo día; uno apagado desaparece de todas las pantallas.</li>
+                <li>En una vista de un solo tipo el botón crea ese tipo directamente —<span class="id">RF‑ORG‑014</span>—.</li>
+                <li>No hay lista de opciones mantenida a mano en ninguna pantalla.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑014</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑04</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑01</span> Estructura organizacional</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -2473,7 +2692,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-005">Dos dimensiones, un solo árbol</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-005</dd></div>
+                <div><dt>Grupo</dt><dd>Los cimientos</dd></div>
+                <div><dt>Alcance</dt><dd>Toda la estructura</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>La <b>estructura física</b> —región, sucursal, centro de trabajo— contesta dónde está la empresa. La <b>estructura organizacional</b> —unidad de negocio, unidad organizacional, cargo— contesta cómo reparte el trabajo. No son dos árboles: son dos recortes del mismo, y cada pantalla lista solo los tipos de su dimensión.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Cada dimensión lista lo suyo</div>
@@ -2503,7 +2733,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Las dos dimensiones son recortes del mismo árbol: un nodo no se duplica en la otra.</li>
+                <li>Cada pantalla lista solo los tipos de su dimensión —<span class="id">RF‑ORG‑010</span>—.</li>
+                <li>El cargo es donde las dos dimensiones se tocan —<span class="id">BR‑ORG‑010</span>—.</li>
+                <li>Un filtro de la dimensión física recorta la vista organizacional, no la borra —<span class="id">BR‑ORG‑033</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑010</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑03</span> · <span class="id">HU‑ORG‑04</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑01</span> Estructura organizacional</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -2518,9 +2763,20 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-025">La regional agrupa y no depende de nada</h3>
-              <p>La regional es <b>la cima del eje físico</b>: no hay ningún nivel por encima de ella, así que su ficha no pregunta de qué cuelga. Lo que hace es agrupar sucursales, y nada más: no manda, no factura y no liquida. Por eso es la ficha más corta de las tres.</p>
-              <p>Pide <b>nombre, país, ciudad y estado</b>, y nada más. El código, el responsable, la dirección, el teléfono y el correo se rellenan cuando se sepan: el responsable puede no estar dado de alta todavía y el teléfono puede no existir. <b>Una regional creada a medias vale más que una regional que no se pudo crear</b>, porque quien monta la estructura la necesita para colgarle sucursales, no para tenerla completa.</p>
-              <p>Lo de planillas no vive acá. Los parámetros de nómina —orden para planillas, dirección para liquidaciones— son datos de sueldos dentro de la pantalla con la que se monta la estructura: quien la está montando no los sabe todavía, y quien lleva planillas no entra por acá.</p>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-025</dd></div>
+                <div><dt>Grupo</dt><dd>Estructura física</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Regional</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
+              <p>La regional es el nivel más alto del eje físico: ningún nivel está por encima de ella, y por eso su ficha no incluye el campo «Depende de». Su función es agrupar sucursales; no interviene en la línea de mando, en la facturación ni en la liquidación.</p>
+              <p>Sus campos obligatorios son <b>nombre, país, ciudad y estado</b>. El código, el responsable, la dirección, el teléfono y el correo son opcionales: el responsable puede no estar dado de alta todavía y el teléfono puede no existir. Una regional incompleta ya sirve para colgarle sucursales, que es para lo que se la crea.</p>
+              <p>Los parámetros de nómina —orden para planillas, dirección para liquidaciones— son datos de sueldos y no se registran en esta ficha.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Una regional que todavía no tiene responsable</div>
@@ -2537,7 +2793,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Dado que</b>se crea una regional</li>
                     <li><b>Cuando</b>se mira su ficha</li>
                     <li><b>Entonces</b>no hay ningún campo «Depende de»</li>
-                    <li><b>Y</b>es la cima del eje físico: no hay nivel por encima al que ofrecerle</li>
+                    <li><b>Y</b>no hay nivel por encima al que ofrecerle</li>
                   </ul>
                 </div>
                 <div class="esc ok">
@@ -2550,7 +2806,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>La ficha no ofrece campo «Depende de»: la regla de jerarquía no admite ningún nivel por encima —<span class="id">BR‑ORG‑002</span>—.</li>
+                <li>Los campos opcionales no bloquean el alta; solo el nombre, el país, la ciudad y el estado lo hacen.</li>
+                <li>El nivel «Regional» puede estar apagado en Configuración, y entonces las sucursales cuelgan de la empresa —<span class="id">BR‑ORG‑004</span>—.</li>
+                <li>Los parámetros de nómina se administran en el módulo de sueldos, no en esta pantalla.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span> · <span class="id">RF‑ORG‑023</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑03</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -2561,9 +2833,20 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-026">La sucursal es la sede; el centro de trabajo es el domicilio</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-026</dd></div>
+                <div><dt>Grupo</dt><dd>Estructura física</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Sucursal y centro de trabajo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Son dos niveles y contestan dos preguntas distintas. La <b>sucursal</b> es la sede: la unidad con la que la empresa se presenta en una ciudad, y es lo que hereda todo lo que cuelga de ella. El <b>centro de trabajo</b> es el sitio físico donde la gente trabaja, y su domicilio <b>es el que sale en los papeles laborales</b>: es el nivel donde de verdad se sabe dónde está una persona.</p>
               <p>Por eso el centro pide una cosa que la sucursal no: <b>qué clase de sitio es</b> —oficina, planta, almacén, taller, obra, tienda u otro—, y es obligatorio. Sin el tipo, un almacén y una oficina se leen igual en toda la aplicación.</p>
               <p>Una empresa que no separe sus centros de trabajo apaga ese nivel y su gente queda ubicada en la sucursal, que ahí pasa a ser las dos cosas. Es la decisión de <span class="id">BR‑ORG‑004</span>, y por eso el centro de trabajo no es obligatorio para nadie.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un depósito dentro de una sucursal</div>
@@ -2593,7 +2876,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>El centro de trabajo exige qué clase de sitio es —oficina, planta, almacén, taller, obra, tienda u otro—; la sucursal no lo pide.</li>
+                <li>El domicilio del centro de trabajo es el que sale en los papeles laborales.</li>
+                <li>Una empresa que no separa sus centros apaga ese nivel y su gente queda ubicada en la sucursal —<span class="id">BR‑ORG‑004</span>—.</li>
+                <li>El centro de trabajo no es obligatorio para ninguna empresa.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑026</span> · <span class="id">RF‑ORG‑023</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑03</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -2604,10 +2902,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-027">Un centro de trabajo se ubica con tres listas que se acotan entre sí</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-027</dd></div>
+                <div><dt>Grupo</dt><dd>Estructura física</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Centro de trabajo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>La ficha pregunta por <b>regional, sucursal y centro superior</b> en tres campos separados, y <b>los tres son opcionales</b>: un centro puede colgar directo de la empresa. Preguntarlo así tiene un riesgo evidente —contestar «Occidente» y «Equipetrol», que está en Oriente— y son tres respuestas para una sola pregunta, sin forma de saber cuál vale.</p>
               <p>Se resuelve <b>acotando la lista, no prohibiendo el campo</b>: elegida una regional, «Sucursal» solo ofrece las suyas; elegida una sucursal, «Centro superior» solo ofrece los que están dentro. Los tres campos existen y ninguna combinación imposible se puede siquiera elegir.</p>
               <p>Lo que se guarda es <b>el más específico de los tres</b>, que es de quien cuelga en el árbol; los otros dos quedaron de camino y no son un dato aparte. Un campo cuyo nivel la empresa no usa no aparece: sin regionales creadas, «Regional» sería un desplegable con una sola opción y el nombre de un escalón que esta empresa apagó.</p>
               <p>«Ninguna» es <b>una opción de la lista</b> y no un marcador gris. Elegida por error una sucursal, tiene que haber forma de volver a dejarlo vacío; y elegida a propósito, «Ninguna» dice algo distinto de un campo en blanco: en blanco es «no lo contesté», elegido es «este centro no cuelga de ninguna regional».</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>La sucursal se acota por su regional</div>
@@ -2637,7 +2946,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Los tres campos —regional, sucursal y centro superior— son opcionales: un centro puede colgar directo de la empresa.</li>
+                <li>Cada lista se acota con la anterior: elegida una regional, «Sucursal» solo ofrece las suyas.</li>
+                <li>Se guarda el más específico de los tres; los otros dos no son un dato aparte.</li>
+                <li>Un campo cuyo nivel la empresa apagó no aparece en la ficha.</li>
+                <li>«Ninguna» es una opción de la lista y significa algo distinto de dejar el campo en blanco.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑026</span> · <span class="id">RF‑ORG‑022</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑03</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -2648,9 +2973,20 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-028">La dirección sale de catálogos, y solo hasta donde el catálogo alcanza</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-028</dd></div>
+                <div><dt>Grupo</dt><dd>Estructura física</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Regional, sucursal y centro de trabajo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>País, departamento y ciudad se eligen de listas y <b>cada una acota a la siguiente</b>: del país sale la lista de ciudades, y con departamento elegido salen solo las suyas. Dos listas sueltas dejarían guardar «Departamento: La Paz · Ciudad: Sucre»; acotadas, esa combinación no se puede ni elegir.</p>
-              <p><b>El departamento solo aparece donde esa división existe con ese nombre.</b> Se intentó traducirlo país por país —Provincia en Argentina, Estado en México— y el remedio traía dos problemas: en Chile la división se llama «Región», y esa palabra ya es un nivel de esta estructura, así que dos «regiones» en el mismo formulario se confunden aunque las dos estén bien; y traducir el rótulo no traduce el dato, que sigue siendo texto libre y sigue sin agrupar nada. Donde no aplica, el campo no sale.</p>
-              <p>Provincia, municipio y localidad <b>se quitaron</b>. Eran la mitad de los campos exigidos para dar de alta un depósito y no agrupaban nada: «Santa Cruz» y «Sta. Cruz» son dos sitios distintos para una máquina. Queda la ciudad, que sí sale de un catálogo, y la dirección escrita.</p>
+              <p><b>El departamento solo aparece donde esa división existe con ese nombre.</b> Traducir el rótulo país por país —Provincia en Argentina, Estado en México— trae dos problemas: en Chile la división se llama «Región», y esa palabra ya es un nivel de esta estructura, así que dos «regiones» en el mismo formulario se confunden aunque las dos estén bien; y traducir el rótulo no traduce el dato, que sigue siendo texto libre y sigue sin agrupar nada. Donde no aplica, el campo no sale.</p>
+              <p>Provincia, municipio y localidad <b>no se piden</b>. Eran la mitad de los campos exigidos para dar de alta un depósito y no agrupan nada: «Santa Cruz» y «Sta. Cruz» son dos sitios distintos para una máquina. Queda la ciudad, que sí sale de un catálogo, y la dirección escrita.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Una sucursal fuera de Bolivia</div>
@@ -2680,7 +3016,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>País, departamento y ciudad se eligen de listas, y cada una acota a la siguiente.</li>
+                <li>El departamento solo aparece donde esa división existe con ese nombre; donde no aplica, el campo no sale.</li>
+                <li>Provincia, municipio y localidad no se piden: quedan la ciudad de catálogo y la dirección escrita.</li>
+                <li>Una sucursal puede declarar un país distinto del de la empresa —<span class="id">BR‑ORG‑037</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑023</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑03</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -2695,6 +3046,15 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-022">La unidad de negocio no es un padre: se declara en un nivel y se hereda</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-022</dd></div>
+                <div><dt>Grupo</dt><dd>Unidades de negocio</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Unidad de negocio</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Una unidad de negocio —«Farmacias», «Institucional», «Distribución»— es una <b>etiqueta que reparte</b> la empresa, no un escalón del que cuelguen las cosas. No tiene nada dentro: lo que hace es marcar a qué línea pertenece cada parte de la estructura.</p>
               <p>Cada empresa la declara en <b>un solo escalón</b>, el que le sirve —un holding en sus regionales, una cadena en sus sucursales, una consultora en sus áreas—. La escalera de abajo es idéntica en los tres casos: lo único que cambia es dónde se pega la etiqueta. Elegido el escalón, los de más abajo la <b>leen y no la eligen</b>: su ficha la muestra y dice de dónde sale, así que mezclar dos niveles no es algo que haya que prohibir —no se puede hacer—.</p>
               <p>Pide <b>solo nombre y estado</b>: no tiene código ni descripción, porque no es un sitio ni un área, sino una manera de partir la empresa en líneas.</p>
@@ -2781,6 +3141,8 @@ td.rg{color:var(--tinta-3);font-weight:700}
       </dl>
     </figure>
               <p>Los cargos y los puestos nunca la declaran, solo la muestran. La suya es la de su rama, y cambiar la de la sucursal cambia la de todo lo que cuelga sin tocar un registro.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Empresa A · la pega en sus regionales</div>
@@ -2810,7 +3172,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Cada empresa declara la unidad de negocio en un solo escalón; los de más abajo la heredan y no la eligen.</li>
+                <li>La unidad de negocio no tiene nodos dentro: no es un escalón del que cuelguen cosas.</li>
+                <li>Pide solo nombre y estado: no tiene código ni descripción.</li>
+                <li>La ficha de un nodo que la hereda la muestra y dice de qué nodo sale.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑05</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -2821,9 +3198,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-039">Lo que agrupa una unidad de negocio se ve, pero no se asigna desde ahí</h3>
-              <p>Su ficha muestra <b>qué declaró pertenecerle</b> —cuántos y cuáles—, y esa tarjeta es de solo lectura. La asignación se hace desde la ficha de cada uno, en su campo «A qué negocio pertenece», que es donde uno está cuando lo sabe: «esta sucursal es de Farmacias».</p>
-              <p>Ofrecer las dos puertas sería <b>una segunda entrada para el mismo dato</b>, y dos puertas para un dato terminan discrepando. Verlo junto sí hace falta —es la única forma de contestar «¿qué abarca esta línea?»— y por eso se muestra sin poder tocarse.</p>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-039</dd></div>
+                <div><dt>Grupo</dt><dd>Unidades de negocio</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Unidad de negocio</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
+              <p>Su ficha muestra <b>qué declaró pertenecerle</b> —cuántos y cuáles—, y esa tarjeta es de solo lectura. La asignación se hace desde la ficha de cada uno, en su campo «A qué negocio pertenece», que es la pantalla donde ese dato se conoce.</p>
+              <p>Habilitar también la asignación desde acá sería <b>una segunda entrada para el mismo dato</b>, y dos entradas para un dato terminan discrepando. Verlo junto sí hace falta —es la única forma de contestar «¿qué abarca esta línea?»— y por eso se muestra sin poder tocarse.</p>
               <p>Es la misma forma que ya usa la unidad organizacional con sus apoyos funcionales: se declara donde se sabe, y se lee donde se pregunta.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Qué abarca una línea</div>
                   <ul>
@@ -2851,7 +3240,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>la ficha de Farmacias pasa a listarla, sin que nadie la haya agregado desde allá</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>La tarjeta que lista lo que agrupa es de solo lectura.</li>
+                <li>La asignación se hace desde la ficha de cada nodo, en su campo «A qué negocio pertenece».</li>
+                <li>No hay una segunda puerta para el mismo dato.</li>
+                <li>Es la misma forma que usa la unidad organizacional con sus apoyos funcionales —<span class="id">BR‑ORG‑013</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span> · <span class="id">RF‑ORG‑021</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑05</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -2866,11 +3271,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-023">Una unidad dice dentro de qué está y qué puesto la manda</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-023</dd></div>
+                <div><dt>Grupo</dt><dd>Unidades organizacionales</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Unidad organizacional</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Son <b>dos preguntas y se contestan por separado</b>, porque tienen respuestas distintas.</p>
-              <p><b>«Depende de» dice dentro de qué está.</b> Una unidad organizacional <b>sí se anida en otra unidad</b>: una gerencia dentro de una dirección, un equipo dentro de esa gerencia, tan hondo como la empresa lo tenga. También puede estar directamente dentro de una sucursal, de un centro de trabajo o de la empresa. La tabla dibuja ese anidamiento con sangría, y el organigrama lo dibuja como áreas dentro de áreas.</p>
+              <p><b>«Depende de» dice dentro de qué está.</b> Una unidad organizacional <b>sí se anida en otra unidad</b>: una gerencia dentro de una dirección, un equipo dentro de esa gerencia, con tantos escalones como la empresa tenga. También puede estar directamente dentro de una sucursal, de un centro de trabajo o de la empresa. La tabla dibuja ese anidamiento con sangría, y el organigrama lo dibuja como áreas dentro de áreas.</p>
               <p><b>«Bajo el mando de» dice qué puesto la manda</b>, y es de ahí de donde sale la línea del dibujo. Sin ese dato, la unidad y todo lo que tiene adentro quedan sueltos: se ven como si no dependieran de nadie, aunque estén perfectamente anidados.</p>
               <p>Anidarse no es depender. «Marketing Digital» está dentro de «Marketing» y responde al Líder de Marketing, que es un puesto de Marketing; una unidad de primer nivel está dentro de la empresa y responde al Gerente General. En el dibujo, las cajas de las áreas se anidan unas en otras y las líneas salen de los puestos.</p>
               <p>Su <b>cabeza</b> —el cargo de la unidad que no le responde a nadie de adentro— se deduce y no se declara: es quien manda ahí, y por eso la ficha lo muestra sin preguntarlo.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un área colgada de su gerencia</div>
@@ -2900,7 +3316,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>«Depende de» y «Bajo el mando de» son dos campos distintos y se contestan por separado.</li>
+                <li>Una unidad se anida en otra unidad, en una sucursal, en un centro de trabajo o en la empresa.</li>
+                <li>Sin «Bajo el mando de», la unidad y todo lo que tiene adentro se dibujan sueltos.</li>
+                <li>La cabeza de la unidad se deduce del árbol y no se declara.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑022</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑04</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -2911,9 +3342,20 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-006">El sitio se declara una vez y baja por la rama</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-006</dd></div>
+                <div><dt>Grupo</dt><dd>Unidades organizacionales</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Unidad organizacional</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Una unidad organizacional declara <b>en qué región, sucursal o centro de trabajo está</b>, y ese sitio vale para ella y para todo lo que cuelgue de ella. Las de más abajo no lo vuelven a contestar: su ficha muestra el heredado y, al lado, de qué unidad sale.</p>
               <p>Declarar uno propio en una unidad de más abajo no contradice a su rama: la <b>afina</b> —«Almacén La Paz» dentro de «Logística», que está en Casa Matriz— y desde ahí manda el nuevo hacia abajo. No declarar ninguno significa «toda la empresa», que es la respuesta de una unidad que no está atada a ninguna sede.</p>
               <p>Por eso la columna «Sucursal» tiene dato en unidades y cargos que nunca lo escribieron, y por eso mover una rama de sitio corrige el de todo lo que cuelga de ella sin tocar un solo registro.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Una subunidad hereda el sitio de su rama</div>
@@ -2943,7 +3385,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>El sitio declarado en una unidad vale para ella y para todo lo que cuelgue de ella.</li>
+                <li>Una unidad de más abajo puede declarar el suyo propio, y desde ahí manda el nuevo hacia abajo.</li>
+                <li>No declarar ninguno significa «toda la empresa».</li>
+                <li>Mover una rama de sitio corrige el sitio de todo lo que cuelga sin tocar otro registro.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑012</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑04</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -2958,8 +3415,19 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-007">El cargo es el rol; el puesto es la silla</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-007</dd></div>
+                <div><dt>Grupo</dt><dd>Cargos</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Cargo y puesto</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>El <b>cargo</b> define qué se hace —nombre, unidad, nivel de mando, tipo, descripción— y existe una sola vez. El <b>puesto</b> es una silla concreta de ese cargo: tiene su código, su sitio de trabajo, su jefatura y su ocupante. Nueve «Vendedor» son <b>un cargo con nueve puestos</b>, no nueve cargos.</p>
               <p>Que sean uno solo es lo que permite que sus sillas se repartan entre dos jefaturas sin partir el rol en dos: nueve vendedores, seis bajo la Coordinadora de Ventas y tres bajo la Supervisora de Supermercados, siguen siendo el mismo «Vendedor» en el catálogo, con la misma descripción y la misma banda salarial. <span class="id">BR‑ORG‑012</span>.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Renombrar el rol</div>
@@ -2989,7 +3457,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>El cargo existe una sola vez; el puesto es cada silla de ese cargo.</li>
+                <li>El puesto no tiene nombre propio: se llama como su cargo —<span class="id">RF‑ORG‑024</span>—.</li>
+                <li>Las sillas de un mismo cargo pueden responder a jefaturas distintas sin partir el rol —<span class="id">BR‑ORG‑012</span>—.</li>
+                <li>El puesto no tiene lista propia: se ve desplegando su cargo —<span class="id">RF‑ORG‑016</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑016</span> · <span class="id">RF‑ORG‑024</span> · <span class="id">RF‑ORG‑025</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3000,9 +3483,20 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-008">Un cargo pertenece a una unidad; su línea de mando sale de sus sillas</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-008</dd></div>
+                <div><dt>Grupo</dt><dd>Cargos</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Cargo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>La regla de jerarquía le permitiría colgar de una sucursal o de una región —están más arriba— y eso lo sacaría del organigrama. Un cargo pertenece a una unidad: ahí está su jefe, su presupuesto y su evaluación. Dónde se trabaja lo dice el puesto, que es otra cosa.</p>
               <p><b>«Cuelga de» quiere decir dos cosas, y esta regla habla de una.</b> En el <b>árbol</b> un cargo cuelga de su unidad, y es el único nodo superior que se le ofrece: eso es a qué área pertenece. En el <b>dibujo</b> el cuadro de un cargo aparece debajo del cuadro de otro cargo, y eso es la línea de mando, que no sale de acá: sale de <b>a quién responden sus sillas</b>, una por una —<span class="id">BR‑ORG‑012</span>—. Por eso la tabla de Cargos tiene las dos columnas, «Pertenece a» y «Depende de», y dicen cosas distintas.</p>
               <p>Se contestan por separado porque tienen respuestas distintas. El cargo «Vendedor» pertenece a Ventas y tiene nueve sillas repartidas entre dos jefaturas: en el árbol es <b>uno solo</b> colgando de Ventas, y en el dibujo sus cuadros salen de <b>dos sitios</b>. La columna «Depende de» de la tabla lo dice tal cual —«2 jefaturas»—, porque no la guarda: la lee de las sillas.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Cargo dentro de su unidad</div>
@@ -3032,7 +3526,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>El único nodo superior que se le ofrece a un cargo es una unidad organizacional.</li>
+                <li>La línea del dibujo no sale del árbol: sale de a quién responde cada silla —<span class="id">BR‑ORG‑012</span>—.</li>
+                <li>La tabla de cargos muestra «Pertenece a» y «Depende de» como dos columnas distintas.</li>
+                <li>Un cargo con sillas en dos jefaturas muestra «2 jefaturas»: no es un dato guardado, se lee de las sillas.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑022</span> · <span class="id">RF‑ORG‑029</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span> · <span class="id">HU‑ORG‑07</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3043,7 +3552,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-009">El cupo del cargo es un techo, no una orden de creación</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-009</dd></div>
+                <div><dt>Grupo</dt><dd>Cargos</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Cargo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>«Máximo de ocupantes» declara <b>hasta cuántas personas pueden ocupar ese cargo a la vez</b>. Es el cupo aprobado, y puede ser mayor que las sillas abiertas hoy: dejarlo vacío significa «sin límite», que es el caso de la mayoría de los cargos.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un cupo mayor que las sillas abiertas</div>
@@ -3073,7 +3593,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Dejar el cupo vacío significa «sin límite», que es el caso de la mayoría de los cargos.</li>
+                <li>El cupo puede ser mayor que las sillas abiertas hoy: declararlo no crea puestos.</li>
+                <li>El cupo no se puede bajar por debajo de los puestos ya abiertos.</li>
+                <li>Cupo y plazas abiertas son dos datos distintos —<span class="id">RF‑ORG‑025</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑025</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3084,8 +3619,19 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-014">Los tres tipos de cargo se declaran, y dos de ellos no mandan</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-014</dd></div>
+                <div><dt>Grupo</dt><dd>Cargos</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Cargo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Hay tres tipos de cargo y se <b>declaran</b>, no se deducen. <b>Regular</b> (o de línea): puesto interno en planilla que forma parte de la jerarquía vertical —manda o reporta directamente—. <b>Staff</b> (asesoría o soporte): puesto interno en planilla que da soporte o asistencia a una dirección desde el costado, sin gente a su cargo. <b>Externo</b> (outsourcing): puesto cubierto por un prestador externo, que no genera planilla ni asistencia.</p>
               <p>Los dos últimos se dibujan <b>al costado</b> de la línea de mando, así que preguntarles a qué altura mandan no tiene respuesta posible: el campo «Nivel de mando» no aparece en su formulario.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un cargo de staff</div>
@@ -3115,7 +3661,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>El tipo de cargo se declara; no se deduce del árbol.</li>
+                <li>Staff y externo se dibujan al costado de la línea de mando —<span class="id">RF‑ORG‑032</span>—.</li>
+                <li>El campo «Nivel de mando» no aparece en el formulario de un cargo staff ni de uno externo.</li>
+                <li>El catálogo de tipos se administra en Configuración —<span class="id">RF‑ORG‑007</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑007</span> · <span class="id">RF‑ORG‑032</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑04</span> Configuración de la organización</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3126,8 +3687,19 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-021">El cargo y la plaza llevan códigos distintos</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-021</dd></div>
+                <div><dt>Grupo</dt><dd>Cargos</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Cargo y puesto</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>El código del <strong>cargo</strong> identifica el rol en el catálogo: de él cuelgan la descripción de puesto, el perfil y la banda salarial. El código del <strong>puesto</strong> identifica la plaza financiada: de él cuelgan el presupuesto, el contrato y la fila en planilla. En Recursos Humanos viven en dos documentos distintos —el manual de cargos y la plantilla de personal, donde en el sector público boliviano la plaza es el <em>ítem</em>— y por eso son dos códigos, también cuando el cargo tiene una sola plaza.</p>
               <p>Compartirlos obliga a renumerar el día que se abre la segunda, y para eso basta una transición entre el titular saliente y el entrante, o un interinato de seis meses. Ese código ya salió del sistema: está en un contrato y en una planilla, y renumerarlo ahí no es un cambio de pantalla. Además, un código suelto en una exportación dejaría de decir si nombra un rol o una silla.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un cargo con una sola plaza</div>
@@ -3157,7 +3729,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: el código derivado ya se propone en el prototipo; la validación de códigos repetidos todavía no está construida</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>El código del cargo identifica el rol; el del puesto identifica la plaza financiada.</li>
+                <li>Son dos códigos también cuando el cargo tiene una sola plaza.</li>
+                <li>No se comparten: abrir una segunda plaza no puede obligar a renumerar la primera.</li>
+                <li>Un código suelto en una exportación dice si nombra un rol o una silla.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑024</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Diseño</dt><dd>El código derivado ya se propone en el prototipo; la validación de códigos repetidos todavía no está construida</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3168,9 +3755,20 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-024">El cargo dice con qué jefatura nacen sus sillas nuevas</h3>
-              <p>La jefatura vive en cada puesto —<span class="id">BR‑ORG‑012</span>—, y por eso una silla abierta más tarde nacía suelta: había que entrar a su ficha a decir de quién depende, y un puesto sin ese dato se guarda bien y no aparece colgado de ninguna parte, que es la peor forma de faltar un dato.</p>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-024</dd></div>
+                <div><dt>Grupo</dt><dd>Cargos</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Cargo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
+              <p>La jefatura vive en cada puesto —<span class="id">BR‑ORG‑012</span>—, y por eso una silla abierta más tarde nacía suelta: había que entrar a su ficha a decir de quién depende, y un puesto sin ese dato se guarda igual y no aparece colgado de ninguna parte: el error no se ve hasta que alguien mira el organigrama.</p>
               <p>El cargo declara entonces <b>con qué jefatura nacen sus sillas</b>. No es la línea de mando del cargo, que no tiene: es el valor por defecto de las que se abran. Cambiarlo <b>no mueve a ninguna que ya exista</b> —cada una guarda la suya— y cada silla lo puede cambiar por su cuenta cuando quiera.</p>
               <p>Es también lo que contesta un cargo aprobado y todavía sin sillas: la primera que alguien abra nace colgada donde corresponde, y no hay un segundo paso que se pueda olvidar.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Una silla abierta desde la tabla</div>
@@ -3200,7 +3798,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>El valor declarado en el cargo es el que toman las sillas nuevas; no es la línea de mando del cargo.</li>
+                <li>Cambiarlo no mueve ninguna silla existente: cada una guarda la suya.</li>
+                <li>Cada silla puede cambiar su jefatura por su cuenta —<span class="id">BR‑ORG‑012</span>—.</li>
+                <li>Un cargo todavía sin sillas ya deja declarado dónde colgará la primera.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑038</span> · <span class="id">RF‑ORG‑029</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑07</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -3215,8 +3828,19 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-015">El nivel de mando es un catálogo de la empresa</h3>
-              <p>Vienen tres —superior, medio y bajo— y ahí termina la opinión del producto: cada empresa los renombra, los reordena y agrega los que le falten. El número no se guarda: es <b>la posición en la lista</b>. Un cargo guarda <b>la llave de su nivel de mando</b>, nunca su nombre ni su número.</p>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-015</dd></div>
+                <div><dt>Grupo</dt><dd>Niveles de mando</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Nivel de mando</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
+              <p>Vienen tres —superior, medio y bajo— y es todo lo que el producto define: cada empresa los renombra, los reordena y agrega los que le falten. El número no se guarda: es <b>la posición en la lista</b>. Un cargo guarda <b>la llave de su nivel de mando</b>, nunca su nombre ni su número.</p>
               <p>No se administra en Configuración: tiene su propia pantalla dentro de <b>Estructura organizacional</b>, porque es lo que clasifica a un cargo y no de qué escalones está hecha la empresa. Configuración contesta con qué niveles se arma el árbol; esto contesta cuánto pesa un cargo dentro de él.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Intercalar un nivel de mando</div>
@@ -3246,7 +3870,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Vienen tres —superior, medio y bajo—: la empresa los renombra, los reordena y agrega los que le falten.</li>
+                <li>El número no se guarda: es la posición en la lista.</li>
+                <li>Un cargo guarda la llave de su nivel de mando, nunca su nombre ni su número.</li>
+                <li>Se administra en su propia pantalla dentro de Estructura organizacional, no en Configuración.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑036</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑06</span> Niveles de mando</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3257,9 +3896,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-029">Un nivel de mando no es una línea de mando</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-029</dd></div>
+                <div><dt>Grupo</dt><dd>Niveles de mando</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Nivel de mando</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Los peldaños dicen <b>cuánto pesa</b> un cargo, no de quién depende. No se reportan entre sí: un mando bajo puede colgar directo de un superior sin que en el medio haya nada, y dos cargos del mismo peldaño pueden estar en ramas que no se tocan.</p>
               <p>Por eso la escala de la pantalla se dibuja <b>sin una sola línea entre los cuadros</b>, y es a propósito: en este producto una línea significa «depende de», y unirlos afirmaría que cada nivel le reporta al de arriba. Sin líneas se leen como los peldaños que son.</p>
               <p>Tampoco dibuja un caso concreto. Se probó con un ejemplo de dos ramas y enseñaba mal: se lo tomaba como la forma que iba a tener el organigrama de esa empresa, y esa forma depende de <b>quién cuelga de quién</b>, que es otro dato —<span class="id">BR‑ORG‑012</span>—.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un mando bajo colgando de un superior</div>
                   <ul>
@@ -3287,7 +3938,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>compartir peldaño no los pone en la misma fila ni los relaciona entre sí</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Los peldaños no se reportan entre sí: un mando bajo puede colgar directo de uno superior.</li>
+                <li>La escala se dibuja sin ninguna línea entre los cuadros: una línea significa «depende de».</li>
+                <li>La pantalla no dibuja un caso concreto de organigrama.</li>
+                <li>De quién depende un cargo sale de sus sillas —<span class="id">BR‑ORG‑012</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑036</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑06</span> Niveles de mando</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3298,9 +3965,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-030">La altura de un cuadro se mide contra su jefe, no contra su fila</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-030</dd></div>
+                <div><dt>Grupo</dt><dd>Niveles de mando</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Nivel de mando</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>El número del peldaño es lo que el dibujo convierte en <b>altura</b>, y la referencia es el peldaño <b>inmediatamente por debajo del de su jefe</b>. Un reporte un peldaño por debajo del suyo queda a ras; dos peldaños por debajo baja una caja; tres, baja dos.</p>
-              <p>Medir contra la fila no alcanzaba: un líder de mando bajo y un pasante colgando del mismo jefe se dibujaban idénticos, como pares, cuando no lo son. Cuando <b>el jefe no declara peldaño</b> no hay contra qué medir, y entonces sí se compara contra el hermano más alto de la fila, que es la única referencia que queda.</p>
+              <p>Medir contra la fila no alcanza: un líder de mando bajo y un pasante que cuelgan del mismo jefe se dibujarían idénticos, como pares, y no lo son. Cuando <b>el jefe no declara peldaño</b> no hay contra qué medir, y entonces sí se compara contra el hermano más alto de la fila, que es la única referencia que queda.</p>
               <p><b>Sin peldaño declarado el cuadro no se mueve de su sitio.</b> Lo que no se dijo no es «el más alto»: es que todavía no se dijo, y adivinarlo sería dibujar una jerarquía que nadie declaró.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Dos reportes de peso distinto</div>
                   <ul>
@@ -3328,7 +4007,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>no se le adivina uno: lo que no se dijo no es «el más bajo», es que falta decirlo</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>La altura se mide contra el peldaño inmediatamente por debajo del de su jefe.</li>
+                <li>Cuando el jefe no declara peldaño, la comparación es contra el hermano más alto de la fila.</li>
+                <li>Sin peldaño declarado, el cuadro no se mueve de su sitio.</li>
+                <li>El peldaño no cambia de quién depende el cargo —<span class="id">BR‑ORG‑029</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑036</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑09</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -3343,7 +4038,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-010">El puesto es donde las dos dimensiones se tocan</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-010</dd></div>
+                <div><dt>Grupo</dt><dd>Puestos</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Puesto</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Es el único nodo del árbol que apunta a los dos: cuelga de un <b>cargo</b> —dimensión organizacional— y declara un <b>sitio de trabajo</b> de la dimensión física. Ese sitio puede ser una sucursal o un centro de trabajo; de él se deduce la sucursal sin declararla aparte.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Trabajar en un centro</div>
@@ -3373,7 +4079,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>El puesto cuelga de un cargo y declara un sitio de trabajo: es el único nodo que apunta a las dos dimensiones.</li>
+                <li>El sitio de trabajo puede ser una sucursal o un centro de trabajo.</li>
+                <li>La sucursal se deduce del sitio declarado; no se pide aparte —<span class="id">BR‑ORG‑006</span>—.</li>
+                <li>Un puesto sin sitio declarado queda ubicado por la rama de su cargo.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑024</span> · <span class="id">RF‑ORG‑016</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3384,7 +4105,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-011">El puesto hereda del cargo lo que no es suyo</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-011</dd></div>
+                <div><dt>Grupo</dt><dd>Puestos</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Puesto</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>La unidad organizacional y el nivel de mando salen del cargo y se <b>enseñan</b>, no se preguntan. Volver a pedirlos permitiría que una silla de «Ejecutivo Comercial» declare estar en Contabilidad, y después nadie sabe cuál de las dos vale.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Lo heredado se lee</div>
@@ -3414,7 +4146,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>La unidad organizacional y el nivel de mando salen del cargo y se muestran, no se preguntan.</li>
+                <li>El puesto no puede declarar una unidad distinta de la de su cargo.</li>
+                <li>Cambiar el dato en el cargo lo cambia en todas sus sillas.</li>
+                <li>Lo propio de la silla —código, sitio, jefatura y ocupante— sí se pregunta —<span class="id">BR‑ORG‑007</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑024</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑06</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3425,10 +4172,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-012">«De quién depende» se declara y vive en el puesto</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-012</dd></div>
+                <div><dt>Grupo</dt><dd>Puestos</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Puesto</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>La dependencia estructural del organigrama sale de este dato. Se guarda en el <b>puesto</b> y no en el cargo, porque dos sillas del mismo cargo pueden responderle a jefes distintos.</p>
-              <p><b>El caso que lo obliga.</b> Un solo cargo «Vendedor» con nueve sillas, <span class="mono">PU‑01</span> a <span class="mono">PU‑09</span>: seis responden a la Coordinadora de Ventas y tres a la Supervisora de Supermercados, que atiende esa cuenta. Es un cargo, nueve puestos y <b>dos líneas de mando</b>. Preguntándole al cargo de quién depende no hay una respuesta que dar: hay dos, y el dato tendría que elegir una y mentir sobre las otras seis o las otras tres. Cada silla tiene su propia línea hacia arriba, y por eso el dato vive ahí.</p>
+              <p><b>El caso que lo obliga.</b> Un solo cargo «Vendedor» con nueve sillas, <span class="mono">PU‑01</span> a <span class="mono">PU‑09</span>: seis responden a la Coordinadora de Ventas y tres a la Supervisora de Supermercados, que atiende esa cuenta. Es un cargo, nueve puestos y <b>dos líneas de mando</b>. Preguntándole al cargo de quién depende no hay una sola respuesta: son dos, y guardar una daría por falsa la de las otras sillas. Cada silla tiene su propia línea hacia arriba, y por eso el dato vive ahí.</p>
               <p>Deducirlo —«cada cargo responde a la cabeza de su unidad»— alcanza para el caso corriente y miente en cuanto una unidad tiene dos jefaturas.</p>
               <p>El formulario lo pregunta en ese orden: una casilla dice <b>«todos los puestos dependen de la misma jefatura»</b>, marcada por defecto porque es lo que pasa casi siempre, y desmarcarla es el paso que se pide cuando no. Desmarcada, cada silla elige la suya y el dibujo las agrupa por jefatura en vez de colgarlas todas de una.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Nueve vendedores, dos jefaturas</div>
@@ -3458,7 +4216,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>La dependencia estructural se guarda en el puesto, no en el cargo.</li>
+                <li>La casilla «todos los puestos dependen de la misma jefatura» viene marcada: desmarcarla habilita elegir una por silla.</li>
+                <li>Un cargo con sillas en dos jefaturas se dibuja agrupado por jefatura, no colgado de una sola.</li>
+                <li>El valor con el que nace una silla nueva sale del cargo —<span class="id">BR‑ORG‑024</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑029</span> · <span class="id">RF‑ORG‑038</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑07</span> · <span class="id">HU‑ORG‑15</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑07</span> El cargo y sus plazas</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -3473,7 +4246,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-013">Un puesto pertenece a una unidad y puede trabajar en otras</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-013</dd></div>
+                <div><dt>Grupo</dt><dd>Dependencia funcional</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Puesto</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>La <b>dependencia funcional</b> es eso: la unidad a la que pertenece es la que lo evalúa y donde se lo cuenta; las que apoya son donde además trabaja. En cada una se dibuja como un cuadro más, en azul, y sigue siendo el mismo puesto: no se cuenta dos veces.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Declarar un apoyo</div>
@@ -3503,7 +4287,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>La unidad a la que pertenece es la que lo cuenta y lo evalúa; las que apoya son donde además trabaja.</li>
+                <li>El puesto se dibuja en cada unidad que apoya y sigue siendo el mismo: no se cuenta dos veces.</li>
+                <li>La dependencia funcional no cambia de quién depende —<span class="id">BR‑ORG‑032</span>—.</li>
+                <li>Un puesto puede no apoyar a ninguna unidad: el dato es opcional.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑033</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑08</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3514,9 +4313,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-031">Cada apoyo declara su unidad y a quién responde ahí</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-031</dd></div>
+                <div><dt>Grupo</dt><dd>Dependencia funcional</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Puesto</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Un apoyo funcional no es una etiqueta: es un par. <b>«Trabaja en Marketing respondiendo a la Líder de Marketing»</b> son dos datos, y el segundo se elige de <b>los cargos de esa unidad</b> y de ninguna otra. Elegir otra unidad limpia el jefe: el que valía ahí no vale acá.</p>
               <p>Puede quedar <b>sin jefe funcional</b>, y eso es una respuesta —«cuelga de la unidad»—, no un dato a medio llenar: hay apoyos que son al área entera y no a una persona.</p>
               <p>Dos límites, y los dos son del dato y no de la pantalla —por eso valen igual desde la ficha del cargo y desde el modal del dibujo—. <b>No se ofrece la unidad propia:</b> un puesto pertenece a la suya, que es otra cosa que trabajar en ella. <b>Ni una que ya esté en la lista:</b> repetirla dejaría dos renglones con dos jefes funcionales distintos y ninguna forma de saber cuál vale.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Trabaja en otra área respondiendo a alguien de ahí</div>
                   <ul>
@@ -3544,7 +4355,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>si no queda ninguna libre, el botón de agregar directamente no aparece</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Cada apoyo es un par: la unidad y a quién responde en ella.</li>
+                <li>El jefe funcional se elige entre los cargos de esa unidad; cambiar la unidad limpia el jefe.</li>
+                <li>Un apoyo puede quedar sin jefe funcional, y eso significa «cuelga de la unidad».</li>
+                <li>No se ofrece la unidad propia ni una que ya esté en la lista.</li>
+                <li>Los dos límites valen igual desde la ficha del cargo y desde el modal del dibujo.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑033</span> · <span class="id">RF‑ORG‑039</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑08</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3555,9 +4383,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-032">Lo funcional se dibuja distinto y no se cuenta dos veces</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-032</dd></div>
+                <div><dt>Grupo</dt><dd>Dependencia funcional</dd></div>
+                <div><dt>Nivel que gobierna</dt><dd>Puesto</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>En cada unidad que apoya, el puesto se dibuja como <b>un cuadro más</b>, y la línea que lo trae es <b>secundaria</b>: distinta de la estructural, para que las dos se sigan distinguiendo en escala de grises, fotocopiadas y proyectadas.</p>
               <p>Sigue siendo el <b>mismo puesto</b>. La unidad a la que <b>pertenece</b> es la que lo cuenta, la que lo evalúa y donde sale en su plantilla; las que apoya son donde además trabaja. Contarlo en las dos daría dos respuestas distintas a «¿cuánta gente tiene esta área?» y las dos serían defendibles, que es la peor forma de tener un número.</p>
               <p>Y no cambia de quién depende. La dependencia estructural sigue siendo la de su puesto —<span class="id">BR‑ORG‑012</span>—: un apoyo agrega una segunda persona que puede opinar de su trabajo, no un segundo jefe que lo manda.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>El mismo puesto, dos veces dibujado</div>
                   <ul>
@@ -3585,7 +4425,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>no hace falta el color para saber cuál de las dos es la que manda</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>La línea funcional se dibuja distinta de la estructural, y se distingue también en escala de grises.</li>
+                <li>El puesto se cuenta solo en la unidad a la que pertenece.</li>
+                <li>La dependencia estructural sigue siendo la de su puesto —<span class="id">BR‑ORG‑012</span>—.</li>
+                <li>Un apoyo agrega quién opina de su trabajo, no un segundo jefe que lo manda.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑033</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑08</span> · <span class="id">HU‑ORG‑09</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -3600,7 +4456,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-017">El organigrama y las tablas son el mismo dato</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-017</dd></div>
+                <div><dt>Grupo</dt><dd>El organigrama</dd></div>
+                <div><dt>Alcance</dt><dd>Todo el módulo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>No hay una copia para dibujar y otra para editar. Lo que se carga por una puerta está en la otra al instante, sin botón de sincronizar y sin posibilidad de que una diga una cosa y la otra otra.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Crear desde el dibujo</div>
@@ -3630,7 +4497,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>El organigrama y las tablas leen y escriben el mismo dato: no hay copia para dibujar.</li>
+                <li>Lo que se carga por una puerta aparece en la otra sin botón de sincronizar.</li>
+                <li>Crear y editar desde el dibujo pregunta lo mismo que la ficha —<span class="id">RF‑ORG‑039</span>—.</li>
+                <li>No hay estado en el que una vista diga una cosa y la otra diga otra.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑039</span> · <span class="id">RF‑ORG‑030</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑09</span> · <span class="id">HU‑ORG‑13</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3641,7 +4523,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-018">Los recortes del organigrama son de la vista, no del sistema</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-018</dd></div>
+                <div><dt>Grupo</dt><dd>El organigrama</dd></div>
+                <div><dt>Ámbito</dt><dd>Organigrama y listas</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Filtrar por unidad, por sede, por tipo de cargo o por estado cambia <b>lo que se está mirando</b> y nada más: no cambia lo que se crea ni lo que existe. Cada recorte queda escrito en la frase de arriba y se quita tocándolo.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Ver una sede</div>
@@ -3671,7 +4564,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Filtrar cambia lo que se está mirando; no cambia lo que existe ni lo que se crea.</li>
+                <li>Cada recorte queda escrito en la frase de arriba y se quita desde ahí —<span class="id">BR‑ORG‑033</span>—.</li>
+                <li>Un filtro se queda con las ramas que llegan al nodo elegido, jefes incluidos.</li>
+                <li>Los filtros no se aplican solos: ninguno queda puesto sin que se lea en pantalla.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑031</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑10</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3682,9 +4590,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-033">Los filtros se leen como una frase, no como un panel</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-033</dd></div>
+                <div><dt>Grupo</dt><dd>El organigrama</dd></div>
+                <div><dt>Ámbito</dt><dd>Organigrama</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Lo que se está mirando se dice en una línea que se lee entera: <b>«Viendo todos los cargos de toda la empresa en todas las sucursales»</b>. Cada trozo subrayado es un desplegable, y el texto que muestra es <b>la respuesta</b>, no el nombre del campo: dice «solo los vacantes», no «Estado».</p>
-              <p>Sin nada elegido la frase <b>sigue siendo verdad</b>, así que no hace falta un estado especial para «sin filtros» ni un aviso de que no hay ninguno puesto. Y como se lee sin abrir nada, saber qué se está recortando no cuesta un clic —que es lo que fallaba con el panel de casillas y con el modal que lo reemplazó—.</p>
+              <p>Sin nada elegido la frase <b>sigue siendo verdad</b>, así que no hace falta un estado especial para «sin filtros» ni un aviso de que no hay ninguno puesto. Y como se lee sin abrir nada, saber qué se está recortando no cuesta un clic —con un panel de casillas o con un modal hay que abrirlos para saberlo—.</p>
               <p>Se recorta por <b>sucursal, unidad y estado</b>, y por lo que hace a un cargo lo que es —<b>tipo, nivel de mando y si está vacante</b>—. Esos tres últimos comparten un solo hueco: en tres desplegables la frase tendría cinco huecos y dejaría de leerse como frase, y juntos arman una sola idea —«los cargos de staff con mando medio vacantes»—.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>La frase dice lo que recorta</div>
                   <ul>
@@ -3712,7 +4632,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>sin eso la rama quedaría colgando de la nada, que es dibujar una mentira</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>La frase se lee entera sin abrir nada, y cada trozo subrayado es un desplegable.</li>
+                <li>El texto que muestra un desplegable es la respuesta, no el nombre del campo.</li>
+                <li>Sin nada elegido la frase sigue siendo verdad: no hay estado especial para «sin filtros».</li>
+                <li>Se recorta por sucursal, unidad y estado, y por tipo, nivel de mando y vacante, que comparten un solo hueco.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑031</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑10</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3723,8 +4659,20 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-034">«Qué se dibuja» no es un filtro: cambia el papel, no a quién se deja afuera</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-034</dd></div>
+                <div><dt>Grupo</dt><dd>El organigrama</dd></div>
+                <div><dt>Ámbito</dt><dd>Organigrama</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Elegir entre <b>áreas y cargos</b>, <b>solo cargos</b> o <b>solo áreas</b> no deja a nadie afuera: cambia qué está dibujando el organigrama. Un organigrama de áreas y uno de puestos son dos documentos distintos, y los dos son el mismo dato.</p>
               <p>Por eso <b>no entra en la frase de los filtros</b> y no vive en la misma barra: está abierto sobre el lienzo, arriba a la izquierda, que es donde se ve lo que hace. Meterlo entre los recortes haría creer que hay gente escondida cuando no la hay.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un organigrama de áreas</div>
                   <ul>
@@ -3752,7 +4700,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>son dos preguntas que se contestan juntas: qué se dibuja y de qué pedazo</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Elegir entre áreas y cargos, solo cargos o solo áreas no deja a nadie afuera.</li>
+                <li>El control no entra en la frase de los filtros ni vive en su barra: está sobre el lienzo.</li>
+                <li>Un organigrama de áreas y uno de puestos son dos documentos del mismo dato.</li>
+                <li>Cambiar qué se dibuja no cambia qué se exporta —<span class="id">RF‑ORG‑034</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑030</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑09</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3763,10 +4727,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-035">La empresa elige los tonos de la leyenda, nunca sus significados</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-035</dd></div>
+                <div><dt>Grupo</dt><dd>El organigrama</dd></div>
+                <div><dt>Ámbito</dt><dd>Organigrama</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Lo que se cambia es <b>qué tono tiene cada significado</b> —apoyo funcional, cargo externo, cargo de staff, vacante y el color de marca—. Nunca <b>cuántos significados hay</b> ni <b>cuál pinta qué</b>: eso es la leyenda, y una leyenda que cada empresa redefine deja de poder explicarse.</p>
-              <p>Cambiar el tono sí hace falta, y no es capricho de marca: <b>el teal del staff y el ámbar del vacante son justo el par que más se confunde</b> con daltonismo, y cada empresa tiene que poder separarlos con los colores que su gente distinga.</p>
+              <p>Cambiar el tono es necesario, y no por motivos de marca: <b>el teal del staff y el ámbar del vacante son justo el par que más se confunde</b> con daltonismo, y cada empresa tiene que poder separarlos con los colores que su gente distinga.</p>
               <p>Y el color <b>nunca va solo</b>. Cada codificación lleva <b>tres señales a la vez</b> —color, forma del borde e ícono— para que el organigrama se siga leyendo fotocopiado, proyectado y por alguien que no distingue esos dos tonos. Un cambio de paleta no puede romper la lectura porque no es lo único que la sostiene.</p>
               <p>Nada de esto toca el dato: cambiar cómo se ve el organigrama no mueve un solo nodo.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Separar dos tonos que se confunden</div>
                   <ul>
@@ -3794,7 +4770,23 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>las tres señales están siempre, no solo cuando el color falla</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>La empresa cambia el tono de cada significado; no cuántos significados hay ni cuál pinta qué.</li>
+                <li>Cada codificación lleva tres señales a la vez: color, forma del borde e ícono.</li>
+                <li>El teal del staff y el ámbar del vacante son el par que más se confunde con daltonismo, y por eso se pueden separar.</li>
+                <li>Cambiar la paleta no mueve ningún nodo: no toca el dato.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑036</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑12</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑03</span> Organigrama</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -3809,9 +4801,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-040">Una sola ficha para todos los tipos, y abre para mirar</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-040</dd></div>
+                <div><dt>Grupo</dt><dd>Las fichas y las listas</dd></div>
+                <div><dt>Alcance</dt><dd>Los siete tipos de nodo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Regional, sucursal, centro de trabajo, unidad de negocio, unidad organizacional, cargo y puesto se editan en <b>la misma pantalla</b>, con los mismos gestos. No cambia de forma: cambia qué campos trae. Siete formularios distintos serían siete sitios donde arreglar el mismo error.</p>
               <p><b>Abre en lectura y editar es un paso que se pide.</b> Un nodo se abre muchas más veces para consultarlo que para cambiarlo, y entrando directo al editor cualquier descuido —rozar un desplegable y guardar— muda algo de sitio sin que nadie lo haya pedido. Un alta no tiene nada que mirar todavía: nace en edición.</p>
               <p>Y al pasar de mirar a editar <b>nada se mueve de sitio</b>: los campos son los mismos y están donde van a estar, solo que bloqueados. Cancelar vuelve a <b>la lista del tipo del nodo</b> y no a la pantalla desde la que se llegó: un nodo pertenece a la lista que lo lista, se haya llegado desde donde se haya llegado.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Mirar antes de tocar</div>
                   <ul>
@@ -3839,7 +4843,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>no al organigrama: el nodo pertenece a la lista que lo lista</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Los siete tipos comparten la misma ficha: cambia qué campos trae, no la forma.</li>
+                <li>La ficha abre en lectura; editar es un paso que se pide.</li>
+                <li>Un alta nace en edición: no hay nada que mirar todavía.</li>
+                <li>Al pasar de mirar a editar ningún campo cambia de sitio.</li>
+                <li>Cancelar vuelve a la lista del tipo del nodo, no a la pantalla desde la que se llegó —<span class="id">RF‑ORG‑027</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑020</span> · <span class="id">RF‑ORG‑021</span> · <span class="id">RF‑ORG‑027</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd>—</dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3850,9 +4871,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-041">Lo obligatorio bloquea el guardado y dice por qué hace falta</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-041</dd></div>
+                <div><dt>Grupo</dt><dd>Las fichas y las listas</dd></div>
+                <div><dt>Alcance</dt><dd>Los siete tipos de nodo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Los campos obligatorios salen de <b>los propios campos</b> y no de una lista aparte, así que agregar uno mañana lo hace exigible sin tocar la validación.</p>
               <p>El aviso <b>nombra cuál falta y para qué</b>: «es el domicilio que sale en cada finiquito», «sin nombre no hay forma de elegirla al colgarle una sucursal». Un «campo obligatorio» a secas no explica nada y deja a quien lo lee adivinando si de verdad hace falta. Con uno solo se dice su razón; con varios se enumeran.</p>
-              <p>Y los errores aparecen <b>después del primer intento de guardar</b>, no mientras se escribe. Marcar en rojo un campo que todavía se está llenando es acusar a alguien de un error que no cometió.</p>
+              <p>Y los errores aparecen <b>después del primer intento de guardar</b>, no mientras se escribe. Marcar en rojo un campo que todavía se está llenando señala un error que todavía no ocurrió.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>El aviso dice el campo y su razón</div>
                   <ul>
@@ -3880,7 +4913,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>no hay que descubrirlos de a uno guardando tres veces</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Un campo obligatorio nuevo queda exigible sin tocar la validación: la exigencia sale del propio campo.</li>
+                <li>El aviso nunca dice «campo obligatorio» a secas: nombra cuál falta y para qué hace falta.</li>
+                <li>Con un solo faltante se dice su razón; con varios se enumeran todos en un mismo aviso.</li>
+                <li>Ningún campo se marca en rojo antes del primer intento de guardar.</li>
+                <li>Cada tipo de nodo exige los suyos: la ficha es la misma y los campos cambian —<span class="id">BR‑ORG‑040</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑023</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd>—</dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3891,9 +4941,21 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-042">La tabla dibuja el árbol, y al buscar se aplana</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-042</dd></div>
+                <div><dt>Grupo</dt><dd>Las fichas y las listas</dd></div>
+                <div><dt>Alcance</dt><dd>Las listas del módulo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Las listas no son planas: cada fila se cuelga <b>de su ancestro más cercano que también esté en la vista</b>, con sangría. Un cargo se despliega y muestra sus puestos como filas hijas, con las mismas columnas —el puesto no tiene lista propia: vive dentro de su cargo—.</p>
-              <p>El buscador dice <b>entre cuántos está buscando</b> y de qué habla —«Buscar entre 34 unidades organizacionales…»—, mira nombre, ciudad y código, y <b>no distingue tildes</b>: nadie escribe «Potosí» con acento en un buscador. El resultado vuelve a la primera página, porque buscar estando en la tercera dejaría a alguien mirando una página vacía.</p>
+              <p>El buscador dice <b>entre cuántos está buscando</b> y de qué habla —«Buscar entre 34 unidades organizacionales…»—, mira nombre, ciudad y código, y <b>no distingue tildes</b>: «Potosi» y «Potosí» devuelven lo mismo. El resultado vuelve a la primera página, porque buscar estando en la tercera dejaría a alguien mirando una página vacía.</p>
               <p>Con la búsqueda puesta <b>la sangría se aplana</b>, y es a propósito: los resultados no son hermanos entre sí, así que dibujarlos anidados afirmaría un parentesco que no existe. Ahí la columna «Depende de» pasa a ser lo único que los ubica.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
+              <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>El árbol con sangría</div>
                   <ul>
@@ -3921,7 +4983,24 @@ td.rg{color:var(--tinta-3);font-weight:700}
                     <li><b>Y</b>la búsqueda mira también el código y la ciudad, no solo el nombre</li>
                   </ul>
                 </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              </div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Cada fila se cuelga de su ancestro más cercano que también esté en la vista.</li>
+                <li>Un cargo se despliega y muestra sus puestos como filas hijas —<span class="id">RF‑ORG‑016</span>—.</li>
+                <li>El buscador mira nombre, ciudad y código, no distingue tildes y dice entre cuántos busca.</li>
+                <li>Con la búsqueda puesta la sangría se aplana y «Depende de» pasa a ser lo que ubica cada fila.</li>
+                <li>El resultado vuelve a la primera página —<span class="id">RF‑ORG‑013</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑011</span> · <span class="id">RF‑ORG‑013</span> · <span class="id">RF‑ORG‑016</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd>—</dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑01</span> Estructura organizacional</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -3936,7 +5015,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-016">Desactivar no es borrar</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-016</dd></div>
+                <div><dt>Grupo</dt><dd>Vale para todo el módulo</dd></div>
+                <div><dt>Alcance</dt><dd>Todo el módulo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Una sucursal que cerró tiene historia, gente y planillas detrás. Lo mismo una unidad que se disolvió o un cargo que dejó de usarse. Se <b>desactivan</b>, con su fecha, y dejan de ofrecerse para cosas nuevas conservando todo lo que pasó por ahí.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Cerrar una sucursal</div>
@@ -3966,7 +5056,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: prototipado</div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Los nodos se desactivan con su fecha; no se borran.</li>
+                <li>Un nodo desactivado deja de ofrecerse para cosas nuevas y se conserva en tablas e históricos.</li>
+                <li>El estado se cambia por su único camino, la acción «Cambiar estado» —<span class="id">RF‑ORG‑028</span>—.</li>
+                <li>Desactivar una sucursal no borra lo que colgaba de ella.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd><span class="id">RF‑ORG‑028</span> · <span class="id">RF‑ORG‑015</span></dd></div>
+                <div><dt>Historia de usuario</dt><dd><span class="id">HU‑ORG‑14</span></dd></div>
+                <div><dt>Pantalla</dt><dd><span class="id">W‑02</span> La ficha de un nodo</dd></div>
+                <div><dt>Diseño</dt><dd>Prototipado</dd></div>
+              </dl>
             </div>
           </li>
           <li class="br">
@@ -3977,7 +5082,18 @@ td.rg{color:var(--tinta-3);font-weight:700}
                 <span class="br-estado">Borrador</span>
               </div>
               <h3 id="BR-ORG-020">La estructura es el dato del que dependen los demás módulos</h3>
+
+              <h4 class="br-h"><em>1</em>Información básica</h4>
+              <dl class="br-meta">
+                <div><dt>Código</dt><dd>BR-ORG-020</dd></div>
+                <div><dt>Grupo</dt><dd>Vale para todo el módulo</dd></div>
+                <div><dt>Alcance</dt><dd>Todo el módulo</dd></div>
+                <div><dt>Estado</dt><dd>Borrador</dd></div>
+              </dl>
+              <p class="br-dg-t">Descripción general</p>
               <p>Onboarding saca de aquí a quién le toca cada ruta; Evaluación, a quién apunta cada campaña; Comunicación, a quién le llega cada anuncio. Por eso escribir en la estructura es de Recursos Humanos y de nadie más: una unidad borrada deja rutas sin destino y campañas sin público.</p>
+
+              <h4 class="br-h"><em>2</em>Escenarios ágiles de ejecución</h4>
               <div class="escenarios">
                 <div class="esc ok">
                   <div class="esc-t"><i>✅</i>Un cambio se propaga</div>
@@ -4007,7 +5123,22 @@ td.rg{color:var(--tinta-3);font-weight:700}
                   </ul>
                 </div>
               </div>
-              <div class="traza">Ticket: pendiente · Diseño: la estructura ya es la única fuente en el prototipo; los permisos por rol todavía no se verifican — <span class="id">ABIERTA‑09</span></div>
+              <h4 class="br-h"><em>3</em>Condiciones y excepciones</h4>
+              <ul class="br-cond">
+                <li>Onboarding, Evaluación y Comunicación leen la estructura; ninguno la escribe.</li>
+                <li>Escribir en la estructura es de Recursos Humanos.</li>
+                <li>Una unidad borrada dejaría rutas sin destino y campañas sin público: por eso se desactiva —<span class="id">BR‑ORG‑016</span>—.</li>
+                <li>Los permisos por rol todavía no se verifican en el servidor —<span class="id">ABIERTA‑09</span>—.</li>
+              </ul>
+
+              <h4 class="br-h"><em>4</em>Trazabilidad</h4>
+              <dl class="br-traza">
+                <div><dt>Ticket</dt><dd>Pendiente</dd></div>
+                <div><dt>Requisitos</dt><dd>—</dd></div>
+                <div><dt>Historia de usuario</dt><dd>—</dd></div>
+                <div><dt>Pantalla</dt><dd>—</dd></div>
+                <div><dt>Diseño</dt><dd>La estructura ya es la única fuente en el prototipo; los permisos por rol todavía no se verifican —<span class="id">ABIERTA‑09</span>—</dd></div>
+              </dl>
             </div>
           </li>
         </ol>
@@ -5238,6 +6369,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
       <li><strong>Si el prototipo y este documento no coinciden</strong>, se corrige el que esté mal, y se corrige antes de entregarle nada a desarrollo.</li>
       <li><strong>Los códigos no se reutilizan.</strong> Si una regla o un requisito se elimina, su número queda libre y vacío. Citar <span class="id">RF‑ORG‑012</span> tiene que significar lo mismo dentro de un año.</li>
       <li><strong>Una regla en <em>Borrador</em> no se presenta como aprobada.</strong> El estado es parte de la regla y se actualiza cuando alguien la revisa, no cuando alguien la escribe.</li>
+      <li><strong>Cada regla se escribe en los cuatro apartados</strong> —información básica, escenarios ágiles de ejecución, condiciones y excepciones, y trazabilidad—, y la trazabilidad se declara aunque esté pendiente. Una regla que no los tiene está a medio escribir.</li>
       <li><strong>La versión sube cuando cambia lo que el documento promete</strong>, no cuando se corrige una palabra.</li>
     </ul>
     <div class="nota"><p><strong>Y hay una regla más, que es la que le dio origen a esta versión:</strong> si desarrollo no está entendiendo el documento, el problema es del documento. Un módulo que se explica en nueve secciones y aun así se construye distinto no tiene un problema de lectura.</p></div>
@@ -5250,6 +6382,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
         <tr><td class="rg">1.0</td><td>7 sep 2026</td><td>La documentación del módulo en formato BR: veinte reglas con escenarios, treinta y un requisitos funcionales con código estable, ocho flujos y cinco wireframes. <strong>Cambia el modelo:</strong> un solo árbol de nodos, el esquema de niveles como dato de la empresa, y el cargo separado del puesto</td></tr>
         <tr><td class="rg"><strong>2.0</strong></td><td>7 sep 2026</td><td><strong>Los dos documentos se unen en uno.</strong> El contenido del módulo —reglas, requisitos, flujos y wireframes— entra en la estructura de nueve secciones del PRD, que es la que se sostiene: glosario al frente, contexto, integraciones módulo por módulo, modelo de datos y roadmap. <strong>Se rescata del PRD de agosto</strong> todo lo que seguía valiendo y se reescribe sobre el modelo nuevo: qué es un organigrama, los principios de diseño, las integraciones, el camino hasta desarrollo, los riesgos y el anexo de decisiones. <strong>Se anota lo que falta</strong> en vez de disimularlo: registro de actividad, estados vacíos y permisos verificados en el servidor quedan como <span class="id">ABIERTA‑07</span> a <span class="id">ABIERTA‑09</span>. <strong>Sin revisar todavía</strong></td></tr>
         <tr><td class="rg"><strong>2.1</strong></td><td>9 sep 2026</td><td>Entra <span class="id">BR‑ORG‑021</span>: <strong>el cargo y la plaza llevan códigos distintos</strong>, también cuando el cargo tiene una sola plaza. Es como lo maneja Recursos Humanos —el manual de cargos y la plantilla de personal son dos documentos— y no estaba escrito en ninguna parte, así que el formulario mostraba dos campos «Código» sin decir por qué eran dos</td></tr>
+        <tr><td class="rg"><strong>3.3</strong></td><td>10 sep 2026</td><td><strong>Las cuarenta y una reglas pasan a un formato único de cuatro apartados</strong>, por observación de QA: <b>1 Información básica</b> —código, grupo, alcance, estado y una descripción general—, <b>2 Escenarios ágiles de ejecución</b>, <b>3 Condiciones y excepciones</b> y <b>4 Trazabilidad</b>. <strong>El «Ticket: pendiente» suelto al pie de cada regla desaparece</strong> y pasa a ser el apartado 4, con ticket, requisitos, historia de usuario, pantalla y estado del diseño declarados uno por uno. <strong>Las descripciones se reescriben en tono descriptivo</strong>: lo narrativo —«es la cima del eje físico», «es la ficha más corta»— se enuncia como lo que el sistema hace, sin perder el motivo. Y <span class="id">BR‑ORG‑004</span> decía tres niveles fijos donde son cuatro: el puesto faltaba</td></tr>
         <tr><td class="rg"><strong>3.2</strong></td><td>10 sep 2026</td><td><strong>Dos diagramas y dos wireframes.</strong> Se dibujan los dos casos que más cuesta contar por escrito: <b>los nueve vendedores</b> —un cargo, nueve sillas, dos líneas de mando— en el <span class="id">0.4</span>, y <b>las tres empresas</b> que pegan la unidad de negocio en tres escalones distintos, dentro de <span class="id">BR‑ORG‑022</span>. Entran <span class="id">W‑06</span> Niveles de mando y <span class="id">W‑07</span> El cargo y sus plazas —las dos pantallas sin dibujar, y W‑07 es donde vive lo más difícil del módulo—. Y <span class="id">W‑05</span> marcaba como obligatorios la razón social, el NIT y el país, que no lo son: el único obligatorio de la empresa es el nombre comercial</td></tr>
         <tr><td class="rg"><strong>3.1</strong></td><td>10 sep 2026</td><td><strong>Entra el punto <span class="id">09</span>: quince historias de usuario con sus criterios de aceptación, y el plan de prototipado.</strong> El documento decía qué es verdad —las reglas— y qué tiene que hacer cada pantalla —los requisitos—, pero no decía <b>qué se entrega ni cómo se acepta</b>, y sin eso dos personas leen los mismos requisitos y construyen cosas distintas, las dos defendibles. Los criterios están escritos como afirmaciones que se marcan hechas o no hechas delante de la pantalla: si uno necesita interpretación, no es un criterio. <span class="id">HU‑ORG‑09</span> cubre las tres vistas del organigrama —gráfico, cards y tabla— una por una. El <span class="id">9.2</span> dice qué contesta cada etapa del prototipo, cómo se sabe que terminó, y qué está construido hoy y qué está solo dibujado</td></tr>
         <tr><td class="rg"><strong>3.0</strong></td><td>10 sep 2026</td><td><strong>Barrido del prototipo buscando lo que un desarrollador necesita y el documento no decía.</strong> <b>Datos de la empresa</b> no tenía ninguna regla y es la primera pantalla del módulo: entran <span class="id">BR‑ORG‑036</span> —la raíz solo exige su nombre, porque el organigrama lo imprime en su cabecera— y <span class="id">BR‑ORG‑037</span> —el país se declara una vez y de él salen las ciudades de cada alta—. <b>Configuración</b> gana <span class="id">BR‑ORG‑038</span>: la vista previa se rehace en el momento y los interruptores se ajustan a lo que hay cargado. <b>Unidades de negocio</b> gana <span class="id">BR‑ORG‑039</span>: lo que agrupa se ve y no se asigna desde ahí, porque dos puertas para un dato terminan discrepando. Y entra el grupo <b>Las fichas y las listas</b>, que es la forma que comparten todos los tipos: <span class="id">BR‑ORG‑040</span> una sola ficha que abre para mirar, <span class="id">BR‑ORG‑041</span> lo obligatorio bloquea y dice por qué hace falta, y <span class="id">BR‑ORG‑042</span> la tabla dibuja el árbol y al buscar se aplana</td></tr>
@@ -5293,7 +6426,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 </div>
 
 <footer class="pie">
-  <div>Documentación del módulo de organización — versión 2.1, 9 de septiembre de 2026. Souly HR. Reúne el PRD del organigrama de agosto de 2026 y la documentación del módulo de septiembre, sobre el modelo vigente: un solo árbol de nodos, el esquema de niveles como dato de la empresa y el cargo separado del puesto. <strong>Las veintiuna reglas están en estado borrador y no las revisó nadie todavía.</strong></div>
+  <div>Documentación del módulo de organización — versión 3.3, 10 de septiembre de 2026. Souly HR. Reúne el PRD del organigrama de agosto de 2026 y la documentación del módulo de septiembre, sobre el modelo vigente: un solo árbol de nodos, el esquema de niveles como dato de la empresa y el cargo separado del puesto. <strong>Las cuarenta y una reglas están en estado borrador.</strong></div>
 </footer>
 
 
