@@ -639,11 +639,16 @@ td.rg{color:var(--tinta-3);font-weight:700}
    y el nudo del ENTONCES —el resultado, lo único que de verdad se verifica— va relleno y en
    color. Ahí vive la señal que antes daba el ✅: verde cuando el camino tiene que funcionar,
    ámbar quemado cuando tiene que estar cerrado. */
-.escenarios { display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 16px; counter-reset: esc; }
+.escenarios {
+  display: grid; grid-template-columns: 1fr; gap: 0; margin-top: 16px; counter-reset: esc;
+  background: var(--hoja); border: 1px solid var(--regla); border-radius: var(--r-s);
+  box-shadow: var(--sombra); padding: 0 22px;
+}
 .esc {
   counter-increment: esc; position: relative;
-  background: none; border: 0; padding: 22px 0 8px;
+  background: none; border: 0; padding: 20px 0 18px;
 }
+.esc + .esc { margin: 0 -22px; padding: 20px 22px 18px; border-top: 1px solid var(--regla); }
 .esc::before {
   content: 'Escenario ' counter(esc);
   display: block; margin-bottom: 5px;
@@ -671,7 +676,7 @@ td.rg{color:var(--tinta-3);font-weight:700}
 .esc li::before {
   content: ''; position: absolute; left: 0; top: 11px; box-sizing: border-box;
   width: 8px; height: 8px; border-radius: var(--r-full);
-  background: var(--papel); border: 1.5px solid var(--regla-2);
+  background: var(--hoja); border: 1.5px solid var(--regla-2);
 }
 .esc li:nth-child(3)::before { background: var(--funcional); border-color: var(--funcional); }
 .esc.no li:nth-child(3)::before { background: var(--outsourcing); border-color: var(--outsourcing); }
